@@ -8,7 +8,7 @@
     <meta name="keywords" content="simulation scientifique, simulateur physique, simulation chimie, simulation mathématiques, simulation SVT, simulation biologie, simulation astronomie, simulation informatique, algorithmique interactive, sciences interactives, lycée, terminale, BAC, Bénin, UAC, Cotonou, Edmond TCHOKPON, laboratoire virtuel">
     <meta name="author" content="Edmond Atinzoun TCHOKPON">
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://simlab-science.netlify.app/">
+    <link rel="canonical" href="https://edmond-tc.github.io/simlab/">
     <meta property="og:title" content="SimLab | Le Laboratoire Virtuel de Simulations Scientifiques">
     <meta property="og:description" content="Explorez toutes les sciences à travers des simulations interactives : Physique, Chimie, Maths, SVT, Astronomie, Informatique. Gratuit, éducatif, pour tous les scientifiques.">
     <meta property="og:type" content="website">
@@ -231,6 +231,26 @@
 
         @media(max-width:900px){.nav-links{display:none}.hamburger{display:block}.about-grid,.donation-grid,.contact-grid{grid-template-columns:1fr;gap:2rem}.footer-grid{grid-template-columns:1fr 1fr}}
         @media(max-width:600px){.hero h1{font-size:2.4rem}.footer-grid{grid-template-columns:1fr}.sims-grid{grid-template-columns:1fr}.hero-stats{gap:1.5rem}.domain-tabs{gap:0.4rem}.domain-tab{font-size:0.78rem;padding:0.45rem 0.9rem}}
+    
+        /* ===== ADSTERRA AD ZONES ===== */
+        .ad-wrap{width:100%;position:relative;z-index:1;overflow:hidden;text-align:center}
+        .ad-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;margin-bottom:3px;display:block}
+        /* Leaderboard 728x90 — entre hero et simulations */
+        .ad-leaderboard{padding:14px 5%;background:rgba(0,0,0,0.18);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+        .ad-leaderboard .ad-box{max-width:728px;min-height:90px;margin:0 auto;background:rgba(255,255,255,0.03);border:1px dashed rgba(0,180,216,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem}
+        /* Rectangle 300x250 — dans sidebar FAQ */
+        .ad-rectangle{padding:20px 0;display:flex;justify-content:center}
+        .ad-rectangle .ad-box{width:300px;min-height:250px;background:rgba(255,255,255,0.03);border:1px dashed rgba(0,180,216,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem}
+        /* Billboard 970x90 — avant footer */
+        .ad-billboard{padding:16px 5%;background:rgba(0,0,0,0.1);border-top:1px solid var(--border)}
+        .ad-billboard .ad-box{width:100%;min-height:90px;background:rgba(255,255,255,0.03);border:1px dashed rgba(0,180,216,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem}
+        /* Sticky mobile bottom */
+        .ad-sticky{position:fixed;bottom:0;left:0;right:0;z-index:997;background:var(--dark2);border-top:1px solid var(--border);padding:4px;display:flex;align-items:center;justify-content:center;min-height:60px}
+        .ad-sticky .ad-box{max-width:320px;min-height:50px;width:100%;display:flex;align-items:center;justify-content:center}
+        .ad-sticky-close{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:1px solid var(--border);color:var(--text-muted);font-size:0.75rem;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:var(--font-body)}
+        .ad-sticky-close:hover{color:var(--text)}
+        @media(min-width:900px){.ad-sticky{display:none}}
+
     </style>
 </head>
 <body>
@@ -283,6 +303,20 @@
     </div>
 </section>
 
+
+<!-- ═══ ADSTERRA AD ZONE 1 — Leaderboard 728x90 ═══
+     INSTRUCTIONS: Remplace le commentaire ci-dessous par ton code Adsterra
+     Type recommandé: Banner 728x90 ou Adaptive Banner
+     Obtiens ton code sur: publishers.adsterra.com
+-->
+<div class="ad-wrap ad-leaderboard">
+    <span class="ad-label">Publicité</span>
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 1 (Banner 728x90) -->
+        <!-- Exemple: <script async src="//your-adsterra-code.js"></script> -->
+    </div>
+</div>
+
 <!-- SIMULATIONS -->
 <section id="simulations" class="section-padding">
     <div class="container">
@@ -306,14 +340,7 @@
             <div class="subcat"><div class="subcat-title">⚙️ Mécanique</div>
                 <div class="sims-grid">
                     <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🎯</div><span class="sim-badge">Original</span></div><div class="sim-name">Tir de Projectile</div><div class="sim-desc">Simulez un lancer de projectile, ajustez angle et vitesse initiale, observez la trajectoire parabolique en temps réel.</div><div class="sim-tags"><span class="sim-tag">Parabole</span><span class="sim-tag">Gravité</span><span class="sim-tag">Vitesse</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
-                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🕰️</div><span class="sim-badge">Original</span></div><div class="sim-name">Pendule Simple</div><div class="sim-desc">Explorez le mouvement oscillatoire d'un pendule. Modifiez longueur, masse et gravité en temps réel.</div><div class="sim-tags"><span class="sim-tag">Oscillation</span><span class="sim-tag">Période</span><span class="sim-tag">Fréquence</span></div><div class="sim-btn"><a href="sim-pendule.html" style="text-decoration: none;">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-    </a>
-
-    <a href="guide-pendule.html" style="display: block; margin-top: 10px; color: #666; font-size: 0.8em; text-decoration: underline;">
-        📖 Consulter le guide d'utilisation
-    </a>
-</div>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🕰️</div><span class="sim-badge">Original</span></div><div class="sim-name">Pendule Simple</div><div class="sim-desc">Explorez le mouvement oscillatoire d'un pendule. Modifiez longueur, masse et gravité en temps réel.</div><div class="sim-tags"><span class="sim-tag">Oscillation</span><span class="sim-tag">Période</span><span class="sim-tag">Fréquence</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
                     <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌀</div><span class="sim-badge">Original</span></div><div class="sim-name">Masses et Ressorts</div><div class="sim-desc">Simulation de ressorts avec masses variables. Observez la loi de Hooke et les oscillations.</div><div class="sim-tags"><span class="sim-tag">Ressort</span><span class="sim-tag">Hooke</span><span class="sim-tag">Énergie</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
                     <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">💪</div><span class="sim-badge">Original</span></div><div class="sim-name">Forces et Mouvements</div><div class="sim-desc">Appliquez des forces, observez accélération, frottement et les lois de Newton en action.</div><div class="sim-tags"><span class="sim-tag">Newton</span><span class="sim-tag">Frottement</span><span class="sim-tag">Accélération</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
                     <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">💥</div><span class="sim-badge">Original</span></div><div class="sim-name">Collisions</div><div class="sim-desc">Chocs élastiques et inélastiques. Conservation de la quantité de mouvement visualisée.</div><div class="sim-tags"><span class="sim-tag">Choc</span><span class="sim-tag">Momentum</span><span class="sim-tag">Conservation</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
@@ -524,6 +551,17 @@
     </div>
 </section>
 
+
+<!-- ═══ ADSTERRA AD ZONE 2 — Rectangle 300x250 ═══
+     Type recommandé: Medium Rectangle 300x250
+-->
+<div class="ad-wrap ad-rectangle">
+    <span class="ad-label">Publicité</span>
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 2 (300x250) -->
+    </div>
+</div>
+
 <!-- CONTACT -->
 <section id="contact" class="section-padding">
     <div class="container">
@@ -566,6 +604,17 @@
 </section>
 
 <!-- FOOTER -->
+
+<!-- ═══ ADSTERRA AD ZONE 3 — Billboard 970x90 ═══
+     Type recommandé: Large Banner ou Native Banner
+-->
+<div class="ad-wrap ad-billboard">
+    <span class="ad-label">Publicité</span>
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 3 (Billboard) -->
+    </div>
+</div>
+
 <footer>
     <div class="container">
         <div class="footer-grid">
@@ -598,7 +647,7 @@
                 <h4>Contact</h4>
                 <ul>
                     <li><a href="https://wa.me/22951226741" target="_blank">💬 WhatsApp</a></li>
-                    <li><a href="mailto:tchokponedmond@gmail.com">📧 Email</a></li>
+                    <li><a href="/cdn-cgi/l/email-protection#3d495e5552564d52535859505253597d5a505c5451135e5250">📧 Email</a></li>
                     <li><a href="https://instagram.com/atinz" target="_blank">📸 Instagram</a></li>
                     <li><a href="https://youtube.com/@Atinzoun" target="_blank">🎥 YouTube</a></li>
                     <li><a href="https://www.linkedin.com/in/edmond-undefined-7187683ab" target="_blank">💼 LinkedIn</a></li>
@@ -614,9 +663,21 @@
 
 <div class="wa-float"><a href="https://wa.me/22951226741" class="wa-btn" target="_blank" title="Contacter sur WhatsApp">💬</a></div>
 
+
+<!-- ═══ ADSTERRA AD ZONE 4 — Sticky Mobile Banner ═══
+     Type recommandé: Social Bar ou Sticky Banner Mobile
+     Très rentable sur mobile !
+-->
+<div class="ad-sticky" id="adSticky">
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 4 (Sticky/Social Bar) -->
+    </div>
+    <button class="ad-sticky-close" onclick="document.getElementById('adSticky').style.display='none'">✕</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // NAV SCROLL
     window.addEventListener('scroll', () => {
         document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
@@ -736,9 +797,4 @@
         entries.forEach(entry => {
             if (entry.isIntersecting) { animateCounters(); heroObserver.disconnect(); }
         });
-    }, { threshold: 0.3 });
-    const heroStats = document.querySelector('.hero-stats');
-    if (heroStats) heroObserver.observe(heroStats);
-</script>
-</body>
-</html>
+    }, { th
