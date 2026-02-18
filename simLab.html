@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SimLab | Le Laboratoire Virtuel de Simulations Scientifiques – Edmond TCHOKPON</title>
+    <meta name="description" content="SimLab est une plateforme gratuite de simulations scientifiques interactives : Physique, Chimie, Mathématiques, SVT, Astronomie, Informatique. Pour lycéens et étudiants. Créé par Edmond Atinzoun TCHOKPON, Bénin.">
+    <meta name="keywords" content="simulation scientifique, simulateur physique, simulation chimie, simulation mathématiques, simulation SVT, simulation biologie, simulation astronomie, simulation informatique, algorithmique interactive, sciences interactives, lycée, terminale, BAC, Bénin, UAC, Cotonou, Edmond TCHOKPON, laboratoire virtuel">
+    <meta name="author" content="Edmond Atinzoun TCHOKPON">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://edmond-tc.github.io/simlab/">
+    <meta property="og:title" content="SimLab | Le Laboratoire Virtuel de Simulations Scientifiques">
+    <meta property="og:description" content="Explorez toutes les sciences à travers des simulations interactives : Physique, Chimie, Maths, SVT, Astronomie, Informatique. Gratuit, éducatif, pour tous les scientifiques.">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="fr_FR">
+    <meta property="og:site_name" content="SimLab">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SimLab | Simulations Scientifiques Interactives">
+    <meta name="twitter:description" content="Laboratoire virtuel de simulations pour tous les scientifiques. Physique, Chimie, Maths, SVT, Astronomie, Informatique. Gratuit.">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"EducationalOrganization","name":"SimLab","alternateName":"SimLab – Laboratoire Virtuel de Simulations Scientifiques","description":"Plateforme gratuite de simulations scientifiques interactives couvrant Physique, Chimie, Mathématiques, SVT, Astronomie et Informatique","url":"https://simlab-science.netlify.app","founder":{"@type":"Person","name":"Edmond Atinzoun TCHOKPON","jobTitle":"Étudiant en Physique-Chimie, Créateur de SimLab","affiliation":"Université d'Abomey-Calavi (UAC)","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"}},"addressCountry":"BJ","knowsAbout":["Physique","Chimie","Mathématiques","SVT","Biologie","Astronomie","Informatique","Simulations scientifiques","Éducation numérique"]}</script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root{--primary:#0047AB;--primary-light:#1a6fd8;--secondary:#00B4D8;--accent:#06d6a0;--dark:#050d1a;--dark2:#0a1628;--surface:#0d1f3c;--surface2:#132847;--border:rgba(0,180,216,0.15);--border2:rgba(0,180,216,0.3);--text:#e8f4fd;--text-muted:#8fb3d4;--font-display:'Outfit',sans-serif;--font-body:'Space Grotesk',sans-serif;--radius:12px;--radius-lg:20px;--glow:0 0 30px rgba(0,180,216,0.15)}
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{scroll-behavior:smooth;overflow-x:hidden}
+        body{font-family:var(--font-body);background:var(--dark);color:var(--text);line-height:1.7;overflow-x:hidden}
+        body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,71,171,0.12) 0%,transparent 60%),radial-gradient(ellipse 50% 30% at 80% 80%,rgba(0,180,216,0.08) 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 50% 50%,rgba(6,214,160,0.04) 0%,transparent 70%);pointer-events:none;z-index:0}
+        body::after{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background-image:linear-gradient(rgba(0,180,216,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,180,216,0.03) 1px,transparent 1px);background-size:50px 50px;pointer-events:none;z-index:0}
+
+        /* NAV */
+        nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 5%;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(5,13,26,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);transition:all 0.3s}
+        nav.scrolled{height:60px;background:rgba(5,13,26,0.97)}
+        .nav-logo{font-family:var(--font-display);font-weight:800;font-size:1.5rem;letter-spacing:-0.03em;display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text)}
+        .logo-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+        .grad{background:linear-gradient(135deg,var(--secondary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .nav-links{display:flex;list-style:none;gap:0.2rem;align-items:center}
+        .nav-links a{text-decoration:none;color:var(--text-muted);font-size:0.88rem;font-weight:500;padding:0.4rem 0.75rem;border-radius:8px;transition:all 0.2s}
+        .nav-links a:hover{color:var(--secondary);background:rgba(0,180,216,0.08)}
+        .nav-donate{background:linear-gradient(135deg,var(--primary),var(--secondary))!important;color:white!important;border-radius:20px!important}
+        .hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+        .mobile-nav{display:none;position:fixed;top:70px;left:0;right:0;background:rgba(5,13,26,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1rem;z-index:999;flex-direction:column;gap:0.3rem}
+        .mobile-nav.open{display:flex}
+        .mobile-nav a{text-decoration:none;color:var(--text-muted);padding:0.8rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:500;transition:all 0.2s}
+        .mobile-nav a:hover{color:var(--secondary);background:rgba(0,180,216,0.08)}
+
+        /* HERO */
+        .hero{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:100px 5% 80px}
+        .hero-content{max-width:950px}
+        .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid var(--border2);border-radius:20px;font-size:0.85rem;color:var(--secondary);margin-bottom:2rem;background:rgba(0,180,216,0.06);font-weight:500}
+        .hero-badge::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+        .hero h1{font-family:var(--font-display);font-size:clamp(2.8rem,7vw,5.8rem);font-weight:900;line-height:1.05;letter-spacing:-0.04em;margin-bottom:1.5rem}
+        .grad-text{background:linear-gradient(135deg,var(--secondary) 0%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block}
+        .hero-sub{font-size:1.15rem;color:var(--text-muted);max-width:680px;margin:0 auto 2rem;line-height:1.8}
+        .hero-domains{display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center;margin-bottom:2.5rem}
+        .domain-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:20px;font-size:0.8rem;font-weight:600;border:1px solid}
+        .dp-phy{background:rgba(0,71,171,0.15);border-color:rgba(96,165,250,0.4);color:#60a5fa}
+        .dp-chi{background:rgba(6,214,160,0.1);border-color:rgba(6,214,160,0.4);color:#06d6a0}
+        .dp-mat{background:rgba(255,209,102,0.1);border-color:rgba(255,209,102,0.4);color:#ffd166}
+        .dp-svt{background:rgba(52,211,153,0.1);border-color:rgba(52,211,153,0.4);color:#34d399}
+        .dp-ast{background:rgba(124,58,237,0.15);border-color:rgba(124,58,237,0.4);color:#a78bfa}
+        .dp-inf{background:rgba(249,115,22,0.1);border-color:rgba(249,115,22,0.4);color:#fb923c}
+        .hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:4rem}
+        .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:0.85rem 2rem;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:white;border-radius:10px;text-decoration:none;font-weight:600;font-size:0.95rem;transition:all 0.3s;border:none;cursor:pointer;font-family:var(--font-body)}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,71,171,0.4)}
+        .btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:0.85rem 2rem;background:transparent;color:var(--secondary);border-radius:10px;text-decoration:none;font-weight:600;font-size:0.95rem;border:1px solid var(--border2);transition:all 0.3s}
+        .btn-secondary:hover{background:rgba(0,180,216,0.08);transform:translateY(-2px)}
+        .hero-stats{display:flex;gap:3rem;justify-content:center;flex-wrap:wrap}
+        .stat-item{text-align:center}
+        .stat-num{font-family:var(--font-display);font-size:2.2rem;font-weight:800;background:linear-gradient(135deg,var(--secondary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:block}
+        .stat-label{font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em}
+
+        /* SECTIONS */
+        section{position:relative;z-index:1}
+        .container{max-width:1200px;margin:0 auto;padding:0 5%}
+        .section-padding{padding:100px 0}
+        .section-header{text-align:center;margin-bottom:4rem}
+        .section-tag{display:inline-block;padding:4px 14px;border:1px solid var(--border2);border-radius:20px;font-size:0.8rem;color:var(--secondary);margin-bottom:1rem;text-transform:uppercase;letter-spacing:0.1em;font-weight:600}
+        .section-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:800;letter-spacing:-0.03em;margin-bottom:1rem}
+        .section-sub{color:var(--text-muted);font-size:1.05rem;max-width:620px;margin:0 auto}
+
+        /* DOMAIN TABS */
+        .domain-tabs{display:flex;justify-content:center;gap:0.6rem;margin-bottom:3rem;flex-wrap:wrap}
+        .domain-tab{padding:0.55rem 1.1rem;border-radius:30px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.3s;font-family:var(--font-body);display:flex;align-items:center;gap:6px}
+        .domain-tab:hover,.domain-tab.active{border-color:var(--secondary);color:var(--secondary);background:rgba(0,180,216,0.1)}
+        .domain-tab.active.t-phy{border-color:#60a5fa;color:#60a5fa;background:rgba(0,71,171,0.15)}
+        .domain-tab.active.t-chi{border-color:#06d6a0;color:#06d6a0;background:rgba(6,214,160,0.1)}
+        .domain-tab.active.t-mat{border-color:#ffd166;color:#ffd166;background:rgba(255,209,102,0.1)}
+        .domain-tab.active.t-svt{border-color:#34d399;color:#34d399;background:rgba(52,211,153,0.1)}
+        .domain-tab.active.t-ast{border-color:#a78bfa;color:#a78bfa;background:rgba(124,58,237,0.12)}
+        .domain-tab.active.t-inf{border-color:#fb923c;color:#fb923c;background:rgba(249,115,22,0.1)}
+
+        /* CATEGORY */
+        .cat{display:none}
+        .cat.active{display:block}
+        .domain-banner{display:flex;align-items:center;gap:1rem;padding:1.2rem 1.5rem;border-radius:var(--radius-lg);margin-bottom:2.5rem;border:1px solid}
+        .domain-banner-icon{font-size:2rem}
+        .domain-banner h3{font-family:var(--font-display);font-size:1.3rem;font-weight:800;margin-bottom:0.2rem}
+        .domain-banner p{font-size:0.85rem;opacity:0.8}
+        .b-phy{background:rgba(0,71,171,0.12);border-color:rgba(96,165,250,0.3);color:#60a5fa}
+        .b-chi{background:rgba(6,214,160,0.08);border-color:rgba(6,214,160,0.3);color:#06d6a0}
+        .b-mat{background:rgba(255,209,102,0.08);border-color:rgba(255,209,102,0.3);color:#ffd166}
+        .b-svt{background:rgba(52,211,153,0.08);border-color:rgba(52,211,153,0.3);color:#34d399}
+        .b-ast{background:rgba(124,58,237,0.1);border-color:rgba(167,139,250,0.3);color:#a78bfa}
+        .b-inf{background:rgba(249,115,22,0.08);border-color:rgba(251,146,60,0.3);color:#fb923c}
+
+        .subcat{margin-bottom:3rem}
+        .subcat-title{font-family:var(--font-display);font-size:1.05rem;font-weight:700;color:var(--text-muted);margin-bottom:1.2rem;display:flex;align-items:center;gap:8px}
+        .subcat-title::after{content:'';flex:1;height:1px;background:var(--border)}
+
+        /* SIM CARDS */
+        .sims-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.2rem}
+        .sim-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:all 0.3s;cursor:pointer;text-decoration:none;color:inherit;display:block;position:relative;overflow:hidden}
+        .sim-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;transform:scaleX(0);transition:transform 0.3s}
+        .sim-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:var(--glow)}
+        .sim-card:hover::before{transform:scaleX(1)}
+        .c-phy::before{background:linear-gradient(90deg,var(--primary),#60a5fa)}
+        .c-chi::before{background:linear-gradient(90deg,#06d6a0,#00B4D8)}
+        .c-mat::before{background:linear-gradient(90deg,#ffd166,#fb923c)}
+        .c-svt::before{background:linear-gradient(90deg,#34d399,#06d6a0)}
+        .c-ast::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+        .c-inf::before{background:linear-gradient(90deg,#f97316,#fbbf24)}
+        .sim-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
+        .sim-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--surface2)}
+        .sim-badge{font-size:0.7rem;padding:3px 8px;border-radius:10px;font-weight:600;background:rgba(6,214,160,0.15);color:var(--accent);border:1px solid rgba(6,214,160,0.3)}
+        .sim-name{font-family:var(--font-display);font-size:1.05rem;font-weight:700;margin-bottom:0.4rem}
+        .sim-desc{font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.2rem}
+        .sim-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+        .sim-tag{font-size:0.72rem;padding:2px 8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text-muted)}
+        .sim-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0.65rem;background:linear-gradient(135deg,rgba(0,71,171,0.4),rgba(0,180,216,0.3));border:1px solid var(--border2);border-radius:8px;color:var(--secondary);font-size:0.85rem;font-weight:600;transition:all 0.2s;font-family:var(--font-body)}
+        .sim-btn:hover{background:linear-gradient(135deg,rgba(0,71,171,0.6),rgba(0,180,216,0.5));color:white}
+
+        /* ABOUT */
+        .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+        .about-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem}
+        .about-avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;font-size:2rem;margin-bottom:1.5rem}
+        .about-name{font-family:var(--font-display);font-size:1.6rem;font-weight:800;margin-bottom:0.3rem}
+        .about-role{color:var(--secondary);font-size:0.9rem;font-weight:500;margin-bottom:1.5rem}
+        .about-text{color:var(--text-muted);font-size:0.95rem;line-height:1.8;margin-bottom:1.2rem}
+        .about-pills{display:flex;flex-wrap:wrap;gap:8px}
+        .about-pill{padding:4px 12px;border:1px solid var(--border2);border-radius:20px;font-size:0.8rem;color:var(--text-muted)}
+        .about-features{display:flex;flex-direction:column;gap:1.5rem}
+        .about-feature{display:flex;gap:1rem;align-items:flex-start}
+        .af-icon{width:42px;height:42px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+        .af-title{font-weight:700;font-family:var(--font-display);margin-bottom:0.3rem}
+        .af-text{font-size:0.88rem;color:var(--text-muted)}
+
+        /* DON */
+        #don{background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+        .donation-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:3rem;align-items:start}
+        .donation-intro h2{font-family:var(--font-display);font-size:2.2rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:1rem}
+        .donation-intro>p{color:var(--text-muted);line-height:1.8;margin-bottom:1.5rem}
+        .why-list{display:flex;flex-direction:column;gap:1rem}
+        .why-item{display:flex;gap:0.8rem;align-items:flex-start}
+        .why-item span:first-child{font-size:1.2rem}
+        .why-item strong{display:block;margin-bottom:2px;font-size:0.9rem}
+        .why-item p{font-size:0.82rem;color:var(--text-muted);margin:0}
+        .don-methods{display:flex;flex-direction:column;gap:1rem}
+        .don-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;transition:all 0.3s}
+        .don-card:hover{border-color:var(--border2)}
+        .don-top{display:flex;align-items:center;gap:0.8rem;margin-bottom:0.8rem}
+        .mlogo{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:900;font-family:var(--font-display)}
+        .m-mtn{background:#ffcb00;color:#111}
+        .m-moov{background:#0068b6;color:white}
+        .m-ct{background:#e63946;color:white}
+        .m-pp{background:#003087;color:#009cde}
+        .mname{font-weight:700;font-size:1rem}
+        .mtype{font-size:0.8rem;color:var(--text-muted)}
+        .don-nums{display:flex;flex-direction:column;gap:0.5rem}
+        .don-num{display:flex;align-items:center;justify-content:space-between;padding:0.6rem 0.8rem;background:var(--surface2);border-radius:8px;font-size:0.9rem;flex-wrap:wrap;gap:0.4rem}
+        .don-num span:first-child{color:var(--text-muted);font-size:0.8rem}
+        .don-num strong{font-size:1rem;letter-spacing:0.05em}
+        .copy-btn{background:none;border:1px solid var(--border);color:var(--text-muted);padding:3px 8px;border-radius:6px;font-size:0.75rem;cursor:pointer;transition:all 0.2s;font-family:var(--font-body)}
+        .copy-btn:hover{border-color:var(--secondary);color:var(--secondary)}
+        .copy-btn.copied{color:var(--accent);border-color:var(--accent)}
+        .pp-note{font-size:0.82rem;color:var(--text-muted);margin-top:0.5rem;padding:0.6rem 0.8rem;background:var(--surface2);border-radius:8px}
+        .don-cta{margin-top:1.5rem;padding:1.2rem;background:linear-gradient(135deg,rgba(0,71,171,0.2),rgba(0,180,216,0.1));border:1px solid var(--border2);border-radius:var(--radius);text-align:center}
+        .don-cta p{font-size:0.9rem;margin-bottom:0.8rem;color:var(--text-muted)}
+        .don-cta a{color:var(--secondary);text-decoration:none;font-weight:600}
+
+        /* FAQ */
+        .faq-list{max-width:800px;margin:0 auto}
+        .faq-item{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:0.8rem;overflow:hidden}
+        .faq-q{width:100%;background:var(--surface);border:none;padding:1.2rem 1.5rem;text-align:left;color:var(--text);font-family:var(--font-body);font-size:0.95rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;transition:background 0.2s}
+        .faq-q:hover{background:var(--surface2)}
+        .faq-arrow{font-size:0.7rem;transition:transform 0.3s;color:var(--secondary)}
+        .faq-item.open .faq-arrow{transform:rotate(180deg)}
+        .faq-a{display:none;padding:1rem 1.5rem 1.2rem;background:var(--surface2);font-size:0.9rem;color:var(--text-muted);line-height:1.7}
+        .faq-item.open .faq-a{display:block}
+
+        /* CONTACT */
+        .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+        .contact-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem}
+        .c-method{display:flex;align-items:center;gap:1rem;padding:0.8rem 0;border-bottom:1px solid var(--border)}
+        .c-method:last-of-type{border-bottom:none}
+        .c-icon{width:38px;height:38px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1rem}
+        .c-method a{color:var(--secondary);text-decoration:none;font-size:0.9rem}
+        .c-method strong{display:block;font-size:0.85rem;margin-bottom:2px}
+        .socials{display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:1.5rem}
+        .soc{width:40px;height:40px;border-radius:10px;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;text-decoration:none;font-size:1rem;transition:all 0.2s}
+        .soc:hover{border-color:var(--secondary);transform:translateY(-2px)}
+        .contact-form{display:flex;flex-direction:column;gap:1rem}
+        .fg{display:flex;flex-direction:column;gap:0.4rem}
+        .fg label{font-size:0.85rem;color:var(--text-muted);font-weight:500}
+        .fg input,.fg textarea,.fg select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 1rem;color:var(--text);font-family:var(--font-body);font-size:0.9rem;transition:border-color 0.2s}
+        .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--secondary)}
+        .fg textarea{min-height:120px;resize:vertical}
+        .fg select option{background:var(--surface2)}
+
+        /* FOOTER */
+        footer{background:var(--dark2);border-top:1px solid var(--border);padding:3rem 5% 2rem}
+        .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+        .fbrand p{font-size:0.88rem;color:var(--text-muted);line-height:1.7;margin-top:0.8rem}
+        .fcol h4{font-family:var(--font-display);font-size:0.9rem;font-weight:700;margin-bottom:1rem;color:var(--text)}
+        .fcol ul{list-style:none;display:flex;flex-direction:column;gap:0.6rem}
+        .fcol a{text-decoration:none;color:var(--text-muted);font-size:0.88rem;transition:color 0.2s}
+        .fcol a:hover{color:var(--secondary)}
+        .footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+        .footer-bottom p{font-size:0.82rem;color:var(--text-muted)}
+
+        /* WA FLOAT */
+        .wa-float{position:fixed;bottom:24px;right:24px;z-index:999}
+        .wa-btn{width:54px;height:54px;border-radius:50%;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:1.5rem;text-decoration:none;box-shadow:0 4px 20px rgba(37,211,102,0.4);animation:wa-b 3s ease-in-out infinite}
+        @keyframes wa-b{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        .wa-btn:hover{transform:scale(1.1)!important;animation:none}
+
+        .toast{position:fixed;bottom:90px;right:24px;background:var(--surface2);border:1px solid var(--accent);color:var(--accent);padding:0.7rem 1.2rem;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:9999;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
+        .toast.show{opacity:1;transform:translateY(0)}
+        .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease}
+        .fade-in.visible{opacity:1;transform:translateY(0)}
+
+        @media(max-width:900px){.nav-links{display:none}.hamburger{display:block}.about-grid,.donation-grid,.contact-grid{grid-template-columns:1fr;gap:2rem}.footer-grid{grid-template-columns:1fr 1fr}}
+        @media(max-width:600px){.hero h1{font-size:2.4rem}.footer-grid{grid-template-columns:1fr}.sims-grid{grid-template-columns:1fr}.hero-stats{gap:1.5rem}.domain-tabs{gap:0.4rem}.domain-tab{font-size:0.78rem;padding:0.45rem 0.9rem}}
+    
+        /* ===== ADSTERRA AD ZONES ===== */
+        .ad-wrap{width:100%;position:relative;z-index:1;overflow:hidden;text-align:center}
+        .ad-label{font-size:0.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;opacity:0.5;margin-bottom:3px;display:block}
+        /* Leaderboard 728x90 — entre hero et simulations */
+        .ad-leaderboard{padding:14px 5%;background:rgba(0,0,0,0.18);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+        .ad-leaderboard .ad-box{max-width:728px;min-height:90px;margin:0 auto;background:rgba(255,255,255,0.03);border:1px dashed rgba(0,180,216,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem}
+        /* Rectangle 300x250 — dans sidebar FAQ */
+        .ad-rectangle{padding:20px 0;display:flex;justify-content:center}
+        .ad-rectangle .ad-box{width:300px;min-height:250px;background:rgba(255,255,255,0.03);border:1px dashed rgba(0,180,216,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem}
+        /* Billboard 970x90 — avant footer */
+        .ad-billboard{padding:16px 5%;background:rgba(0,0,0,0.1);border-top:1px solid var(--border)}
+        .ad-billboard .ad-box{width:100%;min-height:90px;background:rgba(255,255,255,0.03);border:1px dashed rgba(0,180,216,0.18);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:0.8rem}
+        /* Sticky mobile bottom */
+        .ad-sticky{position:fixed;bottom:0;left:0;right:0;z-index:997;background:var(--dark2);border-top:1px solid var(--border);padding:4px;display:flex;align-items:center;justify-content:center;min-height:60px}
+        .ad-sticky .ad-box{max-width:320px;min-height:50px;width:100%;display:flex;align-items:center;justify-content:center}
+        .ad-sticky-close{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:1px solid var(--border);color:var(--text-muted);font-size:0.75rem;cursor:pointer;padding:2px 8px;border-radius:4px;font-family:var(--font-body)}
+        .ad-sticky-close:hover{color:var(--text)}
+        @media(min-width:900px){.ad-sticky{display:none}}
+
+    </style>
+</head>
+<body>
+
+<nav id="navbar">
+    <a href="#hero" class="nav-logo"><div class="logo-icon">⚗️</div>Sim<span class="grad">Lab</span></a>
+    <ul class="nav-links">
+        <li><a href="#simulations">Simulations</a></li>
+        <li><a href="#a-propos">À Propos</a></li>
+        <li><a href="#don">Soutenir</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#don" class="nav-donate">❤️ Faire un Don</a></li>
+    </ul>
+    <button class="hamburger" onclick="toggleMobileNav()">☰</button>
+</nav>
+
+<div class="mobile-nav" id="mobileNav">
+    <a href="#simulations" onclick="toggleMobileNav()">🔬 Simulations</a>
+    <a href="#a-propos" onclick="toggleMobileNav()">👤 À Propos</a>
+    <a href="#don" onclick="toggleMobileNav()">❤️ Soutenir</a>
+    <a href="#faq" onclick="toggleMobileNav()">❓ FAQ</a>
+    <a href="#contact" onclick="toggleMobileNav()">📩 Contact</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+    <div class="hero-content">
+        <div class="hero-badge">Laboratoire Virtuel Scientifique · Bénin 🇧🇯</div>
+        <h1>Ton Laboratoire<span class="grad-text">Virtuel de Sciences</span></h1>
+        <p class="hero-sub">Des simulations interactives pour <strong>tous les scientifiques</strong> — lycéens, étudiants, curieux. Explore, manipule, comprends. Sur mobile ou ordinateur, partout, gratuitement.</p>
+        <div class="hero-domains">
+            <span class="domain-pill dp-phy">⚡ Physique</span>
+            <span class="domain-pill dp-chi">🧪 Chimie</span>
+            <span class="domain-pill dp-mat">📐 Mathématiques</span>
+            <span class="domain-pill dp-svt">🌿 SVT / Biologie</span>
+            <span class="domain-pill dp-ast">🔭 Astronomie</span>
+            <span class="domain-pill dp-inf">💻 Informatique</span>
+        </div>
+        <div class="hero-btns">
+            <a href="#simulations" class="btn-primary">🚀 Explorer les Simulations</a>
+            <a href="#don" class="btn-secondary">❤️ Soutenir le Projet</a>
+        </div>
+        <div class="hero-stats">
+            <div class="stat-item"><span class="stat-num">6</span><span class="stat-label">Domaines Scientifiques</span></div>
+            <div class="stat-item"><span class="stat-num">20+</span><span class="stat-label">Simulations</span></div>
+            <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Gratuit</span></div>
+            <div class="stat-item"><span class="stat-num">📱</span><span class="stat-label">Compatible Mobile</span></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══ ADSTERRA AD ZONE 1 — Leaderboard 728x90 ═══
+     INSTRUCTIONS: Remplace le commentaire ci-dessous par ton code Adsterra
+     Type recommandé: Banner 728x90 ou Adaptive Banner
+     Obtiens ton code sur: publishers.adsterra.com
+-->
+<div class="ad-wrap ad-leaderboard">
+    <span class="ad-label">Publicité</span>
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 1 (Banner 728x90) -->
+        <!-- Exemple: <script async src="//your-adsterra-code.js"></script> -->
+    </div>
+</div>
+
+<!-- SIMULATIONS -->
+<section id="simulations" class="section-padding">
+    <div class="container">
+        <div class="section-header fade-in">
+            <span class="section-tag">🔬 Catalogue</span>
+            <h2 class="section-title">Simulations Scientifiques</h2>
+            <p class="section-sub">Choisis ton domaine et lance ta simulation dans un nouvel onglet. Toutes créées par Edmond TCHOKPON.</p>
+        </div>
+        <div class="domain-tabs fade-in">
+            <button class="domain-tab active t-phy" onclick="switchDomain('physique',this)">⚡ Physique</button>
+            <button class="domain-tab t-chi" onclick="switchDomain('chimie',this)">🧪 Chimie</button>
+            <button class="domain-tab t-mat" onclick="switchDomain('maths',this)">📐 Maths</button>
+            <button class="domain-tab t-svt" onclick="switchDomain('svt',this)">🌿 SVT</button>
+            <button class="domain-tab t-ast" onclick="switchDomain('astro',this)">🔭 Astronomie</button>
+            <button class="domain-tab t-inf" onclick="switchDomain('info',this)">💻 Informatique</button>
+        </div>
+
+        <!-- PHYSIQUE -->
+        <div id="domain-physique" class="cat active">
+            <div class="domain-banner b-phy fade-in"><div class="domain-banner-icon">⚡</div><div><h3>Physique</h3><p>Mécanique · Optique · Électricité · Thermodynamique · Ondes</p></div></div>
+            <div class="subcat"><div class="subcat-title">⚙️ Mécanique</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🎯</div><span class="sim-badge">Original</span></div><div class="sim-name">Tir de Projectile</div><div class="sim-desc">Simulez un lancer de projectile, ajustez angle et vitesse initiale, observez la trajectoire parabolique en temps réel.</div><div class="sim-tags"><span class="sim-tag">Parabole</span><span class="sim-tag">Gravité</span><span class="sim-tag">Vitesse</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🕰️</div><span class="sim-badge">Original</span></div><div class="sim-name">Pendule Simple</div><div class="sim-desc">Explorez le mouvement oscillatoire d'un pendule. Modifiez longueur, masse et gravité en temps réel.</div><div class="sim-tags"><span class="sim-tag">Oscillation</span><span class="sim-tag">Période</span><span class="sim-tag">Fréquence</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌀</div><span class="sim-badge">Original</span></div><div class="sim-name">Masses et Ressorts</div><div class="sim-desc">Simulation de ressorts avec masses variables. Observez la loi de Hooke et les oscillations.</div><div class="sim-tags"><span class="sim-tag">Ressort</span><span class="sim-tag">Hooke</span><span class="sim-tag">Énergie</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">💪</div><span class="sim-badge">Original</span></div><div class="sim-name">Forces et Mouvements</div><div class="sim-desc">Appliquez des forces, observez accélération, frottement et les lois de Newton en action.</div><div class="sim-tags"><span class="sim-tag">Newton</span><span class="sim-tag">Frottement</span><span class="sim-tag">Accélération</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">💥</div><span class="sim-badge">Original</span></div><div class="sim-name">Collisions</div><div class="sim-desc">Chocs élastiques et inélastiques. Conservation de la quantité de mouvement visualisée.</div><div class="sim-tags"><span class="sim-tag">Choc</span><span class="sim-tag">Momentum</span><span class="sim-tag">Conservation</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌍</div><span class="sim-badge">Original</span></div><div class="sim-name">Gravité &amp; Orbites</div><div class="sim-desc">Simulez orbites planétaires et satellites. Visualisez la gravitation universelle de Newton.</div><div class="sim-tags"><span class="sim-tag">Orbite</span><span class="sim-tag">Satellite</span><span class="sim-tag">Attraction</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+            <div class="subcat"><div class="subcat-title">💡 Optique</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔦</div><span class="sim-badge">Original</span></div><div class="sim-name">Réfraction de la Lumière</div><div class="sim-desc">Observez réflexion et réfraction selon les milieux. Loi de Snell-Descartes interactive.</div><div class="sim-tags"><span class="sim-tag">Réfraction</span><span class="sim-tag">Réflexion</span><span class="sim-tag">Snell</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔭</div><span class="sim-badge">Original</span></div><div class="sim-name">Lentilles &amp; Miroirs</div><div class="sim-desc">Lentilles convergentes et divergentes, miroirs, formation des images optiques.</div><div class="sim-tags"><span class="sim-tag">Lentille</span><span class="sim-tag">Image</span><span class="sim-tag">Foyer</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌈</div><span class="sim-badge">Original</span></div><div class="sim-name">Vision des Couleurs</div><div class="sim-desc">Explorez comment l'œil perçoit les couleurs, mélange de lumières et synthèse additive.</div><div class="sim-tags"><span class="sim-tag">Couleur</span><span class="sim-tag">Lumière</span><span class="sim-tag">Perception</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+            <div class="subcat"><div class="subcat-title">⚡ Électricité</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔌</div><span class="sim-badge">Original</span></div><div class="sim-name">Circuits Électriques DC</div><div class="sim-desc">Construisez des circuits en courant continu avec résistances, ampoules et interrupteurs.</div><div class="sim-tags"><span class="sim-tag">Circuit</span><span class="sim-tag">Résistance</span><span class="sim-tag">Ohm</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">📊</div><span class="sim-badge">Original</span></div><div class="sim-name">Loi d'Ohm</div><div class="sim-desc">Visualisez la relation U = R × I de manière interactive. Idéal pour les circuits simples.</div><div class="sim-tags"><span class="sim-tag">Tension</span><span class="sim-tag">Intensité</span><span class="sim-tag">Résistance</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🧲</div><span class="sim-badge">Original</span></div><div class="sim-name">Charges &amp; Champs Électriques</div><div class="sim-desc">Visualisez champs électriques et potentiels créés par des charges positives et négatives.</div><div class="sim-tags"><span class="sim-tag">Champ</span><span class="sim-tag">Charge</span><span class="sim-tag">Potentiel</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHIMIE -->
+        <div id="domain-chimie" class="cat">
+            <div class="domain-banner b-chi fade-in"><div class="domain-banner-icon">🧪</div><div><h3>Chimie</h3><p>Réactions · Acides &amp; Bases · Atomes &amp; Molécules · Solutions</p></div></div>
+            <div class="subcat"><div class="subcat-title">🧪 Réactions Chimiques</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">⚗️</div><span class="sim-badge">Original</span></div><div class="sim-name">Réactifs &amp; Produits</div><div class="sim-desc">Explorez la stœchiométrie et les réactifs limitants dans des réactions chimiques concrètes.</div><div class="sim-tags"><span class="sim-tag">Stœchiométrie</span><span class="sim-tag">Réactif</span><span class="sim-tag">Produit</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">⚖️</div><span class="sim-badge">Original</span></div><div class="sim-name">Équilibrage d'Équations</div><div class="sim-desc">Apprenez à équilibrer des équations chimiques avec retour visuel immédiat.</div><div class="sim-tags"><span class="sim-tag">Équation</span><span class="sim-tag">Atome</span><span class="sim-tag">Conservation</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🧫</div><span class="sim-badge">Original</span></div><div class="sim-name">Concentration de Solutions</div><div class="sim-desc">Simulez dissolution, dilution et concentration molaire. Visualisez les solutions.</div><div class="sim-tags"><span class="sim-tag">Molaire</span><span class="sim-tag">Dilution</span><span class="sim-tag">Solution</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+            <div class="subcat"><div class="subcat-title">🔴🔵 Acides &amp; Bases</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">📏</div><span class="sim-badge">Original</span></div><div class="sim-name">Échelle de pH</div><div class="sim-desc">Mesurez le pH de diverses solutions avec un pH-mètre interactif. Acides, bases et neutres.</div><div class="sim-tags"><span class="sim-tag">pH</span><span class="sim-tag">Acide</span><span class="sim-tag">Base</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🧬</div><span class="sim-badge">Original</span></div><div class="sim-name">Solutions Acide-Base</div><div class="sim-desc">Comprenez acides forts, faibles et les bases, ions, conductivité et comportements.</div><div class="sim-tags"><span class="sim-tag">Ion</span><span class="sim-tag">Conductivité</span><span class="sim-tag">Équilibre</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+            <div class="subcat"><div class="subcat-title">⚛️ Atomes &amp; Molécules</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔵</div><span class="sim-badge">Original</span></div><div class="sim-name">Construire une Molécule</div><div class="sim-desc">Assemblez des atomes pour former des molécules réelles (H₂O, CO₂, CH₄...) en interactif.</div><div class="sim-tags"><span class="sim-tag">Molécule</span><span class="sim-tag">Atome</span><span class="sim-tag">Structure</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">⚛️</div><span class="sim-badge">Original</span></div><div class="sim-name">Construire un Atome</div><div class="sim-desc">Ajoutez protons, neutrons et électrons pour construire un atome et découvrez ses propriétés.</div><div class="sim-tags"><span class="sim-tag">Proton</span><span class="sim-tag">Neutron</span><span class="sim-tag">Électron</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-chi" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔬</div><span class="sim-badge">Original</span></div><div class="sim-name">Isotopes &amp; Masse Atomique</div><div class="sim-desc">Explorez les isotopes, abondance naturelle et calcul de la masse atomique moyenne.</div><div class="sim-tags"><span class="sim-tag">Isotope</span><span class="sim-tag">Masse</span><span class="sim-tag">Noyau</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- MATHS -->
+        <div id="domain-maths" class="cat">
+            <div class="domain-banner b-mat fade-in"><div class="domain-banner-icon">📐</div><div><h3>Mathématiques</h3><p>Fonctions &amp; Graphes · Géométrie · Probabilités · Algèbre · Analyse</p></div></div>
+            <div class="subcat"><div class="subcat-title">📈 Fonctions &amp; Analyse</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-mat" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">📉</div><span class="sim-badge">Original</span></div><div class="sim-name">Traceur de Fonctions</div><div class="sim-desc">Trace et explore des fonctions mathématiques en temps réel. Modifie les paramètres et observe les variations.</div><div class="sim-tags"><span class="sim-tag">Fonction</span><span class="sim-tag">Graphe</span><span class="sim-tag">Courbe</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-mat" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔄</div><span class="sim-badge">Original</span></div><div class="sim-name">Dérivées &amp; Tangentes</div><div class="sim-desc">Visualise la dérivée d'une fonction et la tangente en un point. Comprends l'analyse par l'image.</div><div class="sim-tags"><span class="sim-tag">Dérivée</span><span class="sim-tag">Tangente</span><span class="sim-tag">Analyse</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-mat" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">∫</div><span class="sim-badge">Original</span></div><div class="sim-name">Intégrales &amp; Aires</div><div class="sim-desc">Visualise l'intégrale d'une fonction comme une aire sous la courbe. Méthode des rectangles interactive.</div><div class="sim-tags"><span class="sim-tag">Intégrale</span><span class="sim-tag">Aire</span><span class="sim-tag">Calcul</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+            <div class="subcat"><div class="subcat-title">📐 Géométrie &amp; Probabilités</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-mat" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔺</div><span class="sim-badge">Original</span></div><div class="sim-name">Géométrie Interactive</div><div class="sim-desc">Construis et explore des figures géométriques. Triangles, cercles, angles, théorèmes en action.</div><div class="sim-tags"><span class="sim-tag">Triangle</span><span class="sim-tag">Angle</span><span class="sim-tag">Théorème</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-mat" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🎲</div><span class="sim-badge">Original</span></div><div class="sim-name">Probabilités &amp; Statistiques</div><div class="sim-desc">Simule des expériences aléatoires, visualise lois de probabilité et distributions statistiques.</div><div class="sim-tags"><span class="sim-tag">Probabilité</span><span class="sim-tag">Distribution</span><span class="sim-tag">Statistique</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- SVT -->
+        <div id="domain-svt" class="cat">
+            <div class="domain-banner b-svt fade-in"><div class="domain-banner-icon">🌿</div><div><h3>SVT / Biologie</h3><p>Cellule · Génétique · Écosystèmes · Corps Humain · Évolution</p></div></div>
+            <div class="subcat"><div class="subcat-title">🦠 Cellule &amp; Génétique</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-svt" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🦠</div><span class="sim-badge">Original</span></div><div class="sim-name">La Cellule Interactive</div><div class="sim-desc">Explore les organites d'une cellule animale et végétale. Clique sur chaque partie pour comprendre son rôle.</div><div class="sim-tags"><span class="sim-tag">Cellule</span><span class="sim-tag">Organite</span><span class="sim-tag">Mitochondrie</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-svt" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🧬</div><span class="sim-badge">Original</span></div><div class="sim-name">ADN &amp; Génétique</div><div class="sim-desc">Visualise la structure de l'ADN, la réplication et l'hérédité génétique de manière interactive.</div><div class="sim-tags"><span class="sim-tag">ADN</span><span class="sim-tag">Gène</span><span class="sim-tag">Hérédité</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-svt" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌱</div><span class="sim-badge">Original</span></div><div class="sim-name">Photosynthèse</div><div class="sim-desc">Simule la photosynthèse dans une feuille. Observe l'effet de la lumière, CO₂ et eau sur la production d'O₂.</div><div class="sim-tags"><span class="sim-tag">Chlorophylle</span><span class="sim-tag">CO₂</span><span class="sim-tag">Oxygène</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+            <div class="subcat"><div class="subcat-title">🌍 Écosystèmes &amp; Corps Humain</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-svt" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🦁</div><span class="sim-badge">Original</span></div><div class="sim-name">Chaînes Alimentaires</div><div class="sim-desc">Simule un écosystème avec chaînes alimentaires, prédateurs et proies. Modifie les populations.</div><div class="sim-tags"><span class="sim-tag">Écosystème</span><span class="sim-tag">Prédateur</span><span class="sim-tag">Équilibre</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-svt" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">❤️</div><span class="sim-badge">Original</span></div><div class="sim-name">Circulation Sanguine</div><div class="sim-desc">Explore le système cardiovasculaire humain. Suis le trajet du sang à travers le cœur et les organes.</div><div class="sim-tags"><span class="sim-tag">Cœur</span><span class="sim-tag">Sang</span><span class="sim-tag">Vaisseaux</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-svt" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🧠</div><span class="sim-badge">Original</span></div><div class="sim-name">Le Système Nerveux</div><div class="sim-desc">Visualise comment les neurones transmettent les informations dans le corps humain.</div><div class="sim-tags"><span class="sim-tag">Neurone</span><span class="sim-tag">Influx</span><span class="sim-tag">Cerveau</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASTRONOMIE -->
+        <div id="domain-astro" class="cat">
+            <div class="domain-banner b-ast fade-in"><div class="domain-banner-icon">🔭</div><div><h3>Astronomie &amp; Astrophysique</h3><p>Système Solaire · Étoiles · Gravitation · Cosmologie · Lumière</p></div></div>
+            <div class="subcat"><div class="subcat-title">🌌 Système Solaire &amp; Étoiles</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-ast" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🪐</div><span class="sim-badge">Original</span></div><div class="sim-name">Système Solaire Interactif</div><div class="sim-desc">Explore le système solaire en 3D. Observe les orbites des planètes, leurs distances et vitesses réelles.</div><div class="sim-tags"><span class="sim-tag">Planète</span><span class="sim-tag">Orbite</span><span class="sim-tag">Soleil</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-ast" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">⭐</div><span class="sim-badge">Original</span></div><div class="sim-name">Cycle de Vie des Étoiles</div><div class="sim-desc">Découvre comment naissent, évoluent et meurent les étoiles. De la nébuleuse au trou noir.</div><div class="sim-tags"><span class="sim-tag">Étoile</span><span class="sim-tag">Nébuleuse</span><span class="sim-tag">Trou noir</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-ast" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌑</div><span class="sim-badge">Original</span></div><div class="sim-name">Phases de la Lune</div><div class="sim-desc">Simule les phases lunaires et les éclipses. Comprends les mouvements Terre-Lune-Soleil.</div><div class="sim-tags"><span class="sim-tag">Lune</span><span class="sim-tag">Éclipse</span><span class="sim-tag">Phase</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-ast" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌀</div><span class="sim-badge">Original</span></div><div class="sim-name">Trous Noirs &amp; Gravité</div><div class="sim-desc">Visualise la courbure de l'espace-temps autour d'un trou noir. Explore la relativité générale.</div><div class="sim-tags"><span class="sim-tag">Trou noir</span><span class="sim-tag">Relativité</span><span class="sim-tag">Espace-temps</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- INFORMATIQUE -->
+        <div id="domain-info" class="cat">
+            <div class="domain-banner b-inf fade-in"><div class="domain-banner-icon">💻</div><div><h3>Informatique &amp; Algorithmique</h3><p>Algorithmes · Structures de données · Réseaux · Cryptographie · IA</p></div></div>
+            <div class="subcat"><div class="subcat-title">⚙️ Algorithmes &amp; Structures</div>
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-inf" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔢</div><span class="sim-badge">Original</span></div><div class="sim-name">Algorithmes de Tri</div><div class="sim-desc">Visualise en temps réel le tri à bulles, rapide, fusion et par insertion. Compare leurs complexités.</div><div class="sim-tags"><span class="sim-tag">Tri</span><span class="sim-tag">Complexité</span><span class="sim-tag">O(n²)</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-inf" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🗺️</div><span class="sim-badge">Original</span></div><div class="sim-name">Algorithmes de Graphes</div><div class="sim-desc">Explore BFS, DFS, Dijkstra et A* sur des graphes interactifs. Visualise le plus court chemin.</div><div class="sim-tags"><span class="sim-tag">Graphe</span><span class="sim-tag">Dijkstra</span><span class="sim-tag">BFS/DFS</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-inf" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔐</div><span class="sim-badge">Original</span></div><div class="sim-name">Cryptographie de Base</div><div class="sim-desc">Découvre le chiffrement César, Vigenère et RSA. Encode et décode des messages en interactif.</div><div class="sim-tags"><span class="sim-tag">Chiffrement</span><span class="sim-tag">César</span><span class="sim-tag">RSA</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-inf" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🤖</div><span class="sim-badge">Original</span></div><div class="sim-name">Réseau de Neurones</div><div class="sim-desc">Visualise comment fonctionne un réseau de neurones artificiel. Entraîne un modèle simple en direct.</div><div class="sim-tags"><span class="sim-tag">IA</span><span class="sim-tag">Machine Learning</span><span class="sim-tag">Neurone</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- À PROPOS -->
+<section id="a-propos" class="section-padding" style="background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+        <div class="about-grid">
+            <div class="fade-in">
+                <div class="about-card">
+                    <div class="about-avatar">👨‍🔬</div>
+                    <div class="about-name">Edmond Atinzoun TCHOKPON</div>
+                    <div class="about-role">Étudiant Physique-Chimie · UAC Bénin · Créateur de SimLab</div>
+                    <p class="about-text">Je suis étudiant en Physique-Chimie à la Faculté des Sciences et Techniques de l'Université d'Abomey-Calavi (UAC). Passionné par l'informatique, le design et la technologie, j'ai créé SimLab pour rendre <strong>toutes les sciences accessibles</strong> à tous les lycéens et étudiants du Bénin et d'Afrique francophone.</p>
+                    <p class="about-text">Mon ambition : <strong>Créer, Entreprendre, Inventer, Innover</strong>. SimLab est un projet personnel éducatif, entièrement gratuit et 100% original.</p>
+                    <div class="about-pills">
+                        <span class="about-pill">🎓 UAC · Physique-Chimie</span>
+                        <span class="about-pill">💻 Développement Python</span>
+                        <span class="about-pill">🎨 Design Graphique</span>
+                        <span class="about-pill">📚 Cours Particuliers</span>
+                        <span class="about-pill">🇧🇯 Cotonou, Bénin</span>
+                    </div>
+                </div>
+            </div>
+            <div class="about-features fade-in">
+                <div class="about-feature"><div class="af-icon">🔬</div><div><div class="af-title">6 Domaines Scientifiques</div><div class="af-text">Physique, Chimie, Maths, SVT, Astronomie, Informatique — SimLab couvre toutes les disciplines scientifiques du lycée et de l'université.</div></div></div>
+                <div class="about-feature"><div class="af-icon">📱</div><div><div class="af-title">100% Compatible Mobile</div><div class="af-text">Toutes les simulations fonctionnent sur smartphone, tablette et ordinateur. Apprends où que tu sois, quand tu veux.</div></div></div>
+                <div class="about-feature"><div class="af-icon">⭐</div><div><div class="af-title">Simulations 100% Originales</div><div class="af-text">Chaque simulation est créée et développée personnellement par Edmond TCHOKPON. Des outils uniques, taillés pour le programme africain.</div></div></div>
+                <div class="about-feature"><div class="af-icon">🚀</div><div><div class="af-title">En Croissance Continue</div><div class="af-text">De nouvelles simulations sont ajoutées régulièrement. Ton soutien aide à accélérer le développement.</div></div></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DON -->
+<section id="don" class="section-padding">
+    <div class="container">
+        <div class="section-header fade-in">
+            <span class="section-tag">❤️ Soutien</span>
+            <h2 class="section-title">Soutenir SimLab</h2>
+            <p class="section-sub">SimLab est 100% gratuit. Votre don aide à maintenir et étendre la plateforme à encore plus de sciences.</p>
+        </div>
+        <div class="donation-grid fade-in">
+            <div class="donation-intro">
+                <h2>Pourquoi faire un don ?</h2>
+                <p>SimLab est un projet gratuit créé par un étudiant passionné. Chaque contribution, petite ou grande, permet de :</p>
+                <div class="why-list">
+                    <div class="why-item"><span>🖥️</span><div><strong>Maintenir le site en ligne</strong><p>Hébergement, nom de domaine, maintenance technique.</p></div></div>
+                    <div class="why-item"><span>🔬</span><div><strong>Créer de nouvelles simulations</strong><p>Développer des simulations pour tous les domaines scientifiques.</p></div></div>
+                    <div class="why-item"><span>🎓</span><div><strong>Garder l'accès gratuit pour tous</strong><p>Chaque don garantit que SimLab reste libre et sans publicité.</p></div></div>
+                    <div class="why-item"><span>📖</span><div><strong>Soutenir un étudiant entrepreneur</strong><p>Votre soutien m'aide à continuer mes études tout en construisant ce projet.</p></div></div>
+                </div>
+            </div>
+            <div class="don-methods">
+                <div class="don-card">
+                    <div class="don-top"><div class="mlogo m-mtn">M</div><div><div class="mname">MTN Mobile Money</div><div class="mtype">Mobile Money · Bénin</div></div></div>
+                    <div class="don-nums">
+                        <div class="don-num"><span>Numéro MTN MoMo</span><strong>0151 22 67 41</strong><button class="copy-btn" onclick="copyNum('0151226741',this)">Copier</button></div>
+                        <div class="don-num"><span>Bénéficiaire</span><strong>Edmond TCHOKPON</strong></div>
+                    </div>
+                </div>
+                <div class="don-card">
+                    <div class="don-top"><div class="mlogo m-moov">MV</div><div><div class="mname">Moov Africa Money</div><div class="mtype">Mobile Money · Bénin</div></div></div>
+                    <div class="don-nums">
+                        <div class="don-num"><span>Numéro Moov</span><strong>0160 80 46 92</strong><button class="copy-btn" onclick="copyNum('0160804692',this)">Copier</button></div>
+                    </div>
+                </div>
+                <div class="don-card">
+                    <div class="don-top"><div class="mlogo m-ct">CT</div><div><div class="mname">CelTis</div><div class="mtype">Mobile Money · Bénin</div></div></div>
+                    <div class="don-nums">
+                        <div class="don-num"><span>Numéro CelTis</span><strong>0149 43 02 58</strong><button class="copy-btn" onclick="copyNum('0149430258',this)">Copier</button></div>
+                    </div>
+                </div>
+                <div class="don-card">
+                    <div class="don-top"><div class="mlogo m-pp">PP</div><div><div class="mname">PayPal / Virement</div><div class="mtype">International</div></div></div>
+                    <div class="don-nums"><p class="pp-note">💬 Pour un don via PayPal ou virement international, contactez-moi directement via WhatsApp ou email pour obtenir les coordonnées.</p></div>
+                </div>
+                <div class="don-cta">
+                    <p>Une question sur votre don ? Je suis disponible.</p>
+                    <a href="https://wa.me/22951226741?text=Bonjour%20Edmond%2C%20je%20souhaite%20faire%20un%20don%20pour%20SimLab%20!" target="_blank">💬 Me contacter sur WhatsApp →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="section-padding" style="background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+        <div class="section-header fade-in"><span class="section-tag">❓ FAQ</span><h2 class="section-title">Questions Fréquentes</h2></div>
+        <div class="faq-list fade-in">
+            <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Les simulations sont-elles gratuites ?<span class="faq-arrow">▼</span></button><div class="faq-a">Oui, toutes les simulations SimLab sont entièrement gratuites et accessibles sans inscription. C'est un projet éducatif ouvert à tous.</div></div>
+            <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Les simulations fonctionnent-elles sur mobile ?<span class="faq-arrow">▼</span></button><div class="faq-a">Oui ! Toutes les simulations SimLab sont conçues pour fonctionner sur smartphone, tablette et ordinateur. Apprends où que tu sois, sans contrainte d'appareil.</div></div>
+            <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Comment les simulations s'ouvrent-elles ?<span class="faq-arrow">▼</span></button><div class="faq-a">Un clic sur "Lancer la Simulation" ouvre la simulation dans un nouvel onglet. Tu peux revenir sur SimLab à tout moment sans perdre ta progression.</div></div>
+            <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Quels domaines scientifiques sont couverts ?<span class="faq-arrow">▼</span></button><div class="faq-a">SimLab couvre 6 domaines : Physique, Chimie, Mathématiques, SVT/Biologie, Astronomie/Astrophysique et Informatique/Algorithmique. De nouvelles simulations sont ajoutées régulièrement dans chaque domaine.</div></div>
+            <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Puis-je proposer une simulation à ajouter ?<span class="faq-arrow">▼</span></button><div class="faq-a">Absolument ! Contactez-moi via le formulaire de contact ou WhatsApp avec votre suggestion. Je suis toujours ouvert aux idées de la communauté scientifique.</div></div>
+            <div class="faq-item"><button class="faq-q" onclick="toggleFaq(this)">Edmond propose-t-il d'autres services ?<span class="faq-arrow">▼</span></button><div class="faq-a">Oui ! En dehors de SimLab, je propose des cours particuliers en Physique-Chimie et Maths (3ème, Terminale), du design graphique, du développement Python et des services informatiques. Contactez-moi pour en savoir plus.</div></div>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══ ADSTERRA AD ZONE 2 — Rectangle 300x250 ═══
+     Type recommandé: Medium Rectangle 300x250
+-->
+<div class="ad-wrap ad-rectangle">
+    <span class="ad-label">Publicité</span>
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 2 (300x250) -->
+    </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact" class="section-padding">
+    <div class="container">
+        <div class="section-header fade-in"><span class="section-tag">📩 Contact</span><h2 class="section-title">Me Contacter</h2><p class="section-sub">Une question, une suggestion ou un partenariat ? Je réponds dans les 24h.</p></div>
+        <div class="contact-grid fade-in">
+            <div>
+                <div class="contact-card">
+                    <div class="c-method"><div class="c-icon">💬</div><div><strong>WhatsApp</strong><a href="https://wa.me/22951226741" target="_blank">+229 51 22 67 41</a></div></div>
+                    <div class="c-method"><div class="c-icon">📧</div><div><strong>Email</strong><a href="/cdn-cgi/l/email-protection#1d697e7572766d72737879707273795d7a707c7471337e7270"><span class="__cf_email__" data-cfemail="b0c4d3d8dfdbc0dfded5d4dddfded4f0d7ddd1d9dc9ed3dfdd">[email&#160;protected]</span></a></div></div>
+                    <div class="c-method"><div class="c-icon">📍</div><div><strong>Localisation</strong><span style="font-size:0.88rem;color:var(--text-muted)">Cotonou, Bénin 🇧🇯</span></div></div>
+                    <div class="c-method"><div class="c-icon">🎓</div><div><strong>Université</strong><span style="font-size:0.88rem;color:var(--text-muted)">UAC · Physique-Chimie</span></div></div>
+                    <div class="socials">
+                        <a href="https://instagram.com/atinz" target="_blank" class="soc" title="Instagram">📸</a>
+                        <a href="https://youtube.com/@Atinzoun" target="_blank" class="soc" title="YouTube">🎥</a>
+                        <a href="https://tiktok.com/@edmond.tchokpon" target="_blank" class="soc" title="TikTok">🎵</a>
+                        <a href="https://t.me/atinzou" target="_blank" class="soc" title="Telegram">✈️</a>
+                        <a href="https://facebook.com/share/16JbpbJ1W7" target="_blank" clas"soc" title="LinkedIn">💼</a>
+                        <a href="https://atinzcreations.blogspot.com" target="_blank" class="soc" title="Blog">📝</a>
+                    </div>
+                </div>
+            </div>
+            <form class="contact-form" onsubmit="handleContact(event)">
+                <div class="fg"><label>Nom complet</label><input type="text" placeholder="Votre nom" required></div>
+                <div class="fg"><label>Email</label><input type="email" placeholder="votre@email.com" required></div>
+                <div class="fg"><label>Sujet</label>
+                    <select>
+                        <option>Suggestion de simulation</option>
+                        <option>Cours particuliers</option>
+                        <option>Design / Développement Python</option>
+                        <option>Don / Soutien</option>
+                        <option>Partenariat éducatif</option>
+                        <option>Autre</option>
+                    </select>
+                </div>
+                <div class="fg"><label>Message</label><textarea placeholder="Votre message..." required></textarea></div>
+                <button type="submit" class="btn-primary" style="align-self:flex-start;">📩 Envoyer le Message</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+
+<!-- ═══ ADSTERRA AD ZONE 3 — Billboard 970x90 ═══
+     Type recommandé: Large Banner ou Native Banner
+-->
+<div class="ad-wrap ad-billboard">
+    <span class="ad-label">Publicité</span>
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 3 (Billboard) -->
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div class="fbrand">
+                <a href="#hero" class="nav-logo" style="text-decoration:none;"><div class="logo-icon">⚗️</div>Sim<span class="grad">Lab</span></a>
+                <p>Le Laboratoire Virtuel de Simulations Scientifiques. Physique, Chimie, Mathématiques, SVT, Astronomie, Informatique. Gratuit, éducatif, pour tous les scientifiques du monde. Créé par Edmond Atinzoun TCHOKPON 🇧🇯.</p>
+            </div>
+            <div class="fcol">
+                <h4>Domaines</h4>
+                <ul>
+                    <li><a href="#simulations" onclick="switchDomain('physique')">⚡ Physique</a></li>
+                    <li><a href="#simulations" onclick="switchDomain('chimie')">🧪 Chimie</a></li>
+                    <li><a href="#simulations" onclick="switchDomain('maths')">📐 Mathématiques</a></li>
+                    <li><a href="#simulations" onclick="switchDomain('svt')">🌿 SVT / Biologie</a></li>
+                    <li><a href="#simulations" onclick="switchDomain('astro')">🔭 Astronomie</a></li>
+                    <li><a href="#simulations" onclick="switchDomain('info')">💻 Informatique</a></li>
+                </ul>
+            </div>
+            <div class="fcol">
+                <h4>Pages</h4>
+                <ul>
+                    <li><a href="#a-propos">À Propos</a></li>
+                    <li><a href="#don">❤️ Faire un Don</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="https://atinzcreations.blogspot.com" target="_blank">Blog</a></li>
+                </ul>
+            </div>
+            <div class="fcol">
+                <h4>Contact</h4>
+                <ul>
+                    <li><a href="https://wa.me/22951226741" target="_blank">💬 WhatsApp</a></li>
+                    <li><a href="/cdn-cgi/l/email-protection#3d495e5552564d52535859505253597d5a505c5451135e5250">📧 Email</a></li>
+                    <li><a href="https://instagram.com/atinz" target="_blank">📸 Instagram</a></li>
+                    <li><a href="https://youtube.com/@Atinzoun" target="_blank">🎥 YouTube</a></li>
+                    <li><a href="https://www.linkedin.com/in/edmond-undefined-7187683ab" target="_blank">💼 LinkedIn</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 SimLab · Edmond Atinzoun TCHOKPON · Tous droits réservés.</p>
+            <p>Simulations scientifiques originales · Créées par Edmond Atinzoun TCHOKPON</p>
+        </div>
+    </div>
+</footer>
+
+<div class="wa-float"><a href="https://wa.me/22951226741" class="wa-btn" target="_blank" title="Contacter sur WhatsApp">💬</a></div>
+
+
+<!-- ═══ ADSTERRA AD ZONE 4 — Sticky Mobile Banner ═══
+     Type recommandé: Social Bar ou Sticky Banner Mobile
+     Très rentable sur mobile !
+-->
+<div class="ad-sticky" id="adSticky">
+    <div class="ad-box">
+        <!-- COLLE ICI TON CODE ADSTERRA ZONE 4 (Sticky/Social Bar) -->
+    </div>
+    <button class="ad-sticky-close" onclick="document.getElementById('adSticky').style.display='none'">✕</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // NAV SCROLL
+    window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // MOBILE NAV
+    function toggleMobileNav() {
+        document.getElementById('mobileNav').classList.toggle('open');
+    }
+    document.addEventListener('click', (e) => {
+        const nav = document.getElementById('mobileNav');
+        const ham = document.querySelector('.hamburger');
+        if (nav.classList.contains('open') && !nav.contains(e.target) && !ham.contains(e.target)) {
+            nav.classList.remove('open');
+        }
+    });
+
+    // DOMAIN SWITCH
+    function switchDomain(domain, btn) {
+        document.querySelectorAll('.cat').forEach(s => s.classList.remove('active'));
+        const target = document.getElementById('domain-' + domain);
+        if (target) target.classList.add('active');
+        if (btn) {
+            document.querySelectorAll('.domain-tab').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        // Depuis le footer : scroll vers simulations
+        if (!btn) {
+            const sec = document.getElementById('simulations');
+            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // SIMCLICK — bloque les liens vides #
+    function simClick(e, el) {
+        const href = el.getAttribute('href');
+        if (!href || href === '#') {
+            e.preventDefault();
+            showToast('⏳ Lien bientôt disponible — simulation en cours d\'ajout !');
+        }
+    }
+
+    // FAQ
+    function toggleFaq(btn) {
+        const item = btn.parentElement;
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+        if (!isOpen) item.classList.add('open');
+    }
+
+    // COPY NUMBER
+    function copyNum(number, btn) {
+        navigator.clipboard.writeText(number).then(() => {
+            btn.textContent = '✓ Copié !';
+            btn.classList.add('copied');
+            showToast('✅ Numéro copié : ' + number);
+            setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
+        }).catch(() => {
+            showToast('📋 Numéro : ' + number);
+        });
+    }
+
+    // TOAST
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // CONTACT FORM
+    function handleContact(e) {
+        e.preventDefault();
+        showToast('✅ Message envoyé ! Je vous réponds bientôt.');
+        e.target.reset();
+    }
+
+    // FADE IN ON SCROLL
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('visible');
+        });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // SMOOTH SCROLL
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            const href = a.getAttribute('href');
+            if (href === '#') return;
+            const target = document.querySelector(href);
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // ANIMATION COMPTEURS HERO
+    function animateCounters() {
+        document.querySelectorAll('.stat-num').forEach(el => {
+            const raw = el.textContent.trim();
+            const num = parseInt(raw);
+            if (!isNaN(num) && num > 1) {
+                let current = 0;
+                const suffix = raw.replace(String(num), '');
+                const step = Math.ceil(num / 40);
+                const timer = setInterval(() => {
+                    current = Math.min(current + step, num);
+                    el.textContent = current + suffix;
+                    if (current >= num) clearInterval(timer);
+                }, 40);
+            }
+        });
+    }
+    const heroObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) { animateCounters(); heroObserver.disconnect(); }
+        });
+    }, { th
