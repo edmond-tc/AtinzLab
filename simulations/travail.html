@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travail et Énergie</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0b1426; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .sim-container { background: #162544; border: 1px solid #1e3a8a; border-radius: 20px; padding: 30px; width: 90%; max-width: 800px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); text-align: center; }
+        h1 { color: #38bdf8; margin-bottom: 10px; font-size: 28px; }
+        .canvas-area { background: #0f172a; border: 2px dashed #1e40af; border-radius: 15px; height: 300px; margin: 20px 0; display: flex; align-items: center; justify-content: center; color: #64748b; }
+        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; background: #1e293b; padding: 20px; border-radius: 12px; }
+        .btn-start { background: linear-gradient(90deg, #1e40af, #0369a1); color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 20px; width: 100%; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div class="sim-container">
+        <h1>Travail et Énergie</h1>
+        <p>Étude interactive du transfert d'énergie mécanique.</p>
+        <div class="canvas-area">
+            <p>🔄 [ Espace de simulation interactif ]</p>
+        </div>
+        <div class="controls">
+            <div>
+                <label>Force (F) en N :</label><br>
+                <input type="range" min="0" max="100" value="50">
+            </div>
+            <div>
+                <label>Distance (d) en m :</label><br>
+                <input type="range" min="0" max="50" value="25">
+            </div>
+        </div>
+        <button class="btn-start" onclick="alert('Simulation lancée !')">Calculer le Travail</button>
+    </div>
+</body>
+</html>
