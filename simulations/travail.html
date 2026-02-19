@@ -5,48 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travail et Énergie</title>
     <style>
+        /* Design inspiré de ton image */
         body { font-family: 'Segoe UI', sans-serif; background-color: #0b1426; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .sim-container { background: #162544; border: 1px solid #1e3a8a; border-radius: 20px; padding: 30px; width: 95%; max-width: 800px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); text-align: center; }
-        h1 { color: #38bdf8; margin-bottom: 10px; font-size: 28px; }
-        .canvas-area { background: #0f172a; border: 2px dashed #1e40af; border-radius: 15px; min-height: 300px; margin: 20px 0; padding: 20px; }
-        .controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; background: #1e293b; padding: 25px; border-radius: 15px; border: 1px solid #334155; }
-        .btn-start { background: linear-gradient(90deg, #1e40af, #0369a1); color: white; border: none; padding: 15px 30px; border-radius: 12px; cursor: pointer; font-weight: bold; margin-top: 25px; width: 100%; font-size: 18px; }
-        label { color: #38bdf8; font-weight: bold; display: block; margin-bottom: 10px; }
-        input[type=range] { width: 100%; accent-color: #38bdf8; }
+        
+        .sim-container { 
+            background: #162544; 
+            border: 1px solid #1e3a8a; 
+            border-radius: 20px; 
+            padding: 30px; 
+            width: 95%; 
+            max-width: 800px; 
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); 
+            text-align: center; 
+        }
+
+        /* Ton titre modifié */
+        h1 { color: #38bdf8; margin-bottom: 20px; font-size: 28px; font-weight: bold; }
+
+        /* Ton espace simulation avec le nouveau style */
+        .canvas-sim { 
+            border: 2px dashed #1e40af; 
+            border-radius: 15px; 
+            background: #0f172a; 
+            margin: 20px auto; 
+            width: 100%; 
+            max-width: 600px; 
+            height: 300px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            color: #64748b;
+        }
+
+        /* Tes contrôles avec le nouveau style */
+        .controls { 
+            background: #1e293b; 
+            padding: 25px; 
+            border-radius: 15px; 
+            border: 1px solid #334155; 
+            margin-top: 20px;
+        }
+
+        /* Ton bouton avec le dégradé de l'image */
+        button { 
+            background: linear-gradient(90deg, #1e40af, #0369a1); 
+            color: white; 
+            border: none; 
+            padding: 15px 30px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 18px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        button:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
+
     <div class="sim-container">
         <h1>Travail et Énergie</h1>
-        
-        <div class="canvas-area">
-            <canvas id="simCanvas" width="600" height="250" style="background:#000; border-radius:10px;"></canvas>
-            <p id="resultat" style="color: #38bdf8; font-weight: bold; margin-top: 15px;">Travail (W) : 0 J</p>
+
+        <div class="canvas-sim">
+            <p>[ Espace Simulation Interactive ]</p>
         </div>
 
         <div class="controls">
-            <div>
-                <label>Force (F) : <span id="valF">50</span> N</label>
-                <input type="range" id="force" min="0" max="100" value="50" oninput="calculer()">
-            </div>
-            <div>
-                <label>Distance (d) : <span id="valD">10</span> m</label>
-                <input type="range" id="dist" min="0" max="50" value="10" oninput="calculer()">
-            </div>
+            <p style="color: #94a3b8; margin-bottom: 20px;">Ajustez les paramètres pour voir l'impact sur l'énergie cinétique.</p>
+            <button onclick="alert('Simulation lancée !')">🚀 Lancer la Simulation</button>
         </div>
-
-        <button class="btn-start" onclick="calculer()">🚀 Calculer l'Énergie</button>
     </div>
 
-    <script>
-        function calculer() {
-            const f = document.getElementById('force').value;
-            const d = document.getElementById('dist').value;
-            document.getElementById('valF').innerText = f;
-            document.getElementById('valD').innerText = d;
-            const w = f * d;
-            document.getElementById('resultat').innerText = "Travail (W) : " + w + " Joules";
-        }
-    </script>
 </body>
 </html>
