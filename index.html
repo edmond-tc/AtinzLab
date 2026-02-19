@@ -239,6 +239,7 @@
     <a href="#hero" class="nav-logo"><div class="logo-icon">⚗️</div>Sim<span class="grad">Lab</span></a>
     <ul class="nav-links">
         <li><a href="#simulations">Simulations</a></li>
+        <li><a href="travail-energie.html" target="_blank" style="color:var(--accent)!important;">🔋 Travail &amp; Énergie</a></li>
         <li><a href="#a-propos">À Propos</a></li>
         <li><a href="#don">Soutenir</a></li>
         <li><a href="#faq">FAQ</a></li>
@@ -250,6 +251,8 @@
 
 <div class="mobile-nav" id="mobileNav">
     <a href="#simulations" onclick="toggleMobileNav()">🔬 Simulations</a>
+    <a href="travail-energie.html" target="_blank" onclick="toggleMobileNav()" style="color:var(--accent);">🔋 Travail &amp; Énergie</a>
+    <a href="guide-travail-energie.html" target="_blank" onclick="toggleMobileNav()" style="color:var(--accent);opacity:0.8;font-size:0.88rem;padding-left:1.5rem;">📖 Guide pédagogique</a>
     <a href="#a-propos" onclick="toggleMobileNav()">👤 À Propos</a>
     <a href="#don" onclick="toggleMobileNav()">❤️ Soutenir</a>
     <a href="#faq" onclick="toggleMobileNav()">❓ FAQ</a>
@@ -276,7 +279,7 @@
         </div>
         <div class="hero-stats">
             <div class="stat-item"><span class="stat-num">6</span><span class="stat-label">Domaines Scientifiques</span></div>
-            <div class="stat-item"><span class="stat-num">20+</span><span class="stat-label">Simulations</span></div>
+            <div class="stat-item"><span class="stat-num">21+</span><span class="stat-label">Simulations</span></div>
             <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Gratuit</span></div>
             <div class="stat-item"><span class="stat-num">📱</span><span class="stat-label">Compatible Mobile</span></div>
         </div>
@@ -302,85 +305,39 @@
 
         <!-- PHYSIQUE -->
         <div id="domain-physique" class="cat active">
-            <div class="domain-banner b-phy fade-in"><div class="domain-banner-icon">⚡</div><div><h3>Physique</h3><p>Mécanique · Optique · Électricité · Thermodynamique · Ondes</p></div></div>
+            <div class="domain-banner b-phy fade-in"><div class="domain-banner-icon">⚡</div><div><h3>Physique</h3><p>Mécanique · Optique · Électricité · Énergie &amp; Travail · Thermodynamique · Ondes</p></div></div>
             <div class="subcat"><div class="subcat-title">⚙️ Mécanique</div>
-                <!-- ══ SOUS-CAT : ÉNERGIE & TRAVAIL ══ -->
-<div class="subcat">
-  <div class="subcat-title">🔋 Énergie &amp; Travail</div>
-  <div class="sims-grid">
+                
+<div class="sim-card c-phy">
 
-    <!-- ── CARTE : Travail & Énergie ── -->
-    <div class="sim-card c-phy">
+  <div class="sim-card-header">
+    <div class="sim-icon">⚡</div>
+    <span class="sim-badge"
+          style="background:linear-gradient(135deg,#06d6a0,#0047AB);color:#fff;border:none;">
+      Disponible ✓
+    </span>
+  </div>
 
-      <!-- EN-TÊTE : icône + badge -->
-      <div class="sim-card-header">
-        <div class="sim-icon">🔋</div>
-        <span class="sim-badge"
-              style="background:linear-gradient(135deg,#06d6a0,#0047AB);color:#fff;border:none;">
-          Disponible ✓
-        </span>
-      </div>
+  <div class="sim-name">travail-energie</div>
+  <div class="sim-desc">Explorez les formes d'énergie et leurs conversions en temps réel.</div>
 
-      <!-- NOM + DESCRIPTION -->
-      <div class="sim-name">Travail &amp; Énergie</div>
-      <div class="sim-desc">
-        Explorez les formes d'énergie et leurs conversions.
-        Théorème travail-énergie, énergie cinétique, potentielle
-        et mécanique visualisés en temps réel.
-      </div>
+  <div class="sim-card-btns">
+    <a href="travail-energie.html"
+       target="_blank"
+       class="sim-btn"
+       onclick="event.stopPropagation()">
+      🚀 Lancer la Simulation ↗
+    </a>
+    <a href="guide-travail-energie.html"
+       target="_blank"
+       class="sim-btn sim-btn-guide"
+       onclick="event.stopPropagation()">
+      📖 Guide d'utilisation ↗
+    </a>
+  </div>
 
-      <!-- TAGS -->
-      <div class="sim-tags">
-        <span class="sim-tag">Énergie</span>
-        <span class="sim-tag">Travail</span>
-        <span class="sim-tag">Puissance</span>
-        <span class="sim-tag">Conservation</span>
-      </div>
-
-      <!-- BOUTON SIMULATEUR -->
-      <a href="travail-energie.html"
-         class="sim-btn"
-         target="_blank"
-         onclick="event.stopPropagation()">
-        🚀 Lancer la Simulation ↗
-      </a>
-
-      <!-- ACCORDÉON GUIDE -->
-      <button class="guide-toggle"
-              onclick="toggleGuide(this)"
-              aria-expanded="false">
-        <span>📖 Guide pédagogique</span>
-        <span class="guide-arrow">▾</span>
-      </button>
-      <div class="guide-panel">
-        <div class="guide-panel-title">📚 Chapitres du guide</div>
-        <div class="guide-sections">
-          <a href="guide-travail-energie.html#s1" target="_blank" class="guide-section-link">
-            <span class="gs-num">01</span> Travail d'une force
-          </a>
-          <a href="guide-travail-energie.html#s2" target="_blank" class="guide-section-link">
-            <span class="gs-num">02</span> Énergie cinétique
-          </a>
-          <a href="guide-travail-energie.html#s3" target="_blank" class="guide-section-link">
-            <span class="gs-num">03</span> Ressort vertical
-          </a>
-          <a href="guide-travail-energie.html#s4" target="_blank" class="guide-section-link">
-            <span class="gs-num">04</span> Ressort horizontal
-          </a>
-          <a href="guide-travail-energie.html#s5" target="_blank" class="guide-section-link">
-            <span class="gs-num">05</span> Puissance &amp; rendement
-          </a>
-        </div>
-        <a href="guide-travail-energie.html"
-           target="_blank"
-           class="guide-open-full">
-          📖 Ouvrir le guide complet ↗
-        </a>
-      </div><!-- fin guide-panel -->
-
-    </div><!-- fin sim-card -->
-  </div><!-- fin sims-grid -->
-</div><!-- fin subcat -->
+</div><!-- fin sim-card -->
+            </div>
             <div class="subcat"><div class="subcat-title">💡 Optique</div>
                 <div class="sims-grid">
                     <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🔦</div><span class="sim-badge">Original</span></div><div class="sim-name">Réfraction de la Lumière</div><div class="sim-desc">Observez réflexion et réfraction selon les milieux. Loi de Snell-Descartes interactive.</div><div class="sim-tags"><span class="sim-tag">Réfraction</span><span class="sim-tag">Réflexion</span><span class="sim-tag">Snell</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
@@ -394,7 +351,7 @@
                     <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">📊</div><span class="sim-badge">Original</span></div><div class="sim-name">Loi d'Ohm</div><div class="sim-desc">Visualisez la relation U = R × I de manière interactive. Idéal pour les circuits simples.</div><div class="sim-tags"><span class="sim-tag">Tension</span><span class="sim-tag">Intensité</span><span class="sim-tag">Résistance</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
                     <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🧲</div><span class="sim-badge">Original</span></div><div class="sim-name">Charges &amp; Champs Électriques</div><div class="sim-desc">Visualisez champs électriques et potentiels créés par des charges positives et négatives.</div><div class="sim-tags"><span class="sim-tag">Champ</span><span class="sim-tag">Charge</span><span class="sim-tag">Potentiel</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
                 </div>
-            </div>
+            
         </div>
 
         <!-- CHIMIE -->
@@ -659,7 +616,7 @@
                 <h4>Contact</h4>
                 <ul>
                     <li><a href="https://wa.me/22951226741" target="_blank">💬 WhatsApp</a></li>
-                    <li><a href="mailto:tchokponedmond@gmail.com">📧 Email</a></li>
+                    <li><a href="/cdn-cgi/l/email-protection#83f7e0ebece8f3ecede6e7eeecede7c3e4eee2eaefade0ecee">📧 Email</a></li>
                     <li><a href="https://instagram.com/atinz" target="_blank">📸 Instagram</a></li>
                     <li><a href="https://youtube.com/@Atinzoun" target="_blank">🎥 YouTube</a></li>
                     <li><a href="https://www.linkedin.com/in/edmond-undefined-7187683ab" target="_blank">💼 LinkedIn</a></li>
@@ -677,7 +634,7 @@
 
 <div class="toast" id="toast"></div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
     // NAV SCROLL
     window.addEventListener('scroll', () => {
         document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
@@ -797,21 +754,4 @@
         entries.forEach(entry => {
             if (entry.isIntersecting) { animateCounters(); heroObserver.disconnect(); }
         });
-    }, { threshold: 0.3 });
-    const heroStats = document.querySelector('.hero-stats');
-  if (heroStats) heroObserver.observe(heroStats);
- <div class="subcat"><div class="subcat-title">🔋 Énergie &amp; Travail</div>
-                <div class="sims-grid">
-                    <a href="travail-energie.html" class="sim-card c-phy" target="_blank" style="text-decoration:none;">
-                        <div class="sim-card-header">
-                            <div class="sim-icon">🔋</div>
-                            <span class="sim-badge" style="background:linear-gradient(135deg,#06d6a0,#0047AB);color:#fff;border:none;">Disponible ✓</span>
-                        </div>
-                        <div class="sim-name">Travail &amp; Énergie</div>
-                        <div class="sim-desc">Explorez les formes d'énergie et leurs conversions. Théorème travail-énergie, énergie cinétique, potentielle et mécanique visualisés en temps réel.</div>
-                        <div class="sim-tags"><span class="sim-tag">Énergie</span><span class="sim-tag">Travail</span><span class="sim-tag">Puissance</span><span class="sim-tag">Conservation</span></div>
-                        <div style="display:flex;gap:0.5rem;margin-top:0.8rem;flex-wrap:wrap;">
-                            <div class="sim-btn" style="flex:1;min-width:140px;">🚀 Lancer la Simulation ↗</div>
-</script>
-</body>
-</html>
+    }, { th
