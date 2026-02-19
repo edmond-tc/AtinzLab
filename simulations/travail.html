@@ -5,69 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Travail et Énergie</title>
     <style>
-        /* Design sombre inspiré de ton image */
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background-color: #0b1426; 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0; 
-            padding: 20px; 
-        }
-
-        .sim-container { 
-            background: #162544; 
-            border: 1px solid #1e3a8a; 
-            border-radius: 20px; 
-            padding: 30px; 
-            width: 95%; 
-            max-width: 800px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); 
-            text-align: center; 
-        }
-
-        /* Nouveau titre court */
+        body { font-family: 'Segoe UI', sans-serif; background-color: #0b1426; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .sim-container { background: #162544; border: 1px solid #1e3a8a; border-radius: 20px; padding: 30px; width: 95%; max-width: 800px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); text-align: center; }
         h1 { color: #38bdf8; margin-bottom: 20px; font-size: 28px; }
-
-        /* TA SIMULATION : Garde tes classes originales */
-        .canvas-sim { 
-            border: 2px dashed #1e40af; 
-            border-radius: 15px; 
-            background: #0f172a; 
-            margin: 20px auto; 
-            width: 100%; 
-            max-width: 600px; 
-            height: 300px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: #64748b;
-        }
-
-        /* TES CONTRÔLES : Garde ta classe originale */
-        .controls { 
-            background: #1e293b; 
-            padding: 20px; 
-            border-radius: 15px; 
-            border: 1px solid #334155; 
-        }
-
-        /* TON BOUTON : Garde ton onclick mais avec le style de l'image */
-        button { 
-            background: linear-gradient(90deg, #1e40af, #0369a1); 
-            color: white; 
-            border: none; 
-            padding: 15px 30px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            font-size: 18px;
-            width: 100%;
-            margin-top: 10px;
-        }
+        
+        /* STYLE POUR TES CLASSES ORIGINALES */
+        .canvas-sim { border: 2px solid #38bdf8; border-radius: 10px; background: #1e293b; margin: 20px auto; width: 600px; height: 400px; display: flex; align-items: center; justify-content: center; }
+        .controls { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; }
+        button { background: linear-gradient(90deg, #1e40af, #0369a1); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -78,12 +23,12 @@
         <div class="canvas-sim">
             <p>[ Espace Simulation Interactive ]</p>
         </div>
-
         <div class="controls">
-            <p style="color: #94a3b8;">Ajustez les paramètres pour voir l'impact sur l'énergie cinétique.</p>
-            <button onclick="alert('Simulation lancée !')">🚀 Lancer la Simulation</button>
+            <p>Ajustez les paramètres pour voir l'impact sur l'énergie cinétique.</p>
+            <button onclick="alert('Simulation lancée !')">Lancer l'expérience</button>
         </div>
-    </div>
+
+        </div>
 
 </body>
 </html>
