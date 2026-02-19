@@ -130,6 +130,11 @@
         .sim-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0.65rem;background:linear-gradient(135deg,rgba(0,71,171,0.4),rgba(0,180,216,0.3));border:1px solid var(--border2);border-radius:8px;color:var(--secondary);font-size:0.85rem;font-weight:600;transition:all 0.2s;font-family:var(--font-body)}
         .sim-btn:hover{background:linear-gradient(135deg,rgba(0,71,171,0.6),rgba(0,180,216,0.5));color:white}
 
+        /* BOUTONS SIMULATION + GUIDE */
+        .sim-card-btns{display:flex;flex-direction:column;gap:.5rem;margin-top:auto;}
+        .sim-btn-guide{background:linear-gradient(135deg,rgba(6,214,160,.12),rgba(0,71,171,.18));border:1px solid rgba(6,214,160,.3);color:var(--accent);}
+        .sim-btn-guide:hover{background:linear-gradient(135deg,rgba(6,214,160,.28),rgba(0,71,171,.35));color:white;}
+
         /* ABOUT */
         .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
         .about-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem}
@@ -239,7 +244,6 @@
     <a href="#hero" class="nav-logo"><div class="logo-icon">⚗️</div>Sim<span class="grad">Lab</span></a>
     <ul class="nav-links">
         <li><a href="#simulations">Simulations</a></li>
-        <li><a href="travail-energie.html" target="_blank" style="color:var(--accent)!important;">🔋 Travail &amp; Énergie</a></li>
         <li><a href="#a-propos">À Propos</a></li>
         <li><a href="#don">Soutenir</a></li>
         <li><a href="#faq">FAQ</a></li>
@@ -251,8 +255,6 @@
 
 <div class="mobile-nav" id="mobileNav">
     <a href="#simulations" onclick="toggleMobileNav()">🔬 Simulations</a>
-    <a href="travail-energie.html" target="_blank" onclick="toggleMobileNav()" style="color:var(--accent);">🔋 Travail &amp; Énergie</a>
-    <a href="guide-travail-energie.html" target="_blank" onclick="toggleMobileNav()" style="color:var(--accent);opacity:0.8;font-size:0.88rem;padding-left:1.5rem;">📖 Guide pédagogique</a>
     <a href="#a-propos" onclick="toggleMobileNav()">👤 À Propos</a>
     <a href="#don" onclick="toggleMobileNav()">❤️ Soutenir</a>
     <a href="#faq" onclick="toggleMobileNav()">❓ FAQ</a>
@@ -279,7 +281,7 @@
         </div>
         <div class="hero-stats">
             <div class="stat-item"><span class="stat-num">6</span><span class="stat-label">Domaines Scientifiques</span></div>
-            <div class="stat-item"><span class="stat-num">21+</span><span class="stat-label">Simulations</span></div>
+            <div class="stat-item"><span class="stat-num">22+</span><span class="stat-label">Simulations</span></div>
             <div class="stat-item"><span class="stat-num">100%</span><span class="stat-label">Gratuit</span></div>
             <div class="stat-item"><span class="stat-num">📱</span><span class="stat-label">Compatible Mobile</span></div>
         </div>
@@ -305,38 +307,16 @@
 
         <!-- PHYSIQUE -->
         <div id="domain-physique" class="cat active">
-            <div class="domain-banner b-phy fade-in"><div class="domain-banner-icon">⚡</div><div><h3>Physique</h3><p>Mécanique · Optique · Électricité · Énergie &amp; Travail · Thermodynamique · Ondes</p></div></div>
+            <div class="domain-banner b-phy fade-in"><div class="domain-banner-icon">⚡</div><div><h3>Physique</h3><p>Mécanique · Optique · Électricité · Énergie · Rotation · Thermodynamique · Ondes</p></div></div>
             <div class="subcat"><div class="subcat-title">⚙️ Mécanique</div>
-                
-<div class="sim-card c-phy">
-
-  <div class="sim-card-header">
-    <div class="sim-icon">⚡</div>
-    <span class="sim-badge"
-          style="background:linear-gradient(135deg,#06d6a0,#0047AB);color:#fff;border:none;">
-      Disponible ✓
-    </span>
-  </div>
-
-  <div class="sim-name">travail-energie</div>
-  <div class="sim-desc">Explorez les formes d'énergie et leurs conversions en temps réel.</div>
-
-  <div class="sim-card-btns">
-    <a href="travail-energie.html"
-       target="_blank"
-       class="sim-btn"
-       onclick="event.stopPropagation()">
-      🚀 Lancer la Simulation ↗
-    </a>
-    <a href="guide-travail-energie.html"
-       target="_blank"
-       class="sim-btn sim-btn-guide"
-       onclick="event.stopPropagation()">
-      📖 Guide d'utilisation ↗
-    </a>
-  </div>
-
-</div><!-- fin sim-card -->
+                <div class="sims-grid">
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🎯</div><span class="sim-badge">Original</span></div><div class="sim-name">Tir de Projectile</div><div class="sim-desc">Simulez un lancer de projectile, ajustez angle et vitesse initiale, observez la trajectoire parabolique en temps réel.</div><div class="sim-tags"><span class="sim-tag">Parabole</span><span class="sim-tag">Gravité</span><span class="sim-tag">Vitesse</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🕰️</div><span class="sim-badge">Original</span></div><div class="sim-name">Pendule Simple</div><div class="sim-desc">Explorez le mouvement oscillatoire d'un pendule. Modifiez longueur, masse et gravité en temps réel.</div><div class="sim-tags"><span class="sim-tag">Oscillation</span><span class="sim-tag">Période</span><span class="sim-tag">Fréquence</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌀</div><span class="sim-badge">Original</span></div><div class="sim-name">Masses et Ressorts</div><div class="sim-desc">Simulation de ressorts avec masses variables. Observez la loi de Hooke et les oscillations.</div><div class="sim-tags"><span class="sim-tag">Ressort</span><span class="sim-tag">Hooke</span><span class="sim-tag">Énergie</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">💪</div><span class="sim-badge">Original</span></div><div class="sim-name">Forces et Mouvements</div><div class="sim-desc">Appliquez des forces, observez accélération, frottement et les lois de Newton en action.</div><div class="sim-tags"><span class="sim-tag">Newton</span><span class="sim-tag">Frottement</span><span class="sim-tag">Accélération</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">💥</div><span class="sim-badge">Original</span></div><div class="sim-name">Collisions</div><div class="sim-desc">Chocs élastiques et inélastiques. Conservation de la quantité de mouvement visualisée.</div><div class="sim-tags"><span class="sim-tag">Choc</span><span class="sim-tag">Momentum</span><span class="sim-tag">Conservation</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                    <a href="#" class="sim-card c-phy" onclick="simClick(event,this)"><div class="sim-card-header"><div class="sim-icon">🌍</div><span class="sim-badge">Original</span></div><div class="sim-name">Gravité &amp; Orbites</div><div class="sim-desc">Simulez orbites planétaires et satellites. Visualisez la gravitation universelle de Newton.</div><div class="sim-tags"><span class="sim-tag">Orbite</span><span class="sim-tag">Satellite</span><span class="sim-tag">Attraction</span></div><div class="sim-btn">🚀 Lancer la Simulation ↗</div></a>
+                </div>
             </div>
             <div class="subcat"><div class="subcat-title">💡 Optique</div>
                 <div class="sims-grid">
@@ -616,7 +596,7 @@
                 <h4>Contact</h4>
                 <ul>
                     <li><a href="https://wa.me/22951226741" target="_blank">💬 WhatsApp</a></li>
-                    <li><a href="/cdn-cgi/l/email-protection#83f7e0ebece8f3ecede6e7eeecede7c3e4eee2eaefade0ecee">📧 Email</a></li>
+                    <li><a href="/cdn-cgi/l/email-protection#b8ccdbd0d7d3c8d7d6dddcd5d7d6dcf8dfd5d9d1d496dbd7d5">📧 Email</a></li>
                     <li><a href="https://instagram.com/atinz" target="_blank">📸 Instagram</a></li>
                     <li><a href="https://youtube.com/@Atinzoun" target="_blank">🎥 YouTube</a></li>
                     <li><a href="https://www.linkedin.com/in/edmond-undefined-7187683ab" target="_blank">💼 LinkedIn</a></li>
@@ -754,4 +734,9 @@
         entries.forEach(entry => {
             if (entry.isIntersecting) { animateCounters(); heroObserver.disconnect(); }
         });
-    }, { th
+    }, { threshold: 0.3 });
+    document.querySelectorAll('.hero-stats').forEach(el => heroObserver.observe(el));
+
+</script>
+</body>
+</html>
