@@ -2,33 +2,22 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Travail et Énergie</title>
+    <title>Simulation - Travail et Énergie</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #0b1426; color: white; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .sim-container { background: #162544; border: 1px solid #1e3a8a; border-radius: 20px; padding: 30px; width: 95%; max-width: 800px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4); text-align: center; }
-        h1 { color: #38bdf8; margin-bottom: 20px; font-size: 28px; }
-        
-        /* STYLE POUR TES CLASSES ORIGINALES */
-        .canvas-sim { border: 2px solid #38bdf8; border-radius: 10px; background: #1e293b; margin: 20px auto; width: 600px; height: 400px; display: flex; align-items: center; justify-content: center; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #0f172a; color: white; padding: 20px; }
+        .canvas-sim { border: 2px solid #38bdf8; border-radius: 10px; background: #1e293b; margin: 20px; width: 600px; height: 400px; display: flex; align-items: center; justify-content: center; }
         .controls { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; }
-        button { background: linear-gradient(90deg, #1e40af, #0369a1); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button { background: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
-
-    <div class="sim-container">
-        <h1>Travail et Énergie</h1>
-
-        <div class="canvas-sim">
-            <p>[ Espace Simulation Interactive ]</p>
-        </div>
-        <div class="controls">
-            <p>Ajustez les paramètres pour voir l'impact sur l'énergie cinétique.</p>
-            <button onclick="alert('Simulation lancée !')">Lancer l'expérience</button>
-        </div>
-
-        </div>
-
+    <h1>Simulation : Travail d'une Force</h1>
+    <div class="canvas-sim">
+        <p>[ Espace Simulation Interactive ]</p>
+    </div>
+    <div class="controls">
+        <p>Ajustez les paramètres pour voir l'impact sur l'énergie cinétique.</p>
+        <button onclick="alert('Simulation lancée !')">Lancer l'expérience</button>
+    </div>
 </body>
 </html>
