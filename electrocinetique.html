@@ -1,0 +1,2079 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ElectroSim — Simulateur Électrocinétique</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Exo+2:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg2: #0f1525;
+  --bg3: #161d30;
+  --panel: #1a2235;
+  --panel2: #1f2940;
+  --border: #2a3a55;
+  --accent: #00d4ff;
+  --accent2: #ff6b35;
+  --accent3: #39ff14;
+  --accent4: #ffcc00;
+  --text: #e8f0ff;
+  --text2: #8a9bbf;
+  --text3: #4a5a7a;
+  --red: #ff3355;
+  --green: #39ff14;
+  --yellow: #ffcc00;
+  --orange: #ff6b35;
+  --purple: #bf7fff;
+  --glow: 0 0 20px rgba(0,212,255,0.3);
+  --glow2: 0 0 20px rgba(255,107,53,0.3);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+header {
+  background: linear-gradient(135deg, #0a0e1a 0%, #0f1525 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(10px);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: var(--glow);
+}
+.logo-text { font-size: 18px; font-weight: 900; letter-spacing: 1px; }
+.logo-text span { color: var(--accent); }
+.logo-sub { font-size: 9px; color: var(--text2); letter-spacing: 3px; text-transform: uppercase; }
+.header-info { text-align: right; }
+.header-info .name { font-size: 11px; font-weight: 600; color: var(--accent4); }
+.header-info .school { font-size: 9px; color: var(--text3); }
+
+/* ── NAV TABS ── */
+.nav-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 8px;
+  gap: 4px;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── SECTIONS ── */
+.section { display: none; padding: 16px; }
+.section.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* ── SLIDERS ── */
+.param-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.param-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--text2);
+  min-width: 70px;
+}
+.param-label span { color: var(--accent4); font-weight: 600; }
+.param-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 4px;
+  background: var(--bg3);
+  outline: none;
+}
+.param-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--accent);
+  border: 2px solid var(--bg);
+}
+.param-slider.orange::-webkit-slider-thumb { background: var(--orange); box-shadow: 0 0 10px var(--orange); }
+.param-slider.green::-webkit-slider-thumb { background: var(--green); box-shadow: 0 0 10px var(--green); }
+.param-slider.yellow::-webkit-slider-thumb { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+.param-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--text);
+  min-width: 65px;
+  text-align: right;
+}
+
+/* ── OSCILLOSCOPE ── */
+.oscilloscope {
+  background: #050e08;
+  border: 2px solid #1a3a20;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+}
+.oscilloscope::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: 
+    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(0,255,100,0.06) 39px, rgba(0,255,100,0.06) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,255,100,0.06) 39px, rgba(0,255,100,0.06) 40px);
+  pointer-events: none;
+  z-index: 1;
+}
+.oscilloscope canvas { display: block; width: 100%; height: 200px; }
+.osc-labels {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: #050e08;
+  border-top: 1px solid #1a3a20;
+}
+.osc-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+}
+.osc-controls {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: #050e08;
+  border-top: 1px solid #1a3a20;
+  flex-wrap: wrap;
+}
+.osc-btn {
+  padding: 5px 12px;
+  border-radius: 4px;
+  border: 1px solid;
+  background: none;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.osc-btn.ch1 { color: var(--accent); border-color: var(--accent); }
+.osc-btn.ch2 { color: var(--orange); border-color: var(--orange); }
+.osc-btn.active { background: rgba(0,212,255,0.15); }
+.osc-btn.ch2.active { background: rgba(255,107,53,0.15); }
+.osc-knob-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px;
+  background: #070f0b;
+  border-top: 1px solid #1a3a20;
+}
+.knob-group { display: flex; align-items: center; gap: 6px; }
+.knob-label { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: var(--text3); }
+.knob-val { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--green); }
+.mini-slider {
+  width: 70px;
+  -webkit-appearance: none;
+  height: 3px;
+  border-radius: 3px;
+  background: #1a3a20;
+  outline: none;
+}
+.mini-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--green);
+  cursor: pointer;
+}
+
+/* ── MULTIMETER ── */
+.multimeter {
+  background: linear-gradient(180deg, #1a1a1a 0%, #111 100%);
+  border: 3px solid #333;
+  border-radius: 16px;
+  padding: 12px;
+  max-width: 220px;
+  margin: 0 auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.mm-brand {
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 4px;
+  color: #555;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.mm-screen {
+  background: #001a00;
+  border: 2px solid #1a3a1a;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.mm-screen::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%);
+}
+.mm-unit {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #00aa00;
+  display: block;
+  margin-bottom: 2px;
+}
+.mm-value {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 28px;
+  color: #00ff00;
+  text-shadow: 0 0 10px #00ff00;
+  letter-spacing: 2px;
+}
+.mm-value.negative { color: #ff4444; text-shadow: 0 0 10px #ff4444; }
+.mm-mode {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: #006600;
+  display: block;
+  margin-top: 2px;
+}
+.mm-dial {
+  width: 80px; height: 80px;
+  border: 3px solid #333;
+  border-radius: 50%;
+  margin: 0 auto 10px;
+  position: relative;
+  background: radial-gradient(circle at 40% 35%, #3a3a3a, #1a1a1a);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+.mm-dial-inner {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #555, #222);
+  border: 2px solid #444;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+  color: var(--accent);
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 700;
+}
+.mm-dial-mark {
+  position: absolute;
+  width: 3px; height: 12px;
+  background: #ff4400;
+  border-radius: 2px;
+  top: 4px; left: 50%;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(var(--angle, 0deg));
+}
+.mm-terminals {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.mm-terminal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.mm-jack {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  border: 2px solid #555;
+}
+.mm-jack.com { background: #222; border-color: #888; }
+.mm-jack.vma { background: #1a0000; border-color: #ff3300; }
+.mm-jack.ma { background: #001a00; border-color: #00aa00; }
+.mm-jack-label { font-size: 7px; color: #555; font-family: 'Share Tech Mono', monospace; }
+
+/* ── CIRCUIT CANVAS ── */
+.circuit-wrap {
+  background: #f5f0e8;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid #c8b88a;
+  position: relative;
+}
+.circuit-wrap canvas { display: block; width: 100%; }
+.circuit-legend {
+  display: flex;
+  gap: 12px;
+  padding: 8px;
+  background: #ede8d8;
+  border-top: 1px solid #c8b88a;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: #444;
+  font-family: 'Share Tech Mono', monospace;
+}
+.legend-color {
+  width: 20px; height: 3px;
+  border-radius: 2px;
+}
+
+/* ── RESULTS GRID ── */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.result-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  text-align: center;
+}
+.result-box.highlight { border-color: var(--accent); }
+.result-label {
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.result-val {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 700;
+}
+.result-val.orange { color: var(--orange); }
+.result-val.green { color: var(--green); }
+.result-val.yellow { color: var(--yellow); }
+.result-val.purple { color: var(--purple); }
+.result-unit {
+  font-size: 9px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ── PHASOR CANVAS ── */
+.phasor-wrap {
+  background: #08080f;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.phasor-wrap canvas { display: block; max-width: 100%; }
+
+/* ── INFO BOX ── */
+.formula-box {
+  background: var(--bg3);
+  border-left: 3px solid var(--accent2);
+  border-radius: 0 8px 8px 0;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.formula-title {
+  font-size: 10px;
+  color: var(--orange);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.formula {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.8;
+}
+.formula .var { color: var(--accent); }
+.formula .eq { color: var(--text2); }
+
+/* ── KIRCHHOFF ── */
+.kirchhoff-circuit {
+  background: #f7f3ea;
+  border-radius: 8px;
+  border: 2px solid #c8b88a;
+  overflow: hidden;
+}
+.kirchhoff-circuit canvas { display: block; width: 100%; }
+
+/* ── QUIZ ── */
+.quiz-card {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.quiz-q {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 13px;
+  font-family: 'Exo 2', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+}
+.quiz-opt:hover { border-color: var(--accent); color: var(--text); }
+.quiz-opt.correct { border-color: var(--green); background: rgba(57,255,20,0.1); color: var(--green); }
+.quiz-opt.wrong { border-color: var(--red); background: rgba(255,51,85,0.1); color: var(--red); }
+.quiz-feedback {
+  display: none;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.ok { background: rgba(57,255,20,0.08); border: 1px solid var(--green); color: var(--green); }
+.quiz-feedback.nok { background: rgba(255,51,85,0.08); border: 1px solid var(--red); color: var(--red); }
+.quiz-next {
+  display: none;
+  margin-top: 10px;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 8px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.quiz-next:hover { box-shadow: var(--glow); }
+.quiz-score {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+.score-highlight { color: var(--accent4); font-size: 16px; }
+
+/* ── CIRCUIT SELECTOR ── */
+.circuit-sel {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.csel-btn {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.csel-btn.active { border-color: var(--accent); background: rgba(0,212,255,0.1); color: var(--accent); }
+
+/* ── SIGNAL GEN ── */
+.siggen {
+  background: #12100a;
+  border: 2px solid #3a3020;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+.siggen-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: #8a7a50;
+  letter-spacing: 3px;
+  margin-bottom: 10px;
+}
+.siggen-display {
+  background: #0a0800;
+  border: 1px solid #2a2010;
+  border-radius: 6px;
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.siggen-freq {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 22px;
+  color: #ffaa00;
+  text-shadow: 0 0 8px #ffaa00;
+}
+.siggen-unit { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: #665500; }
+.sig-type-row {
+  display: flex;
+  gap: 6px;
+}
+.sig-type-btn {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid #3a3020;
+  background: #1a1508;
+  border-radius: 4px;
+  color: #665500;
+  font-size: 10px;
+  cursor: pointer;
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s;
+  text-align: center;
+}
+.sig-type-btn.active { border-color: #ffaa00; color: #ffaa00; background: rgba(255,170,0,0.1); }
+
+/* ── RESPONSIVE ── */
+@media (min-width: 600px) {
+  .section { padding: 20px; max-width: 800px; margin: 0 auto; }
+  .oscilloscope canvas { height: 260px; }
+  .results-grid { grid-template-columns: repeat(4, 1fr); }
+}
+@media (min-width: 900px) {
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+}
+
+/* ── ANIMATED TICKER ── */
+.status-bar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 5px 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--text3);
+  overflow: hidden;
+  white-space: nowrap;
+}
+.status-ticker {
+  display: inline-block;
+  animation: ticker 20s linear infinite;
+}
+@keyframes ticker {
+  0% { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
+}
+
+/* ── LED ── */
+.led {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: blink 1.5s ease-in-out infinite;
+}
+@keyframes blink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ── TOGGLE ── */
+.power-btn {
+  width: 44px; height: 24px;
+  border-radius: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.power-btn.on { background: rgba(57,255,20,0.2); border-color: var(--green); }
+.power-btn::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--text3);
+  top: 2px; left: 2px;
+  transition: all 0.3s;
+}
+.power-btn.on::after { left: 22px; background: var(--green); box-shadow: 0 0 8px var(--green); }
+
+/* ── SECTION TITLE ── */
+.section-header {
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.section-title span { color: var(--accent); }
+.section-desc {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+/* ── HOME ── */
+.home-hero {
+  background: linear-gradient(135deg, #0f1525, #161d30);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 20px;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+  overflow: hidden;
+}
+.home-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle at center, rgba(0,212,255,0.04) 0%, transparent 60%);
+  animation: pulse 4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.6; }
+}
+.hero-title {
+  font-size: 26px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 6px;
+  position: relative;
+}
+.hero-sub {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 16px;
+  position: relative;
+}
+.hero-student {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--accent4);
+  position: relative;
+}
+.modules-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.module-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+.module-card:hover, .module-card:active {
+  border-color: var(--accent);
+  background: var(--panel2);
+  transform: translateY(-2px);
+  box-shadow: var(--glow);
+}
+.module-icon { font-size: 28px; margin-bottom: 8px; }
+.module-name { font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+.module-desc { font-size: 10px; color: var(--text3); line-height: 1.4; }
+.module-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+.module-badge.orange { background: var(--orange); }
+.module-badge.green { background: var(--green); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚡</div>
+    <div>
+      <div class="logo-text">Electro<span>Sim</span></div>
+      <div class="logo-sub">Simulateur Électrocinétique</div>
+    </div>
+  </div>
+  <div class="header-info">
+    <div class="name">⬡ Edmond A. TCHOKPON</div>
+    <div class="school">Licence PC · UAC · FST</div>
+  </div>
+</header>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <span class="led"></span>&nbsp;
+  <span class="status-ticker">
+    SYSTÈME ACTIF &nbsp;◆&nbsp; Simulateur Électrocinétique v2.0 &nbsp;◆&nbsp; UAC Abomey-Calavi &nbsp;◆&nbsp; 
+    Kirchhoff · RC · RL · RLC · Régime Sinusoïdal · Diagramme de Fresnel &nbsp;◆&nbsp; 
+    ACTIVE SYSTEM &nbsp;◆&nbsp; Electrokinetics Simulator &nbsp;◆&nbsp; Bilingue FR/EN
+  </span>
+</div>
+
+<!-- NAV -->
+<nav class="nav-tabs" id="navTabs">
+  <button class="tab-btn active" onclick="showTab('home')">🏠 Home</button>
+  <button class="tab-btn" onclick="showTab('kirchhoff')">⚡ Kirchhoff</button>
+  <button class="tab-btn" onclick="showTab('rc')">📡 RC / RL</button>
+  <button class="tab-btn" onclick="showTab('rlc')">🔄 RLC</button>
+  <button class="tab-btn" onclick="showTab('sinus')">〜 Sinusoïdal</button>
+  <button class="tab-btn" onclick="showTab('quiz')">📝 Quiz</button>
+</nav>
+
+<!-- ═══════════════════════════ HOME ═══════════════════════════ -->
+<section class="section active" id="home">
+  <div class="home-hero">
+    <div class="hero-title">ElectroSim</div>
+    <div class="hero-sub">Simulateur interactif d'électrocinétique<br>Interactive Electrokinetics Simulator</div>
+    <div class="hero-student">👤 TCHOKPON Edmond Atinzoun &nbsp;·&nbsp; Licence PC</div>
+  </div>
+  <div class="modules-grid">
+    <div class="module-card" onclick="showTab('kirchhoff')">
+      <div class="module-badge">ESSENTIEL</div>
+      <div class="module-icon">⚡</div>
+      <div class="module-name">Lois de Kirchhoff</div>
+      <div class="module-desc">Nœuds, mailles, circuits multi-branches</div>
+    </div>
+    <div class="module-card" onclick="showTab('rc')">
+      <div class="module-badge orange">TRANSITOIRE</div>
+      <div class="module-icon">📡</div>
+      <div class="module-name">Circuits RC / RL</div>
+      <div class="module-desc">Charge, décharge, constante de temps τ</div>
+    </div>
+    <div class="module-card" onclick="showTab('rlc')">
+      <div class="module-badge green">RÉSONANCE</div>
+      <div class="module-icon">🔄</div>
+      <div class="module-name">Circuit RLC</div>
+      <div class="module-desc">Régime transitoire, oscillations, amortissement</div>
+    </div>
+    <div class="module-card" onclick="showTab('sinus')">
+      <div class="module-badge">PHASEUR</div>
+      <div class="module-icon">〜</div>
+      <div class="module-name">Régime Sinusoïdal</div>
+      <div class="module-desc">Impédances, déphasage, Fresnel</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ KIRCHHOFF ═══════════════════════════ -->
+<section class="section" id="kirchhoff">
+  <div class="section-header">
+    <div class="section-title">Lois de <span>Kirchhoff</span></div>
+    <div class="section-desc">Kirchhoff's Current & Voltage Laws · Loi des nœuds et des mailles</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Circuit Interactif</div>
+    <div class="circuit-sel">
+      <button class="csel-btn active" onclick="setKirchCircuit(0,this)">2 Mailles</button>
+      <button class="csel-btn" onclick="setKirchCircuit(1,this)">3 Branches</button>
+      <button class="csel-btn" onclick="setKirchCircuit(2,this)">Pont</button>
+    </div>
+    <div class="kirchhoff-circuit">
+      <canvas id="kirchCanvas" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Paramètres du circuit</div>
+    <div class="param-row">
+      <span class="param-label"><span>E₁</span> (V)</span>
+      <input type="range" class="param-slider" id="kE1" min="1" max="24" value="12" step="0.5" oninput="updateKirchhoff()">
+      <span class="param-value" id="kE1v">12.0 V</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>E₂</span> (V)</span>
+      <input type="range" class="param-slider orange" id="kE2" min="1" max="24" value="6" step="0.5" oninput="updateKirchhoff()">
+      <span class="param-value" id="kE2v">6.0 V</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>R₁</span> (Ω)</span>
+      <input type="range" class="param-slider" id="kR1" min="10" max="1000" value="100" step="10" oninput="updateKirchhoff()">
+      <span class="param-value" id="kR1v">100 Ω</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>R₂</span> (Ω)</span>
+      <input type="range" class="param-slider orange" id="kR2" min="10" max="1000" value="200" step="10" oninput="updateKirchhoff()">
+      <span class="param-value" id="kR2v">200 Ω</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>R₃</span> (Ω)</span>
+      <input type="range" class="param-slider green" id="kR3" min="10" max="1000" value="150" step="10" oninput="updateKirchhoff()">
+      <span class="param-value" id="kR3v">150 Ω</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Multimètre — Résultats</div>
+    <div class="two-col">
+      <div class="multimeter" id="mm1">
+        <div class="mm-brand">FLUKE · 115</div>
+        <div class="mm-screen">
+          <span class="mm-unit">COURANT / CURRENT</span>
+          <div class="mm-value" id="mmI1">0.000</div>
+          <span class="mm-mode">I₁ — mA DC</span>
+        </div>
+        <div class="mm-dial" onclick="cycleMmMode('mm1')">
+          <div class="mm-dial-mark" style="--angle:-30deg"></div>
+          <div class="mm-dial-inner" id="mm1mode">mA</div>
+        </div>
+        <div class="mm-terminals">
+          <div class="mm-terminal"><div class="mm-jack com"></div><div class="mm-jack-label">COM</div></div>
+          <div class="mm-terminal"><div class="mm-jack vma"></div><div class="mm-jack-label">VΩmA</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="results-grid">
+          <div class="result-box highlight">
+            <div class="result-label">I₁</div>
+            <div class="result-val" id="kI1val">—</div>
+            <div class="result-unit">mA</div>
+          </div>
+          <div class="result-box">
+            <div class="result-label">I₂</div>
+            <div class="result-val orange" id="kI2val">—</div>
+            <div class="result-unit">mA</div>
+          </div>
+          <div class="result-box">
+            <div class="result-label">I₃</div>
+            <div class="result-val green" id="kI3val">—</div>
+            <div class="result-unit">mA</div>
+          </div>
+          <div class="result-box">
+            <div class="result-label">VAB</div>
+            <div class="result-val yellow" id="kVAB">—</div>
+            <div class="result-unit">V</div>
+          </div>
+        </div>
+        <div class="formula-box" style="margin-top:10px">
+          <div class="formula-title">Loi des Nœuds / KCL</div>
+          <div class="formula"><span class="var">I₁</span> <span class="eq">=</span> <span class="var">I₂</span> <span class="eq">+</span> <span class="var">I₃</span></div>
+        </div>
+        <div class="formula-box">
+          <div class="formula-title">Loi des Mailles / KVL</div>
+          <div class="formula"><span class="var">E₁</span> <span class="eq">= R₁I₁ + R₃I₃</span></div>
+          <div class="formula"><span class="var">E₂</span> <span class="eq">= R₂I₂ + R₃I₃</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ RC / RL ═══════════════════════════ -->
+<section class="section" id="rc">
+  <div class="section-header">
+    <div class="section-title">Circuits <span>RC / RL</span></div>
+    <div class="section-desc">Régime transitoire · Charge & Décharge · Time constant τ</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Type de circuit</div>
+    <div class="circuit-sel">
+      <button class="csel-btn active" onclick="setRCtype('rc_charge',this)">RC Charge</button>
+      <button class="csel-btn" onclick="setRCtype('rc_decharge',this)">RC Décharge</button>
+      <button class="csel-btn" onclick="setRCtype('rl_charge',this)">RL Charge</button>
+    </div>
+    <div class="circuit-wrap">
+      <canvas id="rcCircuit" height="130"></canvas>
+    </div>
+  </div>
+
+  <!-- Signal Generator -->
+  <div class="siggen">
+    <div class="siggen-title">⬡ GÉNÉRATEUR DE FONCTIONS / FUNCTION GENERATOR</div>
+    <div class="siggen-display">
+      <div>
+        <div class="siggen-freq" id="sgFreq">1000</div>
+        <div class="siggen-unit">Hz · Amplitude: <span id="sgAmp">5.0</span> V</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+        <input type="range" class="mini-slider" id="sgFreqSlider" min="1" max="5000" value="1000" oninput="updateSigGen()">
+        <input type="range" class="mini-slider" id="sgAmpSlider" min="1" max="20" value="5" step="0.5" oninput="updateSigGen()">
+      </div>
+    </div>
+    <div class="sig-type-row">
+      <button class="sig-type-btn active" id="sgt_sin" onclick="setSigType('sin',this)">∿ SINUS</button>
+      <button class="sig-type-btn" id="sgt_sq" onclick="setSigType('sq',this)">⊓ CARRÉ</button>
+      <button class="sig-type-btn" id="sgt_tri" onclick="setSigType('tri',this)">/\ TRIANG.</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Paramètres</div>
+    <div class="param-row">
+      <span class="param-label"><span>R</span> (Ω)</span>
+      <input type="range" class="param-slider" id="rcR" min="100" max="100000" value="10000" step="100" oninput="updateRC()">
+      <span class="param-value" id="rcRv">10.0 kΩ</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>C/L</span></span>
+      <input type="range" class="param-slider orange" id="rcC" min="1" max="1000" value="100" step="1" oninput="updateRC()">
+      <span class="param-value" id="rcCv">100 µF</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>E</span> (V)</span>
+      <input type="range" class="param-slider green" id="rcE" min="1" max="24" value="10" step="0.5" oninput="updateRC()">
+      <span class="param-value" id="rcEv">10.0 V</span>
+    </div>
+  </div>
+
+  <!-- Oscilloscope -->
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Oscilloscope Numérique</div>
+    <div class="oscilloscope">
+      <canvas id="oscRC" height="200"></canvas>
+      <div class="osc-controls">
+        <button class="osc-btn ch1 active" id="btnCH1" onclick="toggleCh(1)">CH1: Vc(t)</button>
+        <button class="osc-btn ch2 active" id="btnCH2" onclick="toggleCh(2)">CH2: i(t)</button>
+      </div>
+      <div class="osc-knob-row">
+        <div class="knob-group">
+          <span class="knob-label">TIME/DIV</span>
+          <input type="range" class="mini-slider" id="oscTime" min="1" max="10" value="5" oninput="drawOscRC()">
+          <span class="knob-val" id="oscTimeVal">5τ</span>
+        </div>
+        <div class="knob-group">
+          <span class="knob-label">VOLT/DIV</span>
+          <input type="range" class="mini-slider" id="oscVolt" min="1" max="5" value="2" oninput="drawOscRC()">
+          <span class="knob-val" id="oscVoltVal">2V</span>
+        </div>
+      </div>
+      <div class="osc-labels">
+        <span class="osc-label" style="color:#00d4ff">— CH1: V(t)</span>
+        <span class="osc-label" style="color:#ff6b35">— CH2: i(t) ×100</span>
+        <span class="osc-label" style="color:#555">τ = <span id="tauVal">1.0s</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-box highlight">
+      <div class="result-label">τ (Tau)</div>
+      <div class="result-val" id="rcTau">—</div>
+      <div class="result-unit">ms</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">V(∞)</div>
+      <div class="result-val orange" id="rcVinf">—</div>
+      <div class="result-unit">V</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">V(τ)</div>
+      <div class="result-val green" id="rcVtau">—</div>
+      <div class="result-unit">V (63%)</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">I(0)</div>
+      <div class="result-val yellow" id="rcI0">—</div>
+      <div class="result-unit">mA</div>
+    </div>
+  </div>
+
+  <div class="formula-box" style="margin-top:14px">
+    <div class="formula-title">Équation du circuit / Circuit Equation</div>
+    <div class="formula" id="rcFormula">
+      <span class="var">Vc(t)</span> <span class="eq">=</span> <span class="var">E·(1 − e^(−t/τ))</span><br>
+      <span class="var">τ</span> <span class="eq">= RC</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ RLC ═══════════════════════════ -->
+<section class="section" id="rlc">
+  <div class="section-header">
+    <div class="section-title">Circuit <span>RLC</span></div>
+    <div class="section-desc">Résonance · Oscillations · Amortissement · Resonance & Damping</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Circuit RLC Série</div>
+    <div class="circuit-wrap">
+      <canvas id="rlcCircuit" height="130"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Paramètres</div>
+    <div class="param-row">
+      <span class="param-label"><span>R</span> (Ω)</span>
+      <input type="range" class="param-slider" id="rlcR" min="0" max="500" value="50" step="5" oninput="updateRLC()">
+      <span class="param-value" id="rlcRv">50 Ω</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>L</span> (mH)</span>
+      <input type="range" class="param-slider orange" id="rlcL" min="1" max="500" value="100" step="1" oninput="updateRLC()">
+      <span class="param-value" id="rlcLv">100 mH</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>C</span> (µF)</span>
+      <input type="range" class="param-slider green" id="rlcC" min="1" max="1000" value="100" step="1" oninput="updateRLC()">
+      <span class="param-value" id="rlcCv">100 µF</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>E</span> (V)</span>
+      <input type="range" class="param-slider yellow" id="rlcE" min="1" max="24" value="10" step="0.5" oninput="updateRLC()">
+      <span class="param-value" id="rlcEv">10.0 V</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Oscilloscope — Réponse Transitoire</div>
+    <div class="oscilloscope">
+      <canvas id="oscRLC" height="220"></canvas>
+      <div class="osc-labels">
+        <span class="osc-label" style="color:#00d4ff">— Vc(t)</span>
+        <span class="osc-label" id="rlcRegime" style="color:#ffcc00">Régime: —</span>
+        <span class="osc-label" style="color:#39ff14">ω₀ = <span id="omega0">—</span> rad/s</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-box highlight">
+      <div class="result-label">ω₀</div>
+      <div class="result-val" id="rlcW0">—</div>
+      <div class="result-unit">rad/s</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">f₀</div>
+      <div class="result-val orange" id="rlcF0">—</div>
+      <div class="result-unit">Hz</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">Q</div>
+      <div class="result-val green" id="rlcQ">—</div>
+      <div class="result-unit">Facteur</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">α</div>
+      <div class="result-val yellow" id="rlcAlpha">—</div>
+      <div class="result-unit">amort.</div>
+    </div>
+  </div>
+
+  <div class="formula-box" style="margin-top:14px">
+    <div class="formula-title">Équations fondamentales / Key Equations</div>
+    <div class="formula">
+      <span class="var">ω₀</span><span class="eq"> = 1/√(LC)</span><br>
+      <span class="var">Q</span><span class="eq"> = (1/R)·√(L/C)</span><br>
+      <span class="var">α</span><span class="eq"> = R/(2L)</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ SINUSOIDAL ═══════════════════════════ -->
+<section class="section" id="sinus">
+  <div class="section-header">
+    <div class="section-title">Régime <span>Sinusoïdal</span></div>
+    <div class="section-desc">Impédances complexes · Déphasage · Diagramme de Fresnel · Phasors</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Circuit RLC Série AC</div>
+    <div class="param-row">
+      <span class="param-label"><span>f</span> (Hz)</span>
+      <input type="range" class="param-slider" id="sinF" min="10" max="10000" value="1000" step="10" oninput="updateSinus()">
+      <span class="param-value" id="sinFv">1000 Hz</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>R</span> (Ω)</span>
+      <input type="range" class="param-slider orange" id="sinR" min="10" max="1000" value="100" step="10" oninput="updateSinus()">
+      <span class="param-value" id="sinRv">100 Ω</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>L</span> (mH)</span>
+      <input type="range" class="param-slider green" id="sinL" min="1" max="500" value="100" step="1" oninput="updateSinus()">
+      <span class="param-value" id="sinLv">100 mH</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>C</span> (µF)</span>
+      <input type="range" class="param-slider yellow" id="sinC" min="1" max="1000" value="100" step="1" oninput="updateSinus()">
+      <span class="param-value" id="sinCv">100 µF</span>
+    </div>
+    <div class="param-row">
+      <span class="param-label"><span>Vm</span> (V)</span>
+      <input type="range" class="param-slider" id="sinVm" min="1" max="50" value="10" step="0.5" oninput="updateSinus()">
+      <span class="param-value" id="sinVmv">10 V</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Diagramme de Fresnel / Phasor Diagram</div>
+    <div class="phasor-wrap">
+      <canvas id="fresnel" width="300" height="300"></canvas>
+    </div>
+    <div style="display:flex;gap:12px;padding:8px;flex-wrap:wrap;">
+      <span style="font-size:11px;color:var(--accent)">— V total</span>
+      <span style="font-size:11px;color:var(--orange)">— VR</span>
+      <span style="font-size:11px;color:var(--green)">— VL</span>
+      <span style="font-size:11px;color:var(--yellow)">— VC</span>
+      <span style="font-size:11px;color:var(--purple)">— I</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><div class="dot"></div>Oscilloscope — v(t) & i(t)</div>
+    <div class="oscilloscope">
+      <canvas id="oscSin" height="180"></canvas>
+      <div class="osc-labels">
+        <span class="osc-label" style="color:#00d4ff">— v(t)</span>
+        <span class="osc-label" style="color:#ff6b35">— i(t) ×10</span>
+        <span class="osc-label" style="color:#39ff14">φ = <span id="phiVal">0°</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="results-grid">
+    <div class="result-box highlight">
+      <div class="result-label">|Z|</div>
+      <div class="result-val" id="sinZ">—</div>
+      <div class="result-unit">Ω</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">φ</div>
+      <div class="result-val orange" id="sinPhi">—</div>
+      <div class="result-unit">degrés</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">Im</div>
+      <div class="result-val green" id="sinIm">—</div>
+      <div class="result-unit">mA</div>
+    </div>
+    <div class="result-box">
+      <div class="result-label">Irms</div>
+      <div class="result-val yellow" id="sinIrms">—</div>
+      <div class="result-unit">mA</div>
+    </div>
+  </div>
+
+  <div class="formula-box" style="margin-top:14px">
+    <div class="formula-title">Formules Clés / Key Formulas</div>
+    <div class="formula">
+      <span class="var">Z</span><span class="eq"> = R + j(Lω − 1/Cω)</span><br>
+      <span class="var">φ</span><span class="eq"> = arctan((XL−XC)/R)</span><br>
+      <span class="var">Im</span><span class="eq"> = Vm / |Z|</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ QUIZ ═══════════════════════════ -->
+<section class="section" id="quiz">
+  <div class="section-header">
+    <div class="section-title">Quiz <span>Interactif</span></div>
+    <div class="section-desc">Testez vos connaissances · Test your knowledge</div>
+  </div>
+  <div class="quiz-score">Score: <span class="score-highlight" id="quizScore">0</span> / <span id="quizTotal">0</span></div>
+  <div id="quizContainer"></div>
+</section>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════════════
+function dpr() { return window.devicePixelRatio || 1; }
+
+function setupCanvas(canvas) {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const w = rect.width || 300;
+  const h = parseInt(canvas.getAttribute('height')) || 200;
+  const d = dpr();
+  canvas.width = w * d;
+  canvas.height = h * d;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(d, d);
+  return [ctx, w, h];
+}
+
+function showTab(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = ['home','kirchhoff','rc','rlc','sinus','quiz'];
+  document.querySelectorAll('.tab-btn')[tabs.indexOf(id)]?.classList.add('active');
+  if(id==='kirchhoff') { updateKirchhoff(); drawKirchCircuit(); }
+  if(id==='rc') { updateRC(); }
+  if(id==='rlc') { updateRLC(); drawRLCCircuit(); }
+  if(id==='sinus') { updateSinus(); }
+  if(id==='quiz') { renderQuiz(); }
+}
+
+// ══════════════════════════════════════════════════════
+//  KIRCHHOFF
+// ══════════════════════════════════════════════════════
+let kirchMode = 0;
+
+function setKirchCircuit(m, btn) {
+  kirchMode = m;
+  document.querySelectorAll('#kirchhoff .csel-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  drawKirchCircuit();
+  updateKirchhoff();
+}
+
+function drawKirchCircuit() {
+  const canvas = document.getElementById('kirchCanvas');
+  const [ctx, W, H] = setupCanvas(canvas);
+  ctx.clearRect(0,0,W,H);
+
+  // PCB background
+  ctx.fillStyle = '#2a7a4a';
+  ctx.fillRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+  ctx.lineWidth = 0.5;
+  for(let x=0;x<W;x+=10){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=10){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  const I1 = parseFloat(document.getElementById('kI1val').textContent)||40;
+  const I2 = parseFloat(document.getElementById('kI2val').textContent)||20;
+  const I3 = parseFloat(document.getElementById('kI3val').textContent)||20;
+
+  function wire(x1,y1,x2,y2,col,w=2){
+    ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=w;
+    ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  }
+  function resistor(x,y,label,val,col='#ffd700'){
+    ctx.fillStyle='#c8a020'; ctx.strokeStyle='#ffd700'; ctx.lineWidth=1.5;
+    ctx.fillRect(x-20,y-9,40,18);
+    ctx.strokeRect(x-20,y-9,40,18);
+    // stripes
+    ['#a07000','#d09000','#804000'].forEach((c,i)=>{
+      ctx.fillStyle=c; ctx.fillRect(x-12+i*8,y-9,4,18);
+    });
+    ctx.fillStyle='#fff'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center';
+    ctx.fillText(label,x,y-12);
+    ctx.fillStyle='#ffdd44'; ctx.font='8px Share Tech Mono';
+    ctx.fillText(val,x,y+22);
+  }
+  function battery(x,y,label,val,col='#44aaff'){
+    ctx.fillStyle='#222'; ctx.strokeStyle=col; ctx.lineWidth=1.5;
+    ctx.fillRect(x-10,y-18,20,36); ctx.strokeRect(x-10,y-18,20,36);
+    for(let i=0;i<4;i++){
+      ctx.fillStyle=i%2?col:'#aaa';
+      ctx.fillRect(x-8,y-16+i*9,16,7);
+    }
+    ctx.fillStyle='#fff'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center';
+    ctx.fillText(label,x,y-22);
+    ctx.fillStyle='#44aaff'; ctx.font='8px Share Tech Mono';
+    ctx.fillText(val,x,y+28);
+  }
+  function node(x,y,col='#ff4444'){
+    ctx.beginPath(); ctx.arc(x,y,5,0,2*Math.PI);
+    ctx.fillStyle=col; ctx.fill();
+    ctx.strokeStyle='#fff'; ctx.lineWidth=1; ctx.stroke();
+  }
+  function arrow(x,y,dx,dy,col,label){
+    const len=Math.sqrt(dx*dx+dy*dy);
+    const nx=dx/len,ny=dy/len;
+    ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=1.5;
+    ctx.moveTo(x,y); ctx.lineTo(x+dx*0.7,y+dy*0.7);
+    ctx.stroke();
+    ctx.beginPath(); ctx.fillStyle=col;
+    ctx.moveTo(x+dx,y+dy);
+    ctx.lineTo(x+dx-ny*5-nx*8,y+dy+nx*5-ny*8);
+    ctx.lineTo(x+dx+ny*5-nx*8,y+dy-nx*5-ny*8);
+    ctx.closePath(); ctx.fill();
+    if(label){ctx.fillStyle=col;ctx.font='bold 9px Share Tech Mono';ctx.textAlign='center';ctx.fillText(label,x+dx/2+ny*12,y+dy/2-nx*12);}
+  }
+
+  const cx=W/2, m=30;
+  if(kirchMode===0){
+    // 2-mesh circuit
+    wire(m,H/2, cx-30,H/2,'#cc2222',3);
+    wire(cx+30,H/2, W-m,H/2,'#cc2222',3);
+    wire(m,H/2, m,H*0.2,'#888',2); wire(m,H*0.2,cx,H*0.2,'#888',2);
+    wire(cx,H*0.2,W-m,H*0.2,'#888',2); wire(W-m,H*0.2,W-m,H/2,'#888',2);
+    wire(cx,H*0.2,cx,H/2-12,'#888',2);
+    battery(m,H/2,'E₁',document.getElementById('kE1v').textContent,'#44aaff');
+    battery(W-m,H/2,'E₂',document.getElementById('kE2v').textContent,'#ff8844');
+    resistor(W/4,H*0.2,'R₁',document.getElementById('kR1v').textContent);
+    resistor(3*W/4,H*0.2,'R₂',document.getElementById('kR2v').textContent,'#ff8844');
+    resistor(cx,H/2,'R₃',document.getElementById('kR3v').textContent,'#44ff88');
+    node(cx,H*0.2,'#ffdd00'); node(m,H/2,'#ff4444'); node(W-m,H/2,'#ff8844');
+    // current arrows
+    arrow(W/4+30,H*0.2-5,20,0,'#00d4ff','I₁');
+    arrow(3*W/4-30,H*0.2-5,-20,0,'#ff6b35','I₂');
+    arrow(cx+5,H/2-30,0,20,'#39ff14','I₃');
+  } else if(kirchMode===1){
+    // 3-branch
+    wire(m,H*0.2,W-m,H*0.2,'#888',2);
+    wire(m,H*0.8,W-m,H*0.8,'#888',2);
+    [m,cx,W-m].forEach((x,i)=>{
+      wire(x,H*0.2,x,H*0.8,'#888',2);
+    });
+    battery(m,H/2,'E₁',document.getElementById('kE1v').textContent,'#44aaff');
+    battery(W-m,H/2,'E₂',document.getElementById('kE2v').textContent,'#ff8844');
+    resistor(cx,H*0.35,'R₃',document.getElementById('kR3v').textContent,'#44ff88');
+    resistor(W/4,H*0.2,'R₁',document.getElementById('kR1v').textContent);
+    resistor(3*W/4,H*0.2,'R₂',document.getElementById('kR2v').textContent,'#ff8844');
+    node(m,H*0.2,'#ffdd00'); node(W-m,H*0.2,'#ffdd00');
+    node(m,H*0.8,'#ff4444'); node(W-m,H*0.8,'#ff4444');
+  } else {
+    // Wheatstone bridge
+    const pts={T:[cx,H*0.1],L:[m+10,H/2],R:[W-m-10,H/2],B:[cx,H*0.9]};
+    Object.entries(pts).forEach(([k,p])=>{});
+    wire(pts.T[0],pts.T[1],pts.L[0],pts.L[1],'#888',2);
+    wire(pts.T[0],pts.T[1],pts.R[0],pts.R[1],'#888',2);
+    wire(pts.L[0],pts.L[1],pts.B[0],pts.B[1],'#888',2);
+    wire(pts.R[0],pts.R[1],pts.B[0],pts.B[1],'#888',2);
+    wire(pts.T[0],pts.T[1],cx,H*0.1,'#cc2222',3);
+    // galvanometer in center
+    ctx.beginPath();ctx.arc(cx,H/2,12,0,2*Math.PI);ctx.fillStyle='#222';ctx.fill();ctx.strokeStyle='#44ff88';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#44ff88';ctx.font='bold 9px Exo 2';ctx.textAlign='center';ctx.fillText('G',cx,H/2+4);
+    wire(pts.L[0],pts.L[1],cx,H/2,'#44ff88',1.5);
+    wire(cx,H/2,pts.R[0],pts.R[1],'#44ff88',1.5);
+    const labels=['R₁','R₂','R₃','R₄'];
+    const mids=[[pts.T[0]/2+pts.L[0]/2,pts.T[1]/2+pts.L[1]/2],[pts.T[0]/2+pts.R[0]/2+cx*0,pts.T[1]/2+pts.R[1]/2]];
+    battery(cx,H*0.1,'E',document.getElementById('kE1v').textContent,'#44aaff');
+    [pts.T,pts.L,pts.R,pts.B].forEach(p=>node(p[0],p[1],'#ffdd00'));
+  }
+
+  // labels A B
+  ctx.fillStyle='#ffdd00'; ctx.font='bold 11px Exo 2'; ctx.textAlign='left';
+  ctx.fillText('A',cx-10, H*0.2-5);
+  ctx.fillText('B',cx-10, H/2+20);
+}
+
+function updateKirchhoff() {
+  const E1=parseFloat(document.getElementById('kE1').value);
+  const E2=parseFloat(document.getElementById('kE2').value);
+  const R1=parseFloat(document.getElementById('kR1').value);
+  const R2=parseFloat(document.getElementById('kR2').value);
+  const R3=parseFloat(document.getElementById('kR3').value);
+
+  document.getElementById('kE1v').textContent=E1.toFixed(1)+' V';
+  document.getElementById('kE2v').textContent=E2.toFixed(1)+' V';
+  document.getElementById('kR1v').textContent=R1+' Ω';
+  document.getElementById('kR2v').textContent=R2+' Ω';
+  document.getElementById('kR3v').textContent=R3+' Ω';
+
+  // Solve: E1 = R1*I1 + R3*I3, E2 = R2*I2 + R3*I3, I1 = I2 + I3
+  // Matrix: [R1+R3, R3; R3, R2+R3] * [I1;I2] = [E1;E2-??]
+  // Using Kirchhoff matrix: 2 loops
+  // Loop 1: E1 = R1*I1 + R3*(I1-I2) => E1 = (R1+R3)*I1 - R3*I2
+  // Loop 2: -E2 = -R3*(I1-I2) + R2*I2... wait, sign depends on direction
+  // Let's do: I3 = I1 - I2
+  // Loop 1: E1 = R1*I1 + R3*I3 = R1*I1 + R3*(I1-I2)
+  // Loop 2: E2 = R2*I2 + R3*I3 = R2*I2 + R3*(I1-I2)
+  // => (R1+R3)*I1 - R3*I2 = E1
+  // => R3*I1 + (R2+R3)*I2... wait
+  // Loop 2: E2 = R2*I2 - R3*(I1-I2) hmm...
+  // Standard: mesh currents I1 in left loop, I2 in right
+  // Left loop: E1 = R1*I1 + R3*(I1-I2)
+  // Right loop: -E2 = R2*I2 + R3*(I2-I1) (E2 opposing)
+  // => (R1+R3)I1 - R3*I2 = E1 ... (i)
+  // => -R3*I1 + (R2+R3)*I2 = -E2 ... (ii)
+  const a=R1+R3, b=-R3, c=-R3, d=R2+R3;
+  const det=a*d-b*c;
+  const mI1=(E1*d - b*(-E2))/det;
+  const mI2=(a*(-E2)-E1*c)/det;
+  const mI3=mI1-mI2;
+  const VAB=R3*mI3;
+
+  document.getElementById('kI1val').textContent=(mI1*1000).toFixed(2);
+  document.getElementById('kI2val').textContent=(mI2*1000).toFixed(2);
+  document.getElementById('kI3val').textContent=(mI3*1000).toFixed(2);
+  document.getElementById('kVAB').textContent=VAB.toFixed(3);
+
+  // Update multimeter
+  document.getElementById('mmI1').textContent=(mI1*1000).toFixed(3);
+  document.getElementById('mmI1').className='mm-value'+(mI1<0?' negative':'');
+
+  drawKirchCircuit();
+}
+
+// ══════════════════════════════════════════════════════
+//  RC / RL
+// ══════════════════════════════════════════════════════
+let rcType='rc_charge';
+let ch1on=true, ch2on=true;
+let sigType='sin';
+
+function setRCtype(t, btn){
+  rcType=t;
+  document.querySelectorAll('#rc .csel-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  updateRC();
+}
+
+function setSigType(t, btn){
+  sigType=t;
+  document.querySelectorAll('.sig-type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  drawOscRC();
+}
+
+function toggleCh(n){
+  if(n===1){ch1on=!ch1on;document.getElementById('btnCH1').classList.toggle('active',ch1on);}
+  else{ch2on=!ch2on;document.getElementById('btnCH2').classList.toggle('active',ch2on);}
+  drawOscRC();
+}
+
+function updateSigGen(){
+  const f=document.getElementById('sgFreqSlider').value;
+  const a=parseFloat(document.getElementById('sgAmpSlider').value);
+  document.getElementById('sgFreq').textContent=f;
+  document.getElementById('sgAmp').textContent=a.toFixed(1);
+}
+
+function updateRC(){
+  const R=parseFloat(document.getElementById('rcR').value);
+  const C=parseFloat(document.getElementById('rcC').value)*1e-6;
+  const E=parseFloat(document.getElementById('rcE').value);
+  const L=C; // reuse slider for mH when RL
+
+  const tau_rc = R*C;
+  const tau_rl = (parseFloat(document.getElementById('rcC').value)*1e-3)/R;
+  let tau = rcType.startsWith('rc') ? tau_rc : tau_rl;
+  let tauMs = tau*1000;
+  let tauS = tau;
+
+  // Display
+  document.getElementById('rcRv').textContent = R>=1000 ? (R/1000).toFixed(1)+' kΩ' : R+' Ω';
+  document.getElementById('rcCv').textContent = rcType.startsWith('rc') ?
+    document.getElementById('rcC').value+' µF' : document.getElementById('rcC').value+' mH';
+  document.getElementById('rcEv').textContent = E.toFixed(1)+' V';
+  document.getElementById('rcTau').textContent = tauMs < 1 ? (tauMs*1000).toFixed(1) : tauMs.toFixed(2);
+  document.getElementById('tauVal').textContent = tauMs < 1 ? (tauMs*1000).toFixed(1)+'ms' : tauMs.toFixed(1)+'ms';
+  document.getElementById('rcVinf').textContent = E.toFixed(2);
+  document.getElementById('rcVtau').textContent = (E*0.632).toFixed(2);
+  document.getElementById('rcI0').textContent = (E/R*1000).toFixed(3);
+
+  let label = rcType.startsWith('rc') ? 'τ = RC' : 'τ = L/R';
+  document.getElementById('rcFormula').innerHTML = rcType==='rc_charge' ?
+    `<span class="var">Vc(t)</span><span class="eq"> = E·(1 − e<sup>−t/τ</sup>)</span><br><span class="var">τ</span><span class="eq"> = RC = ${tau_rc.toFixed(4)}s</span>` :
+    rcType==='rc_decharge' ?
+    `<span class="var">Vc(t)</span><span class="eq"> = E·e<sup>−t/τ</sup></span><br><span class="var">τ</span><span class="eq"> = RC = ${tau_rc.toFixed(4)}s</span>` :
+    `<span class="var">i(t)</span><span class="eq"> = (E/R)·(1 − e<sup>−t/τ</sup>)</span><br><span class="var">τ</span><span class="eq"> = L/R = ${tau_rl.toFixed(4)}s</span>`;
+
+  drawRCCircuit();
+  drawOscRC();
+}
+
+function drawRCCircuit(){
+  const canvas=document.getElementById('rcCircuit');
+  const [ctx,W,H]=setupCanvas(canvas);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f7f3ea'; ctx.fillRect(0,0,W,H);
+  // grid
+  ctx.strokeStyle='rgba(0,0,0,0.07)'; ctx.lineWidth=0.5;
+  for(let x=0;x<W;x+=15){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=15){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  const m=25, ch=H/2, cw=W-2*m;
+  // wires
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(m,ch); ctx.lineTo(W*0.2,ch);   // left to battery
+  ctx.moveTo(W*0.2+28,ch); ctx.lineTo(W*0.45,ch); // battery to switch
+  ctx.moveTo(W*0.45+20,ch); ctx.lineTo(W*0.6,ch);  // switch to R
+  ctx.moveTo(W*0.6+22,ch); ctx.lineTo(W*0.75,ch);  // R to element
+  ctx.stroke();
+  // top rail
+  ctx.strokeStyle='#444'; ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(m,ch-30); ctx.lineTo(W-m,ch-30);
+  ctx.stroke();
+  // bottom rail  
+  ctx.beginPath();
+  ctx.moveTo(m,ch+30); ctx.lineTo(W-m,ch+30);
+  ctx.stroke();
+  ctx.beginPath();ctx.moveTo(m,ch-30);ctx.lineTo(m,ch+30);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W-m,ch-30);ctx.lineTo(W-m,ch+30);ctx.stroke();
+
+  // Battery
+  function drawBattery(x,y){
+    ctx.strokeStyle='#222'; ctx.lineWidth=2;
+    for(let i=0;i<4;i++){
+      const ly=y-12+i*8;
+      ctx.fillStyle=i%2?'#2244aa':'#888';
+      ctx.fillRect(x-8,ly,16,6);
+      ctx.strokeRect(x-8,ly,16,6);
+    }
+    ctx.fillStyle='#2244aa'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center';
+    ctx.fillText('E',x,y+28); 
+    ctx.fillText(document.getElementById('rcEv').textContent,x,y+38);
+    ctx.strokeStyle='#2244aa'; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,y-14);ctx.lineTo(x,y-24);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,y+14);ctx.lineTo(x,y+24);ctx.stroke();
+  }
+  drawBattery(W*0.2+14, ch);
+
+  // Switch
+  function drawSwitch(x,y){
+    ctx.fillStyle='#555'; ctx.strokeStyle='#222'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(x-8,y,4,0,2*Math.PI); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.arc(x+8,y,4,0,2*Math.PI); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x-8,y); ctx.lineTo(x+5,y-10); ctx.strokeStyle='#ff4400'; ctx.lineWidth=2; ctx.stroke();
+    ctx.fillStyle='#444'; ctx.font='8px Exo 2'; ctx.textAlign='center'; ctx.fillText('K',x,y+16);
+  }
+  drawSwitch(W*0.45+10, ch);
+
+  // Resistor
+  function drawResistor(x,y,label,val){
+    ctx.fillStyle='#c8a020'; ctx.strokeStyle='#8a6010'; ctx.lineWidth=1.5;
+    ctx.fillRect(x-20,y-8,40,16); ctx.strokeRect(x-20,y-8,40,16);
+    ['#a07000','#d09000','#804000'].forEach((c,i)=>{
+      ctx.fillStyle=c; ctx.fillRect(x-12+i*8,y-8,4,16);
+    });
+    ctx.fillStyle='#222'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center';
+    ctx.fillText(label,x,y-11);
+    ctx.fillStyle='#8a6010'; ctx.font='8px Share Tech Mono'; ctx.fillText(val,x,y+22);
+  }
+  drawResistor(W*0.6+11, ch, 'R', document.getElementById('rcRv').textContent);
+
+  // Capacitor or Inductor
+  if(rcType.startsWith('rc')){
+    // Capacitor
+    const cx2=W*0.77;
+    ctx.strokeStyle='#2244aa'; ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.moveTo(cx2-1,ch-18);ctx.lineTo(cx2-1,ch+18);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx2+6,ch-18);ctx.lineTo(cx2+6,ch+18);ctx.stroke();
+    ctx.strokeStyle='#2244aa'; ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(cx2-1,ch);ctx.lineTo(cx2-16,ch);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx2+6,ch);ctx.lineTo(cx2+20,ch);ctx.stroke();
+    ctx.fillStyle='#222'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center';
+    ctx.fillText('C',cx2+3,ch-22);
+    ctx.fillStyle='#2244aa'; ctx.font='8px Share Tech Mono'; ctx.fillText(document.getElementById('rcCv').textContent,cx2+3,ch+30);
+  } else {
+    // Inductor
+    const lx=W*0.77;
+    ctx.strokeStyle='#8844cc'; ctx.lineWidth=2.5;
+    for(let i=0;i<4;i++){
+      ctx.beginPath(); ctx.arc(lx-14+i*9,ch,6,Math.PI,0,false); ctx.stroke();
+    }
+    ctx.fillStyle='#222'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center';
+    ctx.fillText('L',lx,ch-18);
+    ctx.fillStyle='#8844cc'; ctx.font='8px Share Tech Mono'; ctx.fillText(document.getElementById('rcCv').textContent,lx,ch+18);
+  }
+
+  // Voltmeter (V across cap)
+  if(W>350){
+    const vx=W-m-10, vy=ch;
+    ctx.beginPath(); ctx.arc(vx,vy,14,0,2*Math.PI);
+    ctx.fillStyle='#fff8ee'; ctx.fill();
+    ctx.strokeStyle='#aa4400'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#aa4400'; ctx.font='bold 10px Exo 2'; ctx.textAlign='center';
+    ctx.fillText('V',vx,vy+4);
+    ctx.strokeStyle='#aa4400'; ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(vx,vy-14);ctx.lineTo(vx,vy-24);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(vx,vy+14);ctx.lineTo(vx,vy+24);ctx.stroke();
+  }
+}
+
+function drawOscRC(){
+  const canvas=document.getElementById('oscRC');
+  const [ctx,W,H]=setupCanvas(canvas);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#050e08'; ctx.fillRect(0,0,W,H);
+
+  // grid
+  const nx=10, ny=8;
+  ctx.strokeStyle='rgba(0,255,100,0.08)'; ctx.lineWidth=0.5;
+  for(let i=0;i<=nx;i++){const x=i*W/nx; ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let i=0;i<=ny;i++){const y=i*H/ny; ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  // center lines
+  ctx.strokeStyle='rgba(0,255,100,0.2)'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W/2,0);ctx.lineTo(W/2,H);ctx.stroke();
+
+  const R=parseFloat(document.getElementById('rcR').value);
+  const Cv=parseFloat(document.getElementById('rcC').value);
+  const E=parseFloat(document.getElementById('rcE').value);
+  const tau_rc=R*Cv*1e-6;
+  const tau_rl=(Cv*1e-3)/R;
+  const tau=rcType.startsWith('rc')?tau_rc:tau_rl;
+  const tScale=parseFloat(document.getElementById('oscTime').value);
+  const vScale=parseFloat(document.getElementById('oscVolt').value);
+  document.getElementById('oscTimeVal').textContent=tScale+'τ';
+  document.getElementById('oscVoltVal').textContent=vScale+'V';
+
+  function plotCurve(fn, col, glow){
+    ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.shadowColor=col; ctx.shadowBlur=glow?6:0;
+    for(let px=0;px<W;px++){
+      const t=(px/W)*tScale*tau;
+      const val=fn(t);
+      const y=H/2-val*(H/2-10)/E/vScale*(E);
+      if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y);
+    }
+    ctx.stroke();
+    ctx.shadowBlur=0;
+  }
+
+  if(rcType==='rc_charge'){
+    if(ch1on) plotCurve(t=>E*(1-Math.exp(-t/tau)),'#00d4ff',true);
+    if(ch2on) plotCurve(t=>(E/R)*Math.exp(-t/tau)*R/E*E*0.3,'#ff6b35',true);
+  } else if(rcType==='rc_decharge'){
+    if(ch1on) plotCurve(t=>E*Math.exp(-t/tau),'#00d4ff',true);
+    if(ch2on) plotCurve(t=>-(E/R)*Math.exp(-t/tau)*R/E*E*0.3,'#ff6b35',true);
+  } else {
+    if(ch1on) plotCurve(t=>E*(1-Math.exp(-t/tau)),'#00d4ff',true);
+    if(ch2on) plotCurve(t=>(E/R)*Math.exp(-t/tau)*0.3*R/1,'#ff6b35',true);
+  }
+
+  // tau marker
+  ctx.strokeStyle='rgba(255,204,0,0.5)'; ctx.lineWidth=1; ctx.setLineDash([4,4]);
+  const tauX=(1/tScale)*W;
+  ctx.beginPath(); ctx.moveTo(tauX,0); ctx.lineTo(tauX,H); ctx.stroke();
+  ctx.fillStyle='#ffcc00'; ctx.font='10px Share Tech Mono'; ctx.textAlign='left';
+  ctx.fillText('τ',tauX+3,14);
+  ctx.setLineDash([]);
+}
+
+// ══════════════════════════════════════════════════════
+//  RLC
+// ══════════════════════════════════════════════════════
+function drawRLCCircuit(){
+  const canvas=document.getElementById('rlcCircuit');
+  const [ctx,W,H]=setupCanvas(canvas);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#f7f3ea'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,0,0,0.07)'; ctx.lineWidth=0.5;
+  for(let x=0;x<W;x+=15){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=15){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  const m=20, ch=H/2;
+  // outer rectangle
+  ctx.strokeStyle='#555'; ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(m,ch); ctx.lineTo(m,ch-35); ctx.lineTo(W-m,ch-35); ctx.lineTo(W-m,ch);
+  ctx.lineTo(W-m,ch+35); ctx.lineTo(m,ch+35); ctx.closePath(); ctx.stroke();
+
+  // Battery on left
+  ctx.strokeStyle='#222'; ctx.lineWidth=2;
+  for(let i=0;i<4;i++){
+    ctx.fillStyle=i%2?'#2244aa':'#888';
+    ctx.fillRect(m-9,ch-12+i*8,18,6); ctx.strokeRect(m-9,ch-12+i*8,18,6);
+  }
+  ctx.fillStyle='#444'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center'; ctx.fillText('E',m,ch+30);
+
+  // R on top
+  const rx=W/4;
+  ctx.fillStyle='#c8a020'; ctx.strokeStyle='#8a6010'; ctx.lineWidth=1.5;
+  ctx.fillRect(rx-22,ch-35-8,44,16); ctx.strokeRect(rx-22,ch-35-8,44,16);
+  ['#a07000','#d09000','#804000'].forEach((c,i)=>{
+    ctx.fillStyle=c; ctx.fillRect(rx-14+i*9,ch-35-8,5,16);
+  });
+  ctx.fillStyle='#333'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center'; ctx.fillText('R',rx,ch-49);
+
+  // L top middle
+  const lx=W/2;
+  ctx.strokeStyle='#8844cc'; ctx.lineWidth=2.5;
+  for(let i=0;i<4;i++){
+    ctx.beginPath(); ctx.arc(lx-14+i*9,ch-35,6,Math.PI,0,false); ctx.stroke();
+  }
+  ctx.fillStyle='#333'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center'; ctx.fillText('L',lx,ch-49);
+
+  // C on right
+  const cx2=3*W/4;
+  ctx.strokeStyle='#2244aa'; ctx.lineWidth=2.5;
+  ctx.beginPath();ctx.moveTo(cx2-1,ch-35-12);ctx.lineTo(cx2-1,ch-35+12);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx2+5,ch-35-12);ctx.lineTo(cx2+5,ch-35+12);ctx.stroke();
+  ctx.fillStyle='#333'; ctx.font='bold 9px Exo 2'; ctx.textAlign='center'; ctx.fillText('C',cx2+2,ch-49);
+}
+
+function updateRLC(){
+  const R=parseFloat(document.getElementById('rlcR').value);
+  const L=parseFloat(document.getElementById('rlcL').value)*1e-3;
+  const C=parseFloat(document.getElementById('rlcC').value)*1e-6;
+  const E=parseFloat(document.getElementById('rlcE').value);
+
+  document.getElementById('rlcRv').textContent=R+' Ω';
+  document.getElementById('rlcLv').textContent=document.getElementById('rlcL').value+' mH';
+  document.getElementById('rlcCv').textContent=document.getElementById('rlcC').value+' µF';
+  document.getElementById('rlcEv').textContent=E.toFixed(1)+' V';
+
+  const w0=1/Math.sqrt(L*C);
+  const f0=w0/(2*Math.PI);
+  const Q=(1/R)*Math.sqrt(L/C);
+  const alpha=R/(2*L);
+
+  document.getElementById('rlcW0').textContent=w0.toFixed(1);
+  document.getElementById('rlcF0').textContent=f0.toFixed(2);
+  document.getElementById('rlcQ').textContent=Q.toFixed(3);
+  document.getElementById('rlcAlpha').textContent=alpha.toFixed(1);
+  document.getElementById('omega0').textContent=w0.toFixed(1);
+
+  let regime='';
+  if(Q>0.5) regime='🔵 Sous-amorti (oscillant)';
+  else if(Q===0.5) regime='🟡 Critique';
+  else regime='🔴 Sur-amorti';
+  if(R===0) regime='🟢 Non amorti';
+  document.getElementById('rlcRegime').textContent=regime;
+
+  drawRLCOsc(R,L,C,E,w0,Q,alpha);
+}
+
+function drawRLCOsc(R,L,C,E,w0,Q,alpha){
+  const canvas=document.getElementById('oscRLC');
+  const [ctx,W,H]=setupCanvas(canvas);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#050e08'; ctx.fillRect(0,0,W,H);
+  // grid
+  for(let i=0;i<=10;i++){ctx.strokeStyle='rgba(0,255,100,0.07)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(i*W/10,0);ctx.lineTo(i*W/10,H);ctx.stroke();}
+  for(let i=0;i<=8;i++){ctx.beginPath();ctx.moveTo(0,i*H/8);ctx.lineTo(W,i*H/8);ctx.stroke();}
+  ctx.strokeStyle='rgba(0,255,100,0.2)'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+
+  // time span
+  const tspan = alpha>0 ? Math.max(6/alpha, 4*2*Math.PI/w0) : 4*2*Math.PI/w0;
+  ctx.beginPath(); ctx.strokeStyle='#00d4ff'; ctx.lineWidth=2;
+  ctx.shadowColor='#00d4ff'; ctx.shadowBlur=5;
+  for(let px=0;px<W;px++){
+    const t=px/W*tspan;
+    let vc;
+    const disc=alpha*alpha-w0*w0;
+    if(R===0){
+      vc=E*(1-Math.cos(w0*t));
+    } else if(disc<0){
+      const wd=Math.sqrt(w0*w0-alpha*alpha);
+      vc=E*(1-Math.exp(-alpha*t)*(Math.cos(wd*t)+alpha/wd*Math.sin(wd*t)));
+    } else if(disc===0){
+      vc=E*(1-Math.exp(-alpha*t)*(1+alpha*t));
+    } else {
+      const r1=-alpha+Math.sqrt(disc), r2=-alpha-Math.sqrt(disc);
+      const A=r2/(r2-r1), B=-r1/(r2-r1);
+      vc=E*(1-A*Math.exp(r1*t)-B*Math.exp(r2*t));
+    }
+    const y=H/2-(vc-E/2)*(H/2-10)/(E/2);
+    if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+
+  // E line
+  ctx.strokeStyle='rgba(255,204,0,0.4)'; ctx.lineWidth=1; ctx.setLineDash([5,5]);
+  ctx.beginPath(); ctx.moveTo(0,H/2-H*0.4); ctx.lineTo(W,H/2-H*0.4); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#ffcc00'; ctx.font='9px Share Tech Mono'; ctx.textAlign='left';
+  ctx.fillText('E = '+E+'V',4,H/2-H*0.4-4);
+}
+
+// ══════════════════════════════════════════════════════
+//  SINUSOIDAL
+// ══════════════════════════════════════════════════════
+function updateSinus(){
+  const f=parseFloat(document.getElementById('sinF').value);
+  const R=parseFloat(document.getElementById('sinR').value);
+  const L=parseFloat(document.getElementById('sinL').value)*1e-3;
+  const C=parseFloat(document.getElementById('sinC').value)*1e-6;
+  const Vm=parseFloat(document.getElementById('sinVm').value);
+
+  document.getElementById('sinFv').textContent=f+' Hz';
+  document.getElementById('sinRv').textContent=R+' Ω';
+  document.getElementById('sinLv').textContent=document.getElementById('sinL').value+' mH';
+  document.getElementById('sinCv').textContent=document.getElementById('sinC').value+' µF';
+  document.getElementById('sinVmv').textContent=Vm+' V';
+
+  const w=2*Math.PI*f;
+  const XL=w*L, XC=1/(w*C);
+  const X=XL-XC;
+  const Z=Math.sqrt(R*R+X*X);
+  const phi=Math.atan2(X,R);
+  const Im=Vm/Z;
+  const Irms=Im/Math.sqrt(2);
+
+  document.getElementById('sinZ').textContent=Z.toFixed(2);
+  document.getElementById('sinPhi').textContent=(phi*180/Math.PI).toFixed(1);
+  document.getElementById('sinIm').textContent=(Im*1000).toFixed(3);
+  document.getElementById('sinIrms').textContent=(Irms*1000).toFixed(3);
+  document.getElementById('phiVal').textContent=(phi*180/Math.PI).toFixed(1)+'°';
+
+  drawFresnel(R,XL,XC,Z,phi,Im,Vm);
+  drawSinOsc(f,phi,Im,Vm);
+}
+
+function drawFresnel(R,XL,XC,Z,phi,Im,Vm){
+  const canvas=document.getElementById('fresnel');
+  const size=Math.min(canvas.parentElement.clientWidth,300);
+  canvas.width=size*dpr(); canvas.height=size*dpr();
+  canvas.style.width=size+'px'; canvas.style.height=size+'px';
+  const ctx=canvas.getContext('2d');
+  ctx.scale(dpr(),dpr());
+  const W=size, H=size;
+  ctx.fillStyle='#08080f'; ctx.fillRect(0,0,W,H);
+
+  const cx=W/2, cy=H/2;
+  const scale=Math.min(W,H)*0.38/Math.max(Vm,1);
+
+  // grid circles
+  [0.25,0.5,0.75,1].forEach(r=>{
+    ctx.beginPath(); ctx.arc(cx,cy,r*Math.min(W,H)*0.38,0,2*Math.PI);
+    ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=1; ctx.stroke();
+  });
+  // axes
+  ctx.strokeStyle='rgba(255,255,255,0.15)'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(W,cy);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(cx,0);ctx.lineTo(cx,H);ctx.stroke();
+  ctx.fillStyle='#444'; ctx.font='9px Share Tech Mono'; ctx.textAlign='center';
+  ctx.fillText('+Im',cx+W*0.35,cy-4); ctx.fillText('+Re',cx+4,cy-W*0.35+4);
+
+  function phasor(mag,angle,col,label,glow){
+    const ex=cx+Math.cos(angle)*mag*scale;
+    const ey=cy-Math.sin(angle)*mag*scale;
+    ctx.beginPath(); ctx.strokeStyle=col; ctx.lineWidth=2.5;
+    if(glow){ctx.shadowColor=col; ctx.shadowBlur=8;}
+    ctx.moveTo(cx,cy); ctx.lineTo(ex,ey); ctx.stroke();
+    // arrowhead
+    const ax=Math.cos(angle), ay=-Math.sin(angle);
+    const nx=-ay, ny=ax;
+    ctx.beginPath(); ctx.fillStyle=col;
+    ctx.moveTo(ex,ey);
+    ctx.lineTo(ex-ax*10+nx*5,ey-ay*10+ny*5);
+    ctx.lineTo(ex-ax*10-nx*5,ey-ay*10-ny*5);
+    ctx.closePath(); ctx.fill();
+    ctx.shadowBlur=0;
+    if(label){
+      ctx.fillStyle=col; ctx.font='bold 10px Exo 2'; ctx.textAlign='center';
+      ctx.fillText(label,ex+Math.cos(angle)*14,ey-Math.sin(angle)*14);
+    }
+  }
+  // I reference (horizontal)
+  phasor(Im*R,0,'#ff6b35','VR',true);   // VR in phase with I
+  phasor(Im*XL,Math.PI/2,'#39ff14','VL',true);   // VL leads 90°
+  phasor(Im*XC,-Math.PI/2,'#ffcc00','VC',true);  // VC lags 90°
+  phasor(Im*R*0.5,0,'#bf7fff','I',true);          // I ref
+  phasor(Vm,phi,'#00d4ff','V',true);              // total V
+}
+
+function drawSinOsc(f,phi,Im,Vm){
+  const canvas=document.getElementById('oscSin');
+  const [ctx,W,H]=setupCanvas(canvas);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#050e08'; ctx.fillRect(0,0,W,H);
+  for(let i=0;i<=10;i++){ctx.strokeStyle='rgba(0,255,100,0.07)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(i*W/10,0);ctx.lineTo(i*W/10,H);ctx.stroke();}
+  for(let i=0;i<=8;i++){ctx.beginPath();ctx.moveTo(0,i*H/8);ctx.lineTo(W,i*H/8);ctx.stroke();}
+  ctx.strokeStyle='rgba(0,255,100,0.2)'; ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+  const T=1/f; const tSpan=3*T;
+  const w=2*Math.PI*f;
+  // v(t)
+  ctx.beginPath(); ctx.strokeStyle='#00d4ff'; ctx.lineWidth=2; ctx.shadowColor='#00d4ff'; ctx.shadowBlur=5;
+  for(let px=0;px<W;px++){
+    const t=px/W*tSpan;
+    const v=Vm*Math.sin(w*t);
+    const y=H/2-v/Vm*(H/2-8);
+    if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+  // i(t)
+  ctx.beginPath(); ctx.strokeStyle='#ff6b35'; ctx.lineWidth=2; ctx.shadowColor='#ff6b35'; ctx.shadowBlur=5;
+  for(let px=0;px<W;px++){
+    const t=px/W*tSpan;
+    const i=Im*Math.sin(w*t-phi)*10; // scaled
+    const y=H/2-i/Vm*(H/2-8);
+    if(px===0) ctx.moveTo(px,y); else ctx.lineTo(px,y);
+  }
+  ctx.stroke(); ctx.shadowBlur=0;
+  // phi annotation
+  if(Math.abs(phi)>0.05){
+    const x1=W*0.2, x2=x1+Math.abs(phi)/(2*Math.PI)*W*tSpan/T*0.3;
+    ctx.strokeStyle='rgba(255,204,0,0.5)'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(x1,H/2); ctx.lineTo(x1,H/2-H*0.35); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  QUIZ
+// ══════════════════════════════════════════════════════
+const questions=[
+  {q:"La loi des nœuds (KCL) stipule que / KCL states that:",opts:["∑ tensions = 0","∑ courants entrants = ∑ courants sortants","∑ résistances = constante","La puissance est conservée"],ans:1,
+    exp:"La loi des nœuds : la somme algébrique des courants en un nœud est nulle. KCL: sum of currents entering a node equals sum leaving."},
+  {q:"Pour un circuit RC en charge, la constante de temps τ vaut / RC charge, time constant τ equals:",opts:["τ = L/R","τ = √(LC)","τ = RC","τ = R/C"],ans:2,
+    exp:"Pour un circuit RC : τ = RC. Pour RL : τ = L/R. C'est le temps nécessaire pour atteindre 63.2% de la tension finale."},
+  {q:"À la résonance d'un circuit RLC série, l'impédance est / At resonance, impedance is:",opts:["|Z| = XL + XC","|Z| = R (minimale/minimum)","|Z| = √(L/C)","|Z| = ∞"],ans:1,
+    exp:"À la résonance (ω₀ = 1/√LC), XL = XC donc Z = R. L'impédance est minimale et le courant est maximal."},
+  {q:"La loi des mailles (KVL) stipule que / KVL states that:",opts:["∑ courants = 0","∑ tensions dans une maille fermée = 0","∑ puissances = 1","I = U × R"],ans:1,
+    exp:"La loi des mailles (Kirchhoff) : la somme algébrique des tensions dans une maille fermée est nulle. ∑ e.m.f = ∑ chutes de tension."},
+  {q:"Le déphasage φ entre tension et courant dans un circuit RL pur est / Phase shift in pure RL circuit:",opts:["φ = 0°","φ = −90°","φ = +90°","φ = 180°"],ans:2,
+    exp:"Dans un inducteur pur, la tension est en avance de 90° sur le courant (i.e. v = L·di/dt). φ = +90°."},
+  {q:"La réactance capacitive XC est / Capacitive reactance XC equals:",opts:["XC = LC","XC = ωC","XC = 1/(ωC)","XC = ω/C"],ans:2,
+    exp:"XC = 1/(ωC) = 1/(2πfC). XC diminue quand la fréquence augmente."},
+  {q:"Le facteur de qualité Q d'un circuit RLC série est / Quality factor Q of series RLC:",opts:["Q = RC","Q = (1/R)√(L/C)","Q = R√(LC)","Q = ω₀R"],ans:1,
+    exp:"Q = (1/R)·√(L/C) = ω₀L/R = 1/(ω₀RC). Plus Q est grand, plus la résonance est sélective."},
+  {q:"Dans un circuit RC, après 5τ, la tension Vc est environ / After 5τ, capacitor voltage is about:",opts:["63% de E","86% de E","99% de E","100% de E"],ans:2,
+    exp:"Après 5τ, e^(-5)≈0.0067, donc Vc≈99.3% de E. On considère que le régime permanent est atteint à 5τ."},
+  {q:"La réactance inductive XL est / Inductive reactance XL equals:",opts:["XL = 1/(ωL)","XL = ωL","XL = L/ω","XL = R+jL"],ans:1,
+    exp:"XL = ωL = 2πfL. XL augmente linéairement avec la fréquence."},
+  {q:"L'impédance complexe d'un condensateur est / Complex impedance of a capacitor:",opts:["Z = jωC","Z = jωL","Z = −j/(ωC)","Z = R+jωC"],ans:2,
+    exp:"Z_C = 1/(jωC) = −j/(ωC). L'impédance d'un condensateur est purement imaginaire négative."},
+];
+
+let quizState={current:0,score:0,total:0,answered:false};
+
+function renderQuiz(){
+  if(quizState.current>=questions.length) quizState.current=0;
+  const q=questions[quizState.current];
+  const container=document.getElementById('quizContainer');
+  container.innerHTML=`
+    <div class="quiz-card">
+      <div class="quiz-q">Q${quizState.current+1}/${questions.length}: ${q.q}</div>
+      <div class="quiz-options">
+        ${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="qfeedback"></div>
+      <button class="quiz-next" id="qnext" onclick="nextQuiz()">
+        ${quizState.current<questions.length-1 ? 'Question suivante →' : '🔄 Recommencer'}
+      </button>
+    </div>`;
+  document.getElementById('quizScore').textContent=quizState.score;
+  document.getElementById('quizTotal').textContent=quizState.total;
+  quizState.answered=false;
+}
+
+function answerQuiz(idx){
+  if(quizState.answered) return;
+  quizState.answered=true;
+  quizState.total++;
+  const q=questions[quizState.current];
+  const opts=document.querySelectorAll('.quiz-opt');
+  const fb=document.getElementById('qfeedback');
+  opts.forEach((o,i)=>{
+    if(i===q.ans) o.classList.add('correct');
+    else if(i===idx && idx!==q.ans) o.classList.add('wrong');
+    o.style.pointerEvents='none';
+  });
+  if(idx===q.ans){
+    quizState.score++;
+    fb.className='quiz-feedback show ok';
+    fb.innerHTML='✅ Correct! '+q.exp;
+  } else {
+    fb.className='quiz-feedback show nok';
+    fb.innerHTML='❌ Incorrect. '+q.exp;
+  }
+  document.getElementById('qnext').style.display='block';
+  document.getElementById('quizScore').textContent=quizState.score;
+  document.getElementById('quizTotal').textContent=quizState.total;
+}
+
+function nextQuiz(){
+  quizState.current++;
+  if(quizState.current>=questions.length) quizState.current=0;
+  renderQuiz();
+}
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+window.addEventListener('resize', ()=>{
+  const active=document.querySelector('.section.active').id;
+  if(active==='kirchhoff') drawKirchCircuit();
+  if(active==='rc') { drawRCCircuit(); drawOscRC(); }
+  if(active==='rlc') { drawRLCCircuit(); updateRLC(); }
+  if(active==='sinus') updateSinus();
+});
+
+// Init all
+setTimeout(()=>{
+  updateKirchhoff();
+  updateRC();
+  updateRLC();
+  updateSinus();
+  renderQuiz();
+},100);
+</script>
+</body>
+</html>

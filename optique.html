@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>OptiSim — Simulateur d'Optique Géométrique</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --accent: #00d4ff;
+  --accent2: #ff6b35;
+  --accent3: #7c3aed;
+  --gold: #fbbf24;
+  --green: #10b981;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --border: rgba(0,212,255,0.15);
+  --ray: #00d4ff;
+  --ray2: #ff6b35;
+  --glass: rgba(255,255,255,0.04);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Syne', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, #0a0e1a 0%, #111827 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.logo-icon {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.logo-text { font-size: 1.2rem; font-weight: 800; color: var(--accent); letter-spacing: -0.5px; }
+.logo-sub { font-size: 0.65rem; color: var(--text2); font-family: 'Space Mono', monospace; }
+.lang-toggle {
+  display: flex; gap: 4px;
+  background: var(--bg3); border-radius: 20px; padding: 3px;
+}
+.lang-btn {
+  padding: 4px 10px; border-radius: 16px; border: none;
+  font-size: 0.7rem; font-weight: 700; cursor: pointer;
+  font-family: 'Syne', sans-serif; transition: all 0.2s;
+  background: transparent; color: var(--text2);
+}
+.lang-btn.active { background: var(--accent); color: #000; }
+
+/* NAV */
+nav {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto; scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 8px;
+}
+nav::-webkit-scrollbar { display: none; }
+.nav-tabs {
+  display: flex; gap: 4px; padding: 8px 0;
+  min-width: max-content;
+}
+.nav-tab {
+  padding: 8px 14px; border-radius: 8px; border: none;
+  font-size: 0.78rem; font-weight: 600; cursor: pointer;
+  font-family: 'Syne', sans-serif; transition: all 0.25s;
+  background: transparent; color: var(--text2);
+  white-space: nowrap; display: flex; align-items: center; gap: 6px;
+}
+.nav-tab:hover { background: var(--bg3); color: var(--text); }
+.nav-tab.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  color: #fff;
+}
+.nav-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.6; }
+
+/* MAIN LAYOUT */
+main { display: flex; flex-direction: column; min-height: calc(100vh - 120px); }
+.sim-container { flex: 1; display: flex; flex-direction: column; }
+
+/* CANVAS AREA */
+.canvas-wrapper {
+  position: relative;
+  background: #060a14;
+  border-bottom: 1px solid var(--border);
+}
+canvas {
+  display: block;
+  width: 100%;
+  touch-action: none;
+}
+.canvas-label {
+  position: absolute; top: 10px; left: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem; color: var(--accent);
+  opacity: 0.7; pointer-events: none;
+}
+.canvas-info {
+  position: absolute; bottom: 10px; right: 12px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem; color: var(--text2);
+  text-align: right; pointer-events: none;
+  line-height: 1.6;
+}
+
+/* CONTROLS */
+.controls {
+  background: var(--bg2);
+  padding: 12px 16px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.controls-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+.control-group {
+  display: flex; flex-direction: column; gap: 4px;
+}
+.control-label {
+  font-size: 0.68rem; font-weight: 700;
+  color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.control-value {
+  font-family: 'Space Mono', monospace;
+  color: var(--accent); font-size: 0.72rem;
+}
+input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 4px;
+  background: var(--bg3);
+  border-radius: 2px; outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(0,212,255,0.5);
+}
+input[type=range]::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+}
+select {
+  background: var(--bg3); color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+  font-family: 'Syne', sans-serif; font-size: 0.78rem;
+  outline: none; width: 100%;
+}
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn {
+  padding: 8px 14px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg3); color: var(--text);
+  font-family: 'Syne', sans-serif; font-size: 0.75rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 5px;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent3));
+  color: #fff; border-color: transparent;
+}
+.btn.active { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.1); }
+
+/* INFO PANEL */
+.info-panel {
+  background: var(--bg3);
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+}
+.info-title {
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+.info-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px;
+}
+.info-card-label { font-size: 0.62rem; color: var(--text2); margin-bottom: 2px; }
+.info-card-value {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.82rem; color: var(--gold); font-weight: 700;
+}
+
+/* THEORY BOX */
+.theory-box {
+  margin: 12px 16px;
+  background: linear-gradient(135deg, rgba(124,58,237,0.1), rgba(0,212,255,0.05));
+  border: 1px solid rgba(124,58,237,0.3);
+  border-radius: 10px; padding: 12px 14px;
+}
+.theory-title { font-size: 0.72rem; font-weight: 700; color: var(--accent3); margin-bottom: 6px; }
+.theory-text { font-size: 0.73rem; color: var(--text2); line-height: 1.6; }
+.formula {
+  font-family: 'Space Mono', monospace;
+  background: rgba(0,0,0,0.3); border-radius: 6px;
+  padding: 6px 10px; margin: 6px 0;
+  color: var(--gold); font-size: 0.78rem;
+  text-align: center;
+}
+
+/* FOOTER */
+footer {
+  text-align: center; padding: 16px;
+  font-size: 0.65rem; color: var(--text2);
+  border-top: 1px solid var(--border);
+  font-family: 'Space Mono', monospace;
+}
+footer span { color: var(--accent); }
+
+/* MODULES HIDDEN */
+.module { display: none; }
+.module.active { display: flex; flex-direction: column; }
+
+/* SECTION TITLE */
+.section-title {
+  padding: 10px 16px 0;
+  font-size: 0.65rem; color: var(--text2);
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+
+/* TOGGLE SWITCH */
+.toggle-row { display: flex; align-items: center; gap: 10px; }
+.toggle-label { font-size: 0.72rem; color: var(--text2); flex: 1; }
+.toggle {
+  position: relative; width: 40px; height: 22px;
+  background: var(--bg3); border-radius: 11px;
+  cursor: pointer; transition: background 0.2s;
+  border: 1px solid var(--border); flex-shrink: 0;
+}
+.toggle.on { background: var(--accent); border-color: var(--accent); }
+.toggle-knob {
+  position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; transition: transform 0.2s;
+}
+.toggle.on .toggle-knob { transform: translateX(18px); }
+
+@media (min-width: 768px) {
+  .controls-row { grid-template-columns: repeat(3, 1fr); }
+  canvas { max-height: 420px; }
+}
+@media (min-width: 1024px) {
+  .sim-container { flex-direction: row; flex-wrap: wrap; }
+  .canvas-wrapper { flex: 1; min-width: 500px; }
+  .side-panel { width: 320px; overflow-y: auto; border-left: 1px solid var(--border); }
+}
+
+.divider {
+  height: 1px; background: var(--border); margin: 4px 16px;
+}
+
+/* COLOR CODED RAYS */
+.ray-legend {
+  display: flex; gap: 12px; flex-wrap: wrap;
+  padding: 8px 16px; font-size: 0.65rem;
+  font-family: 'Space Mono', monospace;
+}
+.ray-item { display: flex; align-items: center; gap: 5px; color: var(--text2); }
+.ray-dot { width: 20px; height: 3px; border-radius: 2px; }
+
+/* MEASUREMENT DISPLAY */
+.measure-display {
+  position: absolute; top: 10px; right: 12px;
+  background: rgba(0,0,0,0.75);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 6px 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.62rem; color: var(--accent);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  line-height: 1.8;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">🔭</div>
+    <div>
+      <div class="logo-text">OptiSim</div>
+      <div class="logo-sub" id="logo-sub">Optique Géométrique · UAC FAST</div>
+    </div>
+  </div>
+  <div class="lang-toggle">
+    <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchModule('refraction')">
+      <span class="nav-dot"></span><span data-fr="Réfraction" data-en="Refraction">Réfraction</span>
+    </button>
+    <button class="nav-tab" onclick="switchModule('mirrors')">
+      <span class="nav-dot"></span><span data-fr="Miroirs" data-en="Mirrors">Miroirs</span>
+    </button>
+    <button class="nav-tab" onclick="switchModule('lenses')">
+      <span class="nav-dot"></span><span data-fr="Lentilles" data-en="Lenses">Lentilles</span>
+    </button>
+    <button class="nav-tab" onclick="switchModule('association')">
+      <span class="nav-dot"></span><span data-fr="Association" data-en="System">Association</span>
+    </button>
+    <button class="nav-tab" onclick="switchModule('prism')">
+      <span class="nav-dot"></span><span data-fr="Prisme" data-en="Prism">Prisme</span>
+    </button>
+    <button class="nav-tab" onclick="switchModule('eye')">
+      <span class="nav-dot"></span><span data-fr="Œil" data-en="Eye">Œil</span>
+    </button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ============ MODULE RÉFRACTION ============ -->
+<div id="mod-refraction" class="module active sim-container">
+  <div class="canvas-wrapper">
+    <canvas id="canvas-refraction" height="340"></canvas>
+    <div class="canvas-label" data-fr="RÉFRACTION — Loi de Snell-Descartes" data-en="REFRACTION — Snell's Law">RÉFRACTION — Loi de Snell-Descartes</div>
+    <div class="measure-display" id="refr-measure">
+      θ₁ = 45.0°<br>θ₂ = 28.1°<br>n₁sinθ₁ = n₂sinθ₂
+    </div>
+  </div>
+  <div class="ray-legend">
+    <div class="ray-item"><div class="ray-dot" style="background:#00d4ff"></div><span data-fr="Rayon incident" data-en="Incident ray">Rayon incident</span></div>
+    <div class="ray-item"><div class="ray-dot" style="background:#ff6b35"></div><span data-fr="Rayon réfracté" data-en="Refracted ray">Rayon réfracté</span></div>
+    <div class="ray-item"><div class="ray-dot" style="background:#7c3aed"></div><span data-fr="Rayon réfléchi" data-en="Reflected ray">Rayon réfléchi</span></div>
+    <div class="ray-item"><div class="ray-dot" style="background:rgba(255,255,255,0.3);border:1px dashed #fff"></div><span data-fr="Normale" data-en="Normal">Normale</span></div>
+  </div>
+  <div class="controls">
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Angle incident θ₁" data-en="Incident angle θ₁">Angle incident θ₁</span><span class="control-value" id="val-angle1">45°</span></div>
+        <input type="range" min="0" max="89" value="45" id="sl-angle1">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Indice n₁" data-en="Index n₁">Indice n₁</span><span class="control-value" id="val-n1">1.00</span></div>
+        <input type="range" min="100" max="250" value="100" id="sl-n1">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Indice n₂" data-en="Index n₂">Indice n₂</span><span class="control-value" id="val-n2">1.50</span></div>
+        <input type="range" min="100" max="250" value="150" id="sl-n2">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label" data-fr="Milieu 1" data-en="Medium 1">Milieu 1</div>
+        <select id="sel-medium1" onchange="updateMediums()">
+          <option value="1.000">Air (n=1.000)</option>
+          <option value="1.333">Eau (n=1.333)</option>
+          <option value="1.500">Verre (n=1.500)</option>
+          <option value="1.620">Crown Glass (n=1.620)</option>
+          <option value="2.417">Diamant (n=2.417)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <div class="control-label" data-fr="Milieu 2" data-en="Medium 2">Milieu 2</div>
+        <select id="sel-medium2" onchange="updateMediums()">
+          <option value="1.000">Air (n=1.000)</option>
+          <option value="1.333">Eau (n=1.333)</option>
+          <option value="1.500" selected>Verre (n=1.500)</option>
+          <option value="1.620">Crown Glass (n=1.620)</option>
+          <option value="2.417">Diamant (n=2.417)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <div class="control-label" data-fr="Options" data-en="Options">Options</div>
+        <div class="toggle-row">
+          <span class="toggle-label" data-fr="Rayon réfléchi" data-en="Reflected ray">Rayon réfléchi</span>
+          <div class="toggle on" id="toggle-reflect" onclick="toggleOption('reflect')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="addMultipleRays()">
+        <span>🌈</span><span data-fr="Faisceau" data-en="Beam">Faisceau</span>
+      </button>
+      <button class="btn" onclick="resetRefraction()">
+        <span>↺</span><span data-fr="Réinitialiser" data-en="Reset">Réinitialiser</span>
+      </button>
+      <button class="btn active" id="btn-tir" onclick="checkTIR()">
+        <span>⚡</span><span data-fr="Réflexion Totale" data-en="Total Reflection">Réflexion Totale</span>
+      </button>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="info-title" data-fr="MESURES EN TEMPS RÉEL" data-en="REAL-TIME MEASUREMENTS">MESURES EN TEMPS RÉEL</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Angle réfracté θ₂" data-en="Refracted angle θ₂">Angle réfracté θ₂</div>
+        <div class="info-card-value" id="r-theta2">28.1°</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Angle critique θc" data-en="Critical angle θc">Angle critique θc</div>
+        <div class="info-card-value" id="r-thetac">—</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">n₁·sin(θ₁)</div>
+        <div class="info-card-value" id="r-n1sin">0.707</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">n₂·sin(θ₂)</div>
+        <div class="info-card-value" id="r-n2sin">0.707</div>
+      </div>
+    </div>
+  </div>
+  <div class="theory-box">
+    <div class="theory-title">📐 <span data-fr="Loi de Snell-Descartes" data-en="Snell-Descartes Law">Loi de Snell-Descartes</span></div>
+    <div class="formula">n₁ · sin(θ₁) = n₂ · sin(θ₂)</div>
+    <div class="theory-text" data-fr="Le rayon réfracté est dans le plan d'incidence. L'angle de réfraction dépend des indices optiques des deux milieux. Pour n₁ > n₂, il existe un angle critique θc = arcsin(n₂/n₁) au-delà duquel se produit la réflexion totale interne." 
+    data-en="The refracted ray lies in the plane of incidence. The refraction angle depends on the optical indices of both media. For n₁ > n₂, there exists a critical angle θc = arcsin(n₂/n₁) beyond which total internal reflection occurs.">
+    Le rayon réfracté est dans le plan d'incidence. L'angle de réfraction dépend des indices optiques des deux milieux. Pour n₁ > n₂, il existe un angle critique θc = arcsin(n₂/n₁) au-delà duquel se produit la réflexion totale interne.</div>
+  </div>
+</div>
+
+<!-- ============ MODULE MIROIRS ============ -->
+<div id="mod-mirrors" class="module sim-container">
+  <div class="canvas-wrapper">
+    <canvas id="canvas-mirrors" height="360"></canvas>
+    <div class="canvas-label" data-fr="MIROIR SPHÉRIQUE — Formation d'image" data-en="SPHERICAL MIRROR — Image formation">MIROIR SPHÉRIQUE</div>
+    <div class="measure-display" id="mirror-measure">SA = -30<br>SA' = ...<br>γ = ...</div>
+  </div>
+  <div class="ray-legend">
+    <div class="ray-item"><div class="ray-dot" style="background:#00d4ff"></div><span data-fr="Rayon parallèle à l'axe" data-en="Parallel to axis">Parallèle à l'axe</span></div>
+    <div class="ray-item"><div class="ray-dot" style="background:#ff6b35"></div><span data-fr="Rayon passant par F" data-en="Through focus F">Passant par F</span></div>
+    <div class="ray-item"><div class="ray-dot" style="background:#10b981"></div><span data-fr="Rayon passant par C" data-en="Through center C">Passant par C</span></div>
+  </div>
+  <div class="controls">
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Type de miroir" data-en="Mirror type">Type de miroir</span></div>
+        <select id="sel-mirror-type" onchange="drawMirrors()">
+          <option value="concave" data-fr="Miroir Concave (convergent)" data-en="Concave Mirror (converging)">Miroir Concave (convergent)</option>
+          <option value="convex" data-fr="Miroir Convexe (divergent)" data-en="Convex Mirror (diverging)">Miroir Convexe (divergent)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Rayon de courbure R (cm)" data-en="Radius of curvature R (cm)">Rayon R (cm)</span><span class="control-value" id="val-R">20</span></div>
+        <input type="range" min="5" max="40" value="20" id="sl-R" oninput="drawMirrors()">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Position objet SA (cm)" data-en="Object position SA (cm)">Position objet (cm)</span><span class="control-value" id="val-objM">-30</span></div>
+        <input type="range" min="-80" max="-5" value="-30" id="sl-objM" oninput="drawMirrors()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Hauteur objet (cm)" data-en="Object height (cm)">Hauteur objet (cm)</span><span class="control-value" id="val-hM">2</span></div>
+        <input type="range" min="1" max="8" value="2" id="sl-hM" oninput="drawMirrors()">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="animateMirrorObj()">▶ <span data-fr="Animer" data-en="Animate">Animer</span></button>
+      <button class="btn" onclick="drawMirrors()">↺ <span data-fr="Reset" data-en="Reset">Reset</span></button>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="info-title" data-fr="RÉSULTATS" data-en="RESULTS">RÉSULTATS</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Distance focale f'" data-en="Focal length f'">Distance focale f'</div>
+        <div class="info-card-value" id="m-f">10.0 cm</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Position image SA'" data-en="Image position SA'">Position image SA'</div>
+        <div class="info-card-value" id="m-img">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Grossissement γ" data-en="Magnification γ">Grossissement γ</div>
+        <div class="info-card-value" id="m-gamma">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Nature de l'image" data-en="Image nature">Nature de l'image</div>
+        <div class="info-card-value" id="m-nature">...</div>
+      </div>
+    </div>
+  </div>
+  <div class="theory-box">
+    <div class="theory-title">📐 <span data-fr="Relations conjugaison — Miroir sphérique" data-en="Conjugation — Spherical Mirror">Relations — Miroir sphérique</span></div>
+    <div class="formula">1/SA' + 1/SA = 2/R = 1/f'&nbsp;&nbsp;&nbsp;&nbsp;γ = SA'/SA</div>
+    <div class="theory-text" data-fr="Convention algébrique : les distances sont algébriques, comptées depuis le sommet S. Pour un miroir concave f' > 0 ; pour un miroir convexe f' < 0. Une image réelle se forme devant le miroir (SA' < 0), une image virtuelle derrière (SA' > 0)."
+    data-en="Algebraic convention: distances are signed, measured from the vertex S. Concave mirror f' > 0; convex mirror f' < 0. A real image forms in front of the mirror (SA' < 0), a virtual image behind it (SA' > 0).">
+    Convention algébrique : les distances sont algébriques, comptées depuis le sommet S. Pour un miroir concave f' > 0 ; pour un miroir convexe f' < 0. Une image réelle se forme devant le miroir (SA' < 0), une image virtuelle derrière (SA' > 0).</div>
+  </div>
+</div>
+
+<!-- ============ MODULE LENTILLES ============ -->
+<div id="mod-lenses" class="module sim-container">
+  <div class="canvas-wrapper">
+    <canvas id="canvas-lenses" height="360"></canvas>
+    <div class="canvas-label" data-fr="LENTILLE MINCE — Formation d'image" data-en="THIN LENS — Image formation">LENTILLE MINCE</div>
+    <div class="measure-display" id="lens-measure">OA = -30<br>OA' = ...<br>γ = ...</div>
+  </div>
+  <div class="ray-legend">
+    <div class="ray-item"><div class="ray-dot" style="background:#00d4ff"></div><span data-fr="// axe → passe par F'" data-en="// axis → through F'">// axe → F'</span></div>
+    <div class="ray-item"><div class="ray-dot" style="background:#ff6b35"></div><span data-fr="Vers F → // axe" data-en="Through F → // axis">Par F → // axe</span></div>
+    <div class="ray-item"><div class="ray-dot" style="background:#10b981"></div><span data-fr="Par centre O" data-en="Through center O">Par centre O</span></div>
+  </div>
+  <div class="controls">
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Type de lentille" data-en="Lens type">Type de lentille</span></div>
+        <select id="sel-lens-type" onchange="drawLenses()">
+          <option value="converging" data-fr="Convergente (biconvexe)" data-en="Converging (biconvex)">Convergente (biconvexe)</option>
+          <option value="diverging" data-fr="Divergente (biconcave)" data-en="Diverging (biconcave)">Divergente (biconcave)</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Distance focale f' (cm)" data-en="Focal length f' (cm)">Distance focale f' (cm)</span><span class="control-value" id="val-focal">15</span></div>
+        <input type="range" min="5" max="40" value="15" id="sl-focal" oninput="drawLenses()">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Position objet OA (cm)" data-en="Object position OA (cm)">Position objet (cm)</span><span class="control-value" id="val-objL">-30</span></div>
+        <input type="range" min="-90" max="-3" value="-30" id="sl-objL" oninput="drawLenses()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Hauteur objet (cm)" data-en="Object height (cm)">Hauteur objet (cm)</span><span class="control-value" id="val-hL">2</span></div>
+        <input type="range" min="1" max="8" value="2" id="sl-hL" oninput="drawLenses()">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="animateLensObj()">▶ <span data-fr="Animer" data-en="Animate">Animer</span></button>
+      <button class="btn" onclick="drawLenses()">↺ Reset</button>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="info-title" data-fr="RÉSULTATS" data-en="RESULTS">RÉSULTATS</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Vergence D (δ)" data-en="Power D (δ)">Vergence D</div>
+        <div class="info-card-value" id="l-vergence">6.67 δ</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Position image OA'" data-en="Image position OA'">Position image OA'</div>
+        <div class="info-card-value" id="l-img">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Grossissement γ" data-en="Magnification γ">Grossissement γ</div>
+        <div class="info-card-value" id="l-gamma">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Nature de l'image" data-en="Image nature">Nature</div>
+        <div class="info-card-value" id="l-nature">...</div>
+      </div>
+    </div>
+  </div>
+  <div class="theory-box">
+    <div class="theory-title">📐 <span data-fr="Relation de conjugaison — Lentille mince" data-en="Conjugation — Thin Lens">Relation de conjugaison — Lentille mince</span></div>
+    <div class="formula">1/OA' − 1/OA = 1/f' = D&nbsp;&nbsp;&nbsp;&nbsp;γ = OA'/OA</div>
+    <div class="theory-text" data-fr="Pour une lentille convergente f' > 0 (D > 0) ; pour une lentille divergente f' < 0 (D < 0). Objet réel : OA < 0. Image réelle : OA' > 0 (de l'autre côté). Image virtuelle : OA' < 0 (même côté que l'objet)."
+    data-en="Converging lens: f' > 0 (D > 0); diverging lens: f' < 0 (D < 0). Real object: OA < 0. Real image: OA' > 0 (opposite side). Virtual image: OA' < 0 (same side as object).">
+    Pour une lentille convergente f' > 0 (D > 0) ; pour une lentille divergente f' < 0 (D < 0). Objet réel : OA < 0. Image réelle : OA' > 0 (de l'autre côté). Image virtuelle : OA' < 0 (même côté que l'objet).</div>
+  </div>
+</div>
+
+<!-- ============ MODULE ASSOCIATION ============ -->
+<div id="mod-association" class="module sim-container">
+  <div class="canvas-wrapper">
+    <canvas id="canvas-assoc" height="360"></canvas>
+    <div class="canvas-label" data-fr="ASSOCIATION DE LENTILLES" data-en="LENS SYSTEM">ASSOCIATION DE LENTILLES</div>
+    <div class="measure-display" id="assoc-measure">...</div>
+  </div>
+  <div class="controls">
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="f'₁ (cm)" data-en="f'₁ (cm)">f'₁ (cm)</span><span class="control-value" id="val-f1">10</span></div>
+        <input type="range" min="-40" max="40" value="10" id="sl-f1" oninput="drawAssoc()">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="f'₂ (cm)" data-en="f'₂ (cm)">f'₂ (cm)</span><span class="control-value" id="val-f2">15</span></div>
+        <input type="range" min="-40" max="40" value="15" id="sl-f2" oninput="drawAssoc()">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Distance O₁O₂ (cm)" data-en="Distance O₁O₂ (cm)">Dist. O₁O₂ (cm)</span><span class="control-value" id="val-d12">25</span></div>
+        <input type="range" min="0" max="60" value="25" id="sl-d12" oninput="drawAssoc()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Position objet O₁A (cm)" data-en="Object pos. O₁A (cm)">Position objet (cm)</span><span class="control-value" id="val-objA">-20</span></div>
+        <input type="range" min="-80" max="-3" value="-20" id="sl-objA" oninput="drawAssoc()">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="presetAssoc('microscope')">🔬 <span data-fr="Microscope" data-en="Microscope">Microscope</span></button>
+      <button class="btn" onclick="presetAssoc('telescope')">🔭 <span data-fr="Lunette" data-en="Telescope">Lunette</span></button>
+      <button class="btn" onclick="drawAssoc()">↺ Reset</button>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="info-title" data-fr="RÉSULTATS SYSTÈME" data-en="SYSTEM RESULTS">RÉSULTATS SYSTÈME</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label" data-fr="f' équivalente" data-en="Equivalent f'">f' équivalente</div>
+        <div class="info-card-value" id="a-feq">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Vergence totale D" data-en="Total power D">Vergence totale D</div>
+        <div class="info-card-value" id="a-Deq">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Position image finale" data-en="Final image position">Image finale O₂A'</div>
+        <div class="info-card-value" id="a-imgfin">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Grossissement total" data-en="Total magnification">Grossissement γ total</div>
+        <div class="info-card-value" id="a-gammatot">...</div>
+      </div>
+    </div>
+  </div>
+  <div class="theory-box">
+    <div class="theory-title">📐 <span data-fr="Association de lentilles accolées" data-en="Thin lens combination">Formule de Gullstrand</span></div>
+    <div class="formula">D = D₁ + D₂ − d·D₁·D₂</div>
+    <div class="theory-text" data-fr="Pour deux lentilles séparées d'une distance d, la vergence équivalente suit la formule de Gullstrand. Si d=0 (lentilles accolées) : D = D₁ + D₂. L'image intermédiaire (image par L₁) sert d'objet pour L₂."
+    data-en="For two lenses separated by distance d, the equivalent power follows Gullstrand's formula. If d=0 (in contact): D = D₁ + D₂. The intermediate image (from L₁) serves as object for L₂.">
+    Pour deux lentilles séparées d'une distance d, la vergence équivalente suit la formule de Gullstrand. Si d=0 (lentilles accolées) : D = D₁ + D₂. L'image intermédiaire (image par L₁) sert d'objet pour L₂.</div>
+  </div>
+</div>
+
+<!-- ============ MODULE PRISME ============ -->
+<div id="mod-prism" class="module sim-container">
+  <div class="canvas-wrapper">
+    <canvas id="canvas-prism" height="360"></canvas>
+    <div class="canvas-label" data-fr="PRISME — Déviation et dispersion" data-en="PRISM — Deviation and dispersion">PRISME — Déviation et dispersion</div>
+    <div class="measure-display" id="prism-measure">A = 60°<br>D = ...<br>D_min = ...</div>
+  </div>
+  <div class="controls">
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Angle au sommet A" data-en="Apex angle A">Angle au sommet A</span><span class="control-value" id="val-prismA">60°</span></div>
+        <input type="range" min="20" max="80" value="60" id="sl-prismA" oninput="drawPrism()">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Indice n" data-en="Index n">Indice n</span><span class="control-value" id="val-prismN">1.50</span></div>
+        <input type="range" min="100" max="250" value="150" id="sl-prismN" oninput="drawPrism()">
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Angle incidence i₁" data-en="Incidence angle i₁">Angle incidence i₁</span><span class="control-value" id="val-prismI">45°</span></div>
+        <input type="range" min="5" max="85" value="45" id="sl-prismI" oninput="drawPrism()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label" data-fr="Dispersion chromatique" data-en="Chromatic dispersion">Dispersion chromatique</div>
+        <div class="toggle-row">
+          <span class="toggle-label" data-fr="Afficher ROYGBIV" data-en="Show ROYGBIV">Afficher ROYGBIV</span>
+          <div class="toggle on" id="toggle-dispersion" onclick="togglePrismDispersion()"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn" onclick="setMinDeviation()">⚙ <span data-fr="Déviation min." data-en="Min. deviation">Déviation min.</span></button>
+      <button class="btn" onclick="drawPrism()">↺ Reset</button>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="info-title" data-fr="MESURES" data-en="MEASUREMENTS">MESURES</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Angle déviation D" data-en="Deviation D">Déviation D</div>
+        <div class="info-card-value" id="p-deviation">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Déviation min. Dm" data-en="Min deviation Dm">Déviation min. Dm</div>
+        <div class="info-card-value" id="p-devmin">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Angle réfraction r₁" data-en="Refraction r₁">Angle r₁</div>
+        <div class="info-card-value" id="p-r1">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Angle sortie i₂" data-en="Exit angle i₂">Angle i₂</div>
+        <div class="info-card-value" id="p-i2">...</div>
+      </div>
+    </div>
+  </div>
+  <div class="theory-box">
+    <div class="theory-title">📐 <span data-fr="Déviation par un prisme" data-en="Prism deviation">Déviation par un prisme</span></div>
+    <div class="formula">D = i₁ + i₂ − A&nbsp;&nbsp;&nbsp;r₁ + r₂ = A</div>
+    <div class="formula" style="font-size:0.7rem">n = sin((A+Dm)/2) / sin(A/2)</div>
+    <div class="theory-text" data-fr="À la déviation minimale Dm, le rayon est parallèle à la base. Cette condition i₁ = i₂ permet de mesurer l'indice n du prisme. La dispersion chromatique est due à la variation de n avec la longueur d'onde (loi de Cauchy)."
+    data-en="At minimum deviation Dm, the ray is parallel to the base. The condition i₁ = i₂ allows measuring the prism index n. Chromatic dispersion is due to the variation of n with wavelength (Cauchy's law).">
+    À la déviation minimale Dm, le rayon est parallèle à la base. Cette condition i₁ = i₂ permet de mesurer l'indice n du prisme. La dispersion chromatique est due à la variation de n avec la longueur d'onde (loi de Cauchy).</div>
+  </div>
+</div>
+
+<!-- ============ MODULE ŒIL ============ -->
+<div id="mod-eye" class="module sim-container">
+  <div class="canvas-wrapper">
+    <canvas id="canvas-eye" height="360"></canvas>
+    <div class="canvas-label" data-fr="ŒIL RÉDUIT — Accommodation et défauts" data-en="REDUCED EYE — Accommodation and defects">ŒIL RÉDUIT</div>
+    <div class="measure-display" id="eye-measure">PR = ∞<br>PP = 15 cm</div>
+  </div>
+  <div class="controls">
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label" data-fr="Défaut visuel" data-en="Vision defect">Défaut visuel</div>
+        <select id="sel-eye" onchange="drawEye()">
+          <option value="normal" data-fr="Œil normal (emmétrope)" data-en="Normal eye (emmetrope)">Œil normal (emmétrope)</option>
+          <option value="myope" data-fr="Myopie" data-en="Myopia">Myopie</option>
+          <option value="hypermetrope" data-fr="Hypermétropie" data-en="Hypermetropia">Hypermétropie</option>
+          <option value="presbyte" data-fr="Presbytie" data-en="Presbyopia">Presbytie</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <div class="control-label"><span data-fr="Distance objet (m)" data-en="Object distance (m)">Distance objet (m)</span><span class="control-value" id="val-eyedist">3.0 m</span></div>
+        <input type="range" min="1" max="100" value="30" id="sl-eyedist" oninput="drawEye()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="control-group">
+        <div class="control-label" data-fr="Correction" data-en="Correction">Correction</div>
+        <div class="toggle-row">
+          <span class="toggle-label" data-fr="Lentille correctrice" data-en="Corrective lens">Lentille correctrice</span>
+          <div class="toggle" id="toggle-correction" onclick="toggleEyeCorrection()"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="info-title" data-fr="INFOS ŒIL" data-en="EYE INFO">INFOS ŒIL</div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Punctum Remotum PR" data-en="Far point PR">Punctum Remotum PR</div>
+        <div class="info-card-value" id="e-pr">∞</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Punctum Proximum PP" data-en="Near point PP">Punctum Proximum PP</div>
+        <div class="info-card-value" id="e-pp">25 cm</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Vergence cristallin" data-en="Lens power">Vergence cristallin</div>
+        <div class="info-card-value" id="e-verg">...</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-fr="Correction nécessaire" data-en="Required correction">Correction</div>
+        <div class="info-card-value" id="e-corr">Aucune</div>
+      </div>
+    </div>
+  </div>
+  <div class="theory-box">
+    <div class="theory-title">👁 <span data-fr="Œil réduit de Listing" data-en="Listing's reduced eye">Œil réduit de Listing</span></div>
+    <div class="formula">D_total ≈ 60 δ&nbsp;&nbsp;&nbsp;Diamètre = 24 mm</div>
+    <div class="theory-text" data-fr="L'œil réduit est modélisé par une lentille convergente (cristallin + cornée, D≈60δ) et un écran (rétine). L'accommodation permet de modifier la vergence du cristallin. Myopie : image en avant de la rétine ; Hypermétropie : en arrière."
+    data-en="The reduced eye is modeled by a converging lens (crystalline + cornea, D≈60δ) and a screen (retina). Accommodation allows varying the lens power. Myopia: image in front of retina; Hypermetropia: behind retina.">
+    L'œil réduit est modélisé par une lentille convergente (cristallin + cornée, D≈60δ) et un écran (rétine). L'accommodation permet de modifier la vergence du cristallin. Myopie : image en avant de la rétine ; Hypermétropie : en arrière.</div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <span data-fr="OptiSim v2.0 — Créé par" data-en="OptiSim v2.0 — Created by">OptiSim v2.0 — Créé par</span>
+  <span style="color:var(--gold)">Edmond Atinzoun TCHOKPON</span>
+  <span data-fr=" · Licence Physique-Chimie · FAST — Université d'Abomey-Calavi" data-en=" · Physics-Chemistry · FAST — University of Abomey-Calavi"> · Licence Physique-Chimie · FAST — UAC</span>
+</footer>
+
+<script>
+// ===================== LANGUAGE SYSTEM =====================
+let currentLang = 'fr';
+function setLang(l) {
+  currentLang = l;
+  document.querySelectorAll('[data-fr]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + l) || el.textContent;
+  });
+  document.querySelectorAll('option[data-fr]').forEach(el => {
+    el.textContent = el.getAttribute('data-' + l) || el.textContent;
+  });
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.lang-btn:' + (l === 'fr' ? 'first-child' : 'last-child')).classList.add('active');
+  // redraw current
+  redrawCurrent();
+}
+
+// ===================== MODULE SWITCHING =====================
+let currentModule = 'refraction';
+function switchModule(name) {
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('mod-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  currentModule = name;
+  setTimeout(() => {
+    if (name === 'refraction') drawRefraction();
+    if (name === 'mirrors') drawMirrors();
+    if (name === 'lenses') drawLenses();
+    if (name === 'association') drawAssoc();
+    if (name === 'prism') drawPrism();
+    if (name === 'eye') drawEye();
+  }, 50);
+}
+
+function redrawCurrent() {
+  if (currentModule === 'refraction') drawRefraction();
+  if (currentModule === 'mirrors') drawMirrors();
+  if (currentModule === 'lenses') drawLenses();
+  if (currentModule === 'association') drawAssoc();
+  if (currentModule === 'prism') drawPrism();
+  if (currentModule === 'eye') drawEye();
+}
+
+// ===================== UTILITIES =====================
+function getCanvasSize(id) {
+  const c = document.getElementById(id);
+  const w = c.parentElement.clientWidth;
+  const h = Math.min(Math.max(w * 0.55, 260), 420);
+  c.width = w;
+  c.height = h;
+  return { c, ctx: c.getContext('2d'), w, h };
+}
+
+function drawGrid(ctx, w, h, scale) {
+  ctx.strokeStyle = 'rgba(0,212,255,0.05)';
+  ctx.lineWidth = 1;
+  const step = scale;
+  for (let x = 0; x < w; x += step) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+  for (let y = 0; y < h; y += step) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+}
+
+function drawAxis(ctx, cx, cy, w, h) {
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, h); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function arrow(ctx, x1, y1, x2, y2, color, lw = 1.5) {
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = lw;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  const angle = Math.atan2(y2 - y1, x2 - x1);
+  const hs = 8;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - hs * Math.cos(angle - 0.4), y2 - hs * Math.sin(angle - 0.4));
+  ctx.lineTo(x2 - hs * Math.cos(angle + 0.4), y2 - hs * Math.sin(angle + 0.4));
+  ctx.closePath(); ctx.fill();
+}
+
+function label(ctx, text, x, y, color = '#94a3b8', size = 11) {
+  ctx.fillStyle = color;
+  ctx.font = `${size}px 'Space Mono', monospace`;
+  ctx.fillText(text, x, y);
+}
+
+function deg2rad(d) { return d * Math.PI / 180; }
+function rad2deg(r) { return r * 180 / Math.PI; }
+
+// ===================== MODULE 1: RÉFRACTION =====================
+let refrOptions = { reflect: true, multiRay: false };
+function toggleOption(opt) {
+  refrOptions[opt] = !refrOptions[opt];
+  const t = document.getElementById('toggle-' + opt);
+  t.classList.toggle('on', refrOptions[opt]);
+  drawRefraction();
+}
+
+function updateMediums() {
+  const n1 = parseFloat(document.getElementById('sel-medium1').value);
+  const n2 = parseFloat(document.getElementById('sel-medium2').value);
+  document.getElementById('sl-n1').value = Math.round(n1 * 100);
+  document.getElementById('sl-n2').value = Math.round(n2 * 100);
+  drawRefraction();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  ['sl-angle1', 'sl-n1', 'sl-n2'].forEach(id => {
+    document.getElementById(id).addEventListener('input', drawRefraction);
+  });
+  drawRefraction();
+  setTimeout(drawMirrors, 100);
+  setTimeout(drawLenses, 100);
+  setTimeout(drawAssoc, 100);
+  setTimeout(drawPrism, 100);
+  setTimeout(drawEye, 100);
+});
+
+function drawRefraction() {
+  const { c, ctx, w, h } = getCanvasSize('canvas-refraction');
+  ctx.clearRect(0, 0, w, h);
+
+  const angle1 = parseFloat(document.getElementById('sl-angle1').value);
+  const n1 = parseFloat(document.getElementById('sl-n1').value) / 100;
+  const n2 = parseFloat(document.getElementById('sl-n2').value) / 100;
+
+  document.getElementById('val-angle1').textContent = angle1 + '°';
+  document.getElementById('val-n1').textContent = n1.toFixed(2);
+  document.getElementById('val-n2').textContent = n2.toFixed(2);
+
+  // Interface horizontale au milieu
+  const iy = h / 2;
+  const ix = w / 2;
+  const sc = w / 10;
+
+  drawGrid(ctx, w, h, 40);
+
+  // Milieu 1 (haut)
+  ctx.fillStyle = `rgba(0, 50, 100, ${0.15 + (n1 - 1) * 0.3})`;
+  ctx.fillRect(0, 0, w, iy);
+  // Milieu 2 (bas)
+  ctx.fillStyle = `rgba(0, 100, 50, ${0.15 + (n2 - 1) * 0.3})`;
+  ctx.fillRect(0, iy, w, h - iy);
+
+  // Labels milieux
+  ctx.fillStyle = 'rgba(0,212,255,0.6)';
+  ctx.font = "12px 'Space Mono', monospace";
+  ctx.fillText(`n₁ = ${n1.toFixed(2)}`, 10, 20);
+  ctx.fillStyle = 'rgba(0,212,255,0.6)';
+  ctx.fillText(`n₂ = ${n2.toFixed(2)}`, 10, iy + 20);
+
+  // Interface
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(0, iy); ctx.lineTo(w, iy); ctx.stroke();
+
+  // Normale
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1; ctx.setLineDash([5, 5]);
+  ctx.beginPath(); ctx.moveTo(ix, iy - h * 0.4); ctx.lineTo(ix, iy + h * 0.4); ctx.stroke();
+  ctx.setLineDash([]);
+
+  const theta1_rad = deg2rad(angle1);
+  const sinTheta2 = (n1 / n2) * Math.sin(theta1_rad);
+  const tir = sinTheta2 > 1;
+
+  let theta2_rad = tir ? null : Math.asin(sinTheta2);
+  const theta2_deg = tir ? null : rad2deg(theta2_rad);
+
+  // Rayon incident
+  const iLen = Math.min(iy - 20, 160);
+  const ix_start = ix - iLen * Math.sin(theta1_rad);
+  const iy_start = iy - iLen * Math.cos(theta1_rad);
+  arrow(ctx, ix_start, iy_start, ix, iy, '#00d4ff', 2.5);
+
+  // Rayon réfracté
+  if (!tir && theta2_rad !== null) {
+    const rLen = Math.min(h - iy - 20, 160);
+    const rx_end = ix + rLen * Math.sin(theta2_rad);
+    const ry_end = iy + rLen * Math.cos(theta2_rad);
+    arrow(ctx, ix, iy, rx_end, ry_end, '#ff6b35', 2.5);
+  }
+
+  // Rayon réfléchi
+  if (refrOptions.reflect) {
+    const rLen = Math.min(iy - 20, 160);
+    const rx_end = ix + rLen * Math.sin(theta1_rad);
+    const ry_end = iy - rLen * Math.cos(theta1_rad);
+    arrow(ctx, ix, iy, rx_end, ry_end, '#7c3aed', 2);
+  }
+
+  // Arcs d'angle
+  function drawAngleArc(cx, cy, r, startAng, endAng, color, lbl) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAng, endAng);
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.stroke();
+    const midAng = (startAng + endAng) / 2;
+    ctx.fillStyle = color; ctx.font = "11px 'Space Mono', monospace";
+    ctx.fillText(lbl, cx + (r + 8) * Math.cos(midAng), cy + (r + 8) * Math.sin(midAng));
+  }
+  // Arc θ₁
+  drawAngleArc(ix, iy, 30, -Math.PI / 2, -Math.PI / 2 + theta1_rad, '#00d4ff', `θ₁=${angle1}°`);
+  if (!tir && theta2_rad) {
+    drawAngleArc(ix, iy, 30, Math.PI / 2 - theta2_rad, Math.PI / 2, '#ff6b35', `θ₂=${theta2_deg.toFixed(1)}°`);
+  }
+
+  // TIR indicator
+  if (tir) {
+    ctx.fillStyle = 'rgba(255,107,53,0.15)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#ff6b35';
+    ctx.font = "bold 13px 'Syne', sans-serif";
+    ctx.textAlign = 'center';
+    ctx.fillText(currentLang === 'fr' ? '⚡ RÉFLEXION TOTALE INTERNE' : '⚡ TOTAL INTERNAL REFLECTION', w / 2, h / 2 - 10);
+    ctx.textAlign = 'left';
+  }
+
+  // Calculs
+  const n1sin = n1 * Math.sin(theta1_rad);
+  const n2sin = tir ? '—' : (n2 * Math.sin(theta2_rad)).toFixed(4);
+  const thetaCrit = n1 > n2 ? rad2deg(Math.asin(n2 / n1)).toFixed(1) + '°' : '—';
+
+  document.getElementById('r-theta2').textContent = tir ? '(TIR)' : theta2_deg.toFixed(1) + '°';
+  document.getElementById('r-thetac').textContent = thetaCrit;
+  document.getElementById('r-n1sin').textContent = n1sin.toFixed(4);
+  document.getElementById('r-n2sin').textContent = tir ? '—' : n2sin;
+  document.getElementById('refr-measure').innerHTML = `θ₁ = ${angle1}°<br>θ₂ = ${tir ? 'TIR' : theta2_deg.toFixed(1) + '°'}<br>n₁sinθ₁ = n₂sinθ₂`;
+}
+
+let multiRayActive = false;
+function addMultipleRays() {
+  multiRayActive = !multiRayActive;
+  const { c, ctx, w, h } = getCanvasSize('canvas-refraction');
+  if (!multiRayActive) { drawRefraction(); return; }
+  const n1 = parseFloat(document.getElementById('sl-n1').value) / 100;
+  const n2 = parseFloat(document.getElementById('sl-n2').value) / 100;
+  const iy = h / 2;
+  for (let a = 10; a <= 80; a += 10) {
+    const tr = deg2rad(a);
+    const s2 = (n1 / n2) * Math.sin(tr);
+    if (s2 > 1) continue;
+    const r2 = Math.asin(s2);
+    const ix = w * 0.2 + (a / 80) * w * 0.6;
+    const iLen = 80;
+    arrow(ctx, ix - iLen * Math.sin(tr), iy - iLen * Math.cos(tr), ix, iy, `hsl(${a * 3},70%,65%)`, 1.5);
+    const rLen = 80;
+    arrow(ctx, ix, iy, ix + rLen * Math.sin(r2), iy + rLen * Math.cos(r2), `hsl(${a * 3},70%,55%)`, 1.5);
+  }
+}
+
+function resetRefraction() { multiRayActive = false; drawRefraction(); }
+
+function checkTIR() {
+  const n1 = parseFloat(document.getElementById('sl-n1').value) / 100;
+  const n2 = parseFloat(document.getElementById('sl-n2').value) / 100;
+  if (n1 > n2) {
+    const critAngle = rad2deg(Math.asin(n2 / n1));
+    document.getElementById('sl-angle1').value = Math.ceil(critAngle);
+    drawRefraction();
+  }
+}
+
+// ===================== MODULE 2: MIROIRS =====================
+let mirrorAnimId = null;
+function drawMirrors() {
+  const { c, ctx, w, h } = getCanvasSize('canvas-mirrors');
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 40);
+
+  const R = parseFloat(document.getElementById('sl-R').value);
+  const SA = parseFloat(document.getElementById('sl-objM').value);
+  const hObj = parseFloat(document.getElementById('sl-hM').value);
+  const type = document.getElementById('sel-mirror-type').value;
+  const sign = type === 'concave' ? 1 : -1;
+  const f = sign * R / 2;
+
+  document.getElementById('val-R').textContent = R;
+  document.getElementById('val-objM').textContent = SA;
+  document.getElementById('val-hM').textContent = hObj;
+  document.getElementById('m-f').textContent = f.toFixed(1) + ' cm';
+
+  // Scale: pixels per cm
+  const sc = w / 120;
+  const cx = w * 0.65;
+  const cy = h * 0.5;
+
+  // Axis
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+
+  // Draw mirror (curved arc)
+  const mH = h * 0.7;
+  ctx.strokeStyle = '#64748b';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  if (type === 'concave') {
+    ctx.arc(cx - R * sc, cy, R * sc, -0.4, 0.4);
+  } else {
+    ctx.arc(cx + R * sc, cy, R * sc, Math.PI - 0.4, Math.PI + 0.4);
+  }
+  ctx.stroke();
+
+  // Mirror reflective surface
+  ctx.strokeStyle = '#c0c0c0';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  if (type === 'concave') {
+    ctx.arc(cx - R * sc, cy, R * sc, -0.38, 0.38);
+  } else {
+    ctx.arc(cx + R * sc, cy, R * sc, Math.PI - 0.38, Math.PI + 0.38);
+  }
+  ctx.stroke();
+
+  // Focal point F and Center C
+  const Fpx = cx + f * sc;
+  const Cpx = cx + (2 * f) * sc;
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.arc(Fpx, cy, 5, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, 'F', Fpx - 5, cy - 10, '#fbbf24', 12);
+  ctx.fillStyle = '#f87171';
+  ctx.beginPath(); ctx.arc(Cpx, cy, 4, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, 'C', Cpx - 5, cy - 10, '#f87171', 12);
+  ctx.fillStyle = '#94a3b8';
+  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, 'S', cx + 4, cy + 15, '#94a3b8', 12);
+
+  // Conjugation
+  let SA_img, gamma;
+  if (f !== 0) {
+    SA_img = (f * SA) / (SA - f);
+    gamma = SA_img / SA;
+  } else {
+    SA_img = NaN;
+    gamma = NaN;
+  }
+
+  // Object
+  const objX = cx + SA * sc;
+  const objY = cy;
+  const objTop = cy - hObj * sc * 4;
+  arrow(ctx, objX, objY, objX, objTop, '#10b981', 2.5);
+  label(ctx, 'A', objX + 3, objY + 14, '#10b981', 11);
+  ctx.fillStyle = '#10b981';
+  ctx.beginPath(); ctx.arc(objX, objY, 4, 0, 2 * Math.PI); ctx.fill();
+
+  // Image
+  if (!isNaN(SA_img) && isFinite(SA_img) && Math.abs(SA_img) < 400) {
+    const imgX = cx + SA_img * sc;
+    const imgH = gamma * hObj * sc * 4;
+    const imgTop = cy - imgH;
+    const isReal = SA_img < 0;
+    ctx.setLineDash(isReal ? [] : [4, 4]);
+    arrow(ctx, imgX, objY, imgX, imgTop, isReal ? '#ff6b35' : 'rgba(255,107,53,0.5)', 2);
+    ctx.setLineDash([]);
+    label(ctx, "A'", imgX + 3, imgY_label(imgTop, cy), '#ff6b35', 11);
+
+    document.getElementById('m-img').textContent = SA_img.toFixed(1) + ' cm';
+    document.getElementById('m-gamma').textContent = gamma.toFixed(2);
+    const nature = (isReal ? (currentLang === 'fr' ? 'Réelle' : 'Real') : (currentLang === 'fr' ? 'Virtuelle' : 'Virtual')) + ', ' + (gamma < 0 ? (currentLang === 'fr' ? 'renversée' : 'inverted') : (currentLang === 'fr' ? 'droite' : 'upright'));
+    document.getElementById('m-nature').textContent = nature;
+    document.getElementById('mirror-measure').innerHTML = `SA = ${SA}<br>SA' = ${SA_img.toFixed(1)} cm<br>γ = ${gamma.toFixed(2)}`;
+  } else {
+    document.getElementById('m-img').textContent = '∞';
+    document.getElementById('m-gamma').textContent = '∞';
+    document.getElementById('m-nature').textContent = currentLang === 'fr' ? 'À l\'infini' : 'At infinity';
+    document.getElementById('mirror-measure').innerHTML = `SA = ${SA}<br>SA' = ∞<br>γ = ∞`;
+  }
+
+  // Draw 3 principal rays
+  if (!isNaN(SA_img) && isFinite(SA_img) && Math.abs(SA_img) < 300) {
+    const oX = objX, oY = objTop;
+    const imgX = cx + SA_img * sc;
+    const imgYval = cy - gamma * hObj * sc * 4;
+
+    // Ray 1: parallel to axis → reflects through F
+    ctx.strokeStyle = '#00d4ff'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(cx, oY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, oY); ctx.lineTo(imgX, imgYval); ctx.stroke();
+
+    // Ray 2: through F → parallel after
+    ctx.strokeStyle = '#ff6b35'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(cx, oY + (cy - oY) * (cx - oX) / (Fpx - oX) * 0); 
+    // simplified: draw to mirror then horizontal
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(cx, oY * 0.0 + cy * 0.0 + oY); // recalc
+    const r2y = oY + (cy - oY) * (cx - oX) / (Fpx - oX);
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(cx, r2y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, r2y); ctx.lineTo(imgX, imgYval); ctx.stroke();
+
+    // Ray 3: through C → same slope back
+    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(cx, cy - (oY - cy) * (cx - oX) / (Cpx - oX)); ctx.stroke();
+    const r3mirY = cy - (oY - cy) * (cx - oX) / (Cpx - oX);
+    ctx.beginPath(); ctx.moveTo(cx, r3mirY); ctx.lineTo(imgX, imgYval); ctx.stroke();
+  }
+}
+
+function imgY_label(y, cy) { return y < cy ? y - 5 : y + 15; }
+
+function animateMirrorObj() {
+  if (mirrorAnimId) { cancelAnimationFrame(mirrorAnimId); mirrorAnimId = null; return; }
+  let v = -90, dir = 1;
+  function step() {
+    v += dir * 0.5;
+    if (v > -6) { v = -6; dir = -1; }
+    if (v < -90) { v = -90; dir = 1; }
+    document.getElementById('sl-objM').value = v;
+    drawMirrors();
+    mirrorAnimId = requestAnimationFrame(step);
+  }
+  step();
+}
+
+// ===================== MODULE 3: LENTILLES =====================
+let lensAnimId = null;
+function drawLenses() {
+  const { c, ctx, w, h } = getCanvasSize('canvas-lenses');
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 40);
+
+  const type = document.getElementById('sel-lens-type').value;
+  let f = parseFloat(document.getElementById('sl-focal').value);
+  if (type === 'diverging') f = -f;
+  const OA = parseFloat(document.getElementById('sl-objL').value);
+  const hObj = parseFloat(document.getElementById('sl-hL').value);
+
+  document.getElementById('val-focal').textContent = Math.abs(f);
+  document.getElementById('val-objL').textContent = OA;
+  document.getElementById('val-hL').textContent = hObj;
+
+  const vergence = 100 / f;
+  document.getElementById('l-vergence').textContent = vergence.toFixed(2) + ' δ';
+
+  const sc = w / 140;
+  const cx = w * 0.5;
+  const cy = h * 0.5;
+
+  // Axis
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+
+  // Lens drawing
+  const lh = h * 0.7;
+  ctx.strokeStyle = type === 'converging' ? '#00d4ff' : '#ff6b35';
+  ctx.lineWidth = 3;
+  if (type === 'converging') {
+    // Biconvex
+    ctx.beginPath(); ctx.arc(cx - 20, cy, 22, -0.6, 0.6); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx + 20, cy, 22, Math.PI - 0.6, Math.PI + 0.6); ctx.stroke();
+  } else {
+    // Biconcave
+    ctx.beginPath(); ctx.arc(cx + 20, cy, 22, Math.PI - 0.6, Math.PI + 0.6); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx - 20, cy, 22, -0.6, 0.6); ctx.stroke();
+  }
+  // Lens arrows
+  ctx.fillStyle = ctx.strokeStyle;
+  ctx.font = '18px serif';
+  if (type === 'converging') {
+    ctx.fillText('↕', cx - 7, cy + 7);
+  } else {
+    ctx.fillText('⇔', cx - 10, cy + 7);
+  }
+
+  // F and F'
+  const Fpx = cx + f * sc;
+  const Fpx2 = cx - f * sc;
+  ctx.fillStyle = '#fbbf24';
+  ctx.beginPath(); ctx.arc(Fpx, cy, 5, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, "F'", Fpx - 4, cy + 18, '#fbbf24', 12);
+  ctx.fillStyle = '#f87171';
+  ctx.beginPath(); ctx.arc(Fpx2, cy, 5, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, 'F', Fpx2 - 4, cy + 18, '#f87171', 12);
+  ctx.fillStyle = '#94a3b8';
+  ctx.beginPath(); ctx.arc(cx, cy, 4, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, 'O', cx + 4, cy + 16, '#94a3b8', 12);
+
+  // Conjugation
+  let OA_img, gamma;
+  const D = 1 / f;
+  OA_img = 1 / (D + 1 / OA);
+  gamma = OA_img / OA;
+
+  // Object
+  const objX = cx + OA * sc;
+  const objTopY = cy - hObj * sc * 4;
+  arrow(ctx, objX, cy, objX, objTopY, '#10b981', 2.5);
+  ctx.fillStyle = '#10b981';
+  ctx.beginPath(); ctx.arc(objX, cy, 4, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, 'A', objX + 3, cy + 14, '#10b981', 11);
+
+  if (!isNaN(OA_img) && isFinite(OA_img) && Math.abs(OA_img) < 400) {
+    const imgX = cx + OA_img * sc;
+    const imgH = gamma * hObj * sc * 4;
+    const imgTopY = cy - imgH;
+    const isReal = OA_img > 0;
+
+    ctx.setLineDash(isReal ? [] : [5, 5]);
+    arrow(ctx, imgX, cy, imgX, imgTopY, isReal ? '#ff6b35' : 'rgba(255,107,53,0.5)', 2);
+    ctx.setLineDash([]);
+    label(ctx, "A'", imgX + 3, imgTopY < cy ? imgTopY - 5 : imgTopY + 14, '#ff6b35', 11);
+
+    document.getElementById('l-img').textContent = OA_img.toFixed(1) + ' cm';
+    document.getElementById('l-gamma').textContent = gamma.toFixed(2);
+    const nature = (isReal ? (currentLang === 'fr' ? 'Réelle' : 'Real') : (currentLang === 'fr' ? 'Virtuelle' : 'Virtual')) + ', ' + (gamma < 0 ? (currentLang === 'fr' ? 'renversée' : 'inverted') : (currentLang === 'fr' ? 'droite' : 'upright'));
+    document.getElementById('l-nature').textContent = nature;
+    document.getElementById('lens-measure').innerHTML = `OA = ${OA}<br>OA' = ${OA_img.toFixed(1)} cm<br>γ = ${gamma.toFixed(2)}`;
+
+    // Principal rays
+    const oX = objX, oY = objTopY;
+    const iX = imgX, iY = imgTopY;
+
+    // Ray 1: // to axis → goes through F'
+    ctx.strokeStyle = '#00d4ff'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(cx, oY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, oY); ctx.lineTo(iX, iY); ctx.stroke();
+    if (!isReal) {
+      ctx.setLineDash([4,4]); ctx.strokeStyle = 'rgba(0,212,255,0.4)';
+      ctx.beginPath(); ctx.moveTo(cx, oY); ctx.lineTo(cx + (Fpx - cx) * 3, oY + (iY - oY) * 3); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Ray 2: through F → // after lens
+    ctx.strokeStyle = '#ff6b35'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(cx, iY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx, iY); ctx.lineTo(iX, iY); ctx.stroke();
+
+    // Ray 3: through O
+    ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(oX, oY); ctx.lineTo(iX, iY); ctx.stroke();
+  } else {
+    document.getElementById('l-img').textContent = '∞';
+    document.getElementById('l-gamma').textContent = '∞';
+    document.getElementById('l-nature').textContent = 'À l\'infini';
+    document.getElementById('lens-measure').innerHTML = `OA = ${OA}<br>OA' = ∞`;
+  }
+}
+
+function animateLensObj() {
+  if (lensAnimId) { cancelAnimationFrame(lensAnimId); lensAnimId = null; return; }
+  let v = -80, dir = 1;
+  function step() {
+    v += dir * 0.6;
+    if (v > -4) { v = -4; dir = -1; }
+    if (v < -80) { v = -80; dir = 1; }
+    document.getElementById('sl-objL').value = v;
+    drawLenses();
+    lensAnimId = requestAnimationFrame(step);
+  }
+  step();
+}
+
+// ===================== MODULE 4: ASSOCIATION =====================
+function drawAssoc() {
+  const { c, ctx, w, h } = getCanvasSize('canvas-assoc');
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 40);
+
+  let f1 = parseFloat(document.getElementById('sl-f1').value);
+  let f2 = parseFloat(document.getElementById('sl-f2').value);
+  const d12 = parseFloat(document.getElementById('sl-d12').value);
+  const OA = parseFloat(document.getElementById('sl-objA').value);
+
+  // patch zero
+  if (f1 === 0) f1 = 0.01;
+  if (f2 === 0) f2 = 0.01;
+
+  document.getElementById('val-f1').textContent = f1;
+  document.getElementById('val-f2').textContent = f2;
+  document.getElementById('val-d12').textContent = d12;
+  document.getElementById('val-objA').textContent = OA;
+
+  const sc = w / 160;
+  const cx1 = w * 0.3;
+  const cx2 = cx1 + d12 * sc;
+  const cy = h / 2;
+
+  // Axis
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+
+  // Lenses
+  function drawLens(x, f, color) {
+    ctx.strokeStyle = color; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(x, cy - 50); ctx.lineTo(x, cy + 50); ctx.stroke();
+    ctx.font = '14px serif';
+    ctx.fillStyle = color;
+    if (f > 0) {
+      ctx.fillText('▲', x - 7, cy - 52);
+      ctx.fillText('▼', x - 7, cy + 58);
+    } else {
+      ctx.fillText('▽', x - 7, cy - 45);
+      ctx.fillText('△', x - 7, cy + 58);
+    }
+    ctx.fillStyle = '#94a3b8'; ctx.font = "11px 'Space Mono', monospace";
+    ctx.fillText(`f'=${f}`, x - 15, cy + 70);
+    const Fp = x + f * sc;
+    ctx.fillStyle = '#fbbf24';
+    ctx.beginPath(); ctx.arc(Fp, cy, 4, 0, 2 * Math.PI); ctx.fill();
+  }
+
+  drawLens(cx1, f1, '#00d4ff');
+  drawLens(cx2, f2, '#ff6b35');
+
+  // Labels
+  label(ctx, 'O₁', cx1 - 6, cy + 85, '#00d4ff', 12);
+  label(ctx, 'O₂', cx2 - 6, cy + 85, '#ff6b35', 12);
+
+  // Object
+  const objX = cx1 + OA * sc;
+  const hObj = 15;
+  arrow(ctx, objX, cy, objX, cy - hObj, '#10b981', 2);
+  ctx.fillStyle = '#10b981'; ctx.beginPath(); ctx.arc(objX, cy, 3, 0, 2 * Math.PI); ctx.fill();
+  label(ctx, 'A', objX + 3, cy + 13, '#10b981', 11);
+
+  // Image through L1
+  const OA1_img = 1 / (1 / f1 + 1 / OA);
+  const gamma1 = isFinite(OA1_img) ? OA1_img / OA : 0;
+  const O2A1 = OA1_img - d12;
+  const OA2_img = isFinite(O2A1) && O2A1 !== 0 ? 1 / (1 / f2 + 1 / O2A1) : Infinity;
+  const gamma2 = isFinite(OA2_img) && isFinite(O2A1) ? OA2_img / O2A1 : 0;
+  const gammaTot = gamma1 * gamma2;
+
+  // Intermediate image
+  if (isFinite(OA1_img) && Math.abs(OA1_img) < 300) {
+    const img1X = cx1 + OA1_img * sc;
+    const img1H = gamma1 * hObj;
+    arrow(ctx, img1X, cy, img1X, cy - img1H, 'rgba(255,107,53,0.5)', 1.5);
+    ctx.setLineDash([3, 3]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(img1X, 0); ctx.lineTo(img1X, h); ctx.stroke();
+    ctx.setLineDash([]);
+    label(ctx, "A₁'", img1X + 3, cy - img1H - 5, 'rgba(255,107,53,0.7)', 10);
+  }
+
+  // Final image
+  if (isFinite(OA2_img) && Math.abs(OA2_img) < 300) {
+    const img2X = cx2 + OA2_img * sc;
+    const img2H = gammaTot * hObj;
+    arrow(ctx, img2X, cy, img2X, cy - img2H, '#ff6b35', 2.5);
+    label(ctx, "A'", img2X + 3, cy - img2H - 5, '#ff6b35', 11);
+
+    // Ray trace simplified
+    if (isFinite(OA1_img) && Math.abs(OA1_img) < 300) {
+      const img1X = cx1 + OA1_img * sc;
+      ctx.strokeStyle = '#00d4ff'; ctx.lineWidth = 1; ctx.globalAlpha = 0.7;
+      ctx.beginPath(); ctx.moveTo(objX, cy - hObj); ctx.lineTo(cx1, cy - hObj); ctx.lineTo(img2X, cy - img2H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(objX, cy - hObj); ctx.lineTo(cx1, cy); ctx.lineTo(img2X, cy - img2H); ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+
+    document.getElementById('a-imgfin').textContent = OA2_img.toFixed(1) + ' cm';
+    document.getElementById('a-gammatot').textContent = gammaTot.toFixed(2);
+  } else {
+    document.getElementById('a-imgfin').textContent = '∞';
+    document.getElementById('a-gammatot').textContent = '∞';
+  }
+
+  // Equivalent system
+  const D1 = 100 / f1, D2 = 100 / f2;
+  const Deq = D1 + D2 - (d12 / 100) * D1 * D2;
+  const feq = 100 / Deq;
+  document.getElementById('a-feq').textContent = feq.toFixed(1) + ' cm';
+  document.getElementById('a-Deq').textContent = Deq.toFixed(2) + ' δ';
+  document.getElementById('assoc-measure').innerHTML = `f'₁=${f1} f'₂=${f2}<br>d=${d12} cm<br>D_eq=${Deq.toFixed(2)}δ`;
+}
+
+function presetAssoc(type) {
+  if (type === 'microscope') {
+    document.getElementById('sl-f1').value = 5;
+    document.getElementById('sl-f2').value = 10;
+    document.getElementById('sl-d12').value = 30;
+    document.getElementById('sl-objA').value = -6;
+  } else {
+    document.getElementById('sl-f1').value = 30;
+    document.getElementById('sl-f2').value = 5;
+    document.getElementById('sl-d12').value = 35;
+    document.getElementById('sl-objA').value = -80;
+  }
+  drawAssoc();
+}
+
+// ===================== MODULE 5: PRISME =====================
+let prismDispersion = true;
+function togglePrismDispersion() {
+  prismDispersion = !prismDispersion;
+  document.getElementById('toggle-dispersion').classList.toggle('on', prismDispersion);
+  drawPrism();
+}
+
+function drawPrism() {
+  const { c, ctx, w, h } = getCanvasSize('canvas-prism');
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 40);
+
+  const A_deg = parseFloat(document.getElementById('sl-prismA').value);
+  const n = parseFloat(document.getElementById('sl-prismN').value) / 100;
+  const i1_deg = parseFloat(document.getElementById('sl-prismI').value);
+
+  document.getElementById('val-prismA').textContent = A_deg + '°';
+  document.getElementById('val-prismN').textContent = n.toFixed(2);
+  document.getElementById('val-prismI').textContent = i1_deg + '°';
+
+  const A = deg2rad(A_deg);
+  const i1 = deg2rad(i1_deg);
+
+  // Prism vertices
+  const cx = w / 2, cy = h / 2;
+  const size = Math.min(w, h) * 0.35;
+  const ax = cx, ay = cy - size * 0.7;
+  const bx = cx - size, by = cy + size * 0.3;
+  const dx = cx + size * 0.4, dy = cy + size * 0.3;
+
+  // Draw prism
+  ctx.fillStyle = 'rgba(100, 200, 255, 0.08)';
+  ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.lineTo(dx, dy); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(100,200,255,0.7)'; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(bx, by); ctx.lineTo(dx, dy); ctx.closePath(); ctx.stroke();
+
+  // Apex angle arc
+  ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 1.5;
+  const aSide = Math.sqrt((ax - bx) ** 2 + (ay - by) ** 2);
+  ctx.beginPath();
+  ctx.arc(ax, ay, 25, Math.atan2(by - ay, bx - ax), Math.atan2(dy - ay, dx - ax));
+  ctx.stroke();
+  label(ctx, `A=${A_deg}°`, ax - 15, ay - 10, '#fbbf24', 11);
+
+  // Snell at face AB
+  const sinR1 = Math.sin(i1) / n;
+  if (sinR1 > 1) {
+    label(ctx, '⚠ TIR à face 1', cx - 60, cy, '#ff6b35', 13);
+    document.getElementById('p-deviation').textContent = 'TIR';
+    return;
+  }
+  const r1 = Math.asin(sinR1);
+  const r2 = A - r1;
+  if (r2 < 0) {
+    label(ctx, '⚠ Géométrie impossible', cx - 80, cy, '#ff6b35', 13);
+    return;
+  }
+  const sinI2 = n * Math.sin(r2);
+  if (sinI2 > 1) {
+    label(ctx, '⚠ TIR à face 2 (Réflexion totale)', cx - 90, cy, '#ff6b35', 12);
+    document.getElementById('p-deviation').textContent = 'TIR face 2';
+    return;
+  }
+  const i2 = Math.asin(sinI2);
+  const D = i1 + i2 - A;
+
+  // Min deviation
+  const Dm = 2 * Math.asin(n * Math.sin(A / 2)) - A;
+
+  document.getElementById('p-deviation').textContent = rad2deg(D).toFixed(1) + '°';
+  document.getElementById('p-devmin').textContent = rad2deg(Dm).toFixed(1) + '°';
+  document.getElementById('p-r1').textContent = rad2deg(r1).toFixed(1) + '°';
+  document.getElementById('p-i2').textContent = rad2deg(i2).toFixed(1) + '°';
+
+  // Draw ray path
+  // Entry face: AB, approx entry point at midpoint of AB
+  const entX = (ax + bx) / 2 + (ax - bx) * 0.1;
+  const entY = (ay + by) / 2 + (ay - by) * 0.1;
+  const exitX = (ax + dx) / 2;
+  const exitY = (ay + dy) / 2;
+
+  const colors = prismDispersion
+    ? ['#ff0000', '#ff7700', '#ffff00', '#00cc00', '#0077ff', '#8800ff']
+    : ['#00d4ff'];
+  const ns = prismDispersion
+    ? [n - 0.02, n - 0.012, n - 0.005, n, n + 0.008, n + 0.018]
+    : [n];
+
+  colors.forEach((col, ci) => {
+    const ni = ns[ci];
+    const sR1 = Math.sin(i1) / ni;
+    if (sR1 > 1) return;
+    const rr1 = Math.asin(sR1);
+    const rr2 = A - rr1;
+    if (rr2 < 0) return;
+    const sI2 = ni * Math.sin(rr2);
+    if (sI2 > 1) return;
+    const ii2 = Math.asin(sI2);
+    const DD = i1 + ii2 - A;
+
+    // Face AB normal direction
+    const abAngle = Math.atan2(by - ay, bx - ax);
+    const normAB = abAngle + Math.PI / 2;
+
+    // Incident ray: from left
+    const incLen = 80;
+    const incX0 = entX - incLen * Math.cos(i1_deg < 90 ? normAB + i1 - Math.PI / 2 : normAB);
+    const incY0 = entY - incLen * Math.sin(i1_deg < 90 ? normAB + i1 - Math.PI / 2 : normAB);
+
+    ctx.strokeStyle = col; ctx.lineWidth = ci === 0 ? 2 : 1.5;
+    ctx.globalAlpha = prismDispersion ? 0.9 : 1;
+
+    // Simplified ray tracing (visual approximation)
+    const midX = (entX + exitX) / 2 + (rr1 - A / 2) * 40;
+    const midY = (entY + exitY) / 2;
+
+    ctx.beginPath(); ctx.moveTo(entX - 80, entY - 10 * ci); ctx.lineTo(entX, entY); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(entX, entY); ctx.lineTo(exitX + ci * 2, exitY); ctx.stroke();
+
+    const exitLen = 100;
+    const exitAngle = abAngle - i1 + DD + ci * 0.03;
+    ctx.beginPath();
+    ctx.moveTo(exitX + ci * 2, exitY);
+    ctx.lineTo(exitX + exitLen * Math.cos(exitAngle) + ci * 2, exitY + exitLen * Math.sin(exitAngle) + ci * 8);
+    ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
+
+  document.getElementById('prism-measure').innerHTML = `A = ${A_deg}°<br>D = ${rad2deg(D).toFixed(1)}°<br>Dm = ${rad2deg(Dm).toFixed(1)}°`;
+}
+
+function setMinDeviation() {
+  const A = deg2rad(parseFloat(document.getElementById('sl-prismA').value));
+  const n = parseFloat(document.getElementById('sl-prismN').value) / 100;
+  const r_min = A / 2;
+  const i_min = rad2deg(Math.asin(n * Math.sin(r_min)));
+  document.getElementById('sl-prismI').value = Math.round(i_min);
+  drawPrism();
+}
+
+// ===================== MODULE 6: ŒIL =====================
+let eyeCorrection = false;
+function toggleEyeCorrection() {
+  eyeCorrection = !eyeCorrection;
+  document.getElementById('toggle-correction').classList.toggle('on', eyeCorrection);
+  drawEye();
+}
+
+function drawEye() {
+  const { c, ctx, w, h } = getCanvasSize('canvas-eye');
+  ctx.clearRect(0, 0, w, h);
+  drawGrid(ctx, w, h, 40);
+
+  const defect = document.getElementById('sel-eye').value;
+  const dist = parseFloat(document.getElementById('sl-eyedist').value) / 10;
+  document.getElementById('val-eyedist').textContent = dist.toFixed(1) + ' m';
+
+  const cy = h / 2;
+  const eyeX = w * 0.65;
+  const eyeR = Math.min(h * 0.3, 60);
+
+  // Eye parameters by defect
+  const params = {
+    normal:        { D: 60, retina: 24, PR: '∞', PP: '25 cm', corr: 'Aucune / None', corrD: 0 },
+    myope:         { D: 64, retina: 24, PR: '50 cm', PP: '10 cm', corr: '-4 δ', corrD: -4 },
+    hypermetrope:  { D: 57, retina: 24, PR: '-2 m (virtuel)', PP: '50 cm', corr: '+3 δ', corrD: 3 },
+    presbyte:      { D: 60, retina: 24, PR: '∞', PP: '65 cm', corr: '+2 δ (lecture)', corrD: 2 }
+  };
+  const p = params[defect];
+
+  // Axis
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(w, cy); ctx.stroke();
+
+  // Draw eye (ellipse)
+  ctx.save();
+  ctx.translate(eyeX, cy);
+  // Eye sclera
+  ctx.fillStyle = '#f8fafc';
+  ctx.beginPath(); ctx.ellipse(0, 0, eyeR * 1.1, eyeR, 0, 0, 2 * Math.PI); ctx.fill();
+  // Iris
+  const irisColor = '#5b8dd9';
+  ctx.fillStyle = irisColor;
+  ctx.beginPath(); ctx.ellipse(-eyeR * 0.15, 0, eyeR * 0.55, eyeR * 0.55, 0, 0, 2 * Math.PI); ctx.fill();
+  // Pupil
+  ctx.fillStyle = '#1a1a2e';
+  ctx.beginPath(); ctx.ellipse(-eyeR * 0.15, 0, eyeR * 0.28, eyeR * 0.28, 0, 0, 2 * Math.PI); ctx.fill();
+  // Cornea
+  ctx.strokeStyle = 'rgba(150,220,255,0.8)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(-eyeR * 0.9, 0, eyeR * 0.35, -0.7, 0.7); ctx.stroke();
+  // Retina
+  const retinaX = eyeR * 0.8;
+  ctx.strokeStyle = '#f87171'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(retinaX, -eyeR * 0.7); ctx.lineTo(retinaX, eyeR * 0.7); ctx.stroke();
+  label(ctx, 'Rétine', retinaX + 5, -eyeR * 0.75, '#f87171', 10);
+
+  // Crystallin (lens)
+  ctx.strokeStyle = '#00d4ff'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.arc(-10, 0, 18, 0, 2 * Math.PI); ctx.stroke();
+  label(ctx, 'Cristallin', -10, 28, '#00d4ff', 9);
+
+  ctx.restore();
+
+  // Image point on retina
+  const f_eye = 1000 / p.D; // in mm, roughly
+  const objDist_mm = dist * 1000;
+  const OA = -objDist_mm;
+  const OA_img = 1 / (p.D / 1000 + 1 / OA);
+  const retinaPos = p.retina;
+
+  const corrD = eyeCorrection ? p.corrD : 0;
+  const Dtotal = p.D + corrD;
+  const OA_imgCorr = 1 / (Dtotal / 1000 + 1 / OA);
+
+  // Visual indicator
+  const onRetina = Math.abs(OA_imgCorr - retinaPos) < 1.5;
+  const statusColor = onRetina ? '#10b981' : '#ef4444';
+  const statusText = onRetina ? (currentLang === 'fr' ? '✓ Image nette' : '✓ Sharp image') : (currentLang === 'fr' ? '✗ Image floue' : '✗ Blurred image');
+
+  ctx.fillStyle = statusColor;
+  ctx.font = "bold 13px 'Syne', sans-serif";
+  ctx.fillText(statusText, eyeX - eyeR - 80, cy - eyeR - 15);
+
+  // Rays
+  const objX = Math.max(20, eyeX - dist * 80);
+  const cornX = eyeX - eyeR * 1.05;
+
+  ['#00d4ff', '#ff6b35', '#10b981'].forEach((col, i) => {
+    const offset = (i - 1) * 12;
+    ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.7;
+    ctx.beginPath();
+    ctx.moveTo(objX, cy + offset);
+    ctx.lineTo(cornX, cy + offset * 0.3);
+    ctx.lineTo(eyeX + eyeR * 0.7, onRetina ? cy : cy + (onRetina ? 0 : (i - 1) * 5));
+    ctx.stroke();
+  });
+  ctx.globalAlpha = 1;
+
+  // Corrective lens if active
+  if (eyeCorrection && p.corrD !== 0) {
+    const lensX = eyeX - eyeR * 1.8;
+    ctx.strokeStyle = '#fbbf24'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(lensX, cy - 40); ctx.lineTo(lensX, cy + 40); ctx.stroke();
+    ctx.font = '12px serif'; ctx.fillStyle = '#fbbf24';
+    ctx.fillText(p.corrD > 0 ? '▲' : '▽', lensX - 7, cy - 42);
+    ctx.fillText(p.corrD > 0 ? '▼' : '△', lensX - 7, cy + 52);
+    label(ctx, `${p.corrD > 0 ? '+' : ''}${p.corrD}δ`, lensX - 15, cy + 65, '#fbbf24', 10);
+  }
+
+  // Object
+  arrow(ctx, objX, cy, objX, cy - 20, '#10b981', 2);
+
+  document.getElementById('e-pr').textContent = p.PR;
+  document.getElementById('e-pp').textContent = p.PP;
+  document.getElementById('e-verg').textContent = Dtotal.toFixed(0) + ' δ';
+  document.getElementById('e-corr').textContent = eyeCorrection ? p.corr : (currentLang === 'fr' ? 'Aucune' : 'None');
+  document.getElementById('eye-measure').innerHTML = `PR = ${p.PR}<br>PP = ${p.PP}`;
+}
+
+// ===================== WINDOW RESIZE =====================
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(redrawCurrent, 150);
+});
+
+// ===================== TOUCH/DRAG for refraction angle =====================
+const canvasR = document.getElementById('canvas-refraction');
+canvasR.addEventListener('touchstart', handleTouchR, { passive: true });
+canvasR.addEventListener('touchmove', handleTouchR, { passive: true });
+canvasR.addEventListener('mousemove', handleMouseR);
+
+function handleTouchR(e) {
+  if (!e.touches[0]) return;
+  const rect = canvasR.getBoundingClientRect();
+  const x = e.touches[0].clientX - rect.left;
+  const y = e.touches[0].clientY - rect.top;
+  updateAngleFromXY(x, y);
+}
+function handleMouseR(e) {
+  if (e.buttons !== 1) return;
+  const rect = canvasR.getBoundingClientRect();
+  updateAngleFromXY(e.clientX - rect.left, e.clientY - rect.top);
+}
+function updateAngleFromXY(x, y) {
+  const w = canvasR.width, h = canvasR.height;
+  const ix = w / 2, iy = h / 2;
+  if (y < iy) {
+    const angle = rad2deg(Math.atan2(Math.abs(x - ix), Math.abs(y - iy)));
+    document.getElementById('sl-angle1').value = Math.min(88, Math.max(0, Math.round(angle)));
+    drawRefraction();
+  }
+}
+</script>
+</body>
+</html>

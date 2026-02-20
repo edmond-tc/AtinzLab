@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Guide Électrocinétique — TCHOKPON Edmond</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   ROOT & THEME
+═══════════════════════════════════════════ */
+:root {
+  --ink:      #1a1410;
+  --ink2:     #3d3530;
+  --ink3:     #7a6e66;
+  --paper:    #faf6f0;
+  --paper2:   #f3ede3;
+  --paper3:   #ece4d6;
+  --rule:     #d8cfc4;
+  --red:      #c0392b;
+  --blue:     #1a4a8a;
+  --teal:     #0e6e6e;
+  --amber:    #b5660a;
+  --green:    #1a6b3a;
+  --purple:   #5a2d82;
+  --gold:     #c9920a;
+  --shadow:   rgba(26,20,16,0.12);
+  --r: 'Source Serif 4', Georgia, serif;
+  --h: 'Playfair Display', Georgia, serif;
+  --m: 'JetBrains Mono', monospace;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--r);
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR / NAV
+═══════════════════════════════════════════ */
+.sidebar {
+  position: fixed;
+  top: 0; left: 0;
+  width: 260px;
+  height: 100vh;
+  background: var(--ink);
+  color: var(--paper);
+  overflow-y: auto;
+  z-index: 200;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  scrollbar-width: none;
+}
+.sidebar::-webkit-scrollbar { display: none; }
+.sidebar.open { transform: translateX(0); }
+
+.sidebar-header {
+  padding: 28px 20px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.sidebar-logo {
+  font-family: var(--h);
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--paper);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.sidebar-logo em { color: #f5c842; font-style: normal; }
+.sidebar-sub {
+  font-size: 10px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.sidebar-student {
+  margin-top: 12px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  font-family: var(--m);
+  line-height: 1.5;
+}
+
+.nav-section {
+  padding: 16px 0 8px;
+}
+.nav-section-title {
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  padding: 0 20px;
+  margin-bottom: 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+}
+.nav-link:hover { color: #fff; background: rgba(255,255,255,0.06); }
+.nav-link.active { color: #f5c842; border-left-color: #f5c842; background: rgba(245,200,66,0.06); }
+.nav-icon { font-size: 14px; width: 18px; text-align: center; }
+.nav-sub {
+  padding: 6px 20px 6px 48px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  text-decoration: none;
+  display: block;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.nav-sub:hover { color: rgba(255,255,255,0.7); }
+
+/* Overlay */
+.overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 150;
+  backdrop-filter: blur(2px);
+}
+.overlay.show { display: block; }
+
+/* ═══════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════ */
+.topbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  z-index: 100;
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.menu-btn {
+  width: 36px; height: 36px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 4px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.menu-btn:hover { background: var(--paper2); }
+.menu-btn span {
+  display: block;
+  width: 16px; height: 1.5px;
+  background: var(--ink2);
+  border-radius: 2px;
+}
+.topbar-title {
+  flex: 1;
+  font-family: var(--h);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.topbar-title em { color: var(--blue); font-style: normal; }
+.progress-bar-wrap {
+  position: fixed;
+  top: 56px; left: 0; right: 0;
+  height: 3px;
+  background: var(--rule);
+  z-index: 99;
+}
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--red), var(--amber));
+  width: 0%;
+  transition: width 0.1s;
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+main {
+  padding-top: 72px;
+  max-width: 820px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 80px;
+}
+
+/* ═══════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════ */
+.guide-section {
+  margin-bottom: 64px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.guide-section.visible { opacity: 1; transform: translateY(0); }
+
+/* Section header */
+.sec-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--ink);
+}
+.sec-number {
+  font-family: var(--h);
+  font-size: 56px;
+  font-weight: 900;
+  color: var(--rule);
+  line-height: 1;
+  flex-shrink: 0;
+  user-select: none;
+}
+.sec-meta { flex: 1; }
+.sec-tag {
+  display: inline-block;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--paper);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  font-family: var(--m);
+}
+.tag-kirchhoff { background: var(--blue); }
+.tag-rc { background: var(--teal); }
+.tag-rlc { background: var(--purple); }
+.tag-sin { background: var(--red); }
+.tag-intro { background: var(--ink2); }
+.tag-guide { background: var(--green); }
+.sec-title {
+  font-family: var(--h);
+  font-size: clamp(22px, 5vw, 32px);
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.sec-title em { font-style: italic; color: var(--blue); }
+
+/* ═══════════════════════════════════════════
+   TYPOGRAPHY
+═══════════════════════════════════════════ */
+h2 {
+  font-family: var(--h);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 32px 0 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule);
+}
+h3 {
+  font-family: var(--h);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink2);
+  margin: 24px 0 10px;
+}
+p {
+  margin-bottom: 14px;
+  color: var(--ink2);
+  font-size: 15px;
+  line-height: 1.8;
+}
+strong { color: var(--ink); font-weight: 600; }
+em { font-style: italic; color: var(--blue); }
+
+/* ═══════════════════════════════════════════
+   FORMULA CARDS
+═══════════════════════════════════════════ */
+.formula-card {
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin: 20px 0;
+  position: relative;
+  overflow: hidden;
+}
+.formula-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+  transform: translate(30px,-30px);
+}
+.formula-card-label {
+  font-family: var(--m);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 10px;
+}
+.formula-card-title {
+  font-family: var(--h);
+  font-size: 15px;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 14px;
+}
+.formula-line {
+  font-family: var(--m);
+  font-size: 15px;
+  color: #f5c842;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.formula-line:last-child { border-bottom: none; }
+.formula-line .sym { color: #7dd3fc; min-width: 80px; }
+.formula-line .eq { color: rgba(255,255,255,0.4); }
+.formula-line .val { color: #f5c842; flex: 1; }
+.formula-line .unit { color: rgba(255,255,255,0.3); font-size: 11px; }
+.formula-line .note { color: #86efac; font-size: 11px; }
+
+/* ═══════════════════════════════════════════
+   CALLOUT BOXES
+═══════════════════════════════════════════ */
+.callout {
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin: 18px 0;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+.callout-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.callout-body { flex: 1; }
+.callout-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-family: var(--m);
+  letter-spacing: 0.5px;
+}
+.callout-text { font-size: 14px; line-height: 1.7; color: inherit; }
+.callout.def   { background: #e8f0fb; border-left: 3px solid var(--blue);  color: #1a3060; }
+.callout.warn  { background: #fef3e2; border-left: 3px solid var(--amber); color: #5a3a00; }
+.callout.tip   { background: #e6f7ed; border-left: 3px solid var(--green); color: #0e3d1e; }
+.callout.error { background: #fde8e8; border-left: 3px solid var(--red);   color: #5a0e0e; }
+.callout.sim   { background: #f0e8fb; border-left: 3px solid var(--purple); color: #3a1060; }
+
+/* ═══════════════════════════════════════════
+   ANALOGY CARD
+═══════════════════════════════════════════ */
+.analogy {
+  background: var(--paper2);
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 18px 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+}
+.analogy-side { text-align: center; }
+.analogy-icon { font-size: 32px; margin-bottom: 6px; }
+.analogy-label {
+  font-size: 11px;
+  font-family: var(--m);
+  letter-spacing: 1px;
+  color: var(--ink3);
+  text-transform: uppercase;
+}
+.analogy-val { font-size: 14px; font-weight: 600; color: var(--ink); margin-top: 3px; }
+.analogy-arrow { font-size: 22px; color: var(--rule); }
+
+/* ═══════════════════════════════════════════
+   STEP-BY-STEP
+═══════════════════════════════════════════ */
+.steps { margin: 20px 0; }
+.step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 18px;
+  align-items: flex-start;
+}
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--m);
+  font-size: 13px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-title { font-weight: 600; color: var(--ink); font-size: 14px; margin-bottom: 4px; }
+.step-desc { font-size: 14px; color: var(--ink2); line-height: 1.6; }
+.step-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 5px 12px;
+  background: var(--paper3);
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  font-size: 12px;
+  font-family: var(--m);
+  color: var(--ink2);
+}
+
+/* ═══════════════════════════════════════════
+   FORMULA TABLE
+═══════════════════════════════════════════ */
+.formula-table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+  border-radius: 10px;
+  border: 1px solid var(--rule);
+  box-shadow: 0 2px 12px var(--shadow);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--m);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 12px 14px;
+  text-align: left;
+  white-space: nowrap;
+}
+tbody tr { transition: background 0.15s; }
+tbody tr:hover { background: var(--paper2); }
+tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink2);
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+td.sym-col { font-family: var(--m); color: var(--blue); font-weight: 700; font-size: 14px; }
+td.formula-col { font-family: var(--m); color: var(--ink); font-size: 13px; }
+td.unit-col { font-family: var(--m); color: var(--ink3); font-size: 12px; }
+.highlight-row td { background: #fffbe6; }
+.highlight-row td.sym-col { color: var(--amber); }
+
+/* ═══════════════════════════════════════════
+   EXERCISE
+═══════════════════════════════════════════ */
+.exercise {
+  background: var(--paper2);
+  border: 1.5px solid var(--rule);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 24px 0;
+}
+.exercise-header {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.exercise-badge {
+  background: #f5c842;
+  color: var(--ink);
+  font-family: var(--m);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.exercise-title {
+  font-family: var(--h);
+  font-size: 15px;
+  color: var(--paper);
+}
+.exercise-body { padding: 18px; }
+.exercise-q { font-size: 14px; color: var(--ink); margin-bottom: 14px; line-height: 1.7; }
+.exercise-given {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+}
+.exercise-given-title {
+  font-family: var(--m);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink3);
+  margin-bottom: 8px;
+}
+.data-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.data-item {
+  font-family: var(--m);
+  font-size: 13px;
+  background: var(--paper2);
+  padding: 4px 10px;
+  border-radius: 4px;
+  color: var(--blue);
+  border: 1px solid var(--rule);
+}
+.solution-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  font-family: var(--r);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 6px;
+}
+.solution-toggle:hover { background: var(--ink); color: var(--paper); }
+.solution-body {
+  display: none;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+.solution-body.open { display: block; }
+.solution-step {
+  font-family: var(--m);
+  font-size: 13px;
+  color: var(--ink2);
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--rule);
+  line-height: 1.7;
+}
+.solution-step:last-child { border-bottom: none; }
+.solution-step .arrow { color: var(--amber); }
+.solution-step .result { color: var(--red); font-weight: 700; }
+.solution-step .comment { color: var(--green); font-style: italic; font-size: 11px; }
+
+/* ═══════════════════════════════════════════
+   SIM GUIDE CARD
+═══════════════════════════════════════════ */
+.sim-guide {
+  background: linear-gradient(135deg, #1a1410 0%, #2a2018 100%);
+  border-radius: 14px;
+  padding: 20px;
+  margin: 22px 0;
+  color: var(--paper);
+  position: relative;
+  overflow: hidden;
+}
+.sim-guide::after {
+  content: '⚡';
+  position: absolute;
+  top: -10px; right: 10px;
+  font-size: 80px;
+  opacity: 0.04;
+}
+.sim-guide-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.sim-guide-icon {
+  width: 36px; height: 36px;
+  background: #f5c842;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.sim-guide-title {
+  font-family: var(--h);
+  font-size: 16px;
+  color: var(--paper);
+}
+.sim-guide-sub { font-size: 11px; color: rgba(255,255,255,0.4); font-family: var(--m); }
+.sim-step {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: flex-start;
+}
+.sim-step-num {
+  background: rgba(245,200,66,0.15);
+  border: 1px solid rgba(245,200,66,0.3);
+  color: #f5c842;
+  font-family: var(--m);
+  font-size: 11px;
+  font-weight: 700;
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.sim-step-text { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.65; }
+.sim-step-text strong { color: #f5c842; font-weight: 600; }
+.sim-pill {
+  display: inline-block;
+  background: rgba(0,212,255,0.12);
+  border: 1px solid rgba(0,212,255,0.25);
+  color: #7dd3fc;
+  font-family: var(--m);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin: 0 2px;
+}
+
+/* ═══════════════════════════════════════════
+   CIRCUIT SCHEMA (SVG illust)
+═══════════════════════════════════════════ */
+.circuit-illust {
+  background: #f5f0e8;
+  border: 1.5px solid #c8b88a;
+  border-radius: 10px;
+  padding: 16px;
+  margin: 18px 0;
+  text-align: center;
+  overflow-x: auto;
+}
+.circuit-illust svg { max-width: 100%; height: auto; }
+
+/* ═══════════════════════════════════════════
+   TIMELINE / CURVE ILLUST
+═══════════════════════════════════════════ */
+.curve-illust {
+  background: #f5f0e8;
+  border: 1.5px solid #c8b88a;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 18px 0;
+  overflow-x: auto;
+}
+.curve-illust canvas { display: block; margin: 0 auto; }
+
+/* ═══════════════════════════════════════════
+   COMPARISON TABLE
+═══════════════════════════════════════════ */
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 18px 0;
+}
+.compare-card {
+  border-radius: 10px;
+  padding: 16px;
+  border: 1.5px solid var(--rule);
+}
+.compare-card h4 {
+  font-family: var(--h);
+  font-size: 15px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid;
+}
+.compare-card.blue { background: #f0f5ff; border-color: #b0c8f0; }
+.compare-card.blue h4 { color: var(--blue); border-color: var(--blue); }
+.compare-card.red { background: #fff0f0; border-color: #f0b0b0; }
+.compare-card.red h4 { color: var(--red); border-color: var(--red); }
+.compare-card.green { background: #f0fff5; border-color: #a0d8b0; }
+.compare-card.green h4 { color: var(--green); border-color: var(--green); }
+.compare-card.purple { background: #f8f0ff; border-color: #d0b0f0; }
+.compare-card.purple h4 { color: var(--purple); border-color: var(--purple); }
+.compare-item {
+  font-size: 13px;
+  padding: 5px 0;
+  border-bottom: 1px dashed var(--rule);
+  color: var(--ink2);
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.compare-item:last-child { border-bottom: none; }
+.compare-item .label { color: var(--ink3); }
+.compare-item .value { font-family: var(--m); font-weight: 700; font-size: 12px; }
+
+/* ═══════════════════════════════════════════
+   DIVIDER
+═══════════════════════════════════════════ */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 28px 0;
+  color: var(--rule);
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+.divider-sym { font-size: 14px; }
+
+/* ═══════════════════════════════════════════
+   HERO SECTION
+═══════════════════════════════════════════ */
+.hero {
+  background: var(--ink);
+  border-radius: 16px;
+  padding: 36px 28px;
+  margin-bottom: 48px;
+  position: relative;
+  overflow: hidden;
+  color: var(--paper);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 250px; height: 250px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -40px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,200,66,0.04) 0%, transparent 70%);
+}
+.hero-eyebrow {
+  font-family: var(--m);
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #f5c842;
+  margin-bottom: 12px;
+}
+.hero-title {
+  font-family: var(--h);
+  font-size: clamp(28px, 7vw, 46px);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 14px;
+  color: var(--paper);
+}
+.hero-title em { color: #f5c842; font-style: italic; }
+.hero-desc {
+  font-size: 15px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  max-width: 500px;
+  margin-bottom: 22px;
+}
+.hero-student-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.hero-avatar {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5c842, #ff6b35);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.hero-student-name {
+  font-family: var(--h);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--paper);
+}
+.hero-student-school {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  font-family: var(--m);
+}
+.hero-toc {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px,1fr));
+  gap: 8px;
+  margin-top: 24px;
+}
+.toc-item {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.toc-item:hover { background: rgba(255,255,255,0.1); border-color: rgba(245,200,66,0.3); }
+.toc-item-num { font-family: var(--m); font-size: 10px; color: #f5c842; margin-bottom: 3px; }
+.toc-item-name { font-size: 12px; color: rgba(255,255,255,0.8); font-weight: 600; }
+
+/* ═══════════════════════════════════════════
+   MEMORY CARD
+═══════════════════════════════════════════ */
+.memory-card {
+  background: #fffbe6;
+  border: 2px solid var(--gold);
+  border-radius: 12px;
+  padding: 18px 20px;
+  margin: 22px 0;
+}
+.memory-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-family: var(--m);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 700;
+}
+.memory-items { display: flex; flex-direction: column; gap: 8px; }
+.memory-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14px;
+  color: var(--ink);
+}
+.memory-bullet {
+  color: var(--gold);
+  font-weight: 900;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.memory-text { line-height: 1.6; }
+.memory-text code {
+  font-family: var(--m);
+  background: rgba(0,0,0,0.06);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-size: 13px;
+  color: var(--red);
+}
+
+/* ═══════════════════════════════════════════
+   BACK TO TOP
+═══════════════════════════════════════════ */
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  width: 44px; height: 44px;
+  background: var(--ink);
+  border: none;
+  border-radius: 50%;
+  color: var(--paper);
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  z-index: 90;
+}
+.fab.visible { opacity: 1; transform: translateY(0); }
+.fab:hover { background: var(--blue); }
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .compare-grid { grid-template-columns: 1fr; }
+  .hero-toc { grid-template-columns: 1fr 1fr; }
+  .analogy { grid-template-columns: 1fr; }
+  .analogy-arrow { display: none; }
+  .formula-line { font-size: 12px; flex-wrap: wrap; }
+  .formula-line .sym { min-width: 60px; }
+}
+@media (min-width: 700px) {
+  main { padding-left: 40px; padding-right: 40px; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">Electro<em>Sim</em><br>Guide</div>
+    <div class="sidebar-sub">FR / EN · Licence PC</div>
+    <div class="sidebar-student">TCHOKPON Edmond Atinzoun<br>UAC · FST · Abomey-Calavi</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Introduction</div>
+    <a class="nav-link" onclick="scrollTo_('#intro')"><span class="nav-icon">🏠</span> Introduction</a>
+    <a class="nav-link" onclick="scrollTo_('#how-to-use')"><span class="nav-icon">🎮</span> Comment utiliser le sim.</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Chapitres</div>
+    <a class="nav-link" onclick="scrollTo_('#kirchhoff')"><span class="nav-icon">⚡</span> Lois de Kirchhoff</a>
+    <a class="nav-sub" onclick="scrollTo_('#kirchhoff')">Loi des nœuds (KCL)</a>
+    <a class="nav-sub" onclick="scrollTo_('#kirchhoff')">Loi des mailles (KVL)</a>
+    <a class="nav-link" onclick="scrollTo_('#rc')"><span class="nav-icon">📡</span> Circuits RC / RL</a>
+    <a class="nav-sub" onclick="scrollTo_('#rc')">Constante de temps τ</a>
+    <a class="nav-sub" onclick="scrollTo_('#rc')">Charge & décharge</a>
+    <a class="nav-link" onclick="scrollTo_('#rlc')"><span class="nav-icon">🔄</span> Circuit RLC</a>
+    <a class="nav-sub" onclick="scrollTo_('#rlc')">Résonance ω₀</a>
+    <a class="nav-sub" onclick="scrollTo_('#rlc')">Facteur de qualité Q</a>
+    <a class="nav-link" onclick="scrollTo_('#sinus')"><span class="nav-icon">〜</span> Régime Sinusoïdal</a>
+    <a class="nav-sub" onclick="scrollTo_('#sinus')">Impédances complexes</a>
+    <a class="nav-sub" onclick="scrollTo_('#sinus')">Diagramme de Fresnel</a>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-title">Révision</div>
+    <a class="nav-link" onclick="scrollTo_('#formulas')"><span class="nav-icon">📐</span> Tableau de formules</a>
+  </div>
+</div>
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <button class="menu-btn" onclick="toggleSidebar()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="topbar-title">Guide <em>Électrocinétique</em></div>
+</div>
+<div class="progress-bar-wrap">
+  <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- ═══════════════════════ MAIN ═══════════════════════ -->
+<main>
+
+  <!-- ── HERO ── -->
+  <div class="hero" id="intro">
+    <div class="hero-eyebrow">📚 Guide complet bilingue · Niveau débutant</div>
+    <div class="hero-title">Maîtriser<br>l'<em>Électrocinétique</em></div>
+    <div class="hero-desc">
+      Cours théorique complet, méthodes pas-à-pas pour le simulateur,
+      exercices résolus et tableaux de formules. Tout ce qu'il faut pour
+      comprendre les circuits électriques.
+    </div>
+    <div class="hero-student-card">
+      <div class="hero-avatar">👤</div>
+      <div>
+        <div class="hero-student-name">TCHOKPON Edmond Atinzoun</div>
+        <div class="hero-student-school">Licence Physique-Chimie · FST · Université d'Abomey-Calavi</div>
+      </div>
+    </div>
+    <div class="hero-toc">
+      <a class="toc-item" onclick="scrollTo_('#kirchhoff')">
+        <div class="toc-item-num">CH. 01</div>
+        <div class="toc-item-name">Kirchhoff</div>
+      </a>
+      <a class="toc-item" onclick="scrollTo_('#rc')">
+        <div class="toc-item-num">CH. 02</div>
+        <div class="toc-item-name">RC / RL</div>
+      </a>
+      <a class="toc-item" onclick="scrollTo_('#rlc')">
+        <div class="toc-item-num">CH. 03</div>
+        <div class="toc-item-name">RLC</div>
+      </a>
+      <a class="toc-item" onclick="scrollTo_('#sinus')">
+        <div class="toc-item-num">CH. 04</div>
+        <div class="toc-item-name">Sinusoïdal</div>
+      </a>
+      <a class="toc-item" onclick="scrollTo_('#formulas')">
+        <div class="toc-item-num">ANNEXE</div>
+        <div class="toc-item-name">Formules</div>
+      </a>
+    </div>
+  </div>
+
+  <!-- ── HOW TO USE ── -->
+  <div class="guide-section" id="how-to-use">
+    <div class="sec-header">
+      <div class="sec-number">00</div>
+      <div class="sec-meta">
+        <span class="sec-tag tag-guide">Guide du simulateur</span>
+        <div class="sec-title">Comment utiliser<br><em>ElectroSim</em></div>
+      </div>
+    </div>
+
+    <p>Le simulateur <strong>ElectroSim</strong> est conçu pour visualiser en temps réel les phénomènes électrocinétiques. Voici comment en tirer le maximum sur mobile ou ordinateur.</p>
+
+    <div class="sim-guide">
+      <div class="sim-guide-header">
+        <div class="sim-guide-icon">🎮</div>
+        <div>
+          <div class="sim-guide-title">Prise en main rapide</div>
+          <div class="sim-guide-sub">Quick start guide</div>
+        </div>
+      </div>
+      <div class="sim-step">
+        <div class="sim-step-num">1</div>
+        <div class="sim-step-text">Choisir un <strong>onglet</strong> dans la barre de navigation : <span class="sim-pill">Kirchhoff</span> <span class="sim-pill">RC/RL</span> <span class="sim-pill">RLC</span> <span class="sim-pill">Sinusoïdal</span></div>
+      </div>
+      <div class="sim-step">
+        <div class="sim-step-num">2</div>
+        <div class="sim-step-text">Modifier les <strong>sliders</strong> (R, L, C, E, f) → le circuit et les graphes se mettent à jour instantanément</div>
+      </div>
+      <div class="sim-step">
+        <div class="sim-step-num">3</div>
+        <div class="sim-step-text">Observer l'<strong>oscilloscope</strong> : activer/désactiver les voies CH1 / CH2, ajuster TIME/DIV et VOLT/DIV</div>
+      </div>
+      <div class="sim-step">
+        <div class="sim-step-num">4</div>
+        <div class="sim-step-text">Lire les <strong>valeurs calculées</strong> automatiquement (τ, ω₀, Q, Z, φ…) dans les boîtes de résultats</div>
+      </div>
+      <div class="sim-step">
+        <div class="sim-step-num">5</div>
+        <div class="sim-step-text">Tester ses connaissances avec le <strong>Quiz interactif</strong> — 10 questions avec explications détaillées</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">Astuce mobile / Mobile tip</div>
+        <div class="callout-text">Sur smartphone, fais glisser les sliders lentement pour un contrôle précis. Les oscilloscopes sont tactiles — utilise deux doigts pour naviguer.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       CH1 : KIRCHHOFF
+  ═══════════════════════════════════════════ -->
+  <div class="guide-section" id="kirchhoff">
+    <div class="sec-header">
+      <div class="sec-number">01</div>
+      <div class="sec-meta">
+        <span class="sec-tag tag-kirchhoff">Chapitre 1 · Chapter 1</span>
+        <div class="sec-title">Lois de <em>Kirchhoff</em></div>
+      </div>
+    </div>
+
+    <h2>Qu'est-ce que l'électrocinétique ?</h2>
+    <p>
+      L'électrocinétique est la branche de la physique qui étudie les <strong>courants électriques en mouvement</strong> dans des circuits. Un circuit électrique, c'est un chemin fermé parcouru par des charges électriques (électrons). Pour analyser ces circuits, on utilise deux lois fondamentales proposées par le physicien allemand <strong>Gustav Kirchhoff</strong> en 1845.
+    </p>
+
+    <div class="callout def">
+      <div class="callout-icon">📖</div>
+      <div class="callout-body">
+        <div class="callout-title">Vocabulaire de base / Basic vocabulary</div>
+        <div class="callout-text">
+          <strong>Nœud (Node) :</strong> point où se rejoignent au moins 3 fils conducteurs.<br>
+          <strong>Branche (Branch) :</strong> portion de circuit entre deux nœuds consécutifs.<br>
+          <strong>Maille (Loop) :</strong> chemin fermé dans un circuit.<br>
+          <strong>Courant I :</strong> débit de charges, en Ampères (A).<br>
+          <strong>Tension U :</strong> différence de potentiel entre deux points, en Volts (V).
+        </div>
+      </div>
+    </div>
+
+    <h2>1.1 — Loi des Nœuds (KCL)</h2>
+    <p>
+      La <strong>Loi des Nœuds</strong> (Kirchhoff's Current Law — KCL) dit : <em>"En tout nœud d'un circuit, la somme des courants qui entrent est égale à la somme des courants qui sortent."</em>
+    </p>
+    <p>Physiquement, c'est une conséquence directe de la <strong>conservation de la charge électrique</strong> : les électrons ne disparaissent pas dans un nœud, ils se redistribuent.</p>
+
+    <div class="analogy">
+      <div class="analogy-side">
+        <div class="analogy-icon">🚰</div>
+        <div class="analogy-label">Analogie</div>
+        <div class="analogy-val">Tuyaux d'eau :<br>débit entrant = débit sortant</div>
+      </div>
+      <div class="analogy-arrow">⟺</div>
+      <div class="analogy-side">
+        <div class="analogy-icon">⚡</div>
+        <div class="analogy-label">Électricité</div>
+        <div class="analogy-val">Circuit :<br>∑I entrant = ∑I sortant</div>
+      </div>
+    </div>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Formule fondamentale · KCL</div>
+      <div class="formula-card-title">Loi des Nœuds</div>
+      <div class="formula-line">
+        <span class="sym">∑ Iₑₙₜᵣₐₙₜₛ</span><span class="eq">=</span><span class="val">∑ Iₛₒᵣₜₐₙₜₛ</span>
+      </div>
+      <div class="formula-line">
+        <span class="sym">Forme algébrique</span><span class="eq">:</span><span class="val">∑ Iₖ = 0</span><span class="note">(en convention algébrique)</span>
+      </div>
+      <div class="formula-line">
+        <span class="sym">Exemple</span><span class="eq">:</span><span class="val">I₁ = I₂ + I₃</span><span class="note">→ nœud à 3 branches</span>
+      </div>
+    </div>
+
+    <!-- Schéma KCL SVG -->
+    <div class="circuit-illust">
+      <svg viewBox="0 0 320 160" width="320" height="160" xmlns="http://www.w3.org/2000/svg">
+        <!-- nœud -->
+        <circle cx="160" cy="80" r="8" fill="#1a4a8a"/>
+        <text x="168" y="68" fill="#1a4a8a" font-family="JetBrains Mono" font-size="11" font-weight="bold">A (nœud)</text>
+        <!-- I1 entrant gauche -->
+        <line x1="40" y1="80" x2="150" y2="80" stroke="#c0392b" stroke-width="2.5"/>
+        <polygon points="150,80 138,74 138,86" fill="#c0392b"/>
+        <text x="75" y="68" fill="#c0392b" font-family="JetBrains Mono" font-size="12" font-weight="bold">I₁</text>
+        <!-- I2 sortant haut-droite -->
+        <line x1="166" y1="74" x2="260" y2="30" stroke="#1a6b3a" stroke-width="2.5"/>
+        <polygon points="260,30 248,38 256,46" fill="#1a6b3a"/>
+        <text x="220" y="40" fill="#1a6b3a" font-family="JetBrains Mono" font-size="12" font-weight="bold">I₂</text>
+        <!-- I3 sortant bas-droite -->
+        <line x1="166" y1="86" x2="260" y2="130" stroke="#b5660a" stroke-width="2.5"/>
+        <polygon points="260,130 248,122 256,114" fill="#b5660a"/>
+        <text x="220" y="130" fill="#b5660a" font-family="JetBrains Mono" font-size="12" font-weight="bold">I₃</text>
+        <!-- Équation -->
+        <rect x="10" y="120" width="140" height="30" rx="5" fill="#1a4a8a"/>
+        <text x="80" y="140" fill="white" font-family="JetBrains Mono" font-size="13" font-weight="bold" text-anchor="middle">I₁ = I₂ + I₃</text>
+      </svg>
+    </div>
+
+    <h2>1.2 — Loi des Mailles (KVL)</h2>
+    <p>
+      La <strong>Loi des Mailles</strong> (Kirchhoff's Voltage Law — KVL) dit : <em>"Dans toute maille fermée d'un circuit, la somme algébrique des tensions est nulle."</em>
+    </p>
+    <p>En pratique : si on fait le tour d'une maille, la somme des <strong>chutes de tension</strong> aux bornes des résistances est égale à la somme des <strong>forces électromotrices (f.é.m.)</strong> des générateurs.</p>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Formule fondamentale · KVL</div>
+      <div class="formula-card-title">Loi des Mailles</div>
+      <div class="formula-line">
+        <span class="sym">∑ tensions</span><span class="eq">=</span><span class="val">0</span><span class="note">(dans une maille fermée)</span>
+      </div>
+      <div class="formula-line">
+        <span class="sym">∑ e.m.f.</span><span class="eq">=</span><span class="val">∑ R·I</span><span class="note">(somme des chutes)</span>
+      </div>
+      <div class="formula-line">
+        <span class="sym">Exemple</span><span class="eq">:</span><span class="val">E₁ = R₁I₁ + R₃I₃</span>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Convention de signe / Sign convention</div>
+        <div class="callout-text">
+          Quand on parcourt une maille, on choisit un sens de parcours. Si on traverse un générateur de − vers +, sa tension est <strong>positive</strong>. Si on traverse une résistance dans le sens du courant, la chute de tension est <strong>positive</strong>. Sens contraire → signe négatif.
+        </div>
+      </div>
+    </div>
+
+    <h2>1.3 — Méthode pour résoudre un circuit</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Identifier nœuds et mailles</div>
+          <div class="step-desc">Repérer tous les nœuds (N) et toutes les mailles (M). Un circuit avec N nœuds et M branches donne N−1 équations KCL et M−(N−1) équations KVL.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Orienter les courants</div>
+          <div class="step-desc">Choisir un sens pour chaque courant de branche (si le résultat est négatif, le courant va dans l'autre sens — c'est normal).</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Écrire les équations</div>
+          <div class="step-desc">Appliquer KCL à chaque nœud indépendant et KVL à chaque maille indépendante.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Résoudre le système</div>
+          <div class="step-desc">Résoudre le système d'équations (substitution ou matrice). Vérifier avec la puissance : ∑P générateurs = ∑P récepteurs.</div>
+          <div class="step-action">🖩 Dans le simulateur → onglet Kirchhoff</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EXERCICE KIRCHHOFF -->
+    <div class="exercise">
+      <div class="exercise-header">
+        <span class="exercise-badge">EXERCICE 1</span>
+        <span class="exercise-title">Circuit à deux mailles — Application directe</span>
+      </div>
+      <div class="exercise-body">
+        <div class="exercise-q">
+          Un circuit comporte deux générateurs E₁ et E₂ et trois résistances R₁, R₂, R₃.
+          Calculer les courants I₁, I₂, I₃ et la tension VAB.
+        </div>
+        <div class="exercise-given">
+          <div class="exercise-given-title">Données / Given data</div>
+          <div class="data-grid">
+            <span class="data-item">E₁ = 12 V</span>
+            <span class="data-item">E₂ = 6 V</span>
+            <span class="data-item">R₁ = 100 Ω</span>
+            <span class="data-item">R₂ = 200 Ω</span>
+            <span class="data-item">R₃ = 150 Ω</span>
+          </div>
+        </div>
+        <button class="solution-toggle" onclick="toggleSol(this)">📐 Voir la solution</button>
+        <div class="solution-body">
+          <div class="solution-step"><span class="arrow">→</span> Maille 1 : E₁ = R₁·I₁ + R₃·I₃ = 100I₁ + 150(I₁−I₂)</div>
+          <div class="solution-step"><span class="arrow">→</span> Maille 2 : E₂ = R₂·I₂ + R₃·I₃ ... attention au sens → −E₂ = R₃(I₂−I₁) + R₂·I₂</div>
+          <div class="solution-step"><span class="arrow">→</span> Système : (R₁+R₃)I₁ − R₃·I₂ = E₁ → <strong>250I₁ − 150I₂ = 12</strong></div>
+          <div class="solution-step"><span class="arrow">→</span> Et : −R₃·I₁ + (R₂+R₃)I₂ = −E₂ → <strong>−150I₁ + 350I₂ = −6</strong></div>
+          <div class="solution-step"><span class="arrow">→</span> Déterminant : Δ = 250×350 − 150×150 = 87500 − 22500 = <strong>65000</strong></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">I₁ = (12×350 − (−150)×(−6)) / 65000 = (4200−900)/65000 ≈ 50.8 mA</span></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">I₂ = (250×(−6) − (−150)×12) / 65000 = (−1500+1800)/65000 ≈ 4.6 mA</span></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">I₃ = I₁ − I₂ ≈ 46.2 mA</span></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">VAB = R₃ × I₃ ≈ 150 × 0.0462 ≈ 6.93 V</span></div>
+          <div class="solution-step"><span class="comment">✅ Vérifier dans le simulateur : onglet Kirchhoff, régler R₁=100, R₂=200, R₃=150, E₁=12, E₂=6</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-guide">
+      <div class="sim-guide-header">
+        <div class="sim-guide-icon">⚡</div>
+        <div>
+          <div class="sim-guide-title">Simuler Kirchhoff</div>
+          <div class="sim-guide-sub">Pas à pas dans ElectroSim</div>
+        </div>
+      </div>
+      <div class="sim-step"><div class="sim-step-num">1</div><div class="sim-step-text">Ouvrir l'onglet <strong>⚡ Kirchhoff</strong> dans le simulateur</div></div>
+      <div class="sim-step"><div class="sim-step-num">2</div><div class="sim-step-text">Choisir le circuit : <span class="sim-pill">2 Mailles</span> <span class="sim-pill">3 Branches</span> ou <span class="sim-pill">Pont</span></div></div>
+      <div class="sim-step"><div class="sim-step-num">3</div><div class="sim-step-text">Ajuster les sliders <strong>E₁, E₂, R₁, R₂, R₃</strong> → le multimètre Fluke affiche I₁ en temps réel</div></div>
+      <div class="sim-step"><div class="sim-step-num">4</div><div class="sim-step-text">Lire <strong>I₁, I₂, I₃ et VAB</strong> dans les boîtes de résultats — vérifier que I₁ = I₂ + I₃ (KCL)</div></div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-sym">◆</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       CH2 : RC / RL
+  ═══════════════════════════════════════════ -->
+  <div class="guide-section" id="rc">
+    <div class="sec-header">
+      <div class="sec-number">02</div>
+      <div class="sec-meta">
+        <span class="sec-tag tag-rc">Chapitre 2 · Chapter 2</span>
+        <div class="sec-title">Circuits <em>RC & RL</em><br>— Régime Transitoire</div>
+      </div>
+    </div>
+
+    <p>Lorsqu'on connecte ou déconnecte une source à un circuit contenant un condensateur (C) ou une bobine (L), il se passe une phase transitoire avant d'atteindre un <strong>régime permanent</strong>. Cette phase est gouvernée par une équation différentielle du premier ordre.</p>
+
+    <h2>2.1 — Le condensateur (Capacitor)</h2>
+    <p>Un condensateur stocke de l'énergie sous forme de <strong>champ électrique</strong>. Sa tension ne peut pas changer instantanément.</p>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Relations fondamentales · Condensateur</div>
+      <div class="formula-card-title">Condensateur — Capacitor C</div>
+      <div class="formula-line"><span class="sym">i(t)</span><span class="eq">=</span><span class="val">C · dVc/dt</span><span class="note">courant = C × dérivée tension</span></div>
+      <div class="formula-line"><span class="sym">Vc(t)</span><span class="eq">=</span><span class="val">(1/C) ∫ i dt</span><span class="note">tension = intégrale courant/C</span></div>
+      <div class="formula-line"><span class="sym">Énergie</span><span class="eq">=</span><span class="val">½ C·V²</span><span class="unit">Joules</span></div>
+      <div class="formula-line"><span class="sym">Unité C</span><span class="eq">:</span><span class="val">Farad (F)</span><span class="note">souvent µF ou nF</span></div>
+    </div>
+
+    <h2>2.2 — La bobine (Inductor)</h2>
+    <p>Une bobine stocke de l'énergie sous forme de <strong>champ magnétique</strong>. Le courant qui la traverse ne peut pas changer instantanément.</p>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Relations fondamentales · Bobine</div>
+      <div class="formula-card-title">Bobine — Inductor L</div>
+      <div class="formula-line"><span class="sym">VL(t)</span><span class="eq">=</span><span class="val">L · di/dt</span><span class="note">tension = L × dérivée courant</span></div>
+      <div class="formula-line"><span class="sym">i(t)</span><span class="eq">=</span><span class="val">(1/L) ∫ V dt</span></div>
+      <div class="formula-line"><span class="sym">Énergie</span><span class="eq">=</span><span class="val">½ L·I²</span><span class="unit">Joules</span></div>
+      <div class="formula-line"><span class="sym">Unité L</span><span class="eq">:</span><span class="val">Henry (H)</span><span class="note">souvent mH</span></div>
+    </div>
+
+    <h2>2.3 — Circuit RC en charge</h2>
+    <p>On connecte une résistance R et un condensateur C (initialement vide) à une source E. L'équation différentielle régissant la tension Vc est :</p>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Équation différentielle · RC Charge</div>
+      <div class="formula-card-title">Circuit RC en charge (charging)</div>
+      <div class="formula-line"><span class="sym">RC·dVc/dt</span><span class="eq">+</span><span class="val">Vc = E</span><span class="note">équation diff. ordre 1</span></div>
+      <div class="formula-line"><span class="sym">Vc(t)</span><span class="eq">=</span><span class="val">E·(1 − e^(−t/τ))</span><span class="note">solution</span></div>
+      <div class="formula-line"><span class="sym">i(t)</span><span class="eq">=</span><span class="val">(E/R)·e^(−t/τ)</span><span class="note">courant décroît</span></div>
+      <div class="formula-line"><span class="sym">τ</span><span class="eq">=</span><span class="val">R × C</span><span class="unit">secondes</span></div>
+    </div>
+
+    <div class="callout def">
+      <div class="callout-icon">🔑</div>
+      <div class="callout-body">
+        <div class="callout-title">La constante de temps τ (tau) — The time constant</div>
+        <div class="callout-text">
+          τ est le temps au bout duquel le condensateur atteint <strong>63,2%</strong> de sa charge finale.<br>
+          À <strong>2τ</strong> → 86,5% · À <strong>3τ</strong> → 95% · À <strong>5τ</strong> → 99,3% (≈ régime permanent)<br><br>
+          <strong>Pour RC :</strong> τ = RC &nbsp;|&nbsp; <strong>Pour RL :</strong> τ = L/R
+        </div>
+      </div>
+    </div>
+
+    <!-- Tableau des valeurs de tau -->
+    <div class="formula-table-wrap">
+      <table>
+        <thead><tr><th>Temps</th><th>Vc(t) / E (charge)</th><th>Vc(t) / E (décharge)</th><th>Signification</th></tr></thead>
+        <tbody>
+          <tr><td class="sym-col">t = 0</td><td class="formula-col">0%</td><td class="formula-col">100%</td><td>Condition initiale</td></tr>
+          <tr class="highlight-row"><td class="sym-col">t = τ</td><td class="formula-col">63.2%</td><td class="formula-col">36.8%</td><td>Définition de τ</td></tr>
+          <tr><td class="sym-col">t = 2τ</td><td class="formula-col">86.5%</td><td class="formula-col">13.5%</td><td>Quasi chargé</td></tr>
+          <tr><td class="sym-col">t = 3τ</td><td class="formula-col">95.0%</td><td class="formula-col">5.0%</td><td>Très avancé</td></tr>
+          <tr class="highlight-row"><td class="sym-col">t = 5τ</td><td class="formula-col">99.3%</td><td class="formula-col">0.7%</td><td>⇒ Régime permanent</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>2.4 — Circuit RL</h2>
+    <p>Pour un circuit RL (résistance + bobine), la dynamique est similaire mais c'est le <strong>courant</strong> qui évolue exponentiellement, et τ = L/R.</p>
+
+    <div class="compare-grid">
+      <div class="compare-card blue">
+        <h4>Circuit RC</h4>
+        <div class="compare-item"><span class="label">τ</span><span class="value">R·C</span></div>
+        <div class="compare-item"><span class="label">Grandeur qui évolue</span><span class="value">Vc(t)</span></div>
+        <div class="compare-item"><span class="label">Condition initiale</span><span class="value">Vc(0)</span></div>
+        <div class="compare-item"><span class="label">Régime permanent</span><span class="value">Vc = E</span></div>
+        <div class="compare-item"><span class="label">Énergie stockée</span><span class="value">½CV²</span></div>
+      </div>
+      <div class="compare-card green">
+        <h4>Circuit RL</h4>
+        <div class="compare-item"><span class="label">τ</span><span class="value">L/R</span></div>
+        <div class="compare-item"><span class="label">Grandeur qui évolue</span><span class="value">i(t)</span></div>
+        <div class="compare-item"><span class="label">Condition initiale</span><span class="value">i(0)</span></div>
+        <div class="compare-item"><span class="label">Régime permanent</span><span class="value">i = E/R</span></div>
+        <div class="compare-item"><span class="label">Énergie stockée</span><span class="value">½LI²</span></div>
+      </div>
+    </div>
+
+    <!-- EXERCICE RC -->
+    <div class="exercise">
+      <div class="exercise-header">
+        <span class="exercise-badge">EXERCICE 2</span>
+        <span class="exercise-title">Circuit RC — Calcul de τ et Vc(t)</span>
+      </div>
+      <div class="exercise-body">
+        <div class="exercise-q">Un condensateur de 100 µF est chargé via une résistance de 10 kΩ par une source de 10 V. Calculer τ, V(τ), et le temps pour atteindre 95% de la charge finale.</div>
+        <div class="exercise-given">
+          <div class="exercise-given-title">Données</div>
+          <div class="data-grid">
+            <span class="data-item">R = 10 kΩ = 10⁴ Ω</span>
+            <span class="data-item">C = 100 µF = 10⁻⁴ F</span>
+            <span class="data-item">E = 10 V</span>
+          </div>
+        </div>
+        <button class="solution-toggle" onclick="toggleSol(this)">📐 Voir la solution</button>
+        <div class="solution-body">
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">τ = R·C = 10⁴ × 10⁻⁴ = 1 s</span></div>
+          <div class="solution-step"><span class="arrow">→</span> Vc(τ) = E·(1 − e⁻¹) = 10 × 0.632 = <span class="result">6.32 V</span></div>
+          <div class="solution-step"><span class="arrow">→</span> I(0) = E/R = 10/10000 = <span class="result">1 mA</span> (courant initial)</div>
+          <div class="solution-step"><span class="arrow">→</span> 95% de charge → t = 3τ = <span class="result">3 s</span></div>
+          <div class="solution-step"><span class="comment">✅ Dans le simulateur : R=10kΩ, C=100µF, E=10V → observer le marqueur τ sur l'oscilloscope</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-guide">
+      <div class="sim-guide-header">
+        <div class="sim-guide-icon">📡</div>
+        <div><div class="sim-guide-title">Simuler RC/RL</div><div class="sim-guide-sub">Mode oscilloscope</div></div>
+      </div>
+      <div class="sim-step"><div class="sim-step-num">1</div><div class="sim-step-text">Onglet <strong>📡 RC/RL</strong> → choisir <span class="sim-pill">RC Charge</span> <span class="sim-pill">RC Décharge</span> ou <span class="sim-pill">RL Charge</span></div></div>
+      <div class="sim-step"><div class="sim-step-num">2</div><div class="sim-step-text">Régler R et C/L avec les sliders → <strong>τ est recalculé automatiquement</strong></div></div>
+      <div class="sim-step"><div class="sim-step-num">3</div><div class="sim-step-text">Observer sur l'oscilloscope : <strong>CH1 (bleu) = Vc(t)</strong>, <strong>CH2 (orange) = i(t)</strong>. La ligne jaune pointillée = marqueur τ</div></div>
+      <div class="sim-step"><div class="sim-step-num">4</div><div class="sim-step-text">Changer TIME/DIV pour voir 1τ, 3τ, ou 5τ sur l'écran de l'oscilloscope</div></div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-sym">◆</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       CH3 : RLC
+  ═══════════════════════════════════════════ -->
+  <div class="guide-section" id="rlc">
+    <div class="sec-header">
+      <div class="sec-number">03</div>
+      <div class="sec-meta">
+        <span class="sec-tag tag-rlc">Chapitre 3 · Chapter 3</span>
+        <div class="sec-title">Circuit <em>RLC</em> —<br>Résonance & Amortissement</div>
+      </div>
+    </div>
+
+    <p>Un circuit RLC associe une résistance R, une bobine L et un condensateur C. Il est régi par une <strong>équation différentielle du second ordre</strong>. Sa caractéristique remarquable est la <strong>résonance</strong> : à une fréquence précise, le circuit entre en oscillation maximale.</p>
+
+    <h2>3.1 — Équation différentielle</h2>
+    <p>En appliquant KVL dans le circuit RLC série :</p>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Équation du mouvement · RLC</div>
+      <div class="formula-card-title">Équation différentielle du 2nd ordre</div>
+      <div class="formula-line"><span class="sym">L·di/dt</span><span class="eq">+</span><span class="val">R·i + (1/C)∫i dt = E</span></div>
+      <div class="formula-line"><span class="sym">L·d²Vc/dt²</span><span class="eq">+</span><span class="val">R·dVc/dt + (1/C)·Vc = E</span><span class="note">en termes de Vc</span></div>
+      <div class="formula-line"><span class="sym">d²Vc/dt²</span><span class="eq">+</span><span class="val">2α·dVc/dt + ω₀²·Vc = ω₀²·E</span><span class="note">forme canonique</span></div>
+    </div>
+
+    <h2>3.2 — Paramètres fondamentaux</h2>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Paramètres clés / Key parameters</div>
+      <div class="formula-card-title">Pulsation propre, facteur d'amortissement, qualité</div>
+      <div class="formula-line"><span class="sym">ω₀</span><span class="eq">=</span><span class="val">1 / √(L·C)</span><span class="unit">rad/s</span></div>
+      <div class="formula-line"><span class="sym">f₀</span><span class="eq">=</span><span class="val">ω₀ / (2π)</span><span class="unit">Hz</span></div>
+      <div class="formula-line"><span class="sym">α</span><span class="eq">=</span><span class="val">R / (2L)</span><span class="note">coefficient d'amortissement</span></div>
+      <div class="formula-line"><span class="sym">Q</span><span class="eq">=</span><span class="val">(1/R)·√(L/C) = ω₀L/R</span><span class="note">facteur de qualité</span></div>
+      <div class="formula-line"><span class="sym">ξ</span><span class="eq">=</span><span class="val">α/ω₀ = 1/(2Q)</span><span class="note">taux d'amortissement</span></div>
+    </div>
+
+    <h2>3.3 — Les trois régimes</h2>
+    <p>Selon la valeur de R (et donc de Q), le circuit présente trois comportements différents :</p>
+
+    <div class="compare-grid">
+      <div class="compare-card blue">
+        <h4>Sous-amorti</h4>
+        <div class="compare-item"><span class="label">Condition</span><span class="value">α &lt; ω₀</span></div>
+        <div class="compare-item"><span class="label">Q</span><span class="value">&gt; 0.5</span></div>
+        <div class="compare-item"><span class="label">Comportement</span><span class="value">Oscillant</span></div>
+        <div class="compare-item"><span class="label">Vc(t)</span><span class="value">Sinusoïde amortie</span></div>
+        <div class="compare-item"><span class="label">Quand</span><span class="value">R petit</span></div>
+      </div>
+      <div class="compare-card red">
+        <h4>Sur-amorti</h4>
+        <div class="compare-item"><span class="label">Condition</span><span class="value">α &gt; ω₀</span></div>
+        <div class="compare-item"><span class="label">Q</span><span class="value">&lt; 0.5</span></div>
+        <div class="compare-item"><span class="label">Comportement</span><span class="value">Apériodique</span></div>
+        <div class="compare-item"><span class="label">Vc(t)</span><span class="value">Exp. décroissante</span></div>
+        <div class="compare-item"><span class="label">Quand</span><span class="value">R grand</span></div>
+      </div>
+      <div class="compare-card green">
+        <h4>Critique</h4>
+        <div class="compare-item"><span class="label">Condition</span><span class="value">α = ω₀</span></div>
+        <div class="compare-item"><span class="label">Q</span><span class="value">= 0.5</span></div>
+        <div class="compare-item"><span class="label">Comportement</span><span class="value">Limite</span></div>
+        <div class="compare-item"><span class="label">Vc(t)</span><span class="value">Retour le plus rapide</span></div>
+        <div class="compare-item"><span class="label">Quand</span><span class="value">Rcrit = 2√(L/C)</span></div>
+      </div>
+      <div class="compare-card purple">
+        <h4>Non amorti</h4>
+        <div class="compare-item"><span class="label">Condition</span><span class="value">R = 0</span></div>
+        <div class="compare-item"><span class="label">Q</span><span class="value">→ ∞</span></div>
+        <div class="compare-item"><span class="label">Comportement</span><span class="value">Oscillations pures</span></div>
+        <div class="compare-item"><span class="label">Vc(t)</span><span class="value">Sinusoïde permanente</span></div>
+        <div class="compare-item"><span class="label">Quand</span><span class="value">Idéal théorique</span></div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🎯</div>
+      <div class="callout-body">
+        <div class="callout-title">Interprétation physique du facteur Q</div>
+        <div class="callout-text">
+          Q mesure la <strong>sélectivité</strong> du circuit. Plus Q est grand, plus la résonance est nette et étroite en fréquence. En pratique : Q &gt; 10 → circuit très sélectif (utilisé en radio). Q &lt; 0.5 → pas de résonance.
+        </div>
+      </div>
+    </div>
+
+    <!-- EXERCICE RLC -->
+    <div class="exercise">
+      <div class="exercise-header">
+        <span class="exercise-badge">EXERCICE 3</span>
+        <span class="exercise-title">Circuit RLC série — Résonance et régime</span>
+      </div>
+      <div class="exercise-body">
+        <div class="exercise-q">Calculer ω₀, f₀, Q et α, puis identifier le régime pour deux valeurs de R.</div>
+        <div class="exercise-given">
+          <div class="exercise-given-title">Données</div>
+          <div class="data-grid">
+            <span class="data-item">L = 100 mH</span>
+            <span class="data-item">C = 100 µF</span>
+            <span class="data-item">Cas A : R = 50 Ω</span>
+            <span class="data-item">Cas B : R = 500 Ω</span>
+          </div>
+        </div>
+        <button class="solution-toggle" onclick="toggleSol(this)">📐 Voir la solution</button>
+        <div class="solution-body">
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">ω₀ = 1/√(0.1 × 100×10⁻⁶) = 1/√(10⁻⁵) = 1/0.00316 ≈ 316.2 rad/s</span></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">f₀ = 316.2/(2π) ≈ 50.3 Hz</span></div>
+          <div class="solution-step"><span class="arrow">→</span> Cas A (R=50Ω) : α = 50/(2×0.1) = <span class="result">250 s⁻¹</span>, Q = 316.2/50 × 0.1... = (1/50)√(0.1/100µ) ≈ <span class="result">6.32</span> → <strong>sous-amorti, oscillant</strong></div>
+          <div class="solution-step"><span class="arrow">→</span> Cas B (R=500Ω) : α = 2500 s⁻¹ &gt; ω₀=316 → Q ≈ <span class="result">0.63</span> → <strong>toujours sous-amorti légèrement</strong></div>
+          <div class="solution-step"><span class="arrow">→</span> Résistance critique : Rcrit = 2√(L/C) = 2√(0.1/100×10⁻⁶) = 2×31.6 = <span class="result">63.2 Ω</span></div>
+          <div class="solution-step"><span class="comment">✅ Dans le simulateur : onglet RLC → faire varier R et observer le changement de régime sur l'oscilloscope</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-guide">
+      <div class="sim-guide-header">
+        <div class="sim-guide-icon">🔄</div>
+        <div><div class="sim-guide-title">Explorer la résonance RLC</div><div class="sim-guide-sub">Expérience interactive</div></div>
+      </div>
+      <div class="sim-step"><div class="sim-step-num">1</div><div class="sim-step-text">Onglet <strong>🔄 RLC</strong> → mettre <strong>R = 0 Ω</strong> → observer les oscillations pures (non amorti)</div></div>
+      <div class="sim-step"><div class="sim-step-num">2</div><div class="sim-step-text">Augmenter progressivement R → voir les oscillations s'amortir. Le label <strong>Régime</strong> change en temps réel</div></div>
+      <div class="sim-step"><div class="sim-step-num">3</div><div class="sim-step-text">Trouver la résistance critique : R = 2√(L/C) → le circuit passe du sous-amorti au sur-amorti</div></div>
+      <div class="sim-step"><div class="sim-step-num">4</div><div class="sim-step-text">Varier L et C → observer que ω₀ change → <strong>ω₀ = 1/√(LC)</strong> s'affiche en bas de l'oscilloscope</div></div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-sym">◆</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       CH4 : SINUSOÏDAL
+  ═══════════════════════════════════════════ -->
+  <div class="guide-section" id="sinus">
+    <div class="sec-header">
+      <div class="sec-number">04</div>
+      <div class="sec-meta">
+        <span class="sec-tag tag-sin">Chapitre 4 · Chapter 4</span>
+        <div class="sec-title">Régime <em>Sinusoïdal</em> —<br>Impédances & Fresnel</div>
+      </div>
+    </div>
+
+    <p>En régime sinusoïdal permanent, la source impose une tension <strong>sinusoïdale</strong> : v(t) = Vm·sin(ωt). Toutes les grandeurs (courants, tensions) sont alors sinusoïdales à la même fréquence, mais pas nécessairement en phase.</p>
+
+    <h2>4.1 — Représentation complexe (phaseurs)</h2>
+    <p>Pour simplifier les calculs, on utilise les <strong>phaseurs</strong> (nombres complexes) : chaque sinusoïde V·cos(ωt+φ) est représentée par le complexe V·e^(jφ). Cela transforme les équations différentielles en équations algébriques.</p>
+
+    <div class="callout def">
+      <div class="callout-icon">📐</div>
+      <div class="callout-body">
+        <div class="callout-title">Rappel nombres complexes / Complex numbers reminder</div>
+        <div class="callout-text">
+          <strong>j</strong> = √(−1) (notation électrique, ≡ i en mathématiques)<br>
+          <strong>Module</strong> |Z| = √(Re² + Im²) &nbsp;|&nbsp; <strong>Argument</strong> φ = arctan(Im/Re)<br>
+          <strong>Forme algébrique :</strong> Z = a + jb &nbsp;|&nbsp; <strong>Forme polaire :</strong> Z = |Z|·e^(jφ)
+        </div>
+      </div>
+    </div>
+
+    <h2>4.2 — Impédances complexes</h2>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Impédances · Impedances</div>
+      <div class="formula-card-title">Composants en régime sinusoïdal</div>
+      <div class="formula-line"><span class="sym">Z_R</span><span class="eq">=</span><span class="val">R</span><span class="note">résistance pure — réelle</span></div>
+      <div class="formula-line"><span class="sym">Z_L</span><span class="eq">=</span><span class="val">jωL = jXL</span><span class="note">bobine — imaginaire pur +</span></div>
+      <div class="formula-line"><span class="sym">Z_C</span><span class="eq">=</span><span class="val">1/(jωC) = −jXC</span><span class="note">condensateur — imaginaire pur −</span></div>
+      <div class="formula-line"><span class="sym">Z_série</span><span class="eq">=</span><span class="val">R + j(XL − XC)</span><span class="note">circuit RLC série</span></div>
+      <div class="formula-line"><span class="sym">|Z|</span><span class="eq">=</span><span class="val">√(R² + (XL−XC)²)</span><span class="unit">Ω</span></div>
+      <div class="formula-line"><span class="sym">φ</span><span class="eq">=</span><span class="val">arctan((XL−XC)/R)</span><span class="unit">radians / degrés</span></div>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card blue">
+        <h4>Réactance Inductive XL</h4>
+        <div class="compare-item"><span class="label">Formule</span><span class="value">XL = ωL</span></div>
+        <div class="compare-item"><span class="label">Quand f↑</span><span class="value">XL↑ (augmente)</span></div>
+        <div class="compare-item"><span class="label">Déphasage</span><span class="value">V avance I de 90°</span></div>
+        <div class="compare-item"><span class="label">À f=0</span><span class="value">XL = 0 (court-circuit)</span></div>
+        <div class="compare-item"><span class="label">À f→∞</span><span class="value">XL → ∞ (circuit ouvert)</span></div>
+      </div>
+      <div class="compare-card red">
+        <h4>Réactance Capacitive XC</h4>
+        <div class="compare-item"><span class="label">Formule</span><span class="value">XC = 1/(ωC)</span></div>
+        <div class="compare-item"><span class="label">Quand f↑</span><span class="value">XC↓ (diminue)</span></div>
+        <div class="compare-item"><span class="label">Déphasage</span><span class="value">V retarde I de 90°</span></div>
+        <div class="compare-item"><span class="label">À f=0</span><span class="value">XC→∞ (circuit ouvert)</span></div>
+        <div class="compare-item"><span class="label">À f→∞</span><span class="value">XC → 0 (court-circuit)</span></div>
+      </div>
+    </div>
+
+    <h2>4.3 — Le diagramme de Fresnel</h2>
+    <p>Le <strong>diagramme de Fresnel</strong> (ou diagramme vectoriel / phasor diagram) représente graphiquement les tensions et courants comme des vecteurs tournants dans le plan complexe. C'est un outil puissant pour visualiser les déphasages.</p>
+
+    <div class="callout sim">
+      <div class="callout-icon">📊</div>
+      <div class="callout-body">
+        <div class="callout-title">Lire le diagramme de Fresnel dans ElectroSim</div>
+        <div class="callout-text">
+          <strong>Vecteur bleu (V) :</strong> tension totale appliquée.<br>
+          <strong>Vecteur orange (VR) :</strong> chute sur R — en phase avec I.<br>
+          <strong>Vecteur vert (VL) :</strong> chute sur L — en avance de 90° sur I.<br>
+          <strong>Vecteur jaune (VC) :</strong> chute sur C — en retard de 90° sur I.<br>
+          <strong>Vecteur violet (I) :</strong> courant de référence.<br>
+          L'angle entre V et I = déphasage φ affiché en bas.
+        </div>
+      </div>
+    </div>
+
+    <h2>4.4 — Loi d'Ohm généralisée</h2>
+
+    <div class="formula-card">
+      <div class="formula-card-label">Loi d'Ohm · Generalized Ohm's Law</div>
+      <div class="formula-card-title">Calcul du courant en régime sinusoïdal</div>
+      <div class="formula-line"><span class="sym">V</span><span class="eq">=</span><span class="val">Z · I</span><span class="note">en notation complexe</span></div>
+      <div class="formula-line"><span class="sym">Im</span><span class="eq">=</span><span class="val">Vm / |Z|</span><span class="note">amplitudes</span></div>
+      <div class="formula-line"><span class="sym">Ieff</span><span class="eq">=</span><span class="val">Im / √2</span><span class="note">valeur efficace (rms)</span></div>
+      <div class="formula-line"><span class="sym">i(t)</span><span class="eq">=</span><span class="val">Im · sin(ωt − φ)</span><span class="note">expression temporelle</span></div>
+    </div>
+
+    <!-- EXERCICE SINUSOIDAL -->
+    <div class="exercise">
+      <div class="exercise-header">
+        <span class="exercise-badge">EXERCICE 4</span>
+        <span class="exercise-title">Circuit RLC série AC — Impédance et déphasage</span>
+      </div>
+      <div class="exercise-body">
+        <div class="exercise-q">Un circuit RLC série est alimenté par v(t) = 10·sin(2000πt) V. Calculer |Z|, φ, Im, et Ieff.</div>
+        <div class="exercise-given">
+          <div class="exercise-given-title">Données</div>
+          <div class="data-grid">
+            <span class="data-item">Vm = 10 V</span>
+            <span class="data-item">f = 1000 Hz</span>
+            <span class="data-item">R = 100 Ω</span>
+            <span class="data-item">L = 100 mH</span>
+            <span class="data-item">C = 100 µF</span>
+          </div>
+        </div>
+        <button class="solution-toggle" onclick="toggleSol(this)">📐 Voir la solution</button>
+        <div class="solution-body">
+          <div class="solution-step"><span class="arrow">→</span> ω = 2π × 1000 = <span class="result">6283 rad/s</span></div>
+          <div class="solution-step"><span class="arrow">→</span> XL = ωL = 6283 × 0.1 = <span class="result">628.3 Ω</span></div>
+          <div class="solution-step"><span class="arrow">→</span> XC = 1/(ωC) = 1/(6283 × 100×10⁻⁶) = <span class="result">1.59 Ω</span></div>
+          <div class="solution-step"><span class="arrow">→</span> X = XL − XC = 628.3 − 1.59 = <span class="result">626.7 Ω</span></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">|Z| = √(100² + 626.7²) = √(10000 + 392752) ≈ 634 Ω</span></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">φ = arctan(626.7/100) = arctan(6.267) ≈ 80.9°</span> (circuit inductif)</div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">Im = Vm/|Z| = 10/634 ≈ 15.8 mA</span></div>
+          <div class="solution-step"><span class="arrow">→</span> <span class="result">Ieff = Im/√2 ≈ 11.2 mA</span></div>
+          <div class="solution-step"><span class="comment">✅ Dans le simulateur : onglet Sinusoïdal, régler f=1000, R=100, L=100, C=100 → lire Z, φ, Im directement</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-guide">
+      <div class="sim-guide-header">
+        <div class="sim-guide-icon">〜</div>
+        <div><div class="sim-guide-title">Explorer le régime sinusoïdal</div><div class="sim-guide-sub">Fresnel & impédances</div></div>
+      </div>
+      <div class="sim-step"><div class="sim-step-num">1</div><div class="sim-step-text">Onglet <strong>〜 Sinusoïdal</strong> → régler f, R, L, C et Vm</div></div>
+      <div class="sim-step"><div class="sim-step-num">2</div><div class="sim-step-text">Observer le <strong>diagramme de Fresnel</strong> : les 5 vecteurs bougent en temps réel selon les paramètres</div></div>
+      <div class="sim-step"><div class="sim-step-num">3</div><div class="sim-step-text">Sur l'oscilloscope : voir le <strong>déphasage φ</strong> entre v(t) et i(t) — angle indiqué en bas à droite</div></div>
+      <div class="sim-step"><div class="sim-step-num">4</div><div class="sim-step-text">Trouver la <strong>fréquence de résonance</strong> : faire varier f jusqu'à ce que φ = 0° → XL = XC → |Z| minimal</div></div>
+    </div>
+  </div>
+
+  <div class="divider"><span class="divider-sym">◆</span></div>
+
+  <!-- ═══════════════════════════════════════════
+       ANNEXE : TABLEAU DE FORMULES
+  ═══════════════════════════════════════════ -->
+  <div class="guide-section" id="formulas">
+    <div class="sec-header">
+      <div class="sec-number">A</div>
+      <div class="sec-meta">
+        <span class="sec-tag tag-intro">Annexe · Appendix</span>
+        <div class="sec-title">Tableau de <em>Formules</em><br>— À retenir</div>
+      </div>
+    </div>
+
+    <div class="memory-card">
+      <div class="memory-card-header">⭐ Les 10 formules incontournables</div>
+      <div class="memory-items">
+        <div class="memory-item"><div class="memory-bullet">①</div><div class="memory-text">Loi des nœuds : <code>∑Iₑₙₜ = ∑Iₛₒᵣₜ</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">②</div><div class="memory-text">Loi des mailles : <code>∑ tensions = 0</code> dans toute maille fermée</div></div>
+        <div class="memory-item"><div class="memory-bullet">③</div><div class="memory-text">Constante RC : <code>τ = R·C</code> &nbsp;|&nbsp; Constante RL : <code>τ = L/R</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">④</div><div class="memory-text">Charge RC : <code>Vc(t) = E·(1 − e^−t/τ)</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">⑤</div><div class="memory-text">Décharge RC : <code>Vc(t) = V₀·e^−t/τ</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">⑥</div><div class="memory-text">Pulsation propre RLC : <code>ω₀ = 1/√(LC)</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">⑦</div><div class="memory-text">Facteur de qualité : <code>Q = (1/R)·√(L/C)</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">⑧</div><div class="memory-text">Impédance RLC : <code>|Z| = √(R² + (XL−XC)²)</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">⑨</div><div class="memory-text">Déphasage : <code>φ = arctan((XL−XC)/R)</code></div></div>
+        <div class="memory-item"><div class="memory-bullet">⑩</div><div class="memory-text">Loi d'Ohm : <code>Im = Vm / |Z|</code> &nbsp;|&nbsp; <code>Ieff = Im/√2</code></div></div>
+      </div>
+    </div>
+
+    <h2>Tableau complet des formules</h2>
+
+    <div class="formula-table-wrap">
+      <table>
+        <thead><tr><th>Grandeur</th><th>Symbole</th><th>Formule</th><th>Unité</th><th>Remarque</th></tr></thead>
+        <tbody>
+          <tr><td>Courant</td><td class="sym-col">I</td><td class="formula-col">I = U/R</td><td class="unit-col">A (Ampère)</td><td>Loi d'Ohm</td></tr>
+          <tr><td>Tension</td><td class="sym-col">U</td><td class="formula-col">U = R·I</td><td class="unit-col">V (Volt)</td><td></td></tr>
+          <tr class="highlight-row"><td>Constante RC</td><td class="sym-col">τ</td><td class="formula-col">τ = R·C</td><td class="unit-col">s (secondes)</td><td>t=τ → 63.2%</td></tr>
+          <tr class="highlight-row"><td>Constante RL</td><td class="sym-col">τ</td><td class="formula-col">τ = L/R</td><td class="unit-col">s</td><td></td></tr>
+          <tr><td>Réactance inductive</td><td class="sym-col">XL</td><td class="formula-col">XL = ω·L = 2πf·L</td><td class="unit-col">Ω</td><td>↑ avec f</td></tr>
+          <tr><td>Réactance capacitive</td><td class="sym-col">XC</td><td class="formula-col">XC = 1/(ω·C)</td><td class="unit-col">Ω</td><td>↓ avec f</td></tr>
+          <tr class="highlight-row"><td>Impédance RLC série</td><td class="sym-col">|Z|</td><td class="formula-col">√(R² + (XL−XC)²)</td><td class="unit-col">Ω</td><td></td></tr>
+          <tr><td>Déphasage</td><td class="sym-col">φ</td><td class="formula-col">arctan((XL−XC)/R)</td><td class="unit-col">rad ou °</td><td>φ&gt;0 → inductif</td></tr>
+          <tr class="highlight-row"><td>Pulsation propre</td><td class="sym-col">ω₀</td><td class="formula-col">1/√(L·C)</td><td class="unit-col">rad/s</td><td>À la résonance</td></tr>
+          <tr><td>Fréquence propre</td><td class="sym-col">f₀</td><td class="formula-col">ω₀/(2π)</td><td class="unit-col">Hz</td><td></td></tr>
+          <tr><td>Facteur de qualité</td><td class="sym-col">Q</td><td class="formula-col">(1/R)·√(L/C)</td><td class="unit-col">sans dim.</td><td>Q&gt;0.5 → oscillant</td></tr>
+          <tr><td>Amortissement</td><td class="sym-col">α</td><td class="formula-col">R/(2L)</td><td class="unit-col">s⁻¹</td><td></td></tr>
+          <tr><td>Valeur efficace</td><td class="sym-col">Xeff</td><td class="formula-col">Xm/√2</td><td class="unit-col">V ou A</td><td>Sinusoïde</td></tr>
+          <tr><td>Puissance active</td><td class="sym-col">P</td><td class="formula-col">P = R·I² = U·I·cos φ</td><td class="unit-col">W (Watt)</td><td></td></tr>
+          <tr><td>Puissance réactive</td><td class="sym-col">Q</td><td class="formula-col">Q = U·I·sin φ</td><td class="unit-col">VAR</td><td></td></tr>
+          <tr class="highlight-row"><td>Puissance apparente</td><td class="sym-col">S</td><td class="formula-col">S = U·I = √(P²+Q²)</td><td class="unit-col">VA</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Analogies hydrauliques — Aide-mémoire</h2>
+    <div class="formula-table-wrap">
+      <table>
+        <thead><tr><th>Électricité</th><th>Symbole</th><th>Analogie hydraulique</th></tr></thead>
+        <tbody>
+          <tr><td>Tension (V)</td><td class="sym-col">U</td><td>Pression d'eau</td></tr>
+          <tr><td>Courant (A)</td><td class="sym-col">I</td><td>Débit d'eau</td></tr>
+          <tr><td>Résistance (Ω)</td><td class="sym-col">R</td><td>Tuyau étroit</td></tr>
+          <tr><td>Condensateur (F)</td><td class="sym-col">C</td><td>Réservoir d'eau</td></tr>
+          <tr><td>Bobine (H)</td><td class="sym-col">L</td><td>Inertie du fluide</td></tr>
+          <tr class="highlight-row"><td>Nœud électrique</td><td class="sym-col">—</td><td>Jonction de tuyaux</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-icon">🎓</div>
+      <div class="callout-body">
+        <div class="callout-title">Conseil final pour les examens</div>
+        <div class="callout-text">
+          Avant tout calcul : <strong>(1)</strong> Identifier le type de circuit. <strong>(2)</strong> Écrire les équations KCL/KVL. <strong>(3)</strong> Calculer τ ou ω₀ selon le cas. <strong>(4)</strong> Vérifier les unités. <strong>(5)</strong> Tester les cas limites (t=0, t→∞). Utilise le simulateur pour vérifier tes réponses !
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; padding: 32px 0 16px; color: var(--ink3); font-family: var(--m); font-size: 12px;">
+      Guide réalisé pour<br>
+      <strong style="color:var(--ink); font-family: var(--h); font-size:15px;">TCHOKPON Edmond Atinzoun</strong><br>
+      Licence PC · FST · Université d'Abomey-Calavi<br>
+      <em style="color:var(--rule)">ElectroSim — Simulateur Électrocinétique</em>
+    </div>
+  </div>
+
+</main>
+
+<!-- SCRIPTS -->
+<script>
+// Sidebar
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+function scrollTo_(id){
+  closeSidebar();
+  const el=document.querySelector(id);
+  if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// Progress bar & FAB
+window.addEventListener('scroll',()=>{
+  const scrolled=window.scrollY;
+  const total=document.body.scrollHeight - window.innerHeight;
+  document.getElementById('progressBar').style.width=(scrolled/total*100)+'%';
+  const fab=document.getElementById('fab');
+  if(scrolled>300) fab.classList.add('visible'); else fab.classList.remove('visible');
+  // Active nav highlight
+  updateActiveNav();
+});
+
+function updateActiveNav(){
+  const sections=['intro','how-to-use','kirchhoff','rc','rlc','sinus','formulas'];
+  let active='';
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.getBoundingClientRect().top < 100) active=id;
+  });
+}
+
+// Intersection observer for animations
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) e.target.classList.add('visible');
+  });
+},{threshold:0.05, rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.guide-section').forEach(s=>observer.observe(s));
+
+// Solution toggle
+function toggleSol(btn){
+  const body=btn.nextElementSibling;
+  const open=body.classList.toggle('open');
+  btn.textContent=open ? '🔼 Masquer la solution' : '📐 Voir la solution';
+}
+</script>
+</body>
+</html>
