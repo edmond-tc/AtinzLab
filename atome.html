@@ -1,0 +1,2102 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AtomSim – Module 1 : Structure de l'Atome | by Edmond Atinzoun TCHOKPON</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap');
+
+  :root {
+    --bg: #020b18;
+    --bg2: #041225;
+    --panel: #071e35;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #7fff00;
+    --proton: #ff4444;
+    --neutron: #4488ff;
+    --electron: #ffdd00;
+    --text: #cce8ff;
+    --text2: #7ab3d4;
+    --border: rgba(0,229,255,0.2);
+    --glow: 0 0 20px rgba(0,229,255,0.4);
+    --glow2: 0 0 30px rgba(255,107,53,0.4);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Exo 2', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* STARFIELD */
+  #stars { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0; }
+
+  /* HEADER */
+  header {
+    position: relative;
+    z-index: 10;
+    padding: 20px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(2,11,24,0.95) 0%, transparent 100%);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .logo {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    color: var(--accent);
+    text-shadow: var(--glow);
+    letter-spacing: 3px;
+  }
+
+  .logo span { color: var(--accent2); }
+
+  .author-badge {
+    font-size: 0.75rem;
+    color: var(--text2);
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  .author-badge strong { color: var(--accent3); font-size: 0.85rem; }
+
+  .lang-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.8rem;
+    transition: all 0.3s;
+  }
+  .lang-btn:hover, .lang-btn.active { background: var(--accent); color: #000; }
+
+  /* TABS */
+  .tabs {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    gap: 5px;
+    padding: 15px 30px;
+    background: rgba(2,11,24,0.8);
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .tab {
+    padding: 10px 20px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    border: 1px solid var(--border);
+    border-bottom: none;
+    background: var(--panel);
+    color: var(--text2);
+    white-space: nowrap;
+    transition: all 0.3s;
+  }
+
+  .tab.active { background: var(--accent); color: #000; border-color: var(--accent); }
+  .tab:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+  /* MAIN CONTENT */
+  .main {
+    position: relative;
+    z-index: 10;
+    padding: 20px 30px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ========== SIM 1: BUILD AN ATOM ========== */
+  .sim-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media(max-width: 768px) {
+    .sim-container { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--glow);
+  }
+
+  .panel h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.85rem;
+    color: var(--accent);
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+  }
+
+  /* Particle bank */
+  .particle-bank {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .particle-group { text-align: center; }
+
+  .particle-group label {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text2);
+    margin-bottom: 5px;
+  }
+
+  .particle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.65rem;
+    cursor: grab;
+    border: 2px solid transparent;
+    transition: transform 0.2s, box-shadow 0.2s;
+    user-select: none;
+    position: relative;
+  }
+
+  .particle:active { cursor: grabbing; transform: scale(1.1); }
+
+  .particle.proton { background: radial-gradient(circle at 35% 35%, #ff8888, var(--proton)); border-color: #ff6666; box-shadow: 0 0 15px rgba(255,68,68,0.5); }
+  .particle.neutron { background: radial-gradient(circle at 35% 35%, #88aaff, var(--neutron)); border-color: #6688ff; box-shadow: 0 0 15px rgba(68,136,255,0.5); }
+  .particle.electron { background: radial-gradient(circle at 35% 35%, #ffee88, var(--electron)); border-color: #ffcc00; box-shadow: 0 0 15px rgba(255,221,0,0.5); width: 30px; height: 30px; font-size: 0.55rem; }
+
+  .particle-count {
+    font-size: 1.2rem;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .btn-particle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .btn-plus, .btn-minus {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-plus { background: var(--accent3); color: #000; }
+  .btn-plus:hover { transform: scale(1.2); box-shadow: 0 0 10px var(--accent3); }
+  .btn-minus { background: var(--accent2); color: #fff; }
+  .btn-minus:hover { transform: scale(1.2); box-shadow: 0 0 10px var(--accent2); }
+
+  /* ATOM CANVAS AREA */
+  .atom-display {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  #atomCanvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle, #0a1f38 0%, #020b18 100%);
+    border: 1px solid var(--border);
+  }
+
+  /* ATOM INFO */
+  .atom-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .info-card {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .info-card .val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 900;
+    line-height: 1;
+  }
+
+  .info-card .lbl {
+    font-size: 0.65rem;
+    color: var(--text2);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .val.z { color: var(--proton); text-shadow: 0 0 10px var(--proton); }
+  .val.a { color: var(--neutron); text-shadow: 0 0 10px var(--neutron); }
+  .val.charge { color: var(--accent3); text-shadow: 0 0 10px var(--accent3); }
+  .val.symbol { color: var(--accent); text-shadow: var(--glow); font-size: 2.5rem; }
+
+  /* ELEMENT DISPLAY */
+  .element-box {
+    background: linear-gradient(135deg, var(--panel), rgba(0,229,255,0.05));
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--glow);
+    margin-top: 15px;
+  }
+
+  .element-symbol { font-family: 'Orbitron', sans-serif; font-size: 3rem; font-weight: 900; color: var(--accent); }
+  .element-name { font-size: 1.1rem; color: var(--text); margin-top: 5px; }
+  .element-notation { font-family: 'Orbitron', sans-serif; font-size: 1.2rem; color: var(--text2); margin-top: 8px; }
+  .element-config { font-size: 0.85rem; color: var(--accent3); margin-top: 8px; letter-spacing: 1px; }
+  .element-state { font-size: 0.75rem; color: var(--accent2); margin-top: 5px; }
+
+  /* CONTROLS */
+  .controls-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text);
+    cursor: pointer;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.85rem;
+    transition: all 0.3s;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+  .btn.primary { background: var(--accent); color: #000; border-color: var(--accent); }
+  .btn.danger { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+
+  /* PRESETS */
+  .presets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .preset-btn {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+
+  .preset-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.1); }
+
+  /* ========== SIM 2: BOHR MODEL ========== */
+  #bohrCanvas {
+    width: 100%;
+    max-width: 420px;
+    height: 420px;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .energy-levels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 15px;
+  }
+
+  .level-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .level-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    color: var(--accent);
+    width: 30px;
+  }
+
+  .level-bar {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .level-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s;
+  }
+
+  .level-bar.n1::after { width: 100%; background: #ff4444; }
+  .level-bar.n2::after { width: 75%; background: #ff8844; }
+  .level-bar.n3::after { width: 55%; background: #ffcc44; }
+  .level-bar.n4::after { width: 40%; background: #44ff88; }
+  .level-bar.n5::after { width: 28%; background: #44aaff; }
+  .level-bar.n6::after { width: 18%; background: #8844ff; }
+
+  .level-energy {
+    font-size: 0.75rem;
+    color: var(--text2);
+    width: 80px;
+    text-align: right;
+  }
+
+  .level-btn {
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text2);
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s;
+  }
+
+  .level-btn:hover { background: var(--accent); color: #000; border-color: var(--accent); }
+  .level-btn.selected { background: var(--accent); color: #000; border-color: var(--accent); }
+
+  .transition-info {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    text-align: center;
+  }
+
+  .photon-color {
+    width: 80px;
+    height: 30px;
+    border-radius: 15px;
+    margin: 10px auto;
+    box-shadow: 0 0 20px currentColor;
+  }
+
+  .spectrum-bar {
+    height: 30px;
+    border-radius: 8px;
+    background: linear-gradient(to right, #6a0dad, #4b0082, #0000ff, #008000, #ffff00, #ff7f00, #ff0000);
+    margin-top: 15px;
+    position: relative;
+    overflow: visible;
+  }
+
+  .spectrum-marker {
+    position: absolute;
+    top: -8px;
+    width: 4px;
+    height: 46px;
+    background: white;
+    border-radius: 2px;
+    transform: translateX(-50%);
+    box-shadow: 0 0 8px white;
+    transition: left 0.5s ease;
+  }
+
+  /* ========== SIM 3: ELECTRONIC CONFIG ========== */
+  .orbital-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .orbital-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .orbital-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.75rem;
+    color: var(--accent2);
+    width: 35px;
+    text-align: right;
+  }
+
+  .orbital-box {
+    width: 42px;
+    height: 42px;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .orbital-box:hover { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+  .orbital-box.filled { border-color: var(--accent3); background: rgba(127,255,0,0.05); }
+
+  .electron-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--electron);
+    box-shadow: 0 0 6px var(--electron);
+    transition: all 0.3s;
+  }
+
+  .electron-dot.up::before { content: '↑'; position: absolute; font-size: 0.6rem; color: var(--electron); }
+  .electron-dot.down::before { content: '↓'; position: absolute; font-size: 0.6rem; color: var(--electron); }
+
+  .config-display {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    color: var(--accent);
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 15px;
+    letter-spacing: 2px;
+    min-height: 60px;
+    word-break: break-all;
+  }
+
+  /* ========== QUIZ ========== */
+  .quiz-container { max-width: 700px; margin: 0 auto; }
+
+  .question-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: var(--glow);
+  }
+
+  .question-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.7rem;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+
+  .question-text {
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    padding: 12px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .option:hover { border-color: var(--accent); background: rgba(0,229,255,0.05); }
+  .option.correct { border-color: var(--accent3); background: rgba(127,255,0,0.1); color: var(--accent3); }
+  .option.wrong { border-color: var(--accent2); background: rgba(255,107,53,0.1); color: var(--accent2); }
+
+  .feedback {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    display: none;
+    line-height: 1.5;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.good { background: rgba(127,255,0,0.1); border: 1px solid var(--accent3); color: var(--accent3); }
+  .feedback.bad { background: rgba(255,107,53,0.1); border: 1px solid var(--accent2); color: var(--accent2); }
+
+  /* SCORE */
+  .score-board {
+    background: var(--panel);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: var(--glow);
+    margin-top: 20px;
+  }
+
+  .score-val {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--accent);
+    text-shadow: var(--glow);
+  }
+
+  .score-label { font-size: 1rem; color: var(--text2); margin-top: 5px; }
+  .score-msg { font-size: 1.1rem; color: var(--accent3); margin-top: 15px; font-weight: 600; }
+
+  /* ========== FICHE ========== */
+  .fiche-container { max-width: 900px; margin: 0 auto; }
+
+  .fiche-header {
+    background: linear-gradient(135deg, var(--panel), rgba(0,229,255,0.1));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .fiche-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .fiche-field label {
+    font-size: 0.7rem;
+    color: var(--text2);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .fiche-field input {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .fiche-field input:focus { border-color: var(--accent); }
+
+  .fiche-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .fiche-table th {
+    background: rgba(0,229,255,0.1);
+    padding: 12px;
+    text-align: center;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+
+  .fiche-table td {
+    padding: 10px;
+    border: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .fiche-table td input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    text-align: center;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+  }
+
+  .fiche-table td input:focus { background: rgba(0,229,255,0.05); border-radius: 4px; }
+
+  .fiche-table tr:hover td { background: rgba(0,229,255,0.03); }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(1rem, 2.5vw, 1.4rem);
+    color: var(--accent);
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    text-shadow: var(--glow);
+  }
+
+  .section-subtitle {
+    font-size: 0.85rem;
+    color: var(--text2);
+    margin-bottom: 20px;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid var(--border);
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 40px;
+  }
+
+  footer strong { color: var(--accent3); }
+
+  /* NOTIFICATION */
+  .notif {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent);
+    color: #000;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    z-index: 1000;
+    transform: translateX(200px);
+    opacity: 0;
+    transition: all 0.4s;
+    max-width: 280px;
+  }
+
+  .notif.show { transform: translateX(0); opacity: 1; }
+
+  /* PROGRESS */
+  .progress-bar {
+    height: 4px;
+    background: rgba(0,229,255,0.1);
+    border-radius: 2px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  /* ANIMATIONS */
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .section.active { animation: fadeIn 0.4s ease; }
+
+  .glow-pulse { animation: pulse 2s infinite; }
+
+  /* TOOLTIP */
+  [data-tip] {
+    position: relative;
+    cursor: help;
+  }
+
+  [data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    color: var(--accent);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 100;
+  }
+
+  [data-tip]:hover::after { opacity: 1; }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .badge.blue { background: rgba(0,229,255,0.15); color: var(--accent); border: 1px solid var(--accent); }
+  .badge.orange { background: rgba(255,107,53,0.15); color: var(--accent2); border: 1px solid var(--accent2); }
+  .badge.green { background: rgba(127,255,0,0.15); color: var(--accent3); border: 1px solid var(--accent3); }
+</style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<header>
+  <div class="logo">ATOM<span>SIM</span></div>
+  <div style="flex:1; text-align:center;">
+    <div style="font-family:'Orbitron',sans-serif; font-size:0.7rem; color:var(--text2); letter-spacing:2px;">MODULE 1 — STRUCTURE DE L'ATOME</div>
+  </div>
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end;">
+    <button class="lang-btn active" onclick="setLang('fr')">🇫🇷 FR</button>
+    <button class="lang-btn" onclick="setLang('en')">🇬🇧 EN</button>
+    <div class="author-badge"><strong>Edmond Atinzoun TCHOKPON</strong><br>Étudiant en Physique-Chimie</div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showSection('sim1')">⚛ <span data-fr="Construire l'Atome" data-en="Build Atom">Construire l'Atome</span></div>
+  <div class="tab" onclick="showSection('sim2')">☀ <span data-fr="Modèle de Bohr" data-en="Bohr Model">Modèle de Bohr</span></div>
+  <div class="tab" onclick="showSection('sim3')">🧬 <span data-fr="Config. Électronique" data-en="Electronic Config.">Config. Électronique</span></div>
+  <div class="tab" onclick="showSection('quiz')">📝 <span data-fr="Quiz" data-en="Quiz">Quiz</span></div>
+  <div class="tab" onclick="showSection('fiche')">📋 <span data-fr="Fiche de Résultats" data-en="Result Sheet">Fiche de Résultats</span></div>
+</div>
+
+<div class="main">
+
+  <!-- ====== SIM 1: BUILD ATOM ====== -->
+  <div id="sim1" class="section active">
+    <div class="section-title" data-fr="⚛ Construire un Atome" data-en="⚛ Build an Atom">⚛ Construire un Atome</div>
+    <div class="section-subtitle" data-fr="Ajoutez des protons, neutrons et électrons pour construire votre atome" data-en="Add protons, neutrons and electrons to build your atom">Ajoutez des protons, neutrons et électrons pour construire votre atome</div>
+
+    <!-- Presets -->
+    <div class="presets" style="margin-bottom:20px;">
+      <span style="font-size:0.75rem; color:var(--text2); align-self:center;" data-fr="Éléments rapides:" data-en="Quick elements:">Éléments rapides:</span>
+      <button class="preset-btn" onclick="loadPreset(1,0,1)">H</button>
+      <button class="preset-btn" onclick="loadPreset(2,2,2)">He</button>
+      <button class="preset-btn" onclick="loadPreset(6,6,6)">C</button>
+      <button class="preset-btn" onclick="loadPreset(8,8,8)">O</button>
+      <button class="preset-btn" onclick="loadPreset(11,12,11)">Na</button>
+      <button class="preset-btn" onclick="loadPreset(17,18,17)">Cl</button>
+      <button class="preset-btn" onclick="loadPreset(26,30,26)">Fe</button>
+      <button class="preset-btn" onclick="loadPreset(79,118,79)">Au</button>
+    </div>
+
+    <div class="sim-container">
+      <!-- Left: Controls -->
+      <div>
+        <div class="panel">
+          <h3 data-fr="🔬 Particules Subatomiques" data-en="🔬 Subatomic Particles">🔬 Particules Subatomiques</h3>
+          <div class="particle-bank">
+            <div class="particle-group">
+              <div class="particle proton" data-tip="Charge +1, Masse ≈ 1 uma">p⁺</div>
+              <label data-fr="Proton" data-en="Proton">Proton</label>
+              <div class="btn-particle">
+                <button class="btn-minus" onclick="changeCount('p',-1)">−</button>
+                <span class="particle-count" id="pCount">0</span>
+                <button class="btn-plus" onclick="changeCount('p',1)">+</button>
+              </div>
+            </div>
+            <div class="particle-group">
+              <div class="particle neutron" data-tip="Charge 0, Masse ≈ 1 uma">n⁰</div>
+              <label data-fr="Neutron" data-en="Neutron">Neutron</label>
+              <div class="btn-particle">
+                <button class="btn-minus" onclick="changeCount('n',-1)">−</button>
+                <span class="particle-count" id="nCount">0</span>
+                <button class="btn-plus" onclick="changeCount('n',1)">+</button>
+              </div>
+            </div>
+            <div class="particle-group">
+              <div class="particle electron" data-tip="Charge −1, Masse négligeable">e⁻</div>
+              <label data-fr="Électron" data-en="Electron">Électron</label>
+              <div class="btn-particle">
+                <button class="btn-minus" onclick="changeCount('e',-1)">−</button>
+                <span class="particle-count" id="eCount">0</span>
+                <button class="btn-plus" onclick="changeCount('e',1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <div class="atom-info">
+            <div class="info-card">
+              <div class="val z" id="valZ">0</div>
+              <div class="lbl">Z — <span data-fr="Numéro Atomique" data-en="Atomic Number">Numéro Atomique</span></div>
+            </div>
+            <div class="info-card">
+              <div class="val a" id="valA">0</div>
+              <div class="lbl">A — <span data-fr="Nombre de Masse" data-en="Mass Number">Nombre de Masse</span></div>
+            </div>
+            <div class="info-card">
+              <div class="val charge" id="valQ">0</div>
+              <div class="lbl"><span data-fr="Charge Totale" data-en="Total Charge">Charge Totale</span></div>
+            </div>
+            <div class="info-card">
+              <div class="val symbol" id="valSym">?</div>
+              <div class="lbl"><span data-fr="Symbole" data-en="Symbol">Symbole</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="element-box" id="elementBox" style="display:none;">
+          <div class="element-symbol" id="elSym">?</div>
+          <div class="element-name" id="elName">—</div>
+          <div class="element-notation" id="elNotation"></div>
+          <div class="element-config" id="elConfig"></div>
+          <div class="element-state" id="elState"></div>
+        </div>
+
+        <div class="controls-row">
+          <button class="btn danger" onclick="resetAtom()" data-fr="🔄 Réinitialiser" data-en="🔄 Reset">🔄 Réinitialiser</button>
+          <button class="btn" onclick="makeIon(1)" data-fr="→ Cation (+1)" data-en="→ Cation (+1)">→ Cation (+1)</button>
+          <button class="btn" onclick="makeIon(-1)" data-fr="→ Anion (−1)" data-en="→ Anion (−1)">→ Anion (−1)</button>
+        </div>
+      </div>
+
+      <!-- Right: Atom canvas -->
+      <div class="panel" style="display:flex; flex-direction:column; align-items:center;">
+        <h3 data-fr="🌌 Visualisation Atomique" data-en="🌌 Atomic Visualization">🌌 Visualisation Atomique</h3>
+        <div class="atom-display">
+          <canvas id="atomCanvas" width="380" height="380"></canvas>
+        </div>
+        <div style="margin-top:15px; font-size:0.8rem; color:var(--text2); text-align:center; line-height:1.8;">
+          <span style="color:var(--proton);">●</span> <span data-fr="Protons" data-en="Protons">Protons</span> &nbsp;
+          <span style="color:var(--neutron);">●</span> <span data-fr="Neutrons" data-en="Neutrons">Neutrons</span> &nbsp;
+          <span style="color:var(--electron);">●</span> <span data-fr="Électrons" data-en="Electrons">Électrons</span>
+        </div>
+        <div id="stabilityMsg" style="margin-top:10px; font-size:0.85rem; text-align:center; color:var(--accent3);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SIM 2: BOHR ====== -->
+  <div id="sim2" class="section">
+    <div class="section-title">☀ <span data-fr="Modèle de Bohr — Transitions Électroniques" data-en="Bohr Model — Electronic Transitions">Modèle de Bohr — Transitions Électroniques</span></div>
+    <div class="section-subtitle" data-fr="Simulez les transitions de l'électron entre niveaux d'énergie et observez le photon émis" data-en="Simulate electron transitions between energy levels and observe the emitted photon">Simulez les transitions de l'électron entre niveaux d'énergie et observez le photon émis</div>
+
+    <div class="sim-container">
+      <div>
+        <canvas id="bohrCanvas" width="420" height="420"></canvas>
+      </div>
+      <div>
+        <div class="panel">
+          <h3 data-fr="⚡ Niveaux d'Énergie (H)" data-en="⚡ Energy Levels (H)">⚡ Niveaux d'Énergie (H)</h3>
+          <div class="energy-levels">
+            <div class="level-row">
+              <span class="level-label">n=1</span>
+              <div class="level-bar n1"></div>
+              <span class="level-energy">−13.6 eV</span>
+              <button class="level-btn" onclick="setLevel(1,'ni')">ni</button>
+              <button class="level-btn" onclick="setLevel(1,'nf')">nf</button>
+            </div>
+            <div class="level-row">
+              <span class="level-label">n=2</span>
+              <div class="level-bar n2"></div>
+              <span class="level-energy">−3.4 eV</span>
+              <button class="level-btn" onclick="setLevel(2,'ni')">ni</button>
+              <button class="level-btn" onclick="setLevel(2,'nf')">nf</button>
+            </div>
+            <div class="level-row">
+              <span class="level-label">n=3</span>
+              <div class="level-bar n3"></div>
+              <span class="level-energy">−1.51 eV</span>
+              <button class="level-btn" onclick="setLevel(3,'ni')">ni</button>
+              <button class="level-btn" onclick="setLevel(3,'nf')">nf</button>
+            </div>
+            <div class="level-row">
+              <span class="level-label">n=4</span>
+              <div class="level-bar n4"></div>
+              <span class="level-energy">−0.85 eV</span>
+              <button class="level-btn" onclick="setLevel(4,'ni')">ni</button>
+              <button class="level-btn" onclick="setLevel(4,'nf')">nf</button>
+            </div>
+            <div class="level-row">
+              <span class="level-label">n=5</span>
+              <div class="level-bar n5"></div>
+              <span class="level-energy">−0.54 eV</span>
+              <button class="level-btn" onclick="setLevel(5,'ni')">ni</button>
+              <button class="level-btn" onclick="setLevel(5,'nf')">nf</button>
+            </div>
+            <div class="level-row">
+              <span class="level-label">n=6</span>
+              <div class="level-bar n6"></div>
+              <span class="level-energy">−0.38 eV</span>
+              <button class="level-btn" onclick="setLevel(6,'ni')">ni</button>
+              <button class="level-btn" onclick="setLevel(6,'nf')">nf</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px; font-size:0.75rem; color:var(--text2);">
+            <span data-fr="ni = niveau initial | nf = niveau final" data-en="ni = initial level | nf = final level">ni = niveau initial | nf = niveau final</span>
+          </div>
+
+          <button class="btn primary" onclick="doTransition()" style="margin-top:15px; width:100%;" data-fr="⚡ Déclencher la Transition" data-en="⚡ Trigger Transition">⚡ Déclencher la Transition</button>
+        </div>
+
+        <div class="transition-info" id="transitionInfo">
+          <div style="font-size:0.8rem; color:var(--text2);" data-fr="Sélectionnez ni et nf puis déclenchez la transition" data-en="Select ni and nf then trigger transition">Sélectionnez ni et nf puis déclenchez la transition</div>
+        </div>
+
+        <div class="panel" style="margin-top:15px;">
+          <h3 data-fr="🌈 Spectre Visible" data-en="🌈 Visible Spectrum">🌈 Spectre Visible</h3>
+          <div class="spectrum-bar">
+            <div class="spectrum-marker" id="specMarker" style="left:50%; display:none;"></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text2); margin-top:5px;">
+            <span>380 nm</span><span>450 nm</span><span>500 nm</span><span>570 nm</span><span>620 nm</span><span>700 nm</span><span>780 nm</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SIM 3: ELECTRONIC CONFIG ====== -->
+  <div id="sim3" class="section">
+    <div class="section-title">🧬 <span data-fr="Configuration Électronique" data-en="Electronic Configuration">Configuration Électronique</span></div>
+    <div class="section-subtitle" data-fr="Remplissez les cases quantiques selon les règles de Klechkowski, Hund et Pauli" data-en="Fill quantum boxes according to Klechkowski, Hund and Pauli rules">Remplissez les cases quantiques selon les règles de Klechkowski, Hund et Pauli</div>
+
+    <div class="sim-container">
+      <div class="panel">
+        <h3 data-fr="📦 Cases Quantiques" data-en="📦 Quantum Boxes">📦 Cases Quantiques</h3>
+        
+        <div style="margin-bottom:15px; display:flex; gap:10px; flex-wrap:wrap;">
+          <select id="elemSelect" onchange="loadElement()" style="background:var(--panel); border:1px solid var(--border); color:var(--text); padding:8px 12px; border-radius:8px; font-family:'Exo 2',sans-serif; flex:1;">
+            <option value="">-- Sélectionner un élément --</option>
+          </select>
+          <button class="btn" onclick="autoFill()" data-fr="▶ Remplissage Auto" data-en="▶ Auto Fill">▶ Remplissage Auto</button>
+          <button class="btn danger" onclick="clearBoxes()" data-fr="🔄 Effacer" data-en="🔄 Clear">🔄 Effacer</button>
+        </div>
+
+        <div class="orbital-grid" id="orbitalGrid">
+          <!-- Filled by JS -->
+        </div>
+
+        <hr class="divider">
+
+        <h3 style="margin-top:10px;" data-fr="📐 Configuration Complète" data-en="📐 Full Configuration">📐 Configuration Complète</h3>
+        <div class="config-display" id="configDisplay">—</div>
+
+        <div id="configRules" style="margin-top:15px; font-size:0.8rem; color:var(--text2); line-height:1.8;"></div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <h3 data-fr="📊 Résumé de l'Élément" data-en="📊 Element Summary">📊 Résumé de l'Élément</h3>
+          <div id="elemSummary" style="font-size:0.85rem; color:var(--text2); line-height:2;">
+            <span data-fr="Sélectionnez un élément pour voir son résumé" data-en="Select an element to see its summary">Sélectionnez un élément pour voir son résumé</span>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-top:15px;">
+          <h3 data-fr="📏 Règles de Remplissage" data-en="📏 Filling Rules">📏 Règles de Remplissage</h3>
+          <div style="font-size:0.82rem; line-height:1.9; color:var(--text);">
+            <div style="margin-bottom:8px;"><span style="color:var(--accent); font-weight:700;">Klechkowski:</span> <span data-fr="Ordre croissant de (n+l), puis n" data-en="Ascending order of (n+l), then n">Ordre croissant de (n+l), puis n</span></div>
+            <div style="margin-bottom:8px;"><span style="color:var(--accent2); font-weight:700;">Hund:</span> <span data-fr="Maximiser les spins parallèles dans une sous-couche" data-en="Maximize parallel spins in a subshell">Maximiser les spins parallèles dans une sous-couche</span></div>
+            <div><span style="color:var(--accent3); font-weight:700;">Pauli:</span> <span data-fr="2 électrons max par case, spins opposés" data-en="Max 2 electrons per box, opposite spins">2 électrons max par case, spins opposés</span></div>
+          </div>
+          <hr class="divider">
+          <div style="font-size:0.75rem; color:var(--text2);">
+            <strong style="color:var(--accent);" data-fr="Ordre de remplissage:" data-en="Filling order:">Ordre de remplissage:</strong><br>
+            1s → 2s → 2p → 3s → 3p → 4s → 3d → 4p → 5s → 4d...
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== QUIZ ====== -->
+  <div id="quiz" class="section">
+    <div class="section-title">📝 <span data-fr="Quiz — Module 1" data-en="Quiz — Module 1">Quiz — Module 1</span></div>
+    <div class="section-subtitle" data-fr="Testez vos connaissances sur la structure de l'atome" data-en="Test your knowledge on atomic structure">Testez vos connaissances sur la structure de l'atome</div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="quizProgress" style="width:0%"></div>
+    </div>
+
+    <div class="quiz-container" id="quizContainer">
+      <!-- Questions generated by JS -->
+    </div>
+
+    <div style="display:flex; gap:10px; margin-top:20px; max-width:700px; margin-left:auto; margin-right:auto;">
+      <button class="btn primary" onclick="checkQuiz()" data-fr="✓ Valider mes réponses" data-en="✓ Submit answers">✓ Valider mes réponses</button>
+      <button class="btn" onclick="resetQuiz()" data-fr="🔄 Nouveau Quiz" data-en="🔄 New Quiz">🔄 Nouveau Quiz</button>
+    </div>
+
+    <div id="scoreBoard" style="display:none;" class="score-board max-width:700px; margin:20px auto;">
+      <div class="score-label" data-fr="Score Final" data-en="Final Score">Score Final</div>
+      <div class="score-val" id="scoreVal">0/0</div>
+      <div class="score-msg" id="scoreMsg"></div>
+    </div>
+  </div>
+
+  <!-- ====== FICHE ====== -->
+  <div id="fiche" class="section">
+    <div class="section-title">📋 <span data-fr="Fiche de Résultats" data-en="Results Sheet">Fiche de Résultats</span></div>
+    <div class="section-subtitle" data-fr="Complétez votre fiche de compte-rendu de laboratoire virtuel" data-en="Complete your virtual lab report sheet">Complétez votre fiche de compte-rendu de laboratoire virtuel</div>
+
+    <div class="fiche-container">
+      <div class="fiche-header">
+        <div class="fiche-field">
+          <label data-fr="Nom et Prénom" data-en="Full Name">Nom et Prénom</label>
+          <input type="text" id="ficheNom" placeholder="...">
+        </div>
+        <div class="fiche-field">
+          <label data-fr="Classe / Niveau" data-en="Class / Level">Classe / Niveau</label>
+          <input type="text" id="ficheClasse" placeholder="...">
+        </div>
+        <div class="fiche-field">
+          <label data-fr="Date" data-en="Date">Date</label>
+          <input type="date" id="ficheDate">
+        </div>
+        <div class="fiche-field">
+          <label data-fr="Établissement" data-en="Institution">Établissement</label>
+          <input type="text" id="ficheEtab" placeholder="...">
+        </div>
+      </div>
+
+      <!-- Table 1 -->
+      <div class="panel" style="margin-bottom:20px;">
+        <h3 data-fr="📊 Tableau 1 — Composition des Atomes" data-en="📊 Table 1 — Atom Composition">📊 Tableau 1 — Composition des Atomes</h3>
+        <div style="overflow-x:auto;">
+          <table class="fiche-table">
+            <thead>
+              <tr>
+                <th data-fr="Élément" data-en="Element">Élément</th>
+                <th data-fr="Symbole" data-en="Symbol">Symbole</th>
+                <th>Z</th>
+                <th>A</th>
+                <th data-fr="Protons" data-en="Protons">Protons</th>
+                <th data-fr="Neutrons" data-en="Neutrons">Neutrons</th>
+                <th data-fr="Électrons" data-en="Electrons">Électrons</th>
+                <th data-fr="Charge" data-en="Charge">Charge</th>
+              </tr>
+            </thead>
+            <tbody id="ficheTable1">
+              <tr><td><input type="text" placeholder="Hydrogène"></td><td><input type="text" placeholder="H"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="Carbone"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="Oxygène"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="Sodium"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="Chlore"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Table 2 -->
+      <div class="panel" style="margin-bottom:20px;">
+        <h3 data-fr="📊 Tableau 2 — Configurations Électroniques" data-en="📊 Table 2 — Electronic Configurations">📊 Tableau 2 — Configurations Électroniques</h3>
+        <div style="overflow-x:auto;">
+          <table class="fiche-table">
+            <thead>
+              <tr>
+                <th data-fr="Élément" data-en="Element">Élément</th>
+                <th>Z</th>
+                <th data-fr="Configuration Électronique" data-en="Electronic Configuration">Configuration Électronique</th>
+                <th data-fr="Électrons de valence" data-en="Valence electrons">Électrons de valence</th>
+                <th data-fr="Groupe" data-en="Group">Groupe</th>
+                <th data-fr="Période" data-en="Period">Période</th>
+              </tr>
+            </thead>
+            <tbody id="ficheTable2">
+              <tr><td><input type="text" placeholder="H"></td><td>1</td><td><input type="text" style="width:200px;"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="C"></td><td>6</td><td><input type="text" style="width:200px;"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="Na"></td><td>11</td><td><input type="text" style="width:200px;"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="Cl"></td><td>17</td><td><input type="text" style="width:200px;"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text" placeholder="Fe"></td><td>26</td><td><input type="text" style="width:200px;"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text" style="width:200px;"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Transitions Table -->
+      <div class="panel" style="margin-bottom:20px;">
+        <h3 data-fr="📊 Tableau 3 — Transitions Électroniques (Modèle de Bohr)" data-en="📊 Table 3 — Electronic Transitions (Bohr Model)">📊 Tableau 3 — Transitions Électroniques (Modèle de Bohr)</h3>
+        <div style="overflow-x:auto;">
+          <table class="fiche-table">
+            <thead>
+              <tr>
+                <th>ni</th>
+                <th>nf</th>
+                <th data-fr="Type" data-en="Type">Type</th>
+                <th>ΔE (eV)</th>
+                <th>λ (nm)</th>
+                <th data-fr="Couleur / Domaine" data-en="Color / Domain">Couleur / Domaine</th>
+                <th data-fr="Série" data-en="Series">Série</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+              <tr><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td><td><input type="text"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Observations -->
+      <div class="panel" style="margin-bottom:20px;">
+        <h3 data-fr="💬 Observations et Conclusions" data-en="💬 Observations and Conclusions">💬 Observations et Conclusions</h3>
+        <textarea style="width:100%; min-height:120px; background:rgba(0,0,0,0.3); border:1px solid var(--border); border-radius:8px; padding:12px; color:var(--text); font-family:'Exo 2',sans-serif; font-size:0.85rem; resize:vertical; outline:none;" placeholder="Rédigez vos observations ici..."></textarea>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:center;">
+        <button class="btn primary" onclick="printFiche()" data-fr="🖨 Imprimer la Fiche" data-en="🖨 Print Sheet">🖨 Imprimer la Fiche</button>
+        <button class="btn" onclick="clearFiche()" data-fr="🔄 Effacer la Fiche" data-en="🔄 Clear Sheet">🔄 Effacer la Fiche</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div>AtomSim — <span data-fr="Simulation pédagogique de chimie générale" data-en="Educational general chemistry simulation">Simulation pédagogique de chimie générale</span></div>
+  <div style="margin-top:5px;"><strong>© 2025 Edmond Atinzoun TCHOKPON</strong> — <span data-fr="Étudiant en Physique-Chimie" data-en="Physics-Chemistry Student">Étudiant en Physique-Chimie</span></div>
+  <div style="margin-top:5px; color:rgba(100,150,200,0.5); font-size:0.65rem;">Pour lycéens, collégiens, étudiants, enseignants et tous les scientifiques</div>
+</footer>
+
+<div class="notif" id="notif"></div>
+
+<script>
+// ============================================================
+// STARFIELD
+// ============================================================
+(function(){
+  const c = document.getElementById('stars');
+  const ctx = c.getContext('2d');
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+  const stars = Array.from({length:200}, () => ({
+    x: Math.random()*c.width,
+    y: Math.random()*c.height,
+    r: Math.random()*1.5+0.2,
+    a: Math.random(),
+    s: Math.random()*0.005+0.001
+  }));
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s => {
+      s.a += s.s;
+      if(s.a > 1) s.s = -s.s;
+      if(s.a < 0) s.s = -s.s;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(180,220,255,${s.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize', () => { c.width = window.innerWidth; c.height = window.innerHeight; });
+})();
+
+// ============================================================
+// LANGUAGE
+// ============================================================
+let lang = 'fr';
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('[data-fr]').forEach(el => {
+    if(el.tagName === 'INPUT' || el.tagName === 'BUTTON') {
+      if(el.dataset[l]) el.value = el.dataset[l];
+    } else {
+      el.textContent = el.dataset[l] || el.dataset['fr'];
+    }
+  });
+  // Update button text
+  document.querySelectorAll('[data-fr][onclick]').forEach(el => {
+    const txt = el.dataset[l];
+    if(txt) el.textContent = txt;
+  });
+}
+
+// ============================================================
+// SECTION SWITCHING
+// ============================================================
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const tabs = document.querySelectorAll('.tab');
+  const map = {sim1:0, sim2:1, sim3:2, quiz:3, fiche:4};
+  tabs[map[id]].classList.add('active');
+
+  if(id==='sim2') initBohrCanvas();
+  if(id==='quiz' && !quizBuilt) buildQuiz();
+}
+
+// ============================================================
+// ELEMENT DATA
+// ============================================================
+const ELEMENTS = [
+  {z:1, sym:'H', name:'Hydrogène / Hydrogen', a:1, config:'1s¹', valence:1, group:1, period:1, state:'Gaz / Gas'},
+  {z:2, sym:'He', name:'Hélium / Helium', a:4, config:'1s²', valence:2, group:18, period:1, state:'Gaz noble / Noble gas'},
+  {z:3, sym:'Li', name:'Lithium / Lithium', a:7, config:'[He] 2s¹', valence:1, group:1, period:2, state:'Solide / Solid'},
+  {z:4, sym:'Be', name:'Béryllium / Beryllium', a:9, config:'[He] 2s²', valence:2, group:2, period:2, state:'Solide / Solid'},
+  {z:5, sym:'B', name:'Bore / Boron', a:11, config:'[He] 2s² 2p¹', valence:3, group:13, period:2, state:'Solide / Solid'},
+  {z:6, sym:'C', name:'Carbone / Carbon', a:12, config:'[He] 2s² 2p²', valence:4, group:14, period:2, state:'Solide / Solid'},
+  {z:7, sym:'N', name:'Azote / Nitrogen', a:14, config:'[He] 2s² 2p³', valence:5, group:15, period:2, state:'Gaz / Gas'},
+  {z:8, sym:'O', name:'Oxygène / Oxygen', a:16, config:'[He] 2s² 2p⁴', valence:6, group:16, period:2, state:'Gaz / Gas'},
+  {z:9, sym:'F', name:'Fluor / Fluorine', a:19, config:'[He] 2s² 2p⁵', valence:7, group:17, period:2, state:'Gaz / Gas'},
+  {z:10, sym:'Ne', name:'Néon / Neon', a:20, config:'[He] 2s² 2p⁶', valence:8, group:18, period:2, state:'Gaz noble / Noble gas'},
+  {z:11, sym:'Na', name:'Sodium / Sodium', a:23, config:'[Ne] 3s¹', valence:1, group:1, period:3, state:'Solide / Solid'},
+  {z:12, sym:'Mg', name:'Magnésium / Magnesium', a:24, config:'[Ne] 3s²', valence:2, group:2, period:3, state:'Solide / Solid'},
+  {z:13, sym:'Al', name:'Aluminium / Aluminum', a:27, config:'[Ne] 3s² 3p¹', valence:3, group:13, period:3, state:'Solide / Solid'},
+  {z:14, sym:'Si', name:'Silicium / Silicon', a:28, config:'[Ne] 3s² 3p²', valence:4, group:14, period:3, state:'Solide / Solid'},
+  {z:15, sym:'P', name:'Phosphore / Phosphorus', a:31, config:'[Ne] 3s² 3p³', valence:5, group:15, period:3, state:'Solide / Solid'},
+  {z:16, sym:'S', name:'Soufre / Sulfur', a:32, config:'[Ne] 3s² 3p⁴', valence:6, group:16, period:3, state:'Solide / Solid'},
+  {z:17, sym:'Cl', name:'Chlore / Chlorine', a:35, config:'[Ne] 3s² 3p⁵', valence:7, group:17, period:2, state:'Gaz / Gas'},
+  {z:18, sym:'Ar', name:'Argon / Argon', a:40, config:'[Ne] 3s² 3p⁶', valence:8, group:18, period:3, state:'Gaz noble / Noble gas'},
+  {z:19, sym:'K', name:'Potassium / Potassium', a:39, config:'[Ar] 4s¹', valence:1, group:1, period:4, state:'Solide / Solid'},
+  {z:20, sym:'Ca', name:'Calcium / Calcium', a:40, config:'[Ar] 4s²', valence:2, group:2, period:4, state:'Solide / Solid'},
+  {z:26, sym:'Fe', name:'Fer / Iron', a:56, config:'[Ar] 3d⁶ 4s²', valence:2, group:8, period:4, state:'Solide / Solid'},
+  {z:29, sym:'Cu', name:'Cuivre / Copper', a:64, config:'[Ar] 3d¹⁰ 4s¹', valence:1, group:11, period:4, state:'Solide / Solid'},
+  {z:47, sym:'Ag', name:'Argent / Silver', a:108, config:'[Kr] 4d¹⁰ 5s¹', valence:1, group:11, period:5, state:'Solide / Solid'},
+  {z:79, sym:'Au', name:'Or / Gold', a:197, config:'[Xe] 4f¹⁴ 5d¹⁰ 6s¹', valence:1, group:11, period:6, state:'Solide / Solid'},
+];
+
+function getElement(z) {
+  return ELEMENTS.find(e => e.z === z) || null;
+}
+
+// ============================================================
+// SIM 1: BUILD ATOM
+// ============================================================
+let protons=0, neutrons=0, electrons=0;
+const atomCanvas = document.getElementById('atomCanvas');
+const atomCtx = atomCanvas.getContext('2d');
+let animFrame;
+let nucleusParticles = [];
+let electronParticles = [];
+let time = 0;
+
+function changeCount(type, delta) {
+  if(type==='p') protons = Math.max(0, Math.min(118, protons+delta));
+  if(type==='n') neutrons = Math.max(0, Math.min(200, neutrons+delta));
+  if(type==='e') electrons = Math.max(0, Math.min(118, electrons+delta));
+  updateAtom();
+}
+
+function loadPreset(p, n, e) {
+  protons=p; neutrons=n; electrons=e;
+  updateAtom();
+  showNotif(`⚛ ${getElement(p)?.sym || '?'} chargé!`);
+}
+
+function resetAtom() {
+  protons=0; neutrons=0; electrons=0;
+  updateAtom();
+}
+
+function makeIon(charge) {
+  electrons = Math.max(0, protons - charge);
+  updateAtom();
+}
+
+function updateAtom() {
+  document.getElementById('pCount').textContent = protons;
+  document.getElementById('nCount').textContent = neutrons;
+  document.getElementById('eCount').textContent = electrons;
+  document.getElementById('valZ').textContent = protons;
+  document.getElementById('valA').textContent = protons + neutrons;
+  const charge = protons - electrons;
+  document.getElementById('valQ').textContent = charge > 0 ? '+'+charge : charge;
+
+  const el = getElement(protons);
+  if(el && protons > 0) {
+    document.getElementById('valSym').textContent = el.sym;
+    document.getElementById('elementBox').style.display = 'block';
+    document.getElementById('elSym').textContent = el.sym;
+    document.getElementById('elName').textContent = el.name;
+    const sup1 = protons+neutrons;
+    document.getElementById('elNotation').textContent = `${sup1}${protons}${el.sym}`;
+    document.getElementById('elConfig').textContent = el.config;
+    const chargeStr = charge === 0 ? '(Neutre)' : charge > 0 ? `(Ion ${el.sym}${charge > 1 ? charge : ''}⁺)` : `(Ion ${el.sym}${Math.abs(charge) > 1 ? Math.abs(charge) : ''}⁻)`;
+    document.getElementById('elState').textContent = `${el.state} · ${chargeStr}`;
+  } else if(protons === 0) {
+    document.getElementById('valSym').textContent = '?';
+    document.getElementById('elementBox').style.display = 'none';
+  }
+
+  // Stability
+  let stab = '';
+  if(protons > 0) {
+    const ratio = neutrons/protons;
+    if(protons <= 20 && Math.abs(ratio - 1) < 0.2) stab = '✅ Noyau stable / Stable nucleus';
+    else if(ratio > 1.6 || ratio < 0.5) stab = '⚠️ Noyau instable / Unstable nucleus';
+    else stab = '🔶 Stabilité modérée / Moderate stability';
+  }
+  document.getElementById('stabilityMsg').textContent = stab;
+
+  buildNucleus();
+  buildElectrons();
+}
+
+function buildNucleus() {
+  nucleusParticles = [];
+  const total = protons + neutrons;
+  for(let i=0;i<protons;i++) nucleusParticles.push({type:'p',angle:Math.random()*Math.PI*2,r:Math.random()*25+3,speed:(Math.random()-0.5)*0.02});
+  for(let i=0;i<Math.min(neutrons,100);i++) nucleusParticles.push({type:'n',angle:Math.random()*Math.PI*2,r:Math.random()*25+3,speed:(Math.random()-0.5)*0.02});
+}
+
+function buildElectrons() {
+  electronParticles = [];
+  const shells = [2,8,18,32,32,18,8];
+  let remaining = electrons;
+  let shellIdx = 0;
+  while(remaining > 0 && shellIdx < shells.length) {
+    const inShell = Math.min(remaining, shells[shellIdx]);
+    for(let i=0;i<inShell;i++) {
+      electronParticles.push({
+        shell: shellIdx+1,
+        angle: (i/inShell)*Math.PI*2 + Math.random()*0.1,
+        speed: 0.03 / (shellIdx+1) * (Math.random()*0.4+0.8)
+      });
+    }
+    remaining -= inShell;
+    shellIdx++;
+  }
+}
+
+function drawAtom() {
+  const c = atomCanvas, ctx = atomCtx;
+  const W = c.width, H = c.height, CX = W/2, CY = H/2;
+  ctx.clearRect(0,0,W,H);
+
+  // Glow background
+  const grd = ctx.createRadialGradient(CX,CY,0,CX,CY,W/2);
+  grd.addColorStop(0,'rgba(0,100,180,0.08)');
+  grd.addColorStop(1,'transparent');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0,0,W,H);
+
+  // Electron shells
+  const shellR = [45, 85, 125, 165, 195, 220, 240];
+  const shellCount = [2,8,18,32,32,18,8];
+  const usedShells = Math.ceil(electrons > 0 ? Math.ceil(electronParticles.length > 0 ? Math.max(...electronParticles.map(e=>e.shell)) : 0) : 0);
+  
+  for(let i=0;i<usedShells;i++) {
+    ctx.beginPath();
+    ctx.arc(CX,CY,shellR[i],0,Math.PI*2);
+    ctx.strokeStyle = `rgba(0,229,255,${0.12 + i*0.02})`;
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4,8]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    // Label
+    ctx.font = '10px Orbitron';
+    ctx.fillStyle = 'rgba(0,229,255,0.4)';
+    ctx.fillText(`n=${i+1}`, CX + shellR[i] + 3, CY - 3);
+  }
+
+  // Nucleus glow
+  if(protons > 0) {
+    const nucGrd = ctx.createRadialGradient(CX,CY,0,CX,CY,35);
+    nucGrd.addColorStop(0,'rgba(255,100,100,0.3)');
+    nucGrd.addColorStop(1,'transparent');
+    ctx.fillStyle = nucGrd;
+    ctx.beginPath();
+    ctx.arc(CX,CY,35,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // Nucleus particles
+  nucleusParticles.forEach(p => {
+    p.angle += p.speed;
+    const x = CX + Math.cos(p.angle)*p.r;
+    const y = CY + Math.sin(p.angle)*p.r;
+    const color = p.type === 'p' ? '#ff4444' : '#4488ff';
+    const glow = ctx.createRadialGradient(x,y,0,x,y,6);
+    glow.addColorStop(0, p.type==='p'?'#ff8888':'#88aaff');
+    glow.addColorStop(1, color);
+    ctx.beginPath();
+    ctx.arc(x,y,5,0,Math.PI*2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+  });
+
+  // Electrons
+  electronParticles.forEach(e => {
+    e.angle += e.speed;
+    const r = shellR[e.shell-1];
+    const x = CX + Math.cos(e.angle)*r;
+    const y = CY + Math.sin(e.angle)*r;
+    // Trail
+    for(let t=1;t<=5;t++){
+      const ta = e.angle - e.speed*t*3;
+      const tx = CX + Math.cos(ta)*r;
+      const ty = CY + Math.sin(ta)*r;
+      ctx.beginPath();
+      ctx.arc(tx,ty,3*(1-t/6),0,Math.PI*2);
+      ctx.fillStyle = `rgba(255,221,0,${0.3*(1-t/6)})`;
+      ctx.fill();
+    }
+    const eg = ctx.createRadialGradient(x,y,0,x,y,5);
+    eg.addColorStop(0,'#ffff88');
+    eg.addColorStop(1,'#ffaa00');
+    ctx.beginPath();
+    ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle = eg;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = '#ffdd00';
+    ctx.fill();
+    ctx.shadowBlur = 0;
+  });
+
+  // Center label
+  if(protons > 0) {
+    const el = getElement(protons);
+    ctx.font = 'bold 16px Orbitron';
+    ctx.fillStyle = '#ffffff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(el ? el.sym : '?', CX, CY);
+    ctx.font = '10px Exo 2';
+    ctx.fillStyle = 'rgba(200,230,255,0.6)';
+    ctx.fillText(`Z=${protons}`, CX, CY+18);
+  }
+
+  time += 0.016;
+  animFrame = requestAnimationFrame(drawAtom);
+}
+
+drawAtom();
+
+// ============================================================
+// SIM 2: BOHR MODEL
+// ============================================================
+let ni = null, nf = null;
+let bohrElectronAngle = 0;
+let bohrElectronShell = 1;
+let bohrAnimating = false;
+let bohrCtxRef = null;
+
+function setLevel(n, type) {
+  if(type==='ni') ni=n;
+  else nf=n;
+  document.querySelectorAll('.level-btn').forEach(b => {
+    const row = b.closest('.level-row');
+    const lvl = parseInt(row.querySelector('.level-label').textContent.replace('n=',''));
+    if(b.textContent==='ni' && type==='ni') b.classList.toggle('selected', lvl===n);
+    if(b.textContent==='nf' && type==='nf') b.classList.toggle('selected', lvl===n);
+    if(b.textContent!==type) return;
+  });
+  document.querySelectorAll('.level-btn').forEach(b => {
+    if(b.textContent === type) {
+      const row = b.closest('.level-row');
+      const lvl = parseInt(row.querySelector('.level-label').textContent.replace('n=',''));
+      b.classList.toggle('selected', lvl === n);
+    }
+  });
+}
+
+const ENERGY = {1:-13.6, 2:-3.4, 3:-1.51, 4:-0.85, 5:-0.54, 6:-0.38};
+
+function doTransition() {
+  if(!ni || !nf) { showNotif('⚠ Choisissez ni et nf'); return; }
+  if(ni === nf) { showNotif('⚠ ni doit être différent de nf'); return; }
+  
+  const dE = ENERGY[nf] - ENERGY[ni];
+  const type = dE < 0 ? 'Émission' : 'Absorption';
+  const typeEn = dE < 0 ? 'Emission' : 'Absorption';
+  const lambda = Math.abs(1240/dE); // nm
+  
+  let color = '#ffffff';
+  let colorName = 'UV/IR';
+  if(lambda >= 380 && lambda <= 780) {
+    if(lambda < 450) { color='#8800ff'; colorName='Violet'; }
+    else if(lambda < 495) { color='#0000ff'; colorName='Bleu'; }
+    else if(lambda < 570) { color='#00bb00'; colorName='Vert'; }
+    else if(lambda < 590) { color='#ffff00'; colorName='Jaune'; }
+    else if(lambda < 620) { color='#ff7700'; colorName='Orange'; }
+    else { color='#ff0000'; colorName='Rouge'; }
+  } else if(lambda < 380) { colorName = 'UV'; }
+  else { colorName = 'Infrarouge'; }
+
+  const tInfo = document.getElementById('transitionInfo');
+  tInfo.innerHTML = `
+    <div style="font-size:0.75rem; color:var(--text2); margin-bottom:8px;">${type} / ${typeEn}</div>
+    <div style="display:flex; align-items:center; justify-content:center; gap:20px; flex-wrap:wrap;">
+      <div>
+        <div style="font-family:'Orbitron',sans-serif; font-size:1.4rem; color:var(--accent);">n=${ni} → n=${nf}</div>
+        <div style="font-size:0.8rem; color:var(--text2);">Transition</div>
+      </div>
+      <div>
+        <div style="font-family:'Orbitron',sans-serif; font-size:1.2rem; color:${dE<0?'#ff6b35':'#7fff00'};">${dE.toFixed(2)} eV</div>
+        <div style="font-size:0.8rem; color:var(--text2);">ΔE</div>
+      </div>
+      <div>
+        <div style="font-family:'Orbitron',sans-serif; font-size:1.2rem; color:${color};">${lambda.toFixed(0)} nm</div>
+        <div style="font-size:0.8rem; color:var(--text2);">λ</div>
+      </div>
+    </div>
+    <div style="width:60px; height:20px; border-radius:10px; background:${color}; margin:12px auto; box-shadow:0 0 20px ${color};"></div>
+    <div style="font-size:0.8rem; color:var(--text2);">${colorName}</div>
+  `;
+
+  // Spectrum marker
+  const marker = document.getElementById('specMarker');
+  if(lambda >= 380 && lambda <= 780) {
+    marker.style.display = 'block';
+    const pct = (lambda - 380) / (780 - 380) * 100;
+    marker.style.left = pct + '%';
+    marker.style.background = color;
+    marker.style.boxShadow = `0 0 8px ${color}`;
+  } else {
+    marker.style.display = 'none';
+  }
+
+  bohrElectronShell = ni;
+  bohrAnimating = true;
+  animateBohrTransition(nf, color);
+}
+
+let bohrAnimFrame;
+let bohrCanvas, bohrCtx;
+
+function initBohrCanvas() {
+  if(bohrCtxRef) return;
+  bohrCanvas = document.getElementById('bohrCanvas');
+  bohrCtx = bohrCanvas.getContext('2d');
+  bohrCtxRef = bohrCtx;
+  bohrElectronAngle = 0;
+  bohrElectronShell = 1;
+  drawBohr();
+}
+
+function drawBohr(targetShell=null, flashColor=null) {
+  const c = bohrCanvas, ctx = bohrCtx;
+  const W = c.width, H = c.height, CX=W/2, CY=H/2;
+  ctx.clearRect(0,0,W,H);
+
+  // Bg
+  const bg = ctx.createRadialGradient(CX,CY,0,CX,CY,CX);
+  bg.addColorStop(0,'rgba(5,20,50,0.9)');
+  bg.addColorStop(1,'rgba(2,11,24,0.5)');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,W,H);
+
+  // Shells
+  const shellR = [50, 90, 130, 165, 195, 220];
+  const shellColors = ['#ff4444','#ff8844','#ffcc44','#44ff88','#44aaff','#8844ff'];
+  
+  for(let i=0;i<6;i++){
+    ctx.beginPath();
+    ctx.arc(CX,CY,shellR[i],0,Math.PI*2);
+    ctx.strokeStyle = i === bohrElectronShell-1 ? shellColors[i] : `rgba(${parseInt(shellColors[i].slice(1,3),16)},${parseInt(shellColors[i].slice(3,5),16)},${parseInt(shellColors[i].slice(5,7),16)},0.2)`;
+    ctx.lineWidth = i === bohrElectronShell-1 ? 2 : 1;
+    ctx.setLineDash([5,10]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Label
+    ctx.font = '10px Orbitron';
+    ctx.fillStyle = shellColors[i];
+    ctx.textAlign = 'left';
+    ctx.fillText(`n=${i+1}`, CX+shellR[i]*0.71+4, CY-shellR[i]*0.71-4);
+    
+    // Energy label
+    ctx.font = '9px Exo 2';
+    ctx.fillStyle = 'rgba(150,200,230,0.6)';
+    ctx.fillText(`${Object.values(ENERGY)[i]} eV`, CX-shellR[i]-65, CY-4);
+  }
+
+  // Nucleus
+  const nGrd = ctx.createRadialGradient(CX,CY,0,CX,CY,22);
+  nGrd.addColorStop(0,'rgba(255,150,150,0.9)');
+  nGrd.addColorStop(1,'rgba(200,50,50,0.3)');
+  ctx.beginPath();
+  ctx.arc(CX,CY,22,0,Math.PI*2);
+  ctx.fillStyle = nGrd;
+  ctx.fill();
+  ctx.font = 'bold 12px Orbitron';
+  ctx.fillStyle = '#fff';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('H⁺', CX, CY);
+
+  // Flash photon
+  if(flashColor) {
+    ctx.beginPath();
+    ctx.arc(CX,CY, shellR[bohrElectronShell-1]+10, 0, Math.PI*2);
+    ctx.strokeStyle = flashColor;
+    ctx.lineWidth = 3;
+    ctx.globalAlpha = 0.6;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  // Electron
+  bohrElectronAngle += 0.03 / bohrElectronShell;
+  const r = shellR[bohrElectronShell-1];
+  const ex = CX + Math.cos(bohrElectronAngle)*r;
+  const ey = CY + Math.sin(bohrElectronAngle)*r;
+
+  // Trail
+  for(let t=1;t<=8;t++){
+    const ta = bohrElectronAngle - 0.03/bohrElectronShell*t*4;
+    const tx = CX+Math.cos(ta)*r;
+    const ty = CY+Math.sin(ta)*r;
+    ctx.beginPath();
+    ctx.arc(tx,ty,4*(1-t/9),0,Math.PI*2);
+    ctx.fillStyle = `rgba(255,221,0,${0.4*(1-t/9)})`;
+    ctx.fill();
+  }
+
+  const eG = ctx.createRadialGradient(ex,ey,0,ex,ey,7);
+  eG.addColorStop(0,'#ffffff');
+  eG.addColorStop(0.5,'#ffee44');
+  eG.addColorStop(1,'#ff8800');
+  ctx.beginPath();
+  ctx.arc(ex,ey,6,0,Math.PI*2);
+  ctx.fillStyle = eG;
+  ctx.shadowBlur = 15;
+  ctx.shadowColor = '#ffdd00';
+  ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Electron label
+  ctx.font = '10px Exo 2';
+  ctx.fillStyle = '#ffdd00';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('e⁻', ex, ey-14);
+
+  bohrAnimFrame = requestAnimationFrame(() => drawBohr(targetShell, null));
+}
+
+function animateBohrTransition(targetShell, color) {
+  let steps = 30;
+  const startShell = bohrElectronShell;
+  let flash = true;
+  
+  function animate(step) {
+    if(step >= steps) {
+      bohrElectronShell = targetShell;
+      return;
+    }
+    const progress = step/steps;
+    if(step === 15) {
+      bohrElectronShell = targetShell;
+    }
+    const fc = step < 20 ? color : null;
+    step++;
+    setTimeout(() => animate(step), 30);
+  }
+  animate(0);
+}
+
+// ============================================================
+// SIM 3: ELECTRONIC CONFIG
+// ============================================================
+const orbitalOrder = [
+  {n:1,l:'s',max:2,label:'1s'},
+  {n:2,l:'s',max:2,label:'2s'},
+  {n:2,l:'p',max:6,label:'2p',boxes:3},
+  {n:3,l:'s',max:2,label:'3s'},
+  {n:3,l:'p',max:6,label:'3p',boxes:3},
+  {n:4,l:'s',max:2,label:'4s'},
+  {n:3,l:'d',max:10,label:'3d',boxes:5},
+  {n:4,l:'p',max:6,label:'4p',boxes:3},
+  {n:5,l:'s',max:2,label:'5s'},
+  {n:4,l:'d',max:10,label:'4d',boxes:5},
+];
+
+let boxStates = {}; // key: 'orbital-box' => electrons (0,1,2)
+
+function buildOrbitalGrid() {
+  const grid = document.getElementById('orbitalGrid');
+  grid.innerHTML = '';
+  orbitalOrder.forEach(orb => {
+    const nBoxes = orb.boxes || 1;
+    const row = document.createElement('div');
+    row.className = 'orbital-row';
+    const lbl = document.createElement('span');
+    lbl.className = 'orbital-label';
+    lbl.textContent = orb.label;
+    row.appendChild(lbl);
+    for(let i=0;i<nBoxes;i++){
+      const key = `${orb.label}-${i}`;
+      const box = document.createElement('div');
+      box.className = 'orbital-box';
+      box.dataset.key = key;
+      box.dataset.max = 2;
+      if(!boxStates[key]) boxStates[key] = 0;
+      renderBox(box, boxStates[key]);
+      box.onclick = () => clickBox(key, box);
+      row.appendChild(box);
+    }
+    grid.appendChild(row);
+  });
+}
+
+function renderBox(box, count) {
+  box.innerHTML = '';
+  if(count >= 1) {
+    const d = document.createElement('div');
+    d.className = 'electron-dot up';
+    box.appendChild(d);
+  }
+  if(count >= 2) {
+    const d = document.createElement('div');
+    d.className = 'electron-dot down';
+    box.appendChild(d);
+  }
+  box.classList.toggle('filled', count > 0);
+}
+
+function clickBox(key, box) {
+  boxStates[key] = (boxStates[key] + 1) % 3;
+  renderBox(box, boxStates[key]);
+  updateConfigDisplay();
+}
+
+function updateConfigDisplay() {
+  let totalE = 0;
+  let config = '';
+  orbitalOrder.forEach(orb => {
+    const nBoxes = orb.boxes || 1;
+    let electrons = 0;
+    for(let i=0;i<nBoxes;i++) {
+      electrons += boxStates[`${orb.label}-${i}`] || 0;
+    }
+    if(electrons > 0) {
+      const sup = electrons.toString().replace(/0/g,'⁰').replace(/1/g,'¹').replace(/2/g,'²').replace(/3/g,'³').replace(/4/g,'⁴').replace(/5/g,'⁵').replace(/6/g,'⁶').replace(/7/g,'⁷').replace(/8/g,'⁸').replace(/9/g,'⁹').replace(/10/g,'¹⁰');
+      config += `${orb.label}${sup} `;
+      totalE += electrons;
+    }
+  });
+  document.getElementById('configDisplay').textContent = config || '—';
+}
+
+function autoFill() {
+  const select = document.getElementById('elemSelect');
+  const z = parseInt(select.value);
+  if(!z) return;
+  clearBoxes();
+  let remaining = z;
+  for(const orb of orbitalOrder) {
+    if(remaining <= 0) break;
+    const nBoxes = orb.boxes || 1;
+    const toFill = Math.min(remaining, orb.max);
+    // Hund's rule: fill each box with 1 first, then 2
+    const perBox = Math.ceil(toFill/nBoxes);
+    let placed = 0;
+    // First pass: 1 per box
+    for(let i=0;i<nBoxes && placed < toFill;i++){
+      boxStates[`${orb.label}-${i}`] = 1;
+      placed++;
+    }
+    // Second pass: add second electron
+    const firstPass = placed;
+    for(let i=0;i<nBoxes && placed < toFill;i++){
+      if(boxStates[`${orb.label}-${i}`] === 1) {
+        boxStates[`${orb.label}-${i}`] = 2;
+        placed++;
+      }
+    }
+    remaining -= toFill;
+  }
+  buildOrbitalGrid();
+  updateConfigDisplay();
+  updateElemSummary(z);
+}
+
+function loadElement() {
+  // Just update summary, let user auto-fill
+  const z = parseInt(document.getElementById('elemSelect').value);
+  if(z) updateElemSummary(z);
+}
+
+function updateElemSummary(z) {
+  const el = getElement(z);
+  if(!el) return;
+  document.getElementById('elemSummary').innerHTML = `
+    <div>🔷 <strong style="color:var(--accent);">${el.sym}</strong> — ${el.name}</div>
+    <div>⚛ Z = ${el.z} &nbsp;|&nbsp; A = ${el.a}</div>
+    <div>📐 ${el.config}</div>
+    <div>🔗 Électrons de valence: <strong style="color:var(--accent3);">${el.valence}</strong></div>
+    <div>📊 Groupe: ${el.group} | Période: ${el.period}</div>
+    <div>🌡 État: ${el.state}</div>
+  `;
+}
+
+function clearBoxes() {
+  boxStates = {};
+  buildOrbitalGrid();
+  document.getElementById('configDisplay').textContent = '—';
+  document.getElementById('elemSummary').innerHTML = '<span>Sélectionnez un élément pour voir son résumé</span>';
+}
+
+function populateSelect() {
+  const sel = document.getElementById('elemSelect');
+  ELEMENTS.forEach(el => {
+    const opt = document.createElement('option');
+    opt.value = el.z;
+    opt.textContent = `${el.z}. ${el.sym} — ${el.name}`;
+    sel.appendChild(opt);
+  });
+}
+
+populateSelect();
+buildOrbitalGrid();
+
+// ============================================================
+// QUIZ
+// ============================================================
+let quizBuilt = false;
+let quizAnswers = {};
+
+const QUESTIONS = [
+  {
+    q: "Un atome de carbone (C) possède 6 protons, 6 neutrons et 6 électrons. Quel est son nombre de masse A ?",
+    qen: "A carbon atom (C) has 6 protons, 6 neutrons and 6 electrons. What is its mass number A?",
+    opts: ['A = 6', 'A = 12', 'A = 18', 'A = 3'],
+    ans: 1,
+    expl: "A = Z + N = 6 + 6 = 12. Le nombre de masse est la somme des protons et des neutrons.",
+    explen: "A = Z + N = 6 + 6 = 12. Mass number = protons + neutrons."
+  },
+  {
+    q: "Si on retire 1 électron à un atome de sodium neutre (Z=11), quel ion obtient-on ?",
+    qen: "If we remove 1 electron from a neutral sodium atom (Z=11), what ion do we get?",
+    opts: ['Na²⁺', 'Na⁻', 'Na⁺', 'Na²⁻'],
+    ans: 2,
+    expl: "En retirant 1 électron, l'atome a plus de protons que d'électrons : charge = +1 → Na⁺",
+    explen: "Removing 1 electron: more protons than electrons → charge = +1 → Na⁺"
+  },
+  {
+    q: "Quelle est la configuration électronique de l'oxygène (Z=8) ?",
+    qen: "What is the electronic configuration of oxygen (Z=8)?",
+    opts: ['1s² 2s² 2p²', '1s² 2s² 2p⁴', '1s² 2s⁴ 2p²', '1s⁴ 2s² 2p²'],
+    ans: 1,
+    expl: "O: Z=8 → 1s² 2s² 2p⁴. On remplit: 1s²=2, 2s²=4, il reste 4 électrons dans 2p.",
+    explen: "O: Z=8 → 1s² 2s² 2p⁴. Fill: 1s²=2, 2s²=4, remaining 4 in 2p."
+  },
+  {
+    q: "Dans le modèle de Bohr, quand un électron passe de n=3 à n=1, l'atome...",
+    qen: "In Bohr's model, when an electron goes from n=3 to n=1, the atom...",
+    opts: ['Absorbe un photon', 'Émet un photon', 'Ne change pas', 'Perd un électron'],
+    ans: 1,
+    expl: "Le passage de n=3 à n=1 (niveau plus bas) libère de l'énergie → émission d'un photon.",
+    explen: "Going from n=3 to n=1 (lower level) releases energy → emission of a photon."
+  },
+  {
+    q: "Deux atomes sont des isotopes s'ils ont...",
+    qen: "Two atoms are isotopes if they have...",
+    opts: ['Même Z, même A', 'Même Z, A différent', 'Même A, Z différent', 'Même nombre d\'électrons'],
+    ans: 1,
+    expl: "Les isotopes ont le même numéro atomique Z (même élément) mais un nombre de masse A différent (neutrons différents).",
+    explen: "Isotopes have the same atomic number Z (same element) but different mass number A (different neutrons)."
+  },
+  {
+    q: "La règle de Hund stipule que...",
+    qen: "Hund's rule states that...",
+    opts: ['2 électrons max par case', 'Les électrons remplissent d\'abord chaque case avec 1 électron avant de se dédoubler', 'On remplit les niveaux d\'énergie les plus bas en premier', 'Les électrons ont des spins opposés dans la même case'],
+    ans: 1,
+    expl: "Hund : dans une sous-couche, les électrons occupent d'abord une case chacun (spins parallèles), avant de se mettre en paire.",
+    explen: "Hund: in a subshell, electrons occupy one box each (parallel spins) before pairing up."
+  },
+  {
+    q: "Quel est le nombre maximum d'électrons dans la couche n=2 ?",
+    qen: "What is the maximum number of electrons in shell n=2?",
+    opts: ['2', '4', '8', '18'],
+    ans: 2,
+    expl: "Max = 2n² = 2×2² = 8. La couche n=2 contient les sous-couches 2s (2e⁻) et 2p (6e⁻).",
+    explen: "Max = 2n² = 2×2² = 8. Shell n=2 contains 2s (2e⁻) and 2p (6e⁻)."
+  },
+  {
+    q: "L'énergie d'un photon émis lors d'une transition est ΔE = E(nf) - E(ni). Pour H, n=2→n=1 donne ΔE = ?",
+    qen: "Photon energy during transition ΔE = E(nf) - E(ni). For H, n=2→n=1 gives ΔE = ?",
+    opts: ['−10.2 eV', '+10.2 eV', '−3.4 eV', '+13.6 eV'],
+    ans: 0,
+    expl: "ΔE = E(1) - E(2) = −13.6 − (−3.4) = −10.2 eV. Négatif car émission (perte d'énergie).",
+    explen: "ΔE = E(1) - E(2) = −13.6 − (−3.4) = −10.2 eV. Negative = emission."
+  }
+];
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  quizAnswers = {};
+  quizBuilt = true;
+  QUESTIONS.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    const qText = lang === 'en' && q.qen ? q.qen : q.q;
+    card.innerHTML = `
+      <div class="question-num">QUESTION ${idx+1} / ${QUESTIONS.length}</div>
+      <div class="question-text">${qText}</div>
+      <div class="options" id="opts-${idx}">
+        ${q.opts.map((opt,i) => `<div class="option" data-idx="${idx}" data-opt="${i}" onclick="selectOpt(${idx},${i})">${String.fromCharCode(65+i)}. ${opt}</div>`).join('')}
+      </div>
+      <div class="feedback" id="feedback-${idx}"></div>
+    `;
+    container.appendChild(card);
+  });
+  updateQuizProgress();
+}
+
+function selectOpt(qIdx, optIdx) {
+  quizAnswers[qIdx] = optIdx;
+  document.querySelectorAll(`#opts-${qIdx} .option`).forEach((o,i) => {
+    o.style.background = i === optIdx ? 'rgba(0,229,255,0.15)' : '';
+    o.style.borderColor = i === optIdx ? 'var(--accent)' : '';
+    o.style.color = i === optIdx ? 'var(--accent)' : '';
+  });
+  updateQuizProgress();
+}
+
+function updateQuizProgress() {
+  const answered = Object.keys(quizAnswers).length;
+  document.getElementById('quizProgress').style.width = (answered/QUESTIONS.length*100) + '%';
+}
+
+function checkQuiz() {
+  let score = 0;
+  QUESTIONS.forEach((q, idx) => {
+    const opts = document.querySelectorAll(`#opts-${idx} .option`);
+    const fb = document.getElementById(`feedback-${idx}`);
+    opts.forEach((o,i) => {
+      o.style.background = '';
+      o.style.borderColor = '';
+      o.style.color = '';
+      if(i === q.ans) { o.classList.add('correct'); }
+    });
+    if(quizAnswers[idx] === q.ans) {
+      score++;
+      fb.textContent = '✅ ' + (lang==='en' && q.explen ? q.explen : q.expl);
+      fb.className = 'feedback good show';
+    } else {
+      if(quizAnswers[idx] !== undefined) {
+        opts[quizAnswers[idx]].classList.add('wrong');
+      }
+      fb.textContent = '❌ ' + (lang==='en' && q.explen ? q.explen : q.expl);
+      fb.className = 'feedback bad show';
+    }
+  });
+  const board = document.getElementById('scoreBoard');
+  board.style.display = 'block';
+  document.getElementById('scoreVal').textContent = `${score}/${QUESTIONS.length}`;
+  const pct = score/QUESTIONS.length;
+  const msgs = [
+    ['Continuez à travailler! / Keep working!', '🔴'],
+    ['Bon effort! / Good effort!', '🟡'],
+    ['Bien joué! / Well done!', '🟢'],
+    ['Excellent! / Excellent!', '🌟'],
+    ['Parfait! / Perfect!', '🏆']
+  ];
+  const mIdx = Math.floor(pct * 4.99);
+  document.getElementById('scoreMsg').textContent = msgs[mIdx][1] + ' ' + msgs[mIdx][0];
+  board.scrollIntoView({behavior:'smooth'});
+}
+
+function resetQuiz() {
+  quizBuilt = false;
+  buildQuiz();
+  document.getElementById('scoreBoard').style.display = 'none';
+}
+
+// ============================================================
+// FICHE
+// ============================================================
+function printFiche() {
+  window.print();
+}
+
+function clearFiche() {
+  document.querySelectorAll('.fiche-container input, .fiche-container textarea').forEach(el => el.value = '');
+}
+
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+function showNotif(msg) {
+  const n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+document.getElementById('ficheDate').value = new Date().toISOString().split('T')[0];
+updateAtom();
+</script>
+<<script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+/body>
+</html>

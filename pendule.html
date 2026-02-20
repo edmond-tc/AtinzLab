@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Pendule Simple — Simulateur Interactif | SimLab by Edmond TCHOKPON</title>
+<meta name="description" content="Simulateur interactif du Pendule Simple : oscillations, énergie mécanique, période, vitesse maximale. Modifiez longueur, masse, angle et gravité en temps réel. Gratuit, mobile, éducatif.">
+<meta name="keywords" content="pendule simple, simulateur pendule, oscillation, période, énergie mécanique, Travail énergie, physique terminale, BAC Bénin, Edmond TCHOKPON, SimLab">
+<meta name="author" content="Edmond Atinzoun TCHOKPON">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://edmond-tc.github.io/simlab/sim-pendule-simple.html">
+<meta property="og:title" content="Pendule Simple — Simulateur Interactif | SimLab">
+<meta property="og:description" content="Explore le pendule simple : oscillations, énergie, période. Interactif, gratuit, mobile.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SimLab — Edmond TCHOKPON">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e8;--bg2:#ede8dc;--ink:#1a1410;--ink2:#3d3530;
+  --muted:#8a7e74;--card:#ffffff;--border:#d4c9bb;
+  --E1:#e8521a;--E2:#2563b8;--E3:#16a34a;--E4:#9333ea;--acc:#e8521a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;background:var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:0.5;}
+.wrap{max-width:1140px;margin:0 auto;padding:14px;}
+
+/* AD ZONES */
+.ad-zone{width:100%;text-align:center;padding:10px 0;background:rgba(0,0,0,0.04);border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:14px 0;}
+.ad-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:4px;}
+
+/* NAV RETOUR */
+.back-nav{display:flex;align-items:center;gap:10px;padding:10px 0 14px;border-bottom:1px solid var(--border);margin-bottom:14px;flex-wrap:wrap;justify-content:space-between;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:var(--ink);color:var(--bg);font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;border-radius:5px;text-decoration:none;transition:all 0.15s;}
+.back-btn:hover{background:var(--acc);}
+.nav-links-row{display:flex;gap:8px;flex-wrap:wrap;}
+.nav-link{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-decoration:none;padding:5px 10px;border:1px solid var(--border);border-radius:4px;transition:all 0.15s;}
+.nav-link:hover{border-color:var(--ink);color:var(--ink);}
+.nav-link.guide{border-color:var(--E2);color:var(--E2);}
+.nav-link.guide:hover{background:var(--E2);color:white;}
+
+header{display:flex;align-items:flex-start;justify-content:space-between;padding:20px 0 16px;border-bottom:2px solid var(--ink);margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.h-left .eyebrow{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--acc);text-transform:uppercase;margin-bottom:5px;}
+.h-left h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(32px,6vw,64px);letter-spacing:2px;line-height:0.9;}
+.h-left h1 span{color:var(--acc);}
+.h-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;line-height:2;}
+.h-right a{color:var(--acc);text-decoration:none;}
+
+.sim-tag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;background:var(--ink);color:var(--bg);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;border-radius:4px;margin-bottom:14px;}
+
+.layout{display:grid;grid-template-columns:1fr 300px;gap:14px;}
+@media(max-width:760px){.layout{grid-template-columns:1fr;}}
+
+.ccard{background:var(--card);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:3px 3px 0 var(--border);}
+.ctop{padding:7px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+.ctitle{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.cstatus{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:all 0.3s;flex-shrink:0;}
+.dot.run{background:#16a34a;box-shadow:0 0 7px #16a34a;}
+.dot.pause{background:#f59e0b;box-shadow:0 0 7px #f59e0b;}
+canvas{width:100%;height:auto;display:block;}
+
+.ebar-wrap{padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:5px;}
+.ebar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.ebar-track{width:100%;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden;}
+.ebar-fill{height:100%;border-radius:3px;transition:width 0.06s linear;width:0%;}
+.ebar-lbl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);}
+.ebar-val{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;}
+
+.cpanel{background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px;box-shadow:3px 3px 0 var(--border);}
+.csec{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--muted);border-bottom:1px solid var(--border);padding-bottom:4px;margin-bottom:5px;text-transform:uppercase;}
+.crow{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.clbl{font-size:11px;font-weight:600;color:var(--ink);min-width:66px;flex-shrink:0;line-height:1.2;}
+.clbl small{display:block;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);font-weight:400;}
+input[type=range]{-webkit-appearance:none;flex:1;height:3px;background:var(--border);border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;background:var(--ink);border-radius:50%;cursor:pointer;}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;background:var(--ink);border-radius:50%;border:none;cursor:pointer;}
+.vd{font-family:'DM Mono',monospace;font-size:10px;color:var(--acc);min-width:50px;text-align:right;flex-shrink:0;}
+
+.reads{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.rc{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:7px;text-align:center;}
+.rc .rv{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;}
+.rc .rl{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:1px;}
+
+.brow{display:flex;gap:5px;flex-wrap:wrap;}
+.btn{flex:1;min-width:60px;padding:9px 6px;font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;border-radius:5px;cursor:pointer;transition:all 0.15s;border:1.5px solid var(--border);background:transparent;color:var(--ink);}
+.btn:hover{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.btn.go{background:var(--ink);color:var(--bg);border-color:var(--ink);}
+.btn.go:hover{background:var(--acc);border-color:var(--acc);}
+.btn.pau{border-color:#f59e0b;color:#b45309;}
+.btn.pau:hover,.btn.pau.active{background:#f59e0b;color:white;}
+.btn.rst{border-color:var(--acc);color:var(--acc);}
+.btn.rst:hover{background:var(--acc);color:white;}
+
+.theory{background:var(--card);border:1.5px solid var(--border);border-left:3px solid var(--acc);border-radius:8px;padding:12px 15px;margin-top:12px;font-size:12px;line-height:1.75;box-shadow:3px 3px 0 var(--border);}
+.theory h4{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--acc);margin-bottom:8px;text-transform:uppercase;}
+.fml{display:inline-block;background:var(--bg2);border:1px solid var(--border);padding:4px 9px;border-radius:4px;font-family:'DM Mono',monospace;font-size:11px;color:var(--ink);margin:2px 2px;}
+.tip{margin-top:8px;padding:7px 11px;background:rgba(22,163,74,0.07);border-left:2px solid var(--E3);font-size:11px;color:var(--ink2);border-radius:3px;}
+.tip b{color:var(--E3);}
+.warn{margin-top:7px;padding:7px 11px;background:rgba(232,82,26,0.07);border-left:2px solid var(--acc);font-size:11px;color:var(--ink2);border-radius:3px;}
+
+/* EXERCICE */
+.exo-section{margin-top:14px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:3px 3px 0 var(--border);}
+.exo-header{padding:10px 16px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+.exo-header h3{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;color:var(--bg);}
+.exo-header .toggle-ico{color:var(--bg);font-size:14px;transition:transform 0.2s;}
+.exo-body{padding:14px 16px;display:none;}
+.exo-body.open{display:block;}
+.exo-enonce{font-size:12.5px;line-height:1.75;padding:10px 12px;background:var(--bg2);border-radius:6px;border:1px solid var(--border);margin-bottom:12px;}
+.exo-enonce strong{color:var(--acc);}
+.exo-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;}
+.exo-table th{background:var(--ink);color:var(--bg);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;padding:8px 10px;text-align:left;font-weight:500;}
+.exo-table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.exo-table tr:last-child td{border-bottom:none;}
+.exo-table tr:hover td{background:var(--bg2);}
+.exo-table .grandeur{font-weight:700;font-size:12px;}
+.exo-table .formule{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.exo-table .sim-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--E2);font-weight:500;}
+.exo-input{width:80px;padding:5px 7px;font-family:'DM Mono',monospace;font-size:11px;border:1.5px solid var(--border);border-radius:4px;background:var(--bg);color:var(--ink);outline:none;text-align:center;}
+.exo-input:focus{border-color:var(--acc);}
+.result-ico{font-size:14px;margin-left:4px;}
+.corr-val{font-family:'DM Mono',monospace;font-size:10px;color:var(--E3);margin-left:4px;display:none;}
+.corr-val.show{display:inline;}
+.wrong-val{color:var(--acc)!important;}
+.exo-btn-row{display:flex;gap:6px;margin-top:6px;}
+.exo-btn{padding:8px 14px;font-family:'Manrope',sans-serif;font-size:11px;font-weight:700;border-radius:5px;cursor:pointer;transition:all 0.15s;border:1.5px solid var(--ink);background:var(--ink);color:var(--bg);}
+.exo-btn:hover{background:var(--acc);border-color:var(--acc);}
+.exo-btn.reset{background:transparent;color:var(--acc);border-color:var(--acc);}
+.exo-btn.reset:hover{background:var(--acc);color:white;}
+.score-bar{margin-top:8px;padding:8px 12px;border-radius:5px;font-family:'DM Mono',monospace;font-size:11px;display:none;}
+.score-bar.show{display:block;}
+.score-bar.good{background:rgba(22,163,74,0.1);border:1px solid var(--E3);color:var(--E3);}
+.score-bar.bad{background:rgba(232,82,26,0.08);border:1px solid var(--acc);color:var(--acc);}
+.mgraph{width:100%;height:65px;display:block;margin-top:4px;border-radius:4px;}
+
+/* AUTRES MODULES */
+.more-modules{margin-top:28px;padding-top:20px;border-top:2px solid var(--ink);}
+.more-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;}
+.module-card{display:block;padding:12px 14px;background:var(--card);border:1.5px solid var(--border);border-radius:8px;text-decoration:none;color:var(--ink);transition:all 0.15s;box-shadow:2px 2px 0 var(--border);}
+.module-card:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:3px 3px 0 var(--border);}
+.module-card .mc-num{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:4px;}
+.module-card .mc-name{font-weight:700;font-size:12px;}
+.module-card .mc-desc{font-size:10px;color:var(--muted);margin-top:2px;}
+
+footer{text-align:center;padding:16px;margin-top:24px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);border-top:2px solid var(--ink);}
+footer a{color:var(--acc);text-decoration:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- NAV -->
+  <div class="back-nav">
+    <a href="index.html" class="back-btn">← SimLab</a>
+    <div class="nav-links-row">
+      <a href="guide-pendule-simple.html" class="nav-link guide">📖 Guide d'utilisation</a>
+      <a href="sim-pendule-conique.html" class="nav-link">Suivant : Pendule Conique →</a>
+    </div>
+  </div>
+
+  <!-- ═══ PUB ADSTERRA ZONE 1 — EN HAUT ═══ -->
+  <div class="ad-zone">
+    <span class="ad-label">Publicité — soutenir SimLab</span>
+    <script src="https://pl28741531.effectivegatecpm.com/60/34/3d/60343df7873087f462df90174c6e4dfc.js"></script>
+  </div>
+
+  <header>
+    <div class="h-left">
+      <div class="eyebrow">⚡ SimLab · Module 01 · Travail &amp; Énergie</div>
+      <h1>PENDULE<br><span>SIMPLE</span></h1>
+    </div>
+    <div class="h-right">
+      Edmond Atinzoun TCHOKPON<br>
+      Université d'Abomey-Calavi<br>
+      CPGE / Licence Physique-Chimie<br>
+      <a href="index.html">simlab-science.pages.dev</a>
+    </div>
+  </header>
+
+  <span class="sim-tag">🔵 Simulateur · Pendule Simple · Huygens (1656)</span>
+
+  <div class="layout">
+    <div>
+      <div class="ccard">
+        <div class="ctop">
+          <span class="ctitle">Pendule Simple — Huygens (1656)</span>
+          <span class="cstatus"><span class="dot" id="dPend"></span><span id="sPend">En attente</span></span>
+        </div>
+        <canvas id="cvPend" width="700" height="340"></canvas>
+        <div class="ebar-wrap">
+          <div class="ebar"><div class="ebar-lbl" style="color:var(--E1)">Ec (J)</div><div class="ebar-track"><div class="ebar-fill" id="bPEc" style="background:var(--E1)"></div></div><div class="ebar-val" style="color:var(--E1)" id="vPEc">0.000</div></div>
+          <div class="ebar"><div class="ebar-lbl" style="color:var(--E2)">Ep (J)</div><div class="ebar-track"><div class="ebar-fill" id="bPEp" style="background:var(--E2)"></div></div><div class="ebar-val" style="color:var(--E2)" id="vPEp">0.000</div></div>
+          <div class="ebar"><div class="ebar-lbl" style="color:var(--E3)">Em (J)</div><div class="ebar-track"><div class="ebar-fill" id="bPEm" style="background:var(--E3)"></div></div><div class="ebar-val" style="color:var(--E3)" id="vPEm">0.000</div></div>
+        </div>
+      </div>
+
+      <div class="theory">
+        <h4>// Pendule Simple — Faits réels</h4>
+        <p>Pendule de Foucault (Panthéon, Paris, 1851) : L = 67 m → T ≈ 16.4 s. Pour θ &lt; 15° :</p><br>
+        <span class="fml">T = 2π√(L/g)</span><span class="fml">Ep = mgL(1−cosθ)</span><span class="fml">Em = mgL(1−cosθ₀)</span>
+        <div class="tip"><b>Conservation :</b> au bas Ec = Em, au sommet Ec = 0. T indépendant de m (Galilée, 1602).</div>
+        <div class="warn">⚠ Formule valable pour θ₀ &lt; 15°. Au-delà, la période augmente légèrement.</div>
+      </div>
+
+      <!-- ═══ PUB ADSTERRA ZONE 2 — MILIEU ═══ -->
+      <div class="ad-zone" style="margin-top:14px;">
+        <span class="ad-label">Publicité — soutenir SimLab</span>
+        <script async="async" data-cfasync="false" src="https://pl28741593.effectivegatecpm.com/f73b661be1085dd633d4e5acb60fa5ea/invoke.js"></script>
+        <div id="container-f73b661be1085dd633d4e5acb60fa5ea"></div>
+      </div>
+
+      <!-- EXERCICE -->
+      <div class="exo-section">
+        <div class="exo-header" onclick="toggleExo('exoPend')">
+          <h3>📋 EXERCICE — TABLEAU DE MESURES</h3>
+          <span class="toggle-ico" id="icoExoPend">▼</span>
+        </div>
+        <div class="exo-body" id="exoPend">
+          <div class="exo-enonce">
+            Règle les paramètres : <strong>L = 1.5 m, m = 0.8 kg, θ₀ = 25°, g = 9.81 m/s²</strong>.<br>
+            Lance la simulation puis lis les valeurs affichées. Calcule chaque grandeur et entre ta valeur dans le tableau. Tolérance : ±5 %.
+          </div>
+          <table class="exo-table">
+            <thead><tr><th>Grandeur</th><th>Formule</th><th>Valeur sim.</th><th>Ta valeur</th><th>Résultat</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><span class="grandeur">Période T</span><br><span class="formule">(s)</span></td>
+                <td class="formule">2π√(L/g)</td>
+                <td class="sim-val" id="exP_T">—</td>
+                <td><input class="exo-input" id="inP_T" placeholder="0.00" type="number" step="0.001"></td>
+                <td><span class="result-ico" id="resP_T"></span><span class="corr-val" id="corrP_T"></span></td>
+              </tr>
+              <tr>
+                <td><span class="grandeur">Énergie Em</span><br><span class="formule">(J)</span></td>
+                <td class="formule">mgL(1−cosθ₀)</td>
+                <td class="sim-val" id="exP_Em">—</td>
+                <td><input class="exo-input" id="inP_Em" placeholder="0.00" type="number" step="0.0001"></td>
+                <td><span class="result-ico" id="resP_Em"></span><span class="corr-val" id="corrP_Em"></span></td>
+              </tr>
+              <tr>
+                <td><span class="grandeur">v_max</span><br><span class="formule">(m/s) au bas</span></td>
+                <td class="formule">√(2gL(1−cosθ₀))</td>
+                <td class="sim-val" id="exP_Vm">—</td>
+                <td><input class="exo-input" id="inP_Vm" placeholder="0.00" type="number" step="0.001"></td>
+                <td><span class="result-ico" id="resP_Vm"></span><span class="corr-val" id="corrP_Vm"></span></td>
+              </tr>
+              <tr>
+                <td><span class="grandeur">Ep à θ=15°</span><br><span class="formule">(J)</span></td>
+                <td class="formule">mgL(1−cos15°)</td>
+                <td class="sim-val" id="exP_Ep15">—</td>
+                <td><input class="exo-input" id="inP_Ep15" placeholder="0.00" type="number" step="0.0001"></td>
+                <td><span class="result-ico" id="resP_Ep15"></span><span class="corr-val" id="corrP_Ep15"></span></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="exo-btn-row">
+            <button class="exo-btn" onclick="checkExo()">✔ Vérifier mes réponses</button>
+            <button class="exo-btn reset" onclick="resetExo()">↺ Effacer</button>
+          </div>
+          <div class="score-bar" id="scorePend"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANEL CONTROLES -->
+    <div class="cpanel">
+      <div>
+        <div class="csec">// Paramètres</div>
+        <div class="crow"><div class="clbl">Longueur L<small>(m)</small></div><input type="range" id="pL" min="0.1" max="5" step="0.05" value="1.5" oninput="upPend()"><div class="vd" id="pLv">1.50 m</div></div>
+        <div class="crow"><div class="clbl">Masse m<small>(kg)</small></div><input type="range" id="pM" min="0.1" max="5" step="0.1" value="0.8" oninput="upPend()"><div class="vd" id="pMv">0.8 kg</div></div>
+        <div class="crow"><div class="clbl">Angle θ₀<small>initial</small></div><input type="range" id="pTh" min="2" max="60" value="25" oninput="upPend()"><div class="vd" id="pThv">25°</div></div>
+        <div class="crow"><div class="clbl">g (m/s²)</div><input type="range" id="pG" min="1.6" max="24" step="0.01" value="9.81" oninput="upPend()"><div class="vd" id="pGv">9.81</div></div>
+      </div>
+      <div>
+        <div class="csec">// Mesures live</div>
+        <div class="reads">
+          <div class="rc"><div class="rv" style="color:var(--E1)" id="rPEc">0.0000</div><div class="rl">Ec (J)</div></div>
+          <div class="rc"><div class="rv" style="color:var(--E2)" id="rPEp">0.0000</div><div class="rl">Ep (J)</div></div>
+          <div class="rc"><div class="rv" style="color:var(--E3)" id="rPEm">—</div><div class="rl">Em (J)</div></div>
+          <div class="rc"><div class="rv" id="rPT">—</div><div class="rl">T (s)</div></div>
+        </div>
+        <canvas class="mgraph" id="mgPend"></canvas>
+      </div>
+      <div class="brow">
+        <button class="btn go" id="btnGoP" onclick="goP()">▶ Lancer</button>
+        <button class="btn pau" id="btnPauP" onclick="pauseP()">⏸ Pause</button>
+        <button class="btn rst" onclick="rstP()">↺ Reset</button>
+      </div>
+      <div style="padding-top:8px;border-top:1px solid var(--border);">
+        <a href="guide-pendule-simple.html" style="display:block;text-align:center;padding:8px;background:rgba(37,99,184,0.08);border:1px solid var(--E2);border-radius:5px;font-family:'DM Mono',monospace;font-size:9px;color:var(--E2);text-decoration:none;letter-spacing:1px;">📖 GUIDE D'UTILISATION →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTRES MODULES -->
+  <div class="more-modules">
+    <div class="more-title">// Autres simulateurs — Travail &amp; Énergie</div>
+    <div class="modules-grid">
+      <a href="sim-pendule-conique.html" class="module-card"><div class="mc-num">MODULE 02</div><div class="mc-name">🌀 Pendule Conique</div><div class="mc-desc">Régulateur de Watt (1788)</div></a>
+      <a href="sim-ressort-vertical.html" class="module-card"><div class="mc-num">MODULE 03</div><div class="mc-name">🔴 Ressort Vertical</div><div class="mc-desc">Oscillations verticales, loi de Hooke</div></a>
+      <a href="sim-ressort-horizontal.html" class="module-card"><div class="mc-num">MODULE 04</div><div class="mc-name">🟠 Ressort Horizontal</div><div class="mc-desc">Oscillations horizontales, énergie</div></a>
+      <a href="sim-conservation-energie.html" class="module-card"><div class="mc-num">MODULE 05</div><div class="mc-name">⚡ Conservation Énergie</div><div class="mc-desc">Looping, énergie mécanique totale</div></a>
+    </div>
+  </div>
+
+  <!-- ═══ PUB ADSTERRA ZONE 3 — EN BAS ═══ -->
+  <div class="ad-zone" style="margin-top:20px;">
+    <span class="ad-label">Publicité — soutenir SimLab</span>
+    <a href="https://www.effectivegatecpm.com/dp9qzt4n9r?key=e7b708428db00dc883f0286070c1bbd3" target="_blank" rel="noopener">
+      <img src="https://www.effectivegatecpm.com/dp9qzt4n9r?key=e7b708428db00dc883f0286070c1bbd3" alt="Publicité" style="max-width:100%;height:auto;display:block;margin:0 auto;" onerror="this.style.display='none'">
+    </a>
+  </div>
+
+  <footer>
+    SimLab · Pendule Simple · Edmond Atinzoun TCHOKPON ·
+    <a href="index.html">simlab-science.pages.dev</a>
+    · Université d'Abomey-Calavi · CPGE / Licence PC
+  </footer>
+</div>
+
+<script>
+function C(id){return document.getElementById(id);}
+function sv(id,v){const el=C(id);if(el)el.textContent=v;}
+function sb(id,p){const el=C(id);if(el)el.style.width=Math.min(100,Math.max(0,p*100))+'%';}
+
+function toggleExo(id){
+  const body=C(id);
+  const ico=C('ico'+id.charAt(0).toUpperCase()+id.slice(1));
+  body.classList.toggle('open');
+  if(ico)ico.textContent=body.classList.contains('open')?'▲':'▼';
+}
+
+function clrCV(id){
+  const cv=C(id),ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  return{cv,ctx,W:cv.width,H:cv.height};
+}
+function grd(ctx,W,H){
+  ctx.save();ctx.strokeStyle='rgba(0,0,0,0.04)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.restore();
+}
+function arw(ctx,x1,y1,x2,y2,col,lbl,lw=2){
+  const dx=x2-x1,dy=y2-y1,L=Math.sqrt(dx*dx+dy*dy);
+  if(L<4)return;
+  const ux=dx/L,uy=dy/L,hw=6,hl=10;
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=lw;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2-ux*hl,y2-uy*hl);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-ux*hl-uy*hw,y2-uy*hl+ux*hw);
+  ctx.lineTo(x2-ux*hl+uy*hw,y2-uy*hl-ux*hw);
+  ctx.closePath();ctx.fill();
+  if(lbl){ctx.font='bold 10px DM Mono,monospace';ctx.fillText(lbl,(x1+x2)/2+uy*13,(y1+y2)/2-ux*13);}
+  ctx.restore();
+}
+function drawMG(id,hist,cols){
+  const cv=C(id),ctx=cv.getContext('2d'),W=cv.width,H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='rgba(0,0,0,0.03)';ctx.fillRect(0,0,W,H);
+  if(!hist||hist.length<2)return;
+  for(let s=0;s<cols.length;s++){
+    const vals=hist.map(h=>h[s]);
+    const mx=Math.max(...vals,0.0001);
+    ctx.strokeStyle=cols[s];ctx.lineWidth=1.5;
+    ctx.beginPath();
+    hist.forEach((h,i)=>{
+      const x=i*(W-2)/(hist.length-1)+1,y=H-2-(h[s]/mx)*(H-4);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });ctx.stroke();
+  }
+}
+function setPauseBtn(id,paused){
+  const b=C(id);
+  if(paused){b.textContent='▶ Reprendre';b.classList.add('active');}
+  else{b.textContent='⏸ Pause';b.classList.remove('active');}
+}
+function setDot(id,state){
+  const d=C(id);d.className='dot';
+  if(state==='run')d.classList.add('run');
+  else if(state==='pause')d.classList.add('pause');
+}
+
+// ═══ PENDULE SIMPLE ═══
+let sP={run:false,paused:false,raf:null,th:0,dth:0,t:0,hist:[]};
+function getPend(){return{L:+C('pL').value,m:+C('pM').value,th0:+C('pTh').value*Math.PI/180,g:+C('pG').value};}
+function upPend(){
+  const{L,m,th0,g}=getPend();
+  sv('pLv',L.toFixed(2)+' m');sv('pMv',m.toFixed(1)+' kg');
+  sv('pThv',Math.round(th0*180/Math.PI)+'°');sv('pGv',g.toFixed(2));
+  const T=2*Math.PI*Math.sqrt(L/g),Em=m*g*L*(1-Math.cos(th0));
+  const vmax=Math.sqrt(2*g*L*(1-Math.cos(th0)));
+  sv('rPT',T.toFixed(3)+' s');sv('rPEm',Em.toFixed(4)+' J');
+  sv('vPEm',Em.toFixed(3));sb('bPEm',1);
+  sv('exP_T',T.toFixed(3));sv('exP_Em',Em.toFixed(4));sv('exP_Vm',vmax.toFixed(4));
+  const Ep15=m*g*L*(1-Math.cos(15*Math.PI/180));sv('exP_Ep15',Ep15.toFixed(4));
+  drawPend(sP.run?sP.th:th0,0);
+}
+function drawPend(th,dth){
+  const{cv,ctx,W,H}=clrCV('cvPend');
+  const{L,m,g,th0}=getPend();
+  grd(ctx,W,H);
+  const ox=W/2,oy=50,sc=Math.min((H-80)/L/1.1,95);
+  const bx=ox+Math.sin(th)*L*sc,by=oy+Math.cos(th)*L*sc;
+  ctx.save();
+  ctx.fillStyle='#1a1410';ctx.fillRect(ox-3,oy-14,6,14);
+  ctx.fillStyle='#3d3530';ctx.fillRect(ox-22,oy-16,44,6);
+  ctx.strokeStyle='rgba(37,99,184,0.15)';ctx.lineWidth=1;
+  ctx.beginPath();
+  for(let a=-th0;a<=th0;a+=0.02){
+    const px=ox+Math.sin(a)*L*sc,py=oy+Math.cos(a)*L*sc;
+    a===-th0?ctx.moveTo(px,py):ctx.lineTo(px,py);
+  }ctx.stroke();
+  ctx.strokeStyle='#8a7e74';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(bx,by);ctx.stroke();
+  ctx.strokeStyle='rgba(232,82,26,0.4)';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(ox,oy);ctx.lineTo(ox,oy+52);ctx.stroke();ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(232,82,26,0.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.arc(ox,oy,52,Math.PI/2-Math.abs(th),Math.PI/2,th<0);ctx.stroke();
+  ctx.fillStyle='#e8521a';ctx.font='bold 11px DM Mono,monospace';ctx.textAlign='left';
+  ctx.fillText('θ='+Math.round(th*180/Math.PI)+'°',ox+(th>0?14:-60),oy+55);
+  const Em=m*g*L*(1-Math.cos(th0)),Ep=m*g*L*(1-Math.cos(th)),Ec=Math.max(0,Em-Ep);
+  const r=Math.max(10,Math.min(20,m*7));
+  const g2=ctx.createRadialGradient(bx-r*.3,by-r*.3,0,bx,by,r);
+  g2.addColorStop(0,'#6baee8');g2.addColorStop(1,'#1a3a6e');
+  ctx.fillStyle=g2;ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#2563b8';ctx.lineWidth=2;ctx.stroke();
+  const v=Math.sqrt(2*Ec/m);
+  if(v>0.01){const vx=-Math.cos(th)*v*4,vy=Math.sin(th)*v*4;arw(ctx,bx,by,bx+vx*3,by+vy*3,'#e8521a','v',2);}
+  const h=L*(1-Math.cos(th));
+  ctx.fillStyle='#2563b8';ctx.font='10px DM Mono';ctx.textAlign='left';
+  ctx.fillText('h='+h.toFixed(3)+'m',bx+r+5,by);
+  sv('rPEc',Ec.toFixed(4)+' J');sv('rPEp',Ep.toFixed(4)+' J');sv('rPEm',Em.toFixed(4)+' J');
+  sb('bPEc',Em>0?Ec/Em:0);sb('bPEp',Em>0?Ep/Em:0);sb('bPEm',1);
+  sv('vPEc',Ec.toFixed(3));sv('vPEp',Ep.toFixed(3));sv('vPEm',Em.toFixed(3));
+  ctx.restore();
+}
+function goP(){
+  if(sP.run&&!sP.paused)return;
+  if(sP.paused){sP.paused=false;setDot('dPend','run');sv('sPend','Oscillation…');setPauseBtn('btnPauP',false);loopP();return;}
+  const{th0}=getPend();sP={run:true,paused:false,raf:null,th:th0,dth:0,t:0,hist:[]};
+  setDot('dPend','run');sv('sPend','Oscillation en cours…');loopP();
+}
+function loopP(){
+  let last=null;
+  const step=(ts)=>{
+    if(sP.paused)return;
+    if(!last)last=ts;
+    const dt=Math.min((ts-last)/1000,0.03);last=ts;
+    const{L,m,g,th0}=getPend();
+    sP.dth+=-(g/L)*Math.sin(sP.th)*dt;sP.th+=sP.dth*dt;sP.t+=dt;
+    const Em=m*g*L*(1-Math.cos(th0)),Ep=m*g*L*(1-Math.cos(sP.th)),Ec=Math.max(0,Em-Ep);
+    sP.hist.push([Ec,Ep,Em]);if(sP.hist.length>120)sP.hist.shift();
+    drawPend(sP.th,sP.dth);drawMG('mgPend',sP.hist,['#e8521a','#2563b8','#16a34a']);
+    sv('rPT',(2*Math.PI*Math.sqrt(L/g)).toFixed(3)+' s');
+    sP.raf=requestAnimationFrame(step);
+  };sP.raf=requestAnimationFrame(step);
+}
+function pauseP(){
+  if(!sP.run)return;
+  sP.paused=!sP.paused;
+  if(sP.paused){if(sP.raf)cancelAnimationFrame(sP.raf);setDot('dPend','pause');sv('sPend','En pause');setPauseBtn('btnPauP',true);}
+  else{setDot('dPend','run');sv('sPend','Oscillation…');setPauseBtn('btnPauP',false);loopP();}
+}
+function rstP(){
+  if(sP.raf)cancelAnimationFrame(sP.raf);
+  sP={run:false,paused:false,raf:null,th:0,dth:0,t:0,hist:[]};
+  setDot('dPend','');sv('sPend','En attente');setPauseBtn('btnPauP',false);upPend();
+}
+
+// EXERCICE CHECK
+function checkExo(){
+  const{L,m,th0,g}=getPend();
+  const T=2*Math.PI*Math.sqrt(L/g),Em=m*g*L*(1-Math.cos(th0));
+  const vmax=Math.sqrt(2*g*L*(1-Math.cos(th0))),Ep15=m*g*L*(1-Math.cos(15*Math.PI/180));
+  const refs={T,Em,Vm:vmax,Ep15};
+  const ids=['T','Em','Vm','Ep15'];
+  let ok=0;
+  ids.forEach(id=>{
+    const inp=C('inP_'+id),res=C('resP_'+id),corr=C('corrP_'+id);
+    if(!inp)return;
+    const val=parseFloat(inp.value);const ref=refs[id];
+    if(isNaN(val)){res.textContent='';corr.classList.remove('show');return;}
+    const tol=Math.abs(ref)*0.05;
+    const correct=Math.abs(val-ref)<=tol;
+    res.textContent=correct?'✅':'❌';
+    corr.textContent=correct?'':'→ '+ref.toFixed(4);
+    corr.className='corr-val show'+(correct?'':' wrong-val');
+    if(correct)ok++;
+  });
+  const sc=C('scorePend');
+  sc.textContent='Score : '+ok+' / '+ids.length+(ok===ids.length?' 🎉 Parfait !':ok>0?' — Continue !':' — Réessaie !');
+  sc.className='score-bar show '+(ok===ids.length?'good':'bad');
+}
+function resetExo(){
+  ['T','Em','Vm','Ep15'].forEach(id=>{
+    const inp=C('inP_'+id),res=C('resP_'+id),corr=C('corrP_'+id);
+    if(inp)inp.value='';
+    if(res)res.textContent='';
+    if(corr){corr.textContent='';corr.className='corr-val';}
+  });
+  const sc=C('scorePend');sc.className='score-bar';sc.textContent='';
+}
+
+upPend();
+</script>
+</body>
+</html>

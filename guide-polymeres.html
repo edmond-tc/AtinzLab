@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide SimuPoly — Chimie des Polymères | Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0a1a;
+  --surface:#14102a;
+  --surface2:#1c1738;
+  --p1:#e040fb;
+  --p2:#00e5ff;
+  --p3:#69ff47;
+  --p4:#ffab00;
+  --p5:#ff6d00;
+  --danger:#ff1744;
+  --text:#e8e0ff;
+  --muted:#6a6090;
+  --border:#2a2550;
+  --mono:'Share Tech Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;line-height:1.7;}
+
+/* BG */
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 40% at 10% 10%,rgba(224,64,251,.05) 0%,transparent 70%),
+  radial-gradient(ellipse 50% 50% at 90% 90%,rgba(0,229,255,.04) 0%,transparent 70%);}
+
+/* TOP BAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:6px 28px;
+  font-family:var(--mono);font-size:.62rem;color:var(--muted);text-align:center;letter-spacing:2px;position:relative;z-index:10;}
+
+/* HERO */
+.hero{
+  position:relative;z-index:5;
+  background:linear-gradient(140deg,#0e0a1a 0%,#1c0930 40%,#0a1a2e 100%);
+  border-bottom:1px solid var(--border);
+  padding:64px 40px 52px;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 80% 60% at 50% 100%,rgba(224,64,251,.08) 0%,transparent 60%);}
+.hero::after{content:'🧬';position:absolute;right:3%;top:5%;font-size:260px;opacity:.03;line-height:1;pointer-events:none;}
+.hero-inner{max-width:900px;margin:0 auto;position:relative;z-index:1;}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(224,64,251,.1);border:1px solid rgba(224,64,251,.3);
+  border-radius:40px;padding:5px 16px;margin-bottom:20px;
+  font-family:var(--mono);font-size:.62rem;letter-spacing:2px;color:var(--p1);
+}
+.hero h1{font-family:'Bitter',serif;font-size:clamp(2.2rem,5vw,3.8rem);font-weight:700;
+  line-height:1.1;margin-bottom:14px;
+  background:linear-gradient(135deg,var(--p1),var(--p2),var(--p3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero h1 em{font-style:italic;font-weight:400;}
+.hero p{font-size:1rem;color:var(--muted);max-width:540px;margin-bottom:24px;}
+.author-pill{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(224,64,251,.08);border:1px solid rgba(224,64,251,.25);
+  border-radius:40px;padding:8px 18px;font-size:.82rem;
+}
+.author-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--p4);box-shadow:0 0 8px var(--p4);}
+.pills{display:flex;flex-wrap:wrap;gap:7px;margin-top:22px;}
+.pill{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  color:var(--muted);padding:4px 13px;border-radius:20px;
+  font-size:.68rem;text-decoration:none;font-family:var(--mono);
+  transition:all .2s;
+}
+.pill:hover{border-color:var(--p1);color:var(--p1);}
+
+/* PAGE */
+.page{max-width:980px;margin:0 auto;padding:56px 28px;position:relative;z-index:1;}
+
+/* SECTION */
+.section{margin-bottom:64px;}
+.sec-head{display:flex;align-items:flex-start;gap:20px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);margin-bottom:26px;}
+.sec-num{font-family:'Bitter',serif;font-size:4rem;color:var(--border);line-height:1;
+  flex-shrink:0;margin-top:-8px;}
+.sec-meta .eyebrow{font-family:var(--mono);font-size:.6rem;letter-spacing:3px;
+  color:var(--p1);text-transform:uppercase;margin-bottom:3px;}
+.sec-meta h2{font-family:'Bitter',serif;font-size:1.9rem;font-weight:700;
+  color:var(--text);line-height:1.2;}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:18px;position:relative;transition:transform .2s,border-color .2s;}
+.card:hover{transform:translateY(-2px);border-color:var(--p1);}
+.card::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--p1),transparent);opacity:.4;}
+.card-icon{font-size:1.7rem;margin-bottom:8px;}
+.card h3{font-size:.9rem;font-weight:600;color:var(--text);margin-bottom:5px;}
+.card p{font-size:.76rem;color:var(--muted);line-height:1.6;}
+.ctag{position:absolute;top:12px;right:12px;
+  font-family:var(--mono);font-size:.55rem;letter-spacing:1px;
+  padding:2px 7px;border-radius:3px;text-transform:uppercase;}
+.tg-m{background:rgba(224,64,251,.15);color:var(--p1);}
+.tg-c{background:rgba(0,229,255,.1);color:var(--p2);}
+.tg-g{background:rgba(105,255,71,.1);color:var(--p3);}
+.tg-a{background:rgba(255,171,0,.1);color:var(--p4);}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;}
+.step{display:flex;gap:18px;padding:16px 0 16px 28px;
+  border-left:1px solid var(--border);margin-left:15px;position:relative;}
+.step::before{content:attr(data-n);position:absolute;left:-15px;top:16px;
+  width:28px;height:28px;background:var(--p1);color:#0e0a1a;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:.72rem;font-weight:700;}
+.step:last-child{border-left-color:transparent;}
+.step h4{font-weight:600;font-size:.9rem;color:var(--text);margin-bottom:4px;}
+.step p{font-size:.79rem;color:var(--muted);line-height:1.6;}
+.step code{background:var(--surface2);padding:1px 6px;border-radius:3px;
+  font-family:var(--mono);font-size:.75rem;color:var(--p2);}
+
+/* FORMULA BOX */
+.fbox{background:#080614;border:1px solid var(--border);border-radius:7px;
+  padding:13px 16px;margin:12px 0;font-family:var(--mono);font-size:.82rem;
+  color:var(--p4);position:relative;}
+.fbox::before{content:'FORMULE';position:absolute;top:7px;right:10px;
+  font-size:.52rem;letter-spacing:2px;color:rgba(255,171,0,.3);}
+.fbox .hl{color:var(--p2);}
+.fbox .cm{color:var(--muted);font-size:.72rem;}
+
+/* INFO BOXES */
+.ibox{border-radius:7px;padding:12px 16px;margin:12px 0;
+  display:flex;gap:12px;align-items:flex-start;}
+.ib-tip{background:rgba(105,255,71,.07);border-left:3px solid var(--p3);}
+.ib-warn{background:rgba(255,171,0,.07);border-left:3px solid var(--p4);}
+.ib-info{background:rgba(0,229,255,.07);border-left:3px solid var(--p2);}
+.ib-hot{background:rgba(224,64,251,.07);border-left:3px solid var(--p1);}
+.ib-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.ibox p{font-size:.79rem;color:var(--text);line-height:1.65;}
+.ibox strong{font-weight:600;color:var(--text);}
+
+/* ONGLET CARDS */
+.onglets{display:flex;flex-direction:column;gap:10px;}
+.ong{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.ong-head{display:flex;align-items:center;gap:12px;padding:12px 18px;
+  background:var(--surface2);border-bottom:1px solid var(--border);}
+.ong-emoji{font-size:1.3rem;}
+.ong-head h3{font-size:.9rem;font-weight:600;color:var(--text);}
+.ong-lvl{margin-left:auto;font-family:var(--mono);font-size:.58rem;letter-spacing:1px;color:var(--muted);}
+.ong-body{padding:16px 18px;}
+.ong-body p{font-size:.8rem;color:var(--muted);line-height:1.65;margin-bottom:7px;}
+.ong-body ul{padding-left:16px;}
+.ong-body li{font-size:.79rem;color:var(--muted);margin-bottom:3px;}
+.ong-body li strong{color:var(--text);}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:.76rem;}
+.tbl th{background:rgba(224,64,251,.12);color:var(--p1);
+  padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);
+  font-family:var(--mono);font-size:.64rem;letter-spacing:1px;}
+.tbl td{padding:8px 12px;border-bottom:1px solid rgba(42,37,80,.5);color:var(--text);}
+.tbl tr:hover td{background:rgba(224,64,251,.04);}
+.badge{display:inline-block;padding:2px 7px;border-radius:3px;
+  font-size:.62rem;font-weight:600;font-family:var(--mono);}
+.bg-m{background:rgba(224,64,251,.15);color:var(--p1);}
+.bg-c{background:rgba(0,229,255,.1);color:var(--p2);}
+.bg-g{background:rgba(105,255,71,.1);color:var(--p3);}
+.bg-a{background:rgba(255,171,0,.1);color:var(--p4);}
+
+/* PROTOCOL */
+.protocol{background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.proto-head{padding:12px 18px;display:flex;align-items:center;gap:10px;color:white;}
+.proto-body{padding:18px;}
+.checklist{display:flex;flex-direction:column;gap:7px;}
+.ci{display:flex;align-items:flex-start;gap:10px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:8px 12px;}
+.cb{width:18px;height:18px;border-radius:3px;border:1px solid var(--border);
+  flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:.62rem;}
+.cb.done{background:var(--p3);border-color:var(--p3);color:#0e0a1a;}
+.ci p{font-size:.79rem;color:var(--text);}
+.ci p span{color:var(--muted);font-size:.72rem;}
+
+/* FORMULAS REF */
+.fref-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(275px,1fr));gap:12px;}
+.fref{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.fref-title{font-family:var(--mono);font-size:.64rem;color:var(--p1);letter-spacing:2px;margin-bottom:8px;}
+
+/* GLOSSARY */
+.glossary{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:10px;}
+.gitem{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;}
+.gterm{font-family:var(--mono);font-size:.75rem;color:var(--p1);font-weight:500;margin-bottom:3px;}
+.gdef{font-size:.75rem;color:var(--muted);line-height:1.55;}
+
+/* TIPS */
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;}
+.tip-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid;
+  border-radius:0 8px 8px 0;padding:14px;}
+
+/* DIVIDER */
+.divider{text-align:center;color:var(--border);letter-spacing:8px;margin:10px 0 24px;font-size:.9rem;}
+
+/* FOOTER */
+footer{background:var(--surface);border-top:1px solid var(--border);
+  text-align:center;padding:36px 20px;
+  font-family:var(--mono);font-size:.65rem;color:var(--muted);letter-spacing:1px;}
+footer strong{color:var(--p1);}
+
+/* PRINT */
+@media print{.topbar,.pills{display:none;}}
+@media(max-width:600px){.hero{padding:36px 16px;}.page{padding:36px 14px;}.sec-num{font-size:2.8rem;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">SIMUPOLY v1.0 — GUIDE OFFICIEL D'UTILISATION — EDMOND ATINZOUN TCHOKPON — LICENCE PHYSIQUE-CHIMIE</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🧬 Guide pratique complet</div>
+    <h1>Guide d'utilisation<br><em>SimuPoly Polymères</em></h1>
+    <p>Tutoriels pas à pas, protocoles de TP, formules clés et conseils d'interprétation pour maîtriser la simulation de chimie des polymères.</p>
+    <div class="author-pill">
+      <span class="dot"></span>
+      <strong>Edmond Atinzoun TCHOKPON</strong> &nbsp;—&nbsp; Licence Physique-Chimie
+    </div>
+    <div class="pills">
+      <a href="#intro" class="pill">01 · Introduction</a>
+      <a href="#interface" class="pill">02 · Interface</a>
+      <a href="#demarrage" class="pill">03 · Démarrage</a>
+      <a href="#onglets" class="pill">04 · Les 9 onglets</a>
+      <a href="#tp" class="pill">05 · Protocoles TP</a>
+      <a href="#formules" class="pill">06 · Formules clés</a>
+      <a href="#interpreter" class="pill">07 · Interpréter</a>
+      <a href="#glossaire" class="pill">08 · Glossaire</a>
+      <a href="#astuces" class="pill">09 · Astuces</a>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+<!-- ══ 01 INTRO ══ -->
+<section class="section" id="intro">
+  <div class="sec-head">
+    <div class="sec-num">01</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Présentation</div>
+      <h2>Qu'est-ce que SimuPoly ?</h2>
+    </div>
+  </div>
+  <p style="font-size:.95rem;color:var(--muted);max-width:680px;margin-bottom:22px;">
+    <strong style="color:var(--text);">SimuPoly</strong> est un simulateur interactif de chimie des polymères qui reproduit les calculs et observations d'un laboratoire de polymérisation. Il couvre les deux grandes familles (addition et condensation), les propriétés thermiques, les architectures de copolymères et la dégradation.
+  </p>
+  <div class="grid">
+    <div class="card"><div class="ctag tg-m">Navigation</div><div class="card-icon">📑</div><h3>9 modules complets</h3><p>Addition, condensation, masses molaires, structure/Tg, copolymères, dégradation, théorie, quiz, rapport.</p></div>
+    <div class="card"><div class="ctag tg-c">Calculs</div><div class="card-icon">⚗️</div><h3>Cinétique rigoureuse</h3><p>Loi de Carothers, Schulz-Flory, Rp radicalaire, équation de Fox — toutes les formules clés calculées en temps réel.</p></div>
+    <div class="card"><div class="ctag tg-g">Visuel</div><div class="card-icon">📊</div><h3>Graphiques Chart.js</h3><p>DMM, DSC simulé, courbes p=f(t), Fox, dégradation Mn=f(t) — interactifs et exportables.</p></div>
+    <div class="card"><div class="ctag tg-a">Export</div><div class="card-icon">💾</div><h3>CSV & Rapport PDF</h3><p>Exportez vos données en CSV pour traitement Python/Excel. Générez un rapport de séance complet en un clic.</p></div>
+  </div>
+  <div class="ibox ib-tip">
+    <span class="ib-icon">💡</span>
+    <p><strong>Compatibilité :</strong> Ouvrez le fichier <code style="font-family:var(--mono);color:var(--p2);background:var(--surface2);padding:1px 6px;border-radius:3px;">simulateur_polymeres_TCHOKPON.html</code> dans Chrome, Firefox ou Edge. Aucune installation requise. Fonctionne hors ligne.</p>
+  </div>
+</section>
+
+<!-- ══ 02 INTERFACE ══ -->
+<section class="section" id="interface">
+  <div class="sec-head">
+    <div class="sec-num">02</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Navigation</div>
+      <h2>Présentation de l'interface</h2>
+    </div>
+  </div>
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));">
+    <div class="card"><div class="card-icon">🔝</div><h3>En-tête</h3><p>Logo SimuPoly animé, bouton FR/EN, identité <em>Edmond Atinzoun TCHOKPON</em>.</p></div>
+    <div class="card"><div class="card-icon">📑</div><h3>Barre d'onglets</h3><p>9 modules accessibles. Onglet actif surligné en magenta. Défilement horizontal sur mobile.</p></div>
+    <div class="card"><div class="card-icon">⚙️</div><h3>Panneau config</h3><p>Gauche de chaque module : sélecteurs, sliders, champs numériques. Bouton ▶ SIMULER.</p></div>
+    <div class="card"><div class="card-icon">📈</div><h3>Zone graphique</h3><p>Courbes Chart.js interactives. Survol pour valeurs précises. Légende cliquable pour masquer/afficher.</p></div>
+    <div class="card"><div class="card-icon">🧬</div><h3>Visualisation</h3><p>Canvas animé des chaînes polymères selon le type de polymérisation et l'architecture.</p></div>
+    <div class="card"><div class="card-icon">🟢</div><h3>Barre de statut</h3><p>Bas de page : état de la simulation, Mn calculée, heure en temps réel.</p></div>
+  </div>
+</section>
+
+<!-- ══ 03 DÉMARRAGE ══ -->
+<section class="section" id="demarrage">
+  <div class="sec-head">
+    <div class="sec-num">03</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Tutoriel</div>
+      <h2>Démarrage rapide — Première simulation</h2>
+    </div>
+  </div>
+  <p style="color:var(--muted);margin-bottom:22px;font-size:.88rem;">Réalisez votre première simulation en 5 minutes en suivant ces étapes :</p>
+
+  <div class="steps">
+    <div class="step" data-n="1">
+      <div><h4>Ouvrir SimuPoly</h4>
+        <p>Double-cliquez sur <code>simulateur_polymeres_TCHOKPON.html</code>. L'onglet ⚡ ADDITION s'affiche par défaut avec la polymérisation radicalaire de l'éthylène.</p>
+      </div>
+    </div>
+    <div class="step" data-n="2">
+      <div><h4>Choisir le type de polymérisation</h4>
+        <p>Menu <strong>Type</strong> : sélectionnez <code>Radicalaire (libre)</code>. Le panneau info affiche la formule cinétique <code>Rp = kp[M](fkd[I]/kt)^0.5</code>.</p>
+      </div>
+    </div>
+    <div class="step" data-n="3">
+      <div><h4>Sélectionner le monomère</h4>
+        <p>Choisissez <strong>Styrène → PS</strong>. La masse molaire de l'unité répétitive (M₀ = 104 g/mol) est utilisée pour le calcul de Mn.</p>
+      </div>
+    </div>
+    <div class="step" data-n="4">
+      <div><h4>Régler les paramètres de départ</h4>
+        <p>Valeurs recommandées : <code>[I]₀ = 0.01 mol/L</code> | <code>[M]₀ = 1.0 mol/L</code> | <code>T = 60°C</code> | <code>Durée = 120 min</code>. Ces valeurs correspondent à un TP classique.</p>
+      </div>
+    </div>
+    <div class="step" data-n="5">
+      <div><h4>Cliquer sur ▶ SIMULER</h4>
+        <p>Les courbes <code>[M]=f(t)</code> et <code>Conversion=f(t)</code> s'affichent. La distribution des masses (Schulz-Flory) apparaît. Les instruments affichent conversion, Mn et Đ.</p>
+      </div>
+    </div>
+    <div class="step" data-n="6">
+      <div><h4>Lire les résultats clés</h4>
+        <p>Notez : <strong>Conversion finale</strong> (%), <strong>Mn</strong> (kg/mol) et <strong>Đ</strong>. Pour une polymérisation radicalaire, Đ ≈ 1.5–2.0 est attendu.</p>
+      </div>
+    </div>
+    <div class="step" data-n="7">
+      <div><h4>Passer à la Condensation</h4>
+        <p>Onglet 🔗 CONDENSATION → <code>Polyestérification</code> → ▶ SIMULER. Observez comment X̄ₙ explose seulement quand p → 0.99 (équation de Carothers).</p>
+      </div>
+    </div>
+    <div class="step" data-n="8">
+      <div><h4>Explorer le DSC et Tg</h4>
+        <p>Onglet 🌡️ STRUCTURE → Sélectionnez <strong>Polystyrène (PS)</strong> → ▶ ANALYSER. Observez le saut de Tg à 100°C sur le diagramme DSC simulé.</p>
+      </div>
+    </div>
+    <div class="step" data-n="9">
+      <div><h4>Générer le rapport</h4>
+        <p>Onglet 📋 RAPPORT → <strong>GÉNÉRER RAPPORT</strong> → 🖨️ IMPRIMER pour exporter en PDF via le navigateur.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="ibox ib-warn">
+    <span class="ib-icon">⚠️</span>
+    <p><strong>Important :</strong> Cliquez toujours sur <strong>▶ SIMULER</strong> après chaque changement de paramètre. Les graphiques ne se mettent pas à jour automatiquement pour les onglets Addition et Condensation.</p>
+  </div>
+</section>
+
+<!-- ══ 04 ONGLETS ══ -->
+<section class="section" id="onglets">
+  <div class="sec-head">
+    <div class="sec-num">04</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Modules</div>
+      <h2>Les 9 onglets en détail</h2>
+    </div>
+  </div>
+
+  <div class="onglets">
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">⚡</span><h3>ADDITION — Polymérisation en chaîne</h3><span class="ong-lvl">LICENCE</span></div>
+      <div class="ong-body">
+        <p>Simule la cinétique des polymérisations radicalaire, anionique (vivante), cationique et par coordination (Ziegler-Natta).</p>
+        <ul>
+          <li><strong>Type :</strong> chaque mécanisme change kd, kt et la formule Rp affichée dans le panneau Info.</li>
+          <li><strong>Monomère :</strong> 5 choix (PE, PS, PVC, PAN, PMMA). Affecte M₀ pour le calcul de Mn.</li>
+          <li><strong>Graphique 1 :</strong> [M]=f(t) en magenta + Conversion=f(t) en cyan sur deux axes Y.</li>
+          <li><strong>Graphique 2 :</strong> Distribution des masses (DMM) de Schulz-Flory centrée sur Mn calculée.</li>
+          <li><strong>Instruments :</strong> conversion finale (%), Mn estimée, Đ selon le type de polymérisation.</li>
+          <li><strong>Canvas chaîne :</strong> visualisation de ~35 unités monomères connectées, bout actif représenté.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">🔗</span><h3>CONDENSATION — Polycondensation</h3><span class="ong-lvl">LICENCE</span></div>
+      <div class="ong-body">
+        <p>Simule la cinétique de polycondensation (polyester, polyamide, polyuréthane, époxy) avec l'équation de Carothers.</p>
+        <ul>
+          <li><strong>Graphique p=f(t) :</strong> taux d'avancement selon la loi cinétique d'ordre 2 : p = kt/(1+kt).</li>
+          <li><strong>Graphique X̄ₙ=f(p) :</strong> montre l'explosion exponentielle du degré de polymérisation quand p → 1.</li>
+          <li><strong>Résultats instantanés :</strong> p, X̄ₙ et Mn mis à jour après simulation.</li>
+          <li><strong>Coproduit éliminé :</strong> H₂O (polyester/polyamide) ou aucun (polyuréthane/époxy).</li>
+        </ul>
+        <div class="ibox ib-hot" style="margin-top:8px;">
+          <span class="ib-icon">🔑</span>
+          <p><strong>Point clé :</strong> Pour obtenir X̄ₙ = 100 (Mn ≈ 20 kg/mol pour polyester), il faut p = 0.99. Augmentez la constante k et la durée pour atteindre ces conversions élevées.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">⚖</span><h3>MASSES MOLAIRES — DMM & Dispersité</h3><span class="ong-lvl">PRÉPA/LICENCE</span></div>
+      <div class="ong-body">
+        <p>Calcule Mn, Mw, Mz, Đ et DPn. Trace la distribution des masses molaires selon 3 modèles.</p>
+        <ul>
+          <li><strong>Schulz-Flory :</strong> distribution la plus probable — typique de la polycondensation et du radicalaire. Đ → 2.0.</li>
+          <li><strong>Poisson :</strong> distribution étroite — polymérisation vivante. Đ → 1 + 1/DPn.</li>
+          <li><strong>Gaussienne :</strong> distribution contrôlée (RAFT, ATRP). Đ réglable.</li>
+          <li><strong>Slider Đ :</strong> modifiez en temps réel la dispersité et observez l'élargissement de la DMM.</li>
+          <li><strong>Interprétation :</strong> le panneau Info traduit automatiquement Đ en type de polymérisation probable.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">🌡️</span><h3>STRUCTURE & Tg/Tf — Transitions thermiques</h3><span class="ong-lvl">LICENCE</span></div>
+      <div class="ong-body">
+        <p>Analyse les propriétés thermiques de 10 polymères courants. Simule un diagramme DSC et le module E'=f(T).</p>
+        <ul>
+          <li><strong>DSC simulé :</strong> saut de Cp à Tg (transition vitreuse) + pic de fusion à Tf (semi-cristallins). Sélectionnez PS (amorphe, pas de Tf) vs PE (semi-cristallin, Tf = 105°C).</li>
+          <li><strong>Module E' :</strong> courbe viscoélastique montrant les zones vitreuse, caoutchoutique et fondu.</li>
+          <li><strong>Slider cristallinité :</strong> modifiez χc (%) et observez l'impact sur la courbe DSC.</li>
+          <li><strong>Canvas structure :</strong> représentation visuelle des domaines cristallins et amorphes.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">🎨</span><h3>COPOLYMÈRES — Architectures macromoléculaires</h3><span class="ong-lvl">LICENCE</span></div>
+      <div class="ong-body">
+        <p>Visualise 5 architectures de copolymères et calcule la Tg via l'équation de Fox.</p>
+        <ul>
+          <li><strong>Alterné :</strong> r₁·r₂ ≈ 0. Une seule Tg. Distribution très régulière A-B-A-B.</li>
+          <li><strong>Blocs :</strong> synthèse vivante. Deux Tg distinctes. Micro-séparation de phases → SBS thermoplastique.</li>
+          <li><strong>Statistique :</strong> r₁·r₂ = 1. Tg intermédiaire. EPDM, SAN.</li>
+          <li><strong>Greffé :</strong> chaîne principale A + greffons B. ABS = PS greffé sur PB. Résistance au choc.</li>
+          <li><strong>Étoile :</strong> plusieurs bras depuis un nœud. Faible viscosité relative à Mw.</li>
+          <li><strong>Équation de Fox :</strong> graphique Tg=f(w₁) mis à jour selon les monomères sélectionnés.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">♻️</span><h3>DÉGRADATION — Vieillissement & Recyclage</h3><span class="ong-lvl">LICENCE</span></div>
+      <div class="ong-body">
+        <p>Simule la diminution de Mn lors de 5 modes de dégradation sur 6 polymères.</p>
+        <ul>
+          <li><strong>Courbe Mn=f(t) :</strong> modèle Mn(t) = Mn₀/(1+kd·Mn₀·t) — décroissance hyperbolique.</li>
+          <li><strong>Mécanisme :</strong> description du mécanisme chimique selon le couple polymère/mode.</li>
+          <li><strong>Score recyclabilité :</strong> barre de 0 à 100 — PLA (90/100) vs PS (20/100).</li>
+          <li><strong>Filières recyclage :</strong> mécanique, chimique, thermique, organique.</li>
+          <li><strong>Codes recyclage 1–7 :</strong> référence rapide pour identifier les plastiques.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">📚</span><h3>THÉORIE — Fiches de cours</h3><span class="ong-lvl">TOUS NIVEAUX</span></div>
+      <div class="ong-body">
+        <p>8 fiches résumées par niveau avec toutes les formules essentielles. Consultez avant chaque simulation pour réviser la théorie sous-jacente.</p>
+        <ul>
+          <li>Radicalaire | Vivante | Carothers | Masses Mn/Mw/Đ | Tg/Tf | Fox | Cristallinité | Dégradation</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">🎯</span><h3>QUIZ — Évaluation interactive</h3><span class="ong-lvl">TOUS NIVEAUX</span></div>
+      <div class="ong-body">
+        <p>25+ questions en 5 catégories avec explications détaillées pour chaque réponse.</p>
+        <ul>
+          <li>Polymérisation par addition | Polycondensation | Masses molaires | Structure & transitions | Quiz général</li>
+          <li>Score en temps réel avec barre de progression. Recommencez autant de fois que souhaité.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head"><span class="ong-emoji">📋</span><h3>RAPPORT — Compte-rendu automatique</h3><span class="ong-lvl">TOUS NIVEAUX</span></div>
+      <div class="ong-body">
+        <p>Génère un rapport de séance complet après exploration des modules. Sections : Addition, Condensation, Structure, Copolymères, Quiz, Conclusion.</p>
+        <ul>
+          <li>Bouton 🖨️ IMPRIMER → export PDF via le navigateur (Ctrl+P → Enregistrer en PDF).</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ 05 PROTOCOLES TP ══ -->
+<section class="section" id="tp">
+  <div class="sec-head">
+    <div class="sec-num">05</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Travaux pratiques</div>
+      <h2>Protocoles de TP virtuels</h2>
+    </div>
+  </div>
+
+  <!-- TP 1 -->
+  <div class="protocol">
+    <div class="proto-head" style="background:linear-gradient(135deg,#6a0080,#e040fb);">
+      <span style="font-size:1.3rem;">🟣</span>
+      <div>
+        <div style="font-size:.58rem;letter-spacing:2px;opacity:.8;font-family:var(--mono);">TP 1 — RADICALAIRE vs VIVANTE</div>
+        <div style="font-weight:700;font-size:.95rem;">Comparaison dispersité Đ selon le mécanisme</div>
+      </div>
+    </div>
+    <div class="proto-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Étape 1 :</strong> Onglet ⚡ Addition | Type = Radicalaire | Styrène | [I]₀=0.01 | [M]₀=1.0 | T=60°C | 120 min → ▶ SIMULER <span>— Noter Mn et Đ</span></p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Étape 2 :</strong> Mêmes paramètres mais Type = <strong>Anionique</strong> → ▶ SIMULER <span>— Comparer Đ avec l'étape 1</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Observation :</strong> Đ(radicalaire) ≈ 1.8 >> Đ(anionique) ≈ 1.05 <span>— La polymérisation vivante donne une distribution beaucoup plus étroite</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Interprétation :</strong> Sans terminaison spontanée, toutes les chaînes croissent simultanément → loi de Poisson → Đ → 1</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Vérifier avec ⚖ Masses molaires :</strong> Entrez Mn obtenue, Đ=1.05 → Distribution Poisson vs Schulz-Flory (Đ=2.0) <span>— Comparer visuellement les deux DMM</span></p></div>
+      </div>
+      <div class="fbox" style="margin-top:12px;">
+        Radicalaire : Đ ≈ 1.5–2.0 | Anionique : Đ = 1 + 1/DPn → 1<br>
+        <span class="cm">DPn = [M]₀/[I]₀ × conversion (polymérisation vivante)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TP 2 -->
+  <div class="protocol">
+    <div class="proto-head" style="background:linear-gradient(135deg,#003d52,#00e5ff);">
+      <span style="font-size:1.3rem;">🔵</span>
+      <div>
+        <div style="font-size:.58rem;letter-spacing:2px;opacity:.8;font-family:var(--mono);">TP 2 — ÉQUATION DE CAROTHERS</div>
+        <div style="font-weight:700;font-size:.95rem;">Polycondensation — rôle critique du taux p</div>
+      </div>
+    </div>
+    <div class="proto-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Étape 1 :</strong> Onglet 🔗 Condensation | Polyestérification | k=0.05 | Durée=200 min → ▶ SIMULER</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Observation :</strong> À t=100 min, lire p et X̄ₙ dans le panneau résultats <span>— X̄ₙ augmente très lentement jusqu'à p ≈ 0.90</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Calcul :</strong> Vérifier X̄ₙ = 1/(1−p) à la main pour les valeurs lues <span>— Confirmer l'accord avec le simulateur</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Étape 2 :</strong> Augmentez k=0.5 et Durée=500 min → ▶ SIMULER <span>— Observer X̄ₙ quand p → 0.99 (X̄ₙ → 100)</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Conclusion :</strong> Il faut p ≥ 0.99 pour obtenir de hautes masses molaires — d'où l'importance d'éliminer le coproduit (H₂O) !</p></div>
+      </div>
+      <div class="fbox" style="margin-top:12px;">
+        <span class="hl">X̄ₙ = 1/(1−p)</span><br>
+        p=0.90 → X̄ₙ=10 | p=0.99 → X̄ₙ=100 | p=0.999 → X̄ₙ=1000<br>
+        <span class="cm">Đ = 1+p → 2 à haute conversion (Schulz-Flory)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TP 3 -->
+  <div class="protocol">
+    <div class="proto-head" style="background:linear-gradient(135deg,#1b5e20,#69ff47);">
+      <span style="font-size:1.3rem;">🟢</span>
+      <div>
+        <div style="font-size:.58rem;letter-spacing:2px;opacity:.8;font-family:var(--mono);">TP 3 — TRANSITIONS THERMIQUES</div>
+        <div style="font-weight:700;font-size:.95rem;">DSC simulé — Tg et Tf par DSC</div>
+      </div>
+    </div>
+    <div class="proto-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Étape 1 :</strong> Onglet 🌡️ Structure | Sélectionner <strong>PS (Polystyrène)</strong> → ▶ ANALYSER <span>— Observer le saut DSC à Tg=100°C, absence de pic Tf (amorphe)</span></p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Étape 2 :</strong> Sélectionner <strong>PE-HD</strong> → ▶ ANALYSER <span>— Observer saut Tg à −120°C ET pic de fusion à Tf=135°C (semi-cristallin)</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Comparer :</strong> PS (T &lt; Tg : vitreux rigide / T &gt; Tg : caoutchoutique) vs PE-HD (T &gt; Tf : fondu)</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Slider cristallinité :</strong> Pour PE-HD, réduire χc de 75% à 20% <span>— Le pic Tf diminue proportionnellement à χc</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Module E' :</strong> Observer le module viscoélastique — chute brutale à Tg → zone caoutchoutique (plateau) → chute à Tf</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TP 4 -->
+  <div class="protocol">
+    <div class="proto-head" style="background:linear-gradient(135deg,#bf360c,#ff6d00);">
+      <span style="font-size:1.3rem;">🟠</span>
+      <div>
+        <div style="font-size:.58rem;letter-spacing:2px;opacity:.8;font-family:var(--mono);">TP 4 — ÉQUATION DE FOX</div>
+        <div style="font-weight:700;font-size:.95rem;">Tg d'un copolymère — Styrène/Butadiène</div>
+      </div>
+    </div>
+    <div class="proto-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Onglet 🎨 Copolymères</strong> | Monomère A = Styrène (Tg=100°C) | Monomère B = Butadiène (Tg=−85°C)</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Architecture = Statistique</strong> | Fraction A = 50% → Observer la Tg sur le graphique Fox <span>— Valeur attendue ≈ −12°C</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Vérifier à la main :</strong> 1/Tg = 0.5/(100+273) + 0.5/(−85+273) = 0.00134+0.00265 → Tg ≈ 261 K = −12°C</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Architecture = Blocs :</strong> Observer que le graphique Fox ne s'applique plus — les blocs donnent 2 Tg distinctes !</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Exemples industriels :</strong> SBS (Styrène-Butadiène-Styrène) = caoutchouc thermoplastique utilisé dans les semelles de chaussures</p></div>
+      </div>
+      <div class="fbox" style="margin-top:12px;">
+        <span class="hl">1/Tg = w₁/Tg₁ + w₂/Tg₂</span> &nbsp;(Tg en Kelvin !)<br>
+        <span class="cm">Fox : valide pour copolymères statistiques homogènes uniquement</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TP 5 -->
+  <div class="protocol">
+    <div class="proto-head" style="background:linear-gradient(135deg,#1a237e,#3d5afe);">
+      <span style="font-size:1.3rem;">🔷</span>
+      <div>
+        <div style="font-size:.58rem;letter-spacing:2px;opacity:.8;font-family:var(--mono);">TP 5 — DÉGRADATION & RECYCLAGE</div>
+        <div style="font-weight:700;font-size:.95rem;">Comparaison PLA biodégradable vs PE</div>
+      </div>
+    </div>
+    <div class="proto-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Onglet ♻️ Dégradation</strong> | Polymère = <strong>PLA</strong> | Mode = Biodégradation | Intensité=80% | Durée=5 ans → ▶ SIMULER</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Observer :</strong> Score recyclabilité = 90/100. Mn diminue rapidement (PLA biodégradable en compostage industriel à 60°C en 90 jours)</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Répéter avec PE :</strong> Mode = Biodégradation | Même intensité → Score = 30/100. Mn diminue très lentement <span>— PE quasi-indégradable biologiquement</span></p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Comparer PE + Photo-oxydation UV :</strong> Observer que UV dégrade PE plus rapidement que la biodégradation</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Conclusion :</strong> PLA issu de ressources renouvelables, compostable. PE = 400 ans dans l'environnement.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 06 FORMULES ══ -->
+<section class="section" id="formules">
+  <div class="sec-head">
+    <div class="sec-num">06</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Référence</div>
+      <h2>Toutes les formules clés</h2>
+    </div>
+  </div>
+
+  <div class="fref-grid">
+    <div class="fref">
+      <div class="fref-title">▶ CINÉTIQUE RADICALAIRE</div>
+      <div class="fbox">Ri = 2·f·kd·[I]<br><span class="hl">Rp = kp·[M]·(f·kd·[I]/kt)^0.5</span><br>Rt = 2·kt·[R•]²<br><span class="cm">f = efficacité d'amorçage (0.5–0.8)</span></div>
+    </div>
+    <div class="fref">
+      <div class="fref-title">▶ POLYMÉRISATION VIVANTE</div>
+      <div class="fbox"><span class="hl">DPn = [M]₀/[I]₀ × τ</span><br>Mn = DPn × M₀<br>Đ = 1 + 1/DPn (Poisson)<br><span class="cm">τ = taux de conversion</span></div>
+    </div>
+    <div class="fref">
+      <div class="fref-title">▶ ÉQUATION DE CAROTHERS</div>
+      <div class="fbox"><span class="hl">X̄ₙ = 1/(1−p)</span><br>p = taux d'avancement (0 → 1)<br>Đ = 1 + p → 2 (Schulz-Flory)<br><span class="cm">X̄ₙ = 100 ↔ p = 0.99</span></div>
+    </div>
+    <div class="fref">
+      <div class="fref-title">▶ MASSES MOLAIRES</div>
+      <div class="fbox">Mn = Σ(ni·Mi)/Σni<br><span class="hl">Mw = Σ(ni·Mi²)/Σ(ni·Mi)</span><br>Đ = Mw/Mn ≥ 1<br><span class="cm">GPC mesure Mn, Mw, Mz simultanément</span></div>
+    </div>
+    <div class="fref">
+      <div class="fref-title">▶ ÉQUATION DE FOX (Tg copolymère)</div>
+      <div class="fbox"><span class="hl">1/Tg = w₁/Tg₁ + w₂/Tg₂</span><br>Tg en KELVIN (= °C + 273)<br><span class="cm">Valide pour copolymère statistique</span></div>
+    </div>
+    <div class="fref">
+      <div class="fref-title">▶ DÉGRADATION</div>
+      <div class="fbox"><span class="hl">Mn(t) = Mn₀/(1 + kd·Mn₀·t)</span><br>kd = constante de dégradation<br><span class="cm">Décroissance hyperbolique de Mn</span></div>
+    </div>
+    <div class="fref">
+      <div class="fref-title">▶ CRISTALLINITÉ</div>
+      <div class="fbox">χc = ΔHf/ΔHf° × 100 %<br><span class="hl">ρ = χc·ρc + (1−χc)·ρa</span><br><span class="cm">DSC mesure ΔHf → χc</span></div>
+    </div>
+    <div class="fref">
+      <div class="fref-title">▶ ARRHENIUS (constante k)</div>
+      <div class="fbox"><span class="hl">k = A·exp(−Ea/RT)</span><br>kp et kd dépendent de T<br>Ea(kd) >> Ea(kp)<br><span class="cm">Augmenter T → augmente Rp ET kd</span></div>
+    </div>
+  </div>
+
+  <div class="ibox ib-warn" style="margin-top:14px;">
+    <span class="ib-icon">⚠️</span>
+    <p><strong>Rappel unités dispersité :</strong> Đ = Mw/Mn est sans unité et toujours ≥ 1. Đ = 1 est le minimum théorique (distribution monodisperse, polymérisation vivante parfaite). Đ = 2 est le maximum théorique pour une polycondensation à conversion totale.</p>
+  </div>
+</section>
+
+<!-- ══ 07 INTERPRÉTER ══ -->
+<section class="section" id="interpreter">
+  <div class="sec-head">
+    <div class="sec-num">07</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Analyse</div>
+      <h2>Conseils pour interpréter les résultats</h2>
+    </div>
+  </div>
+
+  <h3 style="font-size:.9rem;font-weight:600;color:var(--p1);margin-bottom:12px;font-family:var(--mono);letter-spacing:1px;">◆ ONGLET ADDITION</h3>
+  <table class="tbl" style="margin-bottom:22px;">
+    <thead><tr><th>Résultat observé</th><th>Interprétation</th><th>Action corrective</th></tr></thead>
+    <tbody>
+      <tr><td>Conversion faible (&lt;50%)</td><td>kp trop faible, T trop basse ou durée insuffisante</td><td>Augmenter T ou durée de simulation</td></tr>
+      <tr><td>Đ proche de 2.0</td><td>Normal pour radicalaire (Schulz-Flory)</td><td>Passer en anionique pour réduire Đ</td></tr>
+      <tr><td>Đ ≈ 1.05</td><td>Polymérisation vivante (anionique) — distribution Poisson</td><td>Normal — c'est l'objectif !</td></tr>
+      <tr><td>Mn très élevée (>500 kg/mol)</td><td>[I]₀ trop faible → peu de chaînes → longues chaînes</td><td>Augmenter [I]₀ pour réduire Mn</td></tr>
+      <tr><td>DMM très large</td><td>Đ élevé — polymérisation non contrôlée</td><td>Choisir type anionique ou contrôlée (RAFT)</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:.9rem;font-weight:600;color:var(--p2);margin-bottom:12px;font-family:var(--mono);letter-spacing:1px;">◆ ONGLET CONDENSATION</h3>
+  <table class="tbl" style="margin-bottom:22px;">
+    <thead><tr><th>Résultat observé</th><th>Interprétation</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>X̄ₙ &lt; 10 après simulation</td><td>p encore faible (&lt;0.90) — durée ou k insuffisants</td><td>Augmenter k ou durée de 5×</td></tr>
+      <tr><td>X̄ₙ explose en fin de courbe</td><td>Normal — comportement sigmoïde de 1/(1−p)</td><td>C'est le comportement attendu</td></tr>
+      <tr><td>Mn faible malgré X̄ₙ élevé</td><td>Masse molaire de l'unité M₀ peut être petite</td><td>Vérifier M₀ du type sélectionné</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:.9rem;font-weight:600;color:var(--p3);margin-bottom:12px;font-family:var(--mono);letter-spacing:1px;">◆ ONGLET STRUCTURE</h3>
+  <table class="tbl" style="margin-bottom:22px;">
+    <thead><tr><th>Observation DSC</th><th>Signification</th></tr></thead>
+    <tbody>
+      <tr><td>Saut de Cp sans pic de fusion</td><td>Polymère <span class="badge bg-m">AMORPHE</span> — pas de cristallites (PS, PMMA, PC, PVC)</td></tr>
+      <tr><td>Saut Cp + pic endothermique Tf</td><td>Polymère <span class="badge bg-c">SEMI-CRISTALLIN</span> — zones cristallines fondent à Tf (PE, PP, PET)</td></tr>
+      <tr><td>Pic Tf disparaît si χc → 0%</td><td>Normal — le pic est proportionnel à χc (slider cristallinité)</td></tr>
+      <tr><td>Module E' chute à Tg</td><td>Transition vitreuse : mobilité des chaînes → module chute de ~3000 à ~5 MPa</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-size:.9rem;font-weight:600;color:var(--p4);margin-bottom:12px;font-family:var(--mono);letter-spacing:1px;">◆ ONGLET COPOLYMÈRES</h3>
+  <div class="ibox ib-info">
+    <span class="ib-icon">🎨</span>
+    <p>Si vous observez <strong>une seule Tg</strong> sur le graphique Fox → copolymère statistique ou alterné (un seul environnement chimique). Si <strong>deux Tg distinctes</strong> → copolymère à blocs ou greffé (micro-séparation de phases). Les copolymères à blocs sont les seuls qui permettent de combiner deux propriétés opposées (rigidité + élasticité → SBS).</p>
+  </div>
+</section>
+
+<!-- ══ 08 GLOSSAIRE ══ -->
+<section class="section" id="glossaire">
+  <div class="sec-head">
+    <div class="sec-num">08</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Référence</div>
+      <h2>Glossaire des termes polymères</h2>
+    </div>
+  </div>
+  <div class="glossary">
+    <div class="gitem"><div class="gterm">Monomère</div><div class="gdef">Petite molécule réactive qui s'assemble par polymérisaton pour former les unités répétitives du polymère.</div></div>
+    <div class="gitem"><div class="gterm">DPn — Degré de Polymérisation</div><div class="gdef">Nombre moyen d'unités monomères par chaîne. DPn = Mn/M₀. Un polymère utile a DPn > 100.</div></div>
+    <div class="gitem"><div class="gterm">Đ — Dispersité (Ip)</div><div class="gdef">Đ = Mw/Mn. Mesure la largeur de la distribution des masses. Đ = 1 = monodisperse (idéal). Đ = 2 = Schulz-Flory.</div></div>
+    <div class="gitem"><div class="gterm">Tg — Température de Transition Vitreuse</div><div class="gdef">Température de transition entre l'état vitreux (rigide) et l'état caoutchoutique (mobile). Propriété des zones amorphes.</div></div>
+    <div class="gitem"><div class="gterm">Tf — Température de Fusion</div><div class="gdef">Fusion des cristallites dans les polymères semi-cristallins. Tf > Tg toujours. Amorphes n'ont pas de Tf.</div></div>
+    <div class="gitem"><div class="gterm">DSC — Calorimétrie Différentielle</div><div class="gdef">Technique mesurant le flux de chaleur en fonction de T. Détecte Tg (saut Cp), Tf (pic endothermique), cristallisation (pic exo).</div></div>
+    <div class="gitem"><div class="gterm">Schulz-Flory</div><div class="gdef">Distribution la plus probable des masses molaires. Caractérise polycondensation et radicalaire. Đ → 2 à haute conversion.</div></div>
+    <div class="gitem"><div class="gterm">Polymérisation vivante</div><div class="gdef">Sans terminaison spontanée. Toutes les chaînes croissent simultanément. Distribution étroite (Poisson, Đ → 1). Permet la synthèse de copolymères à blocs.</div></div>
+    <div class="gitem"><div class="gterm">Copolymère à blocs</div><div class="gdef">Séquences continues de A puis de B. Synthèse par polymérisation vivante. Deux Tg. Micro-séparation de phases à l'échelle nanométrique.</div></div>
+    <div class="gitem"><div class="gterm">Tacticité</div><div class="gdef">Arrangement stéréochimique des substituants le long de la chaîne. Isotactique (même côté), syndiotactique (alternés), atactique (aléatoire). Contrôlée par Ziegler-Natta.</div></div>
+    <div class="gitem"><div class="gterm">GPC / SEC</div><div class="gdef">Chromatographie d'Exclusion Stérique. Sépare les polymères par taille hydrodynamique. Mesure directe de Mn, Mw et Đ.</div></div>
+    <div class="gitem"><div class="gterm">Polycondensation</div><div class="gdef">Polymérisation par réaction entre groupes fonctionnels avec élimination d'un coproduit (H₂O). Régie par l'équation de Carothers X̄ₙ = 1/(1−p).</div></div>
+    <div class="gitem"><div class="gterm">Cristallinité χc</div><div class="gdef">Fraction de zones cristallines ordonnées dans un polymère semi-cristallin. Mesurée par DSC : χc = ΔHf/ΔHf°. Affecte la rigidité, l'opacité, la densité.</div></div>
+    <div class="gitem"><div class="gterm">PLA — Acide Polylactique</div><div class="gdef">Polymère biodégradable issu de ressources renouvelables (amidon). Compostable en 90 jours à 60°C. Substitut écologique du PS et PET.</div></div>
+    <div class="gitem"><div class="gterm">ABS</div><div class="gdef">Acrylonitrile-Butadiène-Styrène. Copolymère greffé (terpolymère). Matrice PS/AN + phase PB dispersée pour résistance au choc. Lego, pièces auto.</div></div>
+    <div class="gitem"><div class="gterm">RAFT / ATRP</div><div class="gdef">Techniques de polymérisation radicalaire contrôlée. Donnent Đ &lt; 1.3. Permettent architectures complexes (blocs, étoiles) sans passer à l'anionique.</div></div>
+  </div>
+</section>
+
+<!-- ══ 09 ASTUCES ══ -->
+<section class="section" id="astuces">
+  <div class="sec-head">
+    <div class="sec-num">09</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Pro tips</div>
+      <h2>Astuces pour de meilleures simulations</h2>
+    </div>
+  </div>
+  <div class="tips">
+    <div class="tip-card" style="border-left-color:var(--p1);">
+      <div style="font-size:1.4rem;margin-bottom:7px;">🎯</div>
+      <h3 style="font-size:.86rem;font-weight:600;color:var(--text);margin-bottom:5px;">Contrôler Mn en radicalaire</h3>
+      <p style="font-size:.76rem;color:var(--muted);">Mn ∝ [M]/[I]^0.5. Pour doubler Mn : divisez [I]₀ par 4 (pas par 2). Testez avec [I]₀ = 0.001, 0.01, 0.1 et observez l'évolution.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--p2);">
+      <div style="font-size:1.4rem;margin-bottom:7px;">📊</div>
+      <h3 style="font-size:.86rem;font-weight:600;color:var(--text);margin-bottom:5px;">Lire la DMM correctement</h3>
+      <p style="font-size:.76rem;color:var(--muted);">La courbe en masse w(M) a son maximum à Mw, pas Mn. La courbe en nombre n(M) a son maximum vers Mn. Đ = Mw/Mn = rapport des deux pics.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--p3);">
+      <div style="font-size:1.4rem;margin-bottom:7px;">🌡️</div>
+      <h3 style="font-size:.86rem;font-weight:600;color:var(--text);margin-bottom:5px;">Identifier un polymère inconnu</h3>
+      <p style="font-size:.76rem;color:var(--muted);">Sur le DSC simulé : un seul saut → amorphe. Saut + pic → semi-cristallin. Tg élevée (>100°C) → rigide à T ambiante. Tg basse (&lt;0°C) → caoutchoutique à T ambiante.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--p4);">
+      <div style="font-size:1.4rem;margin-bottom:7px;">🔗</div>
+      <h3 style="font-size:.86rem;font-weight:600;color:var(--text);margin-bottom:5px;">Fox : Tg en Kelvin !</h3>
+      <p style="font-size:.76rem;color:var(--muted);">L'équation de Fox utilise les Tg en KELVIN. Si vous calculez à la main, ajoutez 273 avant d'appliquer la formule. Le simulateur le fait automatiquement.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--p5);">
+      <div style="font-size:1.4rem;margin-bottom:7px;">💾</div>
+      <h3 style="font-size:.86rem;font-weight:600;color:var(--text);margin-bottom:5px;">Exploiter le CSV exporté</h3>
+      <p style="font-size:.76rem;color:var(--muted);">Le CSV (onglet Addition) contient t, [M], conversion. Ouvrez dans Python : tracez ln[M]=f(t) pour vérifier l'ordre 1, ou faites une régression linéaire pour extraire kp.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--danger);">
+      <div style="font-size:1.4rem;margin-bottom:7px;">♻️</div>
+      <h3 style="font-size:.86rem;font-weight:600;color:var(--text);margin-bottom:5px;">Comparer recyclabilité</h3>
+      <p style="font-size:.76rem;color:var(--muted);">Testez PLA vs PS en biodégradation : score 90 vs 20. Puis comparez PE en hydrolyse vs UV. La vitesse de dégradation dépend du mode ET de la structure chimique.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">· · · ·</div>
+
+<!-- CLOSING CARD -->
+<div style="background:linear-gradient(135deg,rgba(224,64,251,.08),rgba(0,229,255,.06));border:1px solid var(--border);border-radius:12px;padding:28px;text-align:center;margin-bottom:48px;">
+  <div style="font-size:2rem;margin-bottom:12px;">🧬</div>
+  <h3 style="font-family:'Bitter',serif;font-size:1.5rem;font-weight:700;margin-bottom:8px;
+    background:linear-gradient(135deg,var(--p1),var(--p2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+    Bonne simulation polymère !
+  </h3>
+  <p style="color:var(--muted);font-size:.84rem;max-width:480px;margin:0 auto 18px;">Explorez chaque module, variez les paramètres et comparez les résultats avec votre cours. La simulation est l'outil idéal pour comprendre intuitivement des concepts abstraits.</p>
+  <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(224,64,251,.1);border:1px solid rgba(224,64,251,.3);border-radius:40px;padding:8px 20px;">
+    <span style="color:var(--p1);font-weight:700;font-family:'Bitter',serif;">Edmond Atinzoun TCHOKPON</span>
+    <span style="color:var(--muted);font-size:.78rem;font-family:var(--mono);">LICENCE PHYSIQUE-CHIMIE</span>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<footer>
+  <p>Guide d'utilisation officiel — <strong>SimuPoly v1.0 — Chimie des Polymères</strong></p>
+  <p>Créé pour <strong>Edmond Atinzoun TCHOKPON</strong> — Licence Physique-Chimie</p>
+  <p style="margin-top:5px;font-size:.58rem;opacity:.5;">Usage pédagogique — Lycée · Classes Préparatoires · Licence Universitaire</p>
+</footer>
+
+</body>
+</html>

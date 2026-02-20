@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PhySim · Guide — Comprendre & Simuler</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Unbounded:wght@300;400;700;900&display=swap');
+
+:root {
+  --night: #080808;
+  --deep: #0f0f0f;
+  --panel: #141414;
+  --border: #252525;
+  --gold: #c9a84c;
+  --gold2: #e8c97a;
+  --red: #c0392b;
+  --cyan: #00b4d8;
+  --green: #2ecc71;
+  --txt: #d4d0c8;
+  --muted: #5a5a5a;
+  --white: #f0ece2;
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; font-size:16px; }
+
+body {
+  background: var(--night);
+  color: var(--txt);
+  font-family: 'DM Mono', monospace;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+::selection { background: var(--gold); color: var(--night); }
+::-webkit-scrollbar { width:3px; }
+::-webkit-scrollbar-thumb { background: var(--gold); }
+
+/* ─── PROGRESS ─── */
+#progress {
+  position:fixed; top:0; left:0; height:2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  z-index:9999; transition:width .15s;
+}
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  background: var(--night);
+}
+
+.hero-bg {
+  position:absolute; inset:0;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 75% 30%, rgba(201,168,76,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 20% 70%, rgba(0,180,216,.04) 0%, transparent 50%);
+}
+
+.hero-grid {
+  position:absolute; inset:0;
+  background-image:
+    linear-gradient(rgba(201,168,76,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,.05) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+.hero-content {
+  display:flex; flex-direction:column; justify-content:center;
+  padding: 80px 60px 40px;
+  position:relative; z-index:2;
+  max-width: 1200px; margin:0 auto; width:100%;
+}
+
+.hero-eyebrow {
+  font-family:'Unbounded',sans-serif;
+  font-size:10px; font-weight:400;
+  letter-spacing:5px; text-transform:uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+  opacity:0; animation: riseUp .8s .1s forwards;
+}
+
+.hero-title {
+  font-family:'DM Serif Display',serif;
+  font-size: clamp(60px, 10vw, 140px);
+  font-weight:400; line-height:.9;
+  color: var(--white);
+  margin-bottom: 40px;
+  opacity:0; animation: riseUp .9s .2s forwards;
+}
+
+.hero-title em {
+  font-style:italic; color:var(--gold);
+  display:block;
+}
+
+.hero-rule {
+  width:120px; height:1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  margin-bottom:32px;
+  opacity:0; animation: riseUp .8s .3s forwards;
+}
+
+.hero-desc {
+  max-width:520px;
+  font-size:14px; line-height:1.9;
+  color:var(--muted);
+  margin-bottom:48px;
+  opacity:0; animation: riseUp .8s .4s forwards;
+}
+
+.hero-meta {
+  display:flex; gap:40px; flex-wrap:wrap;
+  opacity:0; animation: riseUp .8s .5s forwards;
+}
+
+.meta-item { }
+.meta-label {
+  font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--muted); margin-bottom:4px;
+}
+.meta-value {
+  font-size:13px; color:var(--gold2);
+  font-family:'Unbounded',sans-serif; font-weight:300;
+}
+
+.hero-scroll {
+  padding:24px 60px;
+  position:relative; z-index:2;
+  display:flex; align-items:center; gap:16px;
+  border-top:1px solid var(--border);
+  opacity:0; animation:riseUp .8s .7s forwards;
+  max-width:1200px; margin:0 auto; width:100%;
+}
+
+.scroll-line {
+  width:48px; height:1px;
+  background: var(--gold);
+  position:relative; overflow:hidden;
+}
+.scroll-line::after {
+  content:''; position:absolute;
+  top:0; left:-100%; width:100%; height:100%;
+  background:var(--white);
+  animation: scanLine 2s 1s infinite;
+}
+.scroll-label {
+  font-size:10px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--muted);
+}
+
+@keyframes scanLine { to{left:200%} }
+@keyframes riseUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+/* ─── NAV ─── */
+.nav {
+  position:sticky; top:0; z-index:200;
+  background:rgba(8,8,8,.92);
+  backdrop-filter:blur(20px) saturate(1.5);
+  border-bottom:1px solid var(--border);
+}
+
+.nav-inner {
+  max-width:1200px; margin:0 auto;
+  display:flex; align-items:center;
+  padding:0 60px; gap:0;
+}
+
+.nav-brand {
+  font-family:'Unbounded',sans-serif;
+  font-size:12px; font-weight:700;
+  color:var(--gold);
+  letter-spacing:2px;
+  padding:18px 0;
+  margin-right:40px;
+  border-right:1px solid var(--border);
+  padding-right:40px;
+  white-space:nowrap;
+}
+
+.nav-links {
+  display:flex; gap:0; overflow-x:auto;
+  scrollbar-width:none;
+}
+.nav-links::-webkit-scrollbar { display:none; }
+
+.nav-link {
+  font-size:10px; letter-spacing:2px; text-transform:uppercase;
+  color:var(--muted); padding:20px 18px;
+  text-decoration:none; white-space:nowrap;
+  border-bottom:1px solid transparent;
+  transition:all .2s;
+}
+.nav-link:hover, .nav-link.active {
+  color:var(--gold); border-bottom-color:var(--gold);
+}
+
+/* ─── LAYOUT ─── */
+.container {
+  max-width:1200px; margin:0 auto; padding:0 60px;
+}
+
+@media(max-width:768px) {
+  .hero-content { padding:60px 24px 32px; }
+  .hero-scroll { padding:20px 24px; }
+  .container { padding:0 24px; }
+  .nav-inner { padding:0 24px; }
+}
+
+/* ─── CHAPTER OPENER ─── */
+.chapter {
+  padding:120px 0 0;
+}
+
+.ch-eyebrow {
+  font-size:9px; letter-spacing:5px; text-transform:uppercase;
+  color:var(--gold); margin-bottom:20px;
+  display:flex; align-items:center; gap:16px;
+}
+.ch-eyebrow::before {
+  content:''; display:block;
+  width:32px; height:1px; background:var(--gold);
+}
+
+.ch-title {
+  font-family:'DM Serif Display',serif;
+  font-size:clamp(44px,7vw,88px);
+  font-weight:400; line-height:.95;
+  color:var(--white);
+  letter-spacing:-2px;
+  margin-bottom:24px;
+}
+
+.ch-title em { font-style:italic; color:var(--gold); }
+
+.ch-lead {
+  font-size:14px; line-height:1.85;
+  color:var(--muted); max-width:580px;
+  margin-bottom:64px;
+  padding-left:20px;
+  border-left:2px solid var(--gold);
+}
+
+/* ─── SECTION LABEL ─── */
+.sec-label {
+  display:flex; align-items:center; gap:16px;
+  margin:64px 0 32px;
+}
+.sec-label span {
+  font-size:9px; letter-spacing:4px; text-transform:uppercase;
+  color:var(--muted); white-space:nowrap;
+}
+.sec-label::after {
+  content:''; flex:1; height:1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* ─── CONCEPT GRID ─── */
+.concept-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(260px,1fr));
+  gap:1px; background:var(--border);
+  border:1px solid var(--border);
+  margin-bottom:56px;
+}
+
+.c-card {
+  background:var(--panel);
+  padding:32px 28px;
+  transition:background .25s;
+  position:relative; overflow:hidden;
+}
+.c-card::before {
+  content:''; position:absolute;
+  top:0; left:0; width:2px; height:0;
+  background:var(--gold);
+  transition:height .3s;
+}
+.c-card:hover { background:#1a1a1a; }
+.c-card:hover::before { height:100%; }
+
+.c-icon {
+  font-size:32px; margin-bottom:18px; display:block;
+  filter:grayscale(30%);
+}
+.c-name {
+  font-family:'Unbounded',sans-serif;
+  font-size:11px; font-weight:700;
+  color:var(--gold); letter-spacing:1px;
+  text-transform:uppercase; margin-bottom:10px;
+}
+.c-text {
+  font-size:12px; line-height:1.8; color:var(--muted);
+  margin-bottom:14px;
+}
+.c-formula {
+  font-family:'DM Mono',monospace;
+  font-size:12px; color:var(--gold2);
+  background:rgba(201,168,76,.06);
+  border:1px solid rgba(201,168,76,.15);
+  padding:8px 12px; display:inline-block;
+  line-height:1.6;
+}
+
+/* ─── BIG SIMULATOR CARD ─── */
+.sim-card {
+  border:1px solid var(--border);
+  margin-bottom:48px;
+  background:var(--panel);
+  overflow:hidden;
+}
+
+.sc-head {
+  display:grid;
+  grid-template-columns:80px 1fr;
+  border-bottom:1px solid var(--border);
+}
+
+.sc-num {
+  font-family:'DM Serif Display',serif;
+  font-size:72px; font-weight:400;
+  color:var(--border);
+  display:flex; align-items:center; justify-content:center;
+  border-right:1px solid var(--border);
+  line-height:1;
+  padding:20px 10px;
+  transition:color .3s;
+}
+.sim-card:hover .sc-num { color:var(--gold); }
+
+.sc-info {
+  padding:24px 28px;
+}
+.sc-tag {
+  font-size:9px; letter-spacing:4px; text-transform:uppercase;
+  color:var(--gold); margin-bottom:6px;
+}
+.sc-title {
+  font-family:'DM Serif Display',serif;
+  font-size:28px; color:var(--white); line-height:1.1;
+}
+
+.sc-body { padding:32px 28px; }
+
+.sc-body h4 {
+  font-family:'Unbounded',sans-serif;
+  font-size:9px; font-weight:700;
+  letter-spacing:4px; text-transform:uppercase;
+  color:var(--gold); margin:28px 0 14px;
+}
+.sc-body h4:first-child { margin-top:0; }
+
+.sc-body p {
+  font-size:13px; line-height:1.85;
+  color:var(--txt); margin-bottom:14px;
+}
+.sc-body p b { color:var(--white); }
+.sc-body p em { color:var(--gold2); font-style:normal; }
+
+/* ─── PARAM TABLE ─── */
+.ptable {
+  width:100%; border-collapse:collapse;
+  font-size:12px; margin-bottom:24px;
+}
+.ptable th {
+  text-align:left; padding:10px 16px;
+  background:rgba(201,168,76,.08);
+  color:var(--gold);
+  font-family:'Unbounded',sans-serif;
+  font-size:8px; letter-spacing:3px; text-transform:uppercase;
+  font-weight:400;
+  border-bottom:1px solid var(--border);
+}
+.ptable td {
+  padding:11px 16px;
+  border-bottom:1px solid var(--border);
+  vertical-align:top;
+  line-height:1.6;
+}
+.ptable td:first-child {
+  font-family:'DM Mono',monospace;
+  color:var(--gold2); font-weight:500;
+  white-space:nowrap; width:90px;
+}
+.ptable td:nth-child(2) { color:var(--white); width:160px; }
+.ptable td:nth-child(3) { color:var(--muted); }
+.ptable tr:last-child td { border-bottom:none; }
+
+/* ─── STEPS ─── */
+.steps { list-style:none; counter-reset:step; margin-bottom:20px; }
+.steps li {
+  counter-increment:step;
+  display:flex; gap:20px; align-items:flex-start;
+  padding:14px 0; border-bottom:1px solid var(--border);
+  font-size:13px; line-height:1.75; color:var(--txt);
+}
+.steps li:last-child { border-bottom:none; }
+.steps li::before {
+  content: counter(step,decimal-leading-zero);
+  font-family:'Unbounded',sans-serif;
+  font-size:11px; font-weight:700;
+  color:var(--gold); min-width:32px;
+  padding-top:1px;
+}
+.steps li b { color:var(--white); }
+.steps li em { color:var(--gold2); font-style:normal; }
+
+/* ─── FORMULA BAR ─── */
+.fbar {
+  background: linear-gradient(135deg, rgba(201,168,76,.08), rgba(201,168,76,.02));
+  border:1px solid rgba(201,168,76,.2);
+  padding:20px 24px;
+  display:flex; flex-wrap:wrap; gap:24px;
+  margin:20px 0;
+  position:relative; overflow:hidden;
+}
+.fbar::before {
+  content:''; position:absolute;
+  top:0; left:0; width:3px; height:100%;
+  background:var(--gold);
+}
+.f-pill {
+  font-family:'DM Mono',monospace;
+  font-size:13px; color:var(--gold2); line-height:1.6;
+}
+.f-pill span { color:var(--white); }
+
+/* ─── TIP / WARN ─── */
+.tip, .warn {
+  padding:16px 20px; margin:16px 0;
+  font-size:12px; line-height:1.8;
+  position:relative; padding-left:20px;
+}
+.tip { border-left:2px solid var(--cyan); background:rgba(0,180,216,.04); color:var(--txt); }
+.warn { border-left:2px solid var(--red); background:rgba(192,57,43,.04); color:var(--txt); }
+.tip strong { color:var(--cyan); }
+.warn strong { color:var(--red); }
+
+/* ─── ANALOGY TABLE ─── */
+.analogy-wrap {
+  display:grid;
+  grid-template-columns:1fr 120px 1fr;
+  border:1px solid var(--border);
+  overflow:hidden; margin-bottom:56px;
+}
+.a-head {
+  padding:14px 20px; text-align:center;
+  font-family:'Unbounded',sans-serif;
+  font-size:9px; letter-spacing:3px; text-transform:uppercase;
+  font-weight:700;
+}
+.a-head.lin { background:rgba(0,180,216,.1); color:var(--cyan); border-bottom:1px solid var(--border); }
+.a-head.ang { background:rgba(201,168,76,.1); color:var(--gold); border-bottom:1px solid var(--border); }
+.a-head.mid {
+  background:rgba(201,168,76,.05); color:var(--muted);
+  border-left:1px solid var(--border); border-right:1px solid var(--border);
+  writing-mode:vertical-rl; padding:24px 10px;
+  font-size:8px; border-bottom:1px solid var(--border);
+}
+
+.a-cell {
+  padding:11px 20px; text-align:center;
+  font-family:'DM Mono',monospace; font-size:12px;
+  border-bottom:1px solid var(--border);
+  line-height:1.5;
+}
+.a-cell.lin { color:var(--cyan); background:rgba(0,180,216,.02); }
+.a-cell.ang { color:var(--gold2); background:rgba(201,168,76,.02); }
+.a-cell.mid {
+  color:var(--muted); font-size:11px;
+  border-left:1px solid var(--border); border-right:1px solid var(--border);
+  background:rgba(0,0,0,.3);
+}
+
+/* ─── ERROR SECTION ─── */
+.error-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(250px,1fr));
+  gap:1px; background:var(--border);
+  border:1px solid var(--border);
+  margin-bottom:48px;
+}
+
+.e-card {
+  background:var(--panel); padding:24px;
+  position:relative; transition:background .2s;
+}
+.e-card:hover { background:#1c1010; }
+.e-num {
+  font-family:'Unbounded',sans-serif;
+  font-size:10px; color:var(--red);
+  letter-spacing:3px; margin-bottom:10px;
+}
+.e-title {
+  font-family:'DM Serif Display',serif;
+  font-size:20px; color:var(--white);
+  margin-bottom:10px; line-height:1.2;
+}
+.e-fix {
+  font-size:12px; line-height:1.75; color:var(--muted);
+}
+.e-fix code {
+  font-family:'DM Mono',monospace;
+  font-size:11px; color:var(--gold2);
+  background:rgba(201,168,76,.08); padding:1px 6px;
+}
+
+/* ─── CHECKLIST ─── */
+.checklist { list-style:none; margin-bottom:32px; }
+.checklist li {
+  display:flex; gap:14px; align-items:flex-start;
+  padding:12px 0; border-bottom:1px solid var(--border);
+  font-size:13px; line-height:1.7; color:var(--txt);
+}
+.checklist li:last-child { border-bottom:none; }
+.check {
+  width:18px; height:18px; border:1px solid var(--gold);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; color:var(--gold);
+  flex-shrink:0; margin-top:2px;
+}
+
+/* ─── REF CARDS ─── */
+.ref-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:1px; background:var(--border);
+  border:1px solid var(--border); margin-bottom:40px;
+}
+.ref-card {
+  background:var(--panel); padding:24px 20px;
+}
+.ref-tag {
+  font-family:'Unbounded',sans-serif;
+  font-size:8px; letter-spacing:3px; text-transform:uppercase;
+  color:var(--gold); margin-bottom:12px;
+}
+.ref-formulas {
+  font-family:'DM Mono',monospace;
+  font-size:13px; line-height:2;
+  color:var(--gold2);
+}
+
+/* ─── FOOTER ─── */
+footer {
+  margin-top:120px;
+  background:var(--deep);
+  border-top:1px solid var(--border);
+  padding:48px 60px;
+  display:grid; grid-template-columns:1fr auto;
+  align-items:center; gap:32px;
+}
+@media(max-width:600px) {
+  footer { grid-template-columns:1fr; padding:32px 24px; }
+}
+.footer-brand {
+  font-family:'DM Serif Display',serif;
+  font-size:28px; color:var(--white); margin-bottom:8px;
+}
+.footer-sub {
+  font-size:11px; color:var(--muted); line-height:1.8;
+}
+.footer-sub a { color:var(--gold); text-decoration:none; }
+.footer-tag {
+  font-family:'Unbounded',sans-serif;
+  font-size:9px; letter-spacing:3px;
+  color:var(--muted); text-align:right;
+}
+
+/* ─── SCROLL REVEAL ─── */
+.reveal {
+  opacity:0; transform:translateY(40px);
+  transition:opacity .7s, transform .7s;
+}
+.reveal.visible { opacity:1; transform:translateY(0); }
+
+/* ─── COLOR SWATCHES for meters legend ─── */
+.swatch-grid { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px; }
+.swatch {
+  display:flex; align-items:center; gap:8px;
+  background:var(--panel); border:1px solid var(--border);
+  padding:8px 12px; font-size:12px;
+}
+.sw-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ══════════════════════════════
+     HERO
+══════════════════════════════ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-content">
+    <div class="hero-eyebrow">PhySim · Universit&eacute; d'Abomey-Calavi · Guide complet</div>
+    <h1 class="hero-title">
+      Comprendre<br>
+      <em>&amp; Simuler</em>
+    </h1>
+    <div class="hero-rule"></div>
+    <p class="hero-desc">
+      Votre guide complet pour ma&icirc;triser les quatre simulateurs de rotation —
+      cin&eacute;matique, moment d'inertie, moment de force et roulement sans glissement.
+      Chaque concept expliqu&eacute;, chaque param&egrave;tre d&eacute;taill&eacute;, chaque pi&egrave;ge d&eacute;voil&eacute;.
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <div class="meta-label">Simulateurs</div>
+        <div class="meta-value">04</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Chapitres</div>
+        <div class="meta-value">07</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Auteur</div>
+        <div class="meta-value">E. Atinzoun</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Niveau</div>
+        <div class="meta-value">Pr&eacute;pa · L1</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span class="scroll-label">Faites d&eacute;filer pour commencer</span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════
+     NAV
+══════════════════════════════ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand">PHYSIM</div>
+    <div class="nav-links">
+      <a class="nav-link" href="#intro">Interface</a>
+      <a class="nav-link" href="#sim1">Cin&eacute;matique</a>
+      <a class="nav-link" href="#sim2">Inertie</a>
+      <a class="nav-link" href="#sim3">Moment</a>
+      <a class="nav-link" href="#sim4">RSG</a>
+      <a class="nav-link" href="#analogie">Analogie</a>
+      <a class="nav-link" href="#erreurs">Pi&egrave;ges</a>
+      <a class="nav-link" href="#refcard">R&eacute;f.</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════
+     CH 0 — INTERFACE
+══════════════════════════════ -->
+<section class="chapter" id="intro">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">00 — Introduction</div>
+  <h2 class="ch-title reveal">L'interface<br><em>en un coup d'œil</em></h2>
+  <p class="ch-lead reveal">
+    Avant d'explorer chaque simulateur, comprendre l'organisation commune
+    de l'interface vous fera gagner un temps pr&eacute;cieux en TP.
+  </p>
+
+  <div class="sec-label reveal"><span>Les 4 modules</span></div>
+
+  <div class="concept-grid reveal">
+    <div class="c-card">
+      <span class="c-icon">&#128260;</span>
+      <div class="c-name">01 · Cin&eacute;matique</div>
+      <div class="c-text">Disque en rotation avec vecteurs v, a&#8345;, a&#8348; et trace de trajectoire en temps r&eacute;el.</div>
+      <div class="c-formula">v&nbsp;=&nbsp;R&omega;&nbsp;&nbsp;|&nbsp;&nbsp;a&#8345;&nbsp;=&nbsp;R&omega;&sup2;&nbsp;&nbsp;|&nbsp;&nbsp;a&#8348;&nbsp;=&nbsp;R&alpha;</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#9881;&#65039;</span>
+      <div class="c-name">02 · Moment d'Inertie</div>
+      <div class="c-text">4 solides sous m&ecirc;me couple M. Comparaison visuelle des acc&eacute;l&eacute;rations angulaires.</div>
+      <div class="c-formula">I&nbsp;=&nbsp;&Sigma;m&#7522;r&#7522;&sup2;&nbsp;&nbsp;|&nbsp;&nbsp;&alpha;&nbsp;=&nbsp;M&nbsp;/&nbsp;I</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#128170;</span>
+      <div class="c-name">03 · Moment de Force</div>
+      <div class="c-text">Bras de levier interactif. L'effet de l'angle &phi; sur le couple moteur est imm&eacute;diat.</div>
+      <div class="c-formula">M&nbsp;=&nbsp;r&nbsp;&times;&nbsp;F&nbsp;&times;&nbsp;sin(&phi;)</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#127923;</span>
+      <div class="c-name">04 · Roulement RSG</div>
+      <div class="c-text">Plan inclin&eacute; avec 4 solides. Bilan &eacute;nerg&eacute;tique translation/rotation en direct.</div>
+      <div class="c-formula">v&nbsp;=&nbsp;R&omega;&nbsp;&nbsp;|&nbsp;&nbsp;Ec&nbsp;=&nbsp;&frac12;mv&sup2;&nbsp;+&nbsp;&frac12;I&omega;&sup2;</div>
+    </div>
+  </div>
+
+  <div class="sec-label reveal"><span>Anatomie commune</span></div>
+
+  <div class="sim-card reveal">
+    <div class="sc-head">
+      <div class="sc-num">&#9632;</div>
+      <div class="sc-info">
+        <div class="sc-tag">Valable pour tous les simulateurs</div>
+        <div class="sc-title">Lire l'interface</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <h4>Zone canvas (colonne gauche)</h4>
+      <p>La <b>zone de dessin principale</b> est mise &agrave; jour 60 fois par seconde. Vecteurs, trajectoires et animations physiques y sont rendus en continu. Chaque couleur correspond &agrave; une grandeur physique.</p>
+
+      <div class="swatch-grid">
+        <div class="swatch"><div class="sw-dot" style="background:#00ccff"></div><span style="color:#00ccff">Cyan</span>&nbsp;— positions, angles (&theta;)</div>
+        <div class="swatch"><div class="sw-dot" style="background:#ff7a30"></div><span style="color:#ff7a30">Orange</span>&nbsp;— vitesses (&omega;, v)</div>
+        <div class="swatch"><div class="sw-dot" style="background:#ffe040"></div><span style="color:#ffe040">Jaune</span>&nbsp;— acc&eacute;l&eacute;rations (&alpha;, M)</div>
+        <div class="swatch"><div class="sw-dot" style="background:#1fff8a"></div><span style="color:#1fff8a">Vert</span>&nbsp;— &eacute;nergies, inertie I</div>
+        <div class="swatch"><div class="sw-dot" style="background:#b06aff"></div><span style="color:#b06aff">Violet</span>&nbsp;— divers (tours, %)</div>
+      </div>
+
+      <h4>Panneaux de contr&ocirc;le (colonne droite)</h4>
+      <p>Les <b>curseurs</b> modifient les param&egrave;tres physiques instantan&eacute;ment. Les <b>m&egrave;tres num&eacute;riques</b> affichent les grandeurs calcul&eacute;es. Les 3 boutons suivants contr&ocirc;lent la simulation&nbsp;:</p>
+      <table class="ptable">
+        <tr><th>Bouton</th><th>Action</th><th>Quand l'utiliser</th></tr>
+        <tr><td>START ▶</td><td>Lance l'animation</td><td>Apr&egrave;s avoir r&eacute;gl&eacute; tous vos param&egrave;tres</td></tr>
+        <tr><td>PAUSE ⏸</td><td>Fige l'image</td><td>Pour lire un vecteur pr&eacute;cis ou noter une valeur</td></tr>
+        <tr><td>RESET ↺</td><td>Remet &agrave; z&eacute;ro</td><td>Toujours avant une nouvelle exp&eacute;rience</td></tr>
+      </table>
+
+      <div class="tip">
+        <strong>Bonne pratique :</strong> RESET → r&eacute;gler les param&egrave;tres → START. Ne jamais modifier un curseur pendant une simulation sans comprendre ce que cela implique physiquement.
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     CH 1 — CINÉMATIQUE
+══════════════════════════════ -->
+<section class="chapter" id="sim1">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">01 — Cin&eacute;matique de rotation</div>
+  <h2 class="ch-title reveal">Le disque<br><em>qui tourne</em></h2>
+  <p class="ch-lead reveal">
+    Ce simulateur repr&eacute;sente un disque vu de face avec un point
+    dont on visualise les vecteurs vitesse et acc&eacute;l&eacute;ration en temps r&eacute;el,
+    plus le graphe &theta;(t) et &omega;(t).
+  </p>
+
+  <div class="sec-label reveal"><span>Ce que vous voyez sur le canvas</span></div>
+
+  <div class="concept-grid reveal">
+    <div class="c-card">
+      <span class="c-icon" style="color:#ff7a30">&#10145;</span>
+      <div class="c-name" style="color:#ff7a30">Fl&egrave;che orange — v</div>
+      <div class="c-text">Vitesse lin&eacute;aire. Toujours <b>tangente</b> au cercle, perpendiculaire au rayon. Sa longueur = v = R&omega;.</div>
+      <div class="c-formula">v&nbsp;=&nbsp;R&nbsp;&times;&nbsp;&omega;</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon" style="color:#ffe040">&#10145;</span>
+      <div class="c-name" style="color:#ffe040">Fl&egrave;che jaune — a&#8345;</div>
+      <div class="c-text">Acc&eacute;l&eacute;ration centripète. Pointe <b>vers le centre</b>. Existe m&ecirc;me si &omega; est constant&nbsp;!</div>
+      <div class="c-formula">a&#8345;&nbsp;=&nbsp;R&nbsp;&times;&nbsp;&omega;&sup2;</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon" style="color:#1fff8a">&#10145;</span>
+      <div class="c-name" style="color:#1fff8a">Fl&egrave;che verte — a&#8348;</div>
+      <div class="c-text">Acc&eacute;l&eacute;ration tangentielle. Tangente au cercle. <b>Nulle si &alpha;&nbsp;=&nbsp;0</b>, non nulle si &omega; varie.</div>
+      <div class="c-formula">a&#8348;&nbsp;=&nbsp;R&nbsp;&times;&nbsp;&alpha;</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon" style="color:#8888ff">&#11835;</span>
+      <div class="c-name" style="color:#8888ff">Trace violette</div>
+      <div class="c-text">Trajectoire du point. Toujours un cercle (m&ecirc;me rayon) mais le point acc&eacute;l&egrave;re si &alpha;&nbsp;&ne;&nbsp;0.</div>
+      <div class="c-formula">s&nbsp;=&nbsp;R&theta;</div>
+    </div>
+  </div>
+
+  <div class="sec-label reveal"><span>Guide des curseurs</span></div>
+
+  <div class="sim-card reveal">
+    <div class="sc-head">
+      <div class="sc-num">01</div>
+      <div class="sc-info">
+        <div class="sc-tag">Cin&eacute;matique · Disque tournant</div>
+        <div class="sc-title">Param&egrave;tres &amp; effets</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <table class="ptable">
+        <tr><th>Curseur</th><th>Variable</th><th>Effet observ&eacute;</th></tr>
+        <tr><td>&omega;&#8320;</td><td>Vitesse initiale rad/s</td><td>D&eacute;finit la rotation au d&eacute;marrage. Plus &omega; est grand, plus les vecteurs v et a&#8345; sont longs. &omega;=0 &rarr; immobile.</td></tr>
+        <tr><td>&alpha;</td><td>Acc&eacute;l. angulaire rad/s&sup2;</td><td>&alpha;&gt;0 &rarr; acc&eacute;l&egrave;re. &alpha;&lt;0 &rarr; ralentit puis change de sens. &alpha;=0 &rarr; rotation uniforme, a&#8348;=0.</td></tr>
+        <tr><td>R</td><td>Rayon du disque m</td><td>Plus R est grand, plus v et a&#8345; sont &eacute;lev&eacute;s pour le m&ecirc;me &omega;. La taille visuelle du disque change.</td></tr>
+        <tr><td>Position</td><td>% du rayon</td><td>Au centre (0%) : v=0, a=0. Au bord (100%) : v et a maximaux. Montre la d&eacute;pendance en r.</td></tr>
+      </table>
+
+      <h4>5 exp&eacute;riences guid&eacute;es</h4>
+      <ul class="steps">
+        <li><b>Rotation uniforme :</b> &omega;&#8320; = 5 rad/s, &alpha; = 0. Observer que a&#8348; (vert) est <em>absente</em> mais a&#8345; (jaune) pointe bien vers le centre. Cocher/d&eacute;cocher les vecteurs pour isoler chaque grandeur.</li>
+        <li><b>Acc&eacute;l&eacute;ration :</b> Mettre &alpha; = 3 rad/s&sup2;. La fl&egrave;che verte appara&icirc;t. Observer le graphe &omega;(t) : c'est une droite montante (pente = &alpha;). &theta;(t) devient une parabole.</li>
+        <li><b>Position sur le rayon :</b> D&eacute;placer le point &agrave; 50%. Tous les vecteurs raccourcissent de moiti&eacute;. Au centre, tout est nul (r = 0). Confirme v = r&omega; et non R&omega;.</li>
+        <li><b>D&eacute;c&eacute;l&eacute;ration :</b> &omega;&#8320; = 10, &alpha; = -3. Regarder &omega; descendre dans les m&egrave;tres jusqu'&agrave; 0, puis a&#8345; disparait. Si on continue, le disque repart en sens inverse.</li>
+        <li><b>Comparaison :</b> m&ecirc;me &omega;, R x2. Observer que v double et a&#8345; double aussi. Confirme la proportionnalit&eacute; en R.</li>
+      </ul>
+
+      <div class="fbar">
+        <div class="f-pill">&theta;(t) = &theta;&#8320; + <span>&omega;&#8320;t</span> + &frac12;&alpha;t&sup2;</div>
+        <div class="f-pill">&omega;(t) = &omega;&#8320; + <span>&alpha;t</span></div>
+        <div class="f-pill">T = <span>2&pi; / &omega;</span></div>
+        <div class="f-pill">n = <span>&omega; / 2&pi;</span></div>
+        <div class="f-pill">&omega;&sup2; = &omega;&#8320;&sup2; + <span>2&alpha;&Delta;&theta;</span></div>
+      </div>
+
+      <div class="tip">
+        <strong>Lire le graphe du bas :</strong> Courbe cyan = &theta;(t), orange = &omega;(t). Si &alpha; = 0, &omega;(t) est horizontal et &theta;(t) est oblique. Si &alpha; &ne; 0, &omega;(t) est oblique et &theta;(t) est une parabole. La pente de &omega;(t) = &alpha;.
+      </div>
+
+      <div class="warn">
+        <strong>Pi&egrave;ge classique :</strong> a&#8345; = R&omega;&sup2; n'est JAMAIS nulle si &omega; &ne; 0, m&ecirc;me en rotation uniforme (&alpha;=0). C'est elle qui courbe la trajectoire. L'acc&eacute;l&eacute;ration totale n'est jamais nulle en rotation circulaire.
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     CH 2 — INERTIE
+══════════════════════════════ -->
+<section class="chapter" id="sim2">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">02 — Moment d'Inertie</div>
+  <h2 class="ch-title reveal">Qui acc&eacute;l&egrave;re<br><em>le plus vite&nbsp;?</em></h2>
+  <p class="ch-lead reveal">
+    M&ecirc;me couple M, m&ecirc;me masse, m&ecirc;me rayon — pourtant chaque solide
+    acc&eacute;l&egrave;re diff&eacute;remment. Tout d&eacute;pend de la r&eacute;partition spatiale de la masse.
+  </p>
+
+  <div class="sec-label reveal"><span>Les 4 solides compar&eacute;s</span></div>
+
+  <div class="concept-grid reveal">
+    <div class="c-card">
+      <span class="c-icon">&#9679;</span>
+      <div class="c-name">Disque plein</div>
+      <div class="c-text">Masse du centre au bord. Inertie interm&eacute;diaire. Acc&eacute;l&egrave;re 2&times; plus vite que l'anneau.</div>
+      <div class="c-formula">I&nbsp;=&nbsp;&frac12;mR&sup2;&nbsp;&nbsp;k&nbsp;=&nbsp;0.5</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#9711;</span>
+      <div class="c-name">Anneau creux</div>
+      <div class="c-text">Toute la masse au bord, &agrave; distance maximale. Inertie <em>maximale</em>. Acc&eacute;l&egrave;re le moins vite.</div>
+      <div class="c-formula">I&nbsp;=&nbsp;mR&sup2;&nbsp;&nbsp;k&nbsp;=&nbsp;1.0</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#9678;</span>
+      <div class="c-name">Sph&egrave;re pleine</div>
+      <div class="c-text">Masse r&eacute;partie en volume. Inertie <em>minimale</em> des 4. Acc&eacute;l&egrave;re le plus vite sous m&ecirc;me couple.</div>
+      <div class="c-formula">I&nbsp;=&nbsp;&frac25;mR&sup2;&nbsp;&nbsp;k&nbsp;=&nbsp;0.4</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#9135;</span>
+      <div class="c-name">Tige (axe central)</div>
+      <div class="c-text">Masse en ligne perpendiculaire &agrave; l'axe. I d&eacute;pend de L, pas de R. L = 2R dans le simulateur.</div>
+      <div class="c-formula">I&nbsp;=&nbsp;mL&sup2;/12</div>
+    </div>
+  </div>
+
+  <div class="sim-card reveal">
+    <div class="sc-head">
+      <div class="sc-num">02</div>
+      <div class="sc-info">
+        <div class="sc-tag">Moment d'inertie · TMC · Huygens-Steiner</div>
+        <div class="sc-title">Param&egrave;tres &amp; exp&eacute;riences</div>
+      </div>
+    </div>
+    <div class="sc-body">
+      <table class="ptable">
+        <tr><th>Curseur</th><th>Variable</th><th>Effet observ&eacute;</th></tr>
+        <tr><td>m</td><td>Masse kg</td><td>Augmenter m augmente I pour tous les solides. L'ordre de classement ne change pas. Les 4 valeurs I affich&eacute;es sur les cartes se mettent &agrave; jour.</td></tr>
+        <tr><td>R</td><td>Rayon m</td><td>I varie en R&sup2;. Doubler R multiplie I par 4. Tr&egrave;s sensible. La tige d&eacute;pend de L = 2R donc &eacute;galement en R&sup2;.</td></tr>
+        <tr><td>M</td><td>Couple N·m</td><td>Augmente la pente des courbes &omega;(t). &alpha; = M/I, si M double, &alpha; double pour tous les solides simultan&eacute;ment.</td></tr>
+        <tr><td>Solide</td><td>S&eacute;lection</td><td>Change le solide affich&eacute; sur le canvas principal. Le graphe &omega;(t) du bas montre les 4 courbes simultan&eacute;ment pour comparer.</td></tr>
+      </table>
+
+      <h4>Exp&eacute;riences guid&eacute;es</h4>
+      <ul class="steps">
+        <li><b>Comparer disque et anneau :</b> Cliquer Disque, START, noter &alpha;. RESET. Cliquer Anneau, START. &alpha; est exactement 2&times; plus petit. Confirme I_anneau = 2&times;I_disque.</li>
+        <li><b>Lire le graphe :</b> Le bas affiche les 4 courbes &omega;(t). Pente la plus raide = solide le moins inerte. Ordre: Sph&egrave;re &gt; Disque &gt; Tige &gt; Anneau.</li>
+        <li><b>Effet du rayon :</b> Doubler R. Toutes les valeurs I &times; 4. Les pentes de &alpha; sont divis&eacute;es par 4. M&ecirc;me couple, 4&times; moins d'acc&eacute;l&eacute;ration.</li>
+        <li><b>Huygens-Steiner :</b> Si vous imaginez le disque pivot&eacute; &agrave; son bord au lieu du centre : I_bord = I_centre + mR&sup2; = &frac12;mR&sup2; + mR&sup2; = &frac32;mR&sup2;. Toujours v&eacute;rifier sur quel axe on calcule I.</li>
+      </ul>
+
+      <div class="fbar">
+        <div class="f-pill">TMC : <span>&Sigma;M = I &times; &alpha;</span></div>
+        <div class="f-pill">donc : <span>&alpha; = M / I</span></div>
+        <div class="f-pill">Ec_rot = <span>&frac12;I&omega;&sup2;</span></div>
+        <div class="f-pill">Steiner : <span>I_D = I_G + md&sup2;</span></div>
+        <div class="f-pill">Puissance : <span>P = M&omega;</span></div>
+      </div>
+
+      <div class="warn">
+        <strong>Erreur fondamentale :</strong> Disque plein I&nbsp;=&nbsp;<em>&frac12;</em>mR&sup2; ≠ Anneau I&nbsp;=&nbsp;mR&sup2;. L'anneau a une inertie <b>deux fois plus grande</b> que le disque de m&ecirc;mes m et R. Confondre les deux formules est l'une des erreurs les plus fr&eacute;quentes en examen.
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     CH 3 — MOMENT DE FORCE
+══════════════════════════════ -->
+<section class="chapter" id="sim3">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">03 — Moment de Force</div>
+  <h2 class="ch-title reveal">L'art du<br><em>bras de levier</em></h2>
+  <p class="ch-lead reveal">
+    Ce simulateur rend visuel un concept abstrait : l'angle &phi; entre la force
+    et le bras de levier change radicalement l'efficacit&eacute; de la force appliqu&eacute;e.
+  </p>
+
+  <div class="sim-card reveal">
+    <div class="sc-head">
+      <div class="sc-num">03</div>
+      <div class="sc-info">
+        <div class="sc-tag">Moment de force · TMC · Conservation L</div>
+        <div class="sc-title">Bras de levier interactif</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <h4>Lire le canvas</h4>
+      <p>Le <b>trait jaune</b> est le bras de levier (longueur r). La <b>fl&egrave;che orange</b> est la force F. L'<b>arc violet</b> montre l'angle &phi; entre r et F. L'info-box en haut &agrave; droite indique M et &alpha; calcul&eacute;s en temps r&eacute;el.</p>
+
+      <table class="ptable">
+        <tr><th>Curseur</th><th>Variable</th><th>Effet observ&eacute;</th></tr>
+        <tr><td>F</td><td>Force N</td><td>Allonge la fl&egrave;che orange. M est proportionnel &agrave; F. Doubler F double M et donc &alpha;. Si F = 0, le disque central ne tourne plus.</td></tr>
+        <tr><td>r</td><td>Bras m</td><td>Allonge le bras jaune. Principe du levier : le m&ecirc;me F cr&eacute;e un couple plus grand. R&eacute;alit&eacute; physique : cl&eacute; &agrave; molette longue vs courte.</td></tr>
+        <tr><td>&phi;</td><td>Angle deg</td><td>Contr&ocirc;le l'efficacit&eacute; de la force. &phi;=90&deg; &rarr; maximum. &phi;=0&deg; ou 180&deg; &rarr; M=0. L'arc violet visualise cet angle.</td></tr>
+        <tr><td>I</td><td>Inertie kg·m&sup2;</td><td>R&eacute;sistance du disque central. Augmenter I r&eacute;duit &alpha; = M/I sans changer M.</td></tr>
+      </table>
+
+      <h4>Exp&eacute;riences essentielles</h4>
+      <ul class="steps">
+        <li><b>Maximum &phi; = 90&deg; :</b> F perpendiculaire au bras. sin(90&deg;) = 1. M = r&times;F. C'est le maximum absolu pour ces valeurs. Visualiser la fl&egrave;che orange perpendiculaire au trait jaune.</li>
+        <li><b>Minimum &phi; = 0&deg; ou 180&deg; :</b> M = 0 car sin(0) = 0. La force est dans l'axe du bras, elle ne cr&eacute;e aucune rotation. Appuyer START : le disque reste immobile m&ecirc;me avec F = 30 N.</li>
+        <li><b>Sym&eacute;trie :</b> Constater que M(&phi; = 30&deg;) = M(&phi; = 150&deg;) car sin(30) = sin(150) = 0.5. Les deux positions de la force donnent le m&ecirc;me couple.</li>
+        <li><b>Doubler r :</b> &agrave; F et &phi; constants, M double. C'est le principe du levier (p&eacute;dale de v&eacute;lo, cl&eacute; longue). Observer &alpha; doubler aussi puisque I n'a pas chang&eacute;.</li>
+        <li><b>Conservation L :</b> Voir exercice patineur. Si &Sigma;M = 0 et I diminue, &omega; augmente proportionnellement (I&omega; = cste).</li>
+      </ul>
+
+      <div class="fbar">
+        <div class="f-pill">M = <span>r &times; F &times; sin(&phi;)</span></div>
+        <div class="f-pill">TMC : <span>&Sigma;M = I&alpha;</span></div>
+        <div class="f-pill">L = <span>I&omega;</span></div>
+        <div class="f-pill">Si &Sigma;M=0 : <span>L = cste</span></div>
+        <div class="f-pill">P = <span>M&omega;</span></div>
+        <div class="f-pill">W = <span>M&Delta;&theta;</span></div>
+      </div>
+
+      <div class="tip">
+        <strong>Comprendre sin(&phi;) :</strong> Seule la composante de F <em>perpendiculaire</em> au bras cr&eacute;e un couple. Si vous notez F⊥ = F&times;sin(&phi;), alors M = r&times;F⊥. C'est pourquoi pousser une porte &agrave; 90&deg; est toujours plus efficace qu'&agrave; un angle quelconque.
+      </div>
+
+      <div class="tip">
+        <strong>Conservation du moment cin&eacute;tique :</strong> Patineur sur glace : bras &eacute;tendus (grand I, faible &omega;), bras repli&eacute;s (petit I) &rarr; &omega; augmente pour conserver L = I&omega;. Simulateur : r&eacute;duire I pendant la rotation et observer &omega; augmenter instantan&eacute;ment.
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     CH 4 — RSG
+══════════════════════════════ -->
+<section class="chapter" id="sim4">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">04 — Roulement Sans Glissement</div>
+  <h2 class="ch-title reveal">Descendre<br><em>sans glisser</em></h2>
+  <p class="ch-lead reveal">
+    RSG signifie que le point de contact solide/sol a une vitesse nulle instantan&eacute;ment.
+    Cela couple translation et rotation et change radicalement le bilan d'&eacute;nergie.
+  </p>
+
+  <div class="concept-grid reveal">
+    <div class="c-card">
+      <span class="c-icon">&#128279;</span>
+      <div class="c-name">Condition fondamentale</div>
+      <div class="c-text">v_contact = 0 &agrave; chaque instant. Le centre G avance de R&omega; par unit&eacute; de temps.</div>
+      <div class="c-formula">v_G&nbsp;=&nbsp;R&omega;&nbsp;&nbsp;|&nbsp;&nbsp;a_G&nbsp;=&nbsp;R&alpha;</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#9889;</span>
+      <div class="c-name">&Eacute;nergie totale</div>
+      <div class="c-text">L'&eacute;nergie se partage entre translation du centre G et rotation autour de G. Les deux termes coexistent.</div>
+      <div class="c-formula">Ec&nbsp;=&nbsp;&frac12;mv&sup2;&nbsp;+&nbsp;&frac12;I&omega;&sup2;</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#127942;</span>
+      <div class="c-name">Course sur plan inclin&eacute;</div>
+      <div class="c-text">La sph&egrave;re arrive toujours en premier (k=0.4), puis disque (0.5), puis anneau (1). Plus k est petit, plus vite.</div>
+      <div class="c-formula">v&nbsp;=&nbsp;&radic;(2gh&nbsp;/&nbsp;(1+k))</div>
+    </div>
+    <div class="c-card">
+      <span class="c-icon">&#128200;</span>
+      <div class="c-name">Part de rotation</div>
+      <div class="c-text">Disque : 33% en rotation. Anneau : 50%. Sph&egrave;re : 29%. Plus inerte &rarr; plus d'&eacute;nergie en rotation &rarr; plus lent.</div>
+      <div class="c-formula">k&nbsp;=&nbsp;I&nbsp;/&nbsp;(mR&sup2;)</div>
+    </div>
+  </div>
+
+  <div class="sim-card reveal">
+    <div class="sc-head">
+      <div class="sc-num">04</div>
+      <div class="sc-info">
+        <div class="sc-tag">Roulement sans glissement · Plan inclin&eacute; · Bilan &eacute;nergie</div>
+        <div class="sc-title">Guide complet RSG</div>
+      </div>
+    </div>
+    <div class="sc-body">
+
+      <table class="ptable">
+        <tr><th>Contr&ocirc;le</th><th>Variable</th><th>Effet observ&eacute;</th></tr>
+        <tr><td>Type</td><td>S&eacute;lection solide</td><td>Change I et la forme affich&eacute;e. L'info-box indique % rotation en temps r&eacute;el. Crucial pour comparer les solides.</td></tr>
+        <tr><td>m</td><td>Masse kg</td><td>Ne change PAS la vitesse finale (m se simplifie dans v = &radic;(2gh/(1+k))). Change Ec_totale mais pas la comp&eacute;tition.</td></tr>
+        <tr><td>R</td><td>Rayon m</td><td>Ne change PAS non plus la vitesse finale (R se simplifie aussi). Change &omega; = v/R et la taille visuelle.</td></tr>
+        <tr><td>&theta;</td><td>Angle du plan &deg;</td><td>Plus &theta; est grand, plus la descente est rapide. h = L&times;sin&theta; entre dans v = &radic;(2gh/(1+k)).</td></tr>
+      </table>
+
+      <h4>Lire le graphe &eacute;nergie</h4>
+      <p>Le graphe du bas montre <em>v(t)</em> en cyan, <em>Ec_translation</em> en vert et <em>Ec_rotation</em> en orange. Observer comment l'&eacute;nergie potentielle se r&eacute;partit entre les deux formes au fil du temps.</p>
+
+      <ul class="steps">
+        <li><b>Sph&egrave;re vs Anneau :</b> Sph&egrave;re, &theta;=30&deg;, L&acirc;cher — noter v finale et % rot (~28.6%). RESET. Anneau, m&ecirc;mes param&egrave;tres. Descente plus lente, % rot = 50%. L'anneau stocke moiti&eacute; de son &eacute;nergie en rotation.</li>
+        <li><b>M et R n'influencent pas :</b> Doubler m puis doubler R et constater que la vitesse finale ne change pas. Comprendre que v = &radic;(2gh/(1+k)) et k = I/(mR&sup2;) simplifie m et R pour chaque type.</li>
+        <li><b>Angle et vitesse :</b> &theta; = 10&deg; vs &theta; = 40&deg;, m&ecirc;me solide. Vitesse finale plus grande &agrave; 40&deg;. Mais % rotation reste identique (ind&eacute;pendant de &theta;).</li>
+        <li><b>Classement :</b> Tester les 4 types avec m&ecirc;me &theta;. Ordre : Sph&egrave;re pleine &gt; Disque &gt; Sph&egrave;re creuse &gt; Anneau. Confirme k le plus petit = le plus rapide.</li>
+      </ul>
+
+      <div class="fbar">
+        <div class="f-pill">RSG : <span>v = R&omega;</span></div>
+        <div class="f-pill">Ec = <span>&frac12;mv&sup2; + &frac12;I&omega;&sup2;</span></div>
+        <div class="f-pill">v_fin = <span>&radic;(2gh/(1+k))</span></div>
+        <div class="f-pill">k = <span>I / mR&sup2;</span></div>
+        <div class="f-pill">a = <span>mg·sin&theta; / (m + I/R&sup2;)</span></div>
+      </div>
+
+      <div class="tip">
+        <strong>Intuition physique :</strong> Sur le plan inclin&eacute;, mgh se transforme en Ec_trans + Ec_rot. Plus un solide concentre sa masse en p&eacute;riph&eacute;rie (grand k), plus il "d&eacute;pense" d'&eacute;nergie &agrave; tourner et moins il en a pour avancer. D'o&ugrave; l'anneau (k=1) toujours en dernier.
+      </div>
+
+      <div class="warn">
+        <strong>Erreur critique :</strong> En RSG, utiliser v = &radic;(2gh) sans le terme (1+k) au d&eacute;nominateur donne une vitesse surestim&eacute;e. Cette formule n'est valable que pour une masse ponctuelle en chute libre, <b>jamais pour un solide qui roule</b>.
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     ANALOGIE
+══════════════════════════════ -->
+<section class="chapter" id="analogie">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">05 — R&eacute;f&eacute;rence</div>
+  <h2 class="ch-title reveal">L'analogie<br><em>lin&eacute;aire / angulaire</em></h2>
+  <p class="ch-lead reveal">
+    La rotation est le miroir exact de la translation. Chaque grandeur lin&eacute;aire a
+    son &eacute;quivalent angulaire. Apprendre cette sym&eacute;trie divise le travail de m&eacute;morisation.
+  </p>
+
+  <div class="analogy-wrap reveal">
+    <div>
+      <div class="a-head lin">Translation lin&eacute;aire</div>
+      <div class="a-cell lin">x &nbsp;&mdash;&nbsp; m</div>
+      <div class="a-cell lin">v = dx/dt &nbsp;&mdash;&nbsp; m/s</div>
+      <div class="a-cell lin">a = dv/dt &nbsp;&mdash;&nbsp; m/s&sup2;</div>
+      <div class="a-cell lin">m &nbsp;&mdash;&nbsp; kg</div>
+      <div class="a-cell lin">F &nbsp;&mdash;&nbsp; N</div>
+      <div class="a-cell lin">p = mv</div>
+      <div class="a-cell lin">F = ma</div>
+      <div class="a-cell lin">&frac12;mv&sup2; &nbsp;&mdash;&nbsp; J</div>
+      <div class="a-cell lin">P = F&times;v &nbsp;&mdash;&nbsp; W</div>
+      <div class="a-cell lin">W = F&times;d &nbsp;&mdash;&nbsp; J</div>
+    </div>
+    <div>
+      <div class="a-head mid">LIEN</div>
+      <div class="a-cell mid">s = R&theta;</div>
+      <div class="a-cell mid">v = R&omega;</div>
+      <div class="a-cell mid">a = R&alpha;</div>
+      <div class="a-cell mid">&mdash;</div>
+      <div class="a-cell mid">M=rFsin&phi;</div>
+      <div class="a-cell mid">&mdash;</div>
+      <div class="a-cell mid">TMC</div>
+      <div class="a-cell mid">&mdash;</div>
+      <div class="a-cell mid">&mdash;</div>
+      <div class="a-cell mid">W=M&Delta;&theta;</div>
+    </div>
+    <div>
+      <div class="a-head ang">Rotation angulaire</div>
+      <div class="a-cell ang">&theta; &nbsp;&mdash;&nbsp; rad</div>
+      <div class="a-cell ang">&omega; = d&theta;/dt &nbsp;&mdash;&nbsp; rad/s</div>
+      <div class="a-cell ang">&alpha; = d&omega;/dt &nbsp;&mdash;&nbsp; rad/s&sup2;</div>
+      <div class="a-cell ang">I = &Sigma;mr&sup2; &nbsp;&mdash;&nbsp; kg&middot;m&sup2;</div>
+      <div class="a-cell ang">M &nbsp;&mdash;&nbsp; N&middot;m</div>
+      <div class="a-cell ang">L = I&omega;</div>
+      <div class="a-cell ang">&Sigma;M = I&alpha;</div>
+      <div class="a-cell ang">&frac12;I&omega;&sup2; &nbsp;&mdash;&nbsp; J</div>
+      <div class="a-cell ang">P = M&omega; &nbsp;&mdash;&nbsp; W</div>
+      <div class="a-cell ang">W = M&Delta;&theta; &nbsp;&mdash;&nbsp; J</div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     ERREURS
+══════════════════════════════ -->
+<section class="chapter" id="erreurs">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">06 — Pi&egrave;ges</div>
+  <h2 class="ch-title reveal">Les 8 erreurs<br><em>qui co&ucirc;tent des points</em></h2>
+  <p class="ch-lead reveal">
+    Ces erreurs reviennent dans presque chaque TP et examen.
+    Les reconna&icirc;tre &agrave; l'avance, c'est autant de points gagn&eacute;s sans effort suppl&eacute;mentaire.
+  </p>
+
+  <div class="error-grid reveal">
+    <div class="e-card">
+      <div class="e-num">ERR 01 &mdash; Conversion</div>
+      <div class="e-title">Oublier rpm → rad/s</div>
+      <div class="e-fix">Toujours convertir avant v = R&omega;.<br><code>&omega; = rpm &times; &pi; / 30</code><br>3000 rpm &rarr; 100&pi; &asymp; 314 rad/s, <em>pas</em> 3000.</div>
+    </div>
+    <div class="e-card">
+      <div class="e-num">ERR 02 &mdash; D&eacute;finition</div>
+      <div class="e-title">Confondre n et T</div>
+      <div class="e-fix">n = fr&eacute;quence (tr/s), T = p&eacute;riode (s).<br><code>n = 1/T = &omega;/(2&pi;)</code><br>Ne jamais &eacute;crire n = T ou inverser.</div>
+    </div>
+    <div class="e-card">
+      <div class="e-num">ERR 03 &mdash; Vecteurs</div>
+      <div class="e-title">Croire a&#8345; = 0 si &omega; = cste</div>
+      <div class="e-fix">FAUX. <code>a&#8345; = R&omega;&sup2; &ne; 0</code> tant que &omega; &ne; 0.<br>Seul a&#8348; = R&alpha; = 0 si &alpha; = 0.<br>a&#8345; maintient la trajectoire circulaire.</div>
+    </div>
+    <div class="e-card">
+      <div class="e-num">ERR 04 &mdash; Formules I</div>
+      <div class="e-title">Disque ≠ Anneau</div>
+      <div class="e-fix">Disque plein : <code>I = &frac12;mR&sup2;</code><br>Anneau creux : <code>I = mR&sup2;</code><br>L'anneau est 2&times; plus inerte que le disque.</div>
+    </div>
+    <div class="e-card">
+      <div class="e-num">ERR 05 &mdash; RSG</div>
+      <div class="e-title">Oublier &frac12;I&omega;&sup2; dans Ec</div>
+      <div class="e-fix">En RSG : <code>Ec = &frac12;mv&sup2; + &frac12;I&omega;&sup2;</code><br>Sans la rotation, v est surestim&eacute;e.<br>Erreur toujours p&eacute;nalis&eacute;e.</div>
+    </div>
+    <div class="e-card">
+      <div class="e-num">ERR 06 &mdash; TMC</div>
+      <div class="e-title">Appliquer TMC hors galil&eacute;en</div>
+      <div class="e-fix">&Sigma;M = I&alpha; n'est valide qu'en <b>r&eacute;f&eacute;rentiel galil&eacute;en</b> et sur axe fixe ou passant par G. Pr&eacute;ciser toujours l'axe.</div>
+    </div>
+    <div class="e-card">
+      <div class="e-num">ERR 07 &mdash; Angles</div>
+      <div class="e-title">Degr&eacute;s au lieu de radians</div>
+      <div class="e-fix">Toutes les formules de rotation sont en radians.<br><code>&theta;(rad) = &theta;(&deg;) &times; &pi; / 180</code><br>V&eacute;rifier les unit&eacute;s syst&eacute;matiquement.</div>
+    </div>
+    <div class="e-card">
+      <div class="e-num">ERR 08 &mdash; Moment</div>
+      <div class="e-title">M = rF sans sin(&phi;)</div>
+      <div class="e-fix">La formule compl&egrave;te est <code>M = r&times;F&times;sin(&phi;)</code>.<br>Uniquement si &phi;=90&deg; on a sin=1 et M=rF.<br>Sinon, le facteur sin est obligatoire.</div>
+    </div>
+  </div>
+
+  <div class="sec-label reveal"><span>Checklist avant TP</span></div>
+
+  <ul class="checklist reveal">
+    <li><div class="check">&#10003;</div>Toutes les vitesses sont en rad/s (pas rpm ni tr/min).</li>
+    <li><div class="check">&#10003;</div>Tous les angles sont en radians dans les formules.</li>
+    <li><div class="check">&#10003;</div>La bonne formule I est utilis&eacute;e pour le bon solide.</li>
+    <li><div class="check">&#10003;</div>Le bilan &eacute;nerg&eacute;tique RSG inclut &frac12;mv&sup2; ET &frac12;I&omega;&sup2;.</li>
+    <li><div class="check">&#10003;</div>Le moment de force inclut le facteur sin(&phi;).</li>
+    <li><div class="check">&#10003;</div>Le TMC est appliqu&eacute; sur un axe fixe en r&eacute;f&eacute;rentiel galil&eacute;en.</li>
+    <li><div class="check">&#10003;</div>Les unit&eacute;s du r&eacute;sultat final ont &eacute;t&eacute; v&eacute;rifi&eacute;es (homog&eacute;n&eacute;it&eacute;).</li>
+  </ul>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     REF CARD
+══════════════════════════════ -->
+<section class="chapter" id="refcard">
+<div class="container">
+
+  <div class="ch-eyebrow reveal">07 — Carte de r&eacute;f&eacute;rence</div>
+  <h2 class="ch-title reveal">Toutes les<br><em>formules essentielles</em></h2>
+  <p class="ch-lead reveal">
+    Carte compl&egrave;te &agrave; consulter pendant vos sessions PhySim et avant les examens.
+  </p>
+
+  <div class="ref-grid reveal">
+    <div class="ref-card">
+      <div class="ref-tag">Cin&eacute;matique</div>
+      <div class="ref-formulas">
+        &omega; = 2&pi;n = 2&pi;/T<br>
+        v = R&omega;<br>
+        a&#8345; = R&omega;&sup2;<br>
+        a&#8348; = R&alpha;<br>
+        a = &radic;(a&#8345;&sup2; + a&#8348;&sup2;)
+      </div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-tag">&Eacute;quations horaires</div>
+      <div class="ref-formulas">
+        &omega; = &omega;&#8320; + &alpha;t<br>
+        &theta; = &theta;&#8320; + &omega;&#8320;t + &frac12;&alpha;t&sup2;<br>
+        &omega;&sup2; = &omega;&#8320;&sup2; + 2&alpha;&Delta;&theta;<br>
+        rpm &rarr; rad/s : &times;&pi;/30
+      </div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-tag">Moments d'inertie</div>
+      <div class="ref-formulas">
+        Disque : &frac12;mR&sup2;<br>
+        Anneau : mR&sup2;<br>
+        Sph&egrave;re pl. : &frac25;mR&sup2;<br>
+        Sph&egrave;re cr. : &frac23;mR&sup2;<br>
+        Tige (ctr) : mL&sup2;/12
+      </div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-tag">Dynamique</div>
+      <div class="ref-formulas">
+        M = r &times; F &times; sin(&phi;)<br>
+        &Sigma;M = I &times; &alpha; (TMC)<br>
+        L = I &times; &omega;<br>
+        I_D = I_G + md&sup2; (Steiner)
+      </div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-tag">&Eacute;nergie &amp; Puissance</div>
+      <div class="ref-formulas">
+        Ec_rot = &frac12;I&omega;&sup2;<br>
+        W = M &times; &Delta;&theta;<br>
+        P = M &times; &omega;<br>
+        Si &Sigma;M=0 : L = cste
+      </div>
+    </div>
+    <div class="ref-card">
+      <div class="ref-tag">Roulement RSG</div>
+      <div class="ref-formulas">
+        v_G = R&omega;<br>
+        Ec = &frac12;mv&sup2; + &frac12;I&omega;&sup2;<br>
+        v = &radic;(2gh/(1+k))<br>
+        k = I/(mR&sup2;)<br>
+        a = mg·sin&theta;/(m+I/R&sup2;)
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ══════════════════════════════
+     FOOTER
+══════════════════════════════ -->
+<footer>
+  <div>
+    <div class="footer-brand">PhySim · Guide</div>
+    <div class="footer-sub">
+      Cr&eacute;&eacute; par <strong style="color:var(--gold2)">Edmond Atinzoun TCHOKPON</strong> &middot; Physique-Chimie &middot; UAC Abomey-Calavi<br>
+      <a href="https://edmond-atinzoun.netlify.app" target="_blank">edmond-atinzoun.netlify.app</a>
+    </div>
+  </div>
+  <div class="footer-tag">
+    ROTATION<br>EN PHYSIQUE<br>&copy; 2025
+  </div>
+</footer>
+
+<script>
+// Progress bar
+window.addEventListener('scroll',function(){
+  var h=document.documentElement;
+  document.getElementById('progress').style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%';
+});
+
+// Scroll reveal
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');}});
+},{threshold:.1,rootMargin:'0px 0px -50px 0px'});
+document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+
+// Active nav
+var sections=document.querySelectorAll('section[id]');
+var links=document.querySelectorAll('.nav-link');
+window.addEventListener('scroll',function(){
+  var y=window.scrollY+90;
+  sections.forEach(function(sec){
+    if(y>=sec.offsetTop&&y<sec.offsetTop+sec.offsetHeight){
+      links.forEach(function(l){l.classList.remove('active');});
+      var a=document.querySelector('.nav-link[href="#'+sec.id+'"]');
+      if(a)a.classList.add('active');
+    }
+  });
+});
+</script>
+</body>
+</html>

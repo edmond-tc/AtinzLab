@@ -1,0 +1,1735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Complet — SimuOrg v2.0 | Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Fira+Code:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f7f3ee;
+  --ink: #1c1410;
+  --panel: #ffffff;
+  --panel2: #f0ebe2;
+  --p1: #2d6a4f;
+  --p2: #b5451b;
+  --p3: #1d3557;
+  --p4: #9b2226;
+  --p5: #606c38;
+  --gold: #d4a017;
+  --muted: #7a6f64;
+  --border: #ddd5c8;
+  --shadow: rgba(28,20,16,0.1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Manrope', sans-serif;
+  line-height: 1.7;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* ─── HEADER ─── */
+header {
+  position: relative;
+  z-index: 10;
+  background: linear-gradient(135deg, var(--p1) 0%, #1e4d38 100%);
+  border-bottom: 3px solid var(--gold);
+  padding: 0;
+  box-shadow: 0 4px 30px rgba(45,106,79,.4);
+}
+
+.hero {
+  padding: 50px 40px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.hero-left { display: flex; align-items: center; gap: 20px; }
+
+.hex-logo {
+  width: 70px; height: 70px;
+  background: var(--gold);
+  clip-path: polygon(50% 0%,93.3% 25%,93.3% 75%,50% 100%,6.7% 75%,6.7% 25%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  animation: hexPulse 4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes hexPulse {
+  0%,100%{box-shadow:0 0 20px rgba(212,160,23,.5)}
+  50%{box-shadow:0 0 50px rgba(212,160,23,.95)}
+}
+
+.hero-title h1 {
+  font-family: 'Fraunces', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 4px;
+}
+.hero-title .sub {
+  font-family: 'Fira Code', monospace;
+  font-size: .65rem;
+  color: rgba(255,255,255,.6);
+  letter-spacing: 2.5px;
+  margin-top: 4px;
+}
+.hero-title .sub2 {
+  font-family: 'Manrope', sans-serif;
+  font-size: .82rem;
+  color: var(--gold);
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.hero-right {
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 12px;
+  padding: 16px 22px;
+  text-align: right;
+}
+.hero-right .name {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+.hero-right .info {
+  font-family: 'Fira Code', monospace;
+  font-size: .6rem;
+  color: rgba(255,255,255,.55);
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+
+/* ─── NAV ─── */
+.guide-nav {
+  background: rgba(0,0,0,.25);
+  padding: 0 40px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+.guide-nav::-webkit-scrollbar { display: none; }
+.guide-nav a {
+  display: inline-block;
+  padding: 11px 18px;
+  color: rgba(255,255,255,.65);
+  text-decoration: none;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .8px;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all .2s;
+  font-family: 'Manrope', sans-serif;
+}
+.guide-nav a:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+  background: rgba(255,255,255,.05);
+}
+
+/* ─── LAYOUT ─── */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 28px 80px;
+}
+
+/* ─── SECTION TITLES ─── */
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 50px 0 22px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+.section-head:first-child { margin-top: 0; }
+.section-icon {
+  width: 46px; height: 46px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.si-green { background: rgba(45,106,79,.15); border: 1px solid rgba(45,106,79,.3); }
+.si-orange { background: rgba(181,69,27,.15); border: 1px solid rgba(181,69,27,.3); }
+.si-blue { background: rgba(29,53,87,.15); border: 1px solid rgba(29,53,87,.3); }
+.si-red { background: rgba(155,34,38,.15); border: 1px solid rgba(155,34,38,.3); }
+.si-olive { background: rgba(96,108,56,.15); border: 1px solid rgba(96,108,56,.3); }
+.si-gold { background: rgba(212,160,23,.15); border: 1px solid rgba(212,160,23,.3); }
+
+.section-head h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.section-head .sec-num {
+  font-family: 'Fira Code', monospace;
+  font-size: .7rem;
+  color: var(--muted);
+  margin-top: 2px;
+  letter-spacing: 1px;
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px;
+  position: relative;
+  box-shadow: 0 2px 16px var(--shadow);
+  margin-bottom: 16px;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 16px; right: 16px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--p1), transparent);
+  opacity: .25;
+  border-radius: 2px;
+}
+.card.accent-orange::before { background: linear-gradient(90deg, transparent, var(--p2), transparent); }
+.card.accent-blue::before { background: linear-gradient(90deg, transparent, var(--p3), transparent); }
+.card.accent-red::before { background: linear-gradient(90deg, transparent, var(--p4), transparent); }
+.card.accent-gold::before { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+
+.card h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--p1);
+  margin-bottom: 10px;
+}
+.card.accent-orange h3 { color: var(--p2); }
+.card.accent-blue h3 { color: var(--p3); }
+.card.accent-red h3 { color: var(--p4); }
+.card.accent-gold h3 { color: #8a6800; }
+
+.card p { font-size: .87rem; color: var(--ink); line-height: 1.75; margin-bottom: 10px; }
+.card p:last-child { margin-bottom: 0; }
+
+/* ─── GRIDS ─── */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+/* ─── MODULE CARDS ─── */
+.module-card {
+  background: var(--panel);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 18px;
+  transition: all .22s;
+  box-shadow: 0 2px 10px var(--shadow);
+}
+.module-card:hover {
+  border-color: var(--p1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(45,106,79,.15);
+}
+.module-card .mod-icon { font-size: 26px; margin-bottom: 10px; }
+.module-card .mod-title {
+  font-family: 'Fraunces', serif;
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.module-card .mod-desc { font-size: .78rem; color: var(--muted); line-height: 1.65; }
+.module-card .mod-level {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: .62rem;
+  font-weight: 700;
+  font-family: 'Fira Code', monospace;
+  letter-spacing: .8px;
+}
+.lv-g { background: rgba(45,106,79,.12); color: var(--p1); border: 1px solid rgba(45,106,79,.3); }
+.lv-o { background: rgba(181,69,27,.12); color: var(--p2); border: 1px solid rgba(181,69,27,.3); }
+.lv-b { background: rgba(29,53,87,.12); color: var(--p3); border: 1px solid rgba(29,53,87,.3); }
+
+/* ─── CODE BOX ─── */
+.code-box {
+  background: #1c1410;
+  color: #a8e6cf;
+  font-family: 'Fira Code', monospace;
+  font-size: .82rem;
+  border-radius: 8px;
+  padding: 13px 16px;
+  margin: 10px 0;
+  line-height: 1.8;
+  overflow-x: auto;
+  border-left: 3px solid var(--p1);
+}
+.code-box.eq { text-align: center; border-left-color: var(--gold); font-size: .88rem; }
+.code-box.warn { border-left-color: var(--p2); }
+.code-box.blue { border-left-color: var(--p3); }
+
+/* ─── STEPS ─── */
+.steps { counter-reset: step-counter; }
+.step {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.step:last-child { border-bottom: none; }
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--p1);
+  color: white;
+  font-family: 'Fira Code', monospace;
+  font-size: .8rem;
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(45,106,79,.3);
+}
+.step-num.orange { background: var(--p2); box-shadow: 0 2px 8px rgba(181,69,27,.3); }
+.step-num.blue { background: var(--p3); box-shadow: 0 2px 8px rgba(29,53,87,.3); }
+.step-body h4 {
+  font-weight: 700;
+  font-size: .9rem;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.step-body p { font-size: .82rem; color: var(--muted); line-height: 1.65; }
+
+/* ─── TIPS / CALLOUTS ─── */
+.callout {
+  border-radius: 10px;
+  padding: 13px 16px;
+  margin: 14px 0;
+  font-size: .83rem;
+  line-height: 1.7;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.tip { background: rgba(45,106,79,.08); border-left: 3px solid var(--p1); color: #1a4030; }
+.warning { background: rgba(181,69,27,.08); border-left: 3px solid var(--p2); color: #6b2a0e; }
+.info { background: rgba(29,53,87,.08); border-left: 3px solid var(--p3); color: #122036; }
+.important { background: rgba(212,160,23,.1); border-left: 3px solid var(--gold); color: #5a3e00; }
+
+/* ─── TABLE ─── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .82rem;
+  margin: 14px 0;
+}
+.data-table th {
+  background: var(--p1);
+  color: white;
+  padding: 10px 14px;
+  text-align: left;
+  font-family: 'Fira Code', monospace;
+  font-size: .72rem;
+  letter-spacing: .8px;
+  font-weight: 500;
+}
+.data-table th:first-child { border-radius: 7px 0 0 0; }
+.data-table th:last-child { border-radius: 0 7px 0 0; }
+.data-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--ink);
+  line-height: 1.6;
+  vertical-align: top;
+}
+.data-table tr:nth-child(even) td { background: var(--panel2); }
+.data-table tr:last-child td:first-child { border-radius: 0 0 0 7px; }
+.data-table tr:last-child td:last-child { border-radius: 0 0 7px 0; }
+.data-table .tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  font-size: .68rem;
+  font-weight: 600;
+}
+
+/* ─── MECHANISM SUMMARY ─── */
+.mech-header {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+}
+.mech-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--p1);
+  margin-bottom: 4px;
+}
+.mech-eq {
+  font-family: 'Fira Code', monospace;
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+/* ─── TOC ─── */
+.toc {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  box-shadow: 0 2px 16px var(--shadow);
+  margin-bottom: 40px;
+}
+.toc h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  color: var(--p1);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.toc ol {
+  counter-reset: toc-counter;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 6px 20px;
+}
+.toc li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: .83rem;
+  transition: all .18s;
+}
+.toc li a:hover { background: rgba(45,106,79,.07); color: var(--p1); }
+.toc li a .toc-num {
+  font-family: 'Fira Code', monospace;
+  font-size: .68rem;
+  color: var(--muted);
+  min-width: 24px;
+}
+.toc li a .toc-icon { font-size: 14px; }
+
+/* ─── INTERFACE DIAGRAM ─── */
+.interface-diagram {
+  background: #1c1410;
+  border-radius: 12px;
+  padding: 22px;
+  margin: 16px 0;
+  color: #e8e0d5;
+  font-family: 'Fira Code', monospace;
+  font-size: .76rem;
+  line-height: 2;
+  border: 1px solid #3a2e26;
+}
+.ifd-label { color: var(--gold); font-weight: 600; }
+.ifd-arrow { color: #a8e6cf; }
+.ifd-desc { color: #8a7e72; }
+
+/* ─── BADGE ─── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'Fira Code', monospace;
+  font-size: .68rem;
+  font-weight: 600;
+}
+.badge-green { background: rgba(45,106,79,.12); color: var(--p1); border: 1px solid rgba(45,106,79,.3); }
+.badge-orange { background: rgba(181,69,27,.12); color: var(--p2); border: 1px solid rgba(181,69,27,.3); }
+.badge-blue { background: rgba(29,53,87,.12); color: var(--p3); border: 1px solid rgba(29,53,87,.3); }
+.badge-red { background: rgba(155,34,38,.12); color: var(--p4); border: 1px solid rgba(155,34,38,.3); }
+
+/* ─── QUICK REF ─── */
+.quick-ref {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+}
+.qr-item {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 12px 14px;
+}
+.qr-key {
+  font-family: 'Fira Code', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+  letter-spacing: .8px;
+  margin-bottom: 4px;
+}
+.qr-val {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.qr-val .hl { color: var(--p1); }
+.qr-val .hl2 { color: var(--p2); }
+
+/* ─── FOOTER ─── */
+footer {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, var(--p1) 0%, #1e4d38 100%);
+  padding: 30px 40px;
+  text-align: center;
+  border-top: 3px solid var(--gold);
+  margin-top: 0;
+}
+footer .f-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+footer p {
+  font-size: .75rem;
+  color: rgba(255,255,255,.55);
+  font-family: 'Fira Code', monospace;
+  letter-spacing: .8px;
+}
+
+/* ─── PRINT ─── */
+@media print {
+  header, footer, .guide-nav { break-inside: avoid; }
+  .card, .module-card { break-inside: avoid; }
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 640px) {
+  .hero { padding: 28px 20px; }
+  .hero-title h1 { font-size: 1.5rem; }
+  .container { padding: 24px 16px 60px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+/* animations */
+.fade-in { animation: fadeIn .4s ease forwards; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════ HEADER ══════════════════════ -->
+<header>
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hex-logo">🧬</div>
+      <div class="hero-title">
+        <h1>GUIDE SIMUORG</h1>
+        <div class="sub">GUIDE COMPLET D'UTILISATION — SIMULATEUR DE CHIMIE ORGANIQUE v2.0</div>
+        <div class="sub2">📖 Tout comprendre pour simuler avec efficacité</div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="name">Edmond Atinzoun TCHOKPON</div>
+      <div class="info">LICENCE PHYSIQUE-CHIMIE</div>
+      <div class="info" style="margin-top:3px;color:rgba(255,255,255,.4);">GUIDE v1.0 — 2025</div>
+    </div>
+  </div>
+  <nav class="guide-nav">
+    <a href="#intro">🧭 Introduction</a>
+    <a href="#interface">🖥️ Interface</a>
+    <a href="#modules">📋 Les 12 Modules</a>
+    <a href="#mecanismes">⚗️ Mécanismes</a>
+    <a href="#stereo">🔄 Stéréochimie</a>
+    <a href="#groupes">🧩 Groupes Fonct.</a>
+    <a href="#synthese">🔗 Synthèse</a>
+    <a href="#mol3d">🔮 Molécules 3D</a>
+    <a href="#energie">📈 Énergie</a>
+    <a href="#nomen">🏷️ Nomenclature</a>
+    <a href="#calcul">🧮 Calculs</a>
+    <a href="#quiz">🎯 Quiz</a>
+    <a href="#strategies">🎓 Stratégies</a>
+    <a href="#theorie">📚 Théorie</a>
+    <a href="#rapport">📋 Rapport</a>
+  </nav>
+</header>
+
+<!-- ══════════════════════ CONTENT ══════════════════════ -->
+<div class="container">
+
+  <!-- ─── TABLE OF CONTENTS ─── -->
+  <div class="toc fade-in">
+    <h3>📚 Table des matières</h3>
+    <ol>
+      <li><a href="#intro"><span class="toc-num">01</span><span class="toc-icon">🧭</span>Introduction & objectifs du simulateur</a></li>
+      <li><a href="#interface"><span class="toc-num">02</span><span class="toc-icon">🖥️</span>Découverte de l'interface</a></li>
+      <li><a href="#modules"><span class="toc-num">03</span><span class="toc-icon">📋</span>Vue d'ensemble des 12 modules</a></li>
+      <li><a href="#mecanismes"><span class="toc-num">04</span><span class="toc-icon">⚗️</span>Module Mécanismes — Guide détaillé</a></li>
+      <li><a href="#stereo"><span class="toc-num">05</span><span class="toc-icon">🔄</span>Module Stéréochimie</a></li>
+      <li><a href="#groupes"><span class="toc-num">06</span><span class="toc-icon">🧩</span>Module Groupes Fonctionnels</a></li>
+      <li><a href="#synthese"><span class="toc-num">07</span><span class="toc-icon">🔗</span>Module Synthèse Organique</a></li>
+      <li><a href="#mol3d"><span class="toc-num">08</span><span class="toc-icon">🔮</span>Module Molécules 3D</a></li>
+      <li><a href="#energie"><span class="toc-num">09</span><span class="toc-icon">📈</span>Module Profil Énergétique</a></li>
+      <li><a href="#nomen"><span class="toc-num">10</span><span class="toc-icon">🏷️</span>Module Nomenclature IUPAC</a></li>
+      <li><a href="#calcul"><span class="toc-num">11</span><span class="toc-icon">🧮</span>Module Calculs Pratiques</a></li>
+      <li><a href="#quiz"><span class="toc-num">12</span><span class="toc-icon">🎯</span>Module Quiz Interactif</a></li>
+      <li><a href="#strategies"><span class="toc-num">13</span><span class="toc-icon">🎓</span>Stratégies d'utilisation efficace</a></li>
+      <li><a href="#theorie"><span class="toc-num">14</span><span class="toc-icon">📚</span>Module Théorie & Rapport</a></li>
+    </ol>
+  </div>
+
+
+  <!-- ═══════════ 1. INTRODUCTION ═══════════ -->
+  <div id="intro" class="section-head">
+    <div class="section-icon si-green">🧭</div>
+    <div>
+      <h2>Introduction — Qu'est-ce que SimuOrg v2.0 ?</h2>
+      <div class="sec-num">SECTION 01 — PRÉSENTATION GÉNÉRALE</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎯 Présentation du simulateur</h3>
+    <p>SimuOrg v2.0 est un <strong>simulateur pédagogique de chimie organique</strong> conçu pour les étudiants en Licence Physique-Chimie. Il s'agit d'une application web autonome (fichier HTML unique) qui fonctionne directement dans le navigateur, sans installation.</p>
+    <p>Il couvre l'intégralité du programme de chimie organique, de la terminale à la Licence 3, avec <strong>12 modules interactifs</strong> couvrant mécanismes réactionnels, stéréochimie, visualisation moléculaire 3D, calculs, quiz et bien plus.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent-orange">
+      <h3>🎓 À qui s'adresse SimuOrg ?</h3>
+      <p>Le simulateur est organisé en <strong>3 niveaux de difficulté</strong> clairement identifiés par des badges colorés dans l'interface :</p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:10px;">
+        <li><span class="badge badge-green">LYCÉE</span> &nbsp;Groupes fonctionnels, nomenclature de base, alcanes/alcools</li>
+        <li><span class="badge badge-orange">PRÉPA</span> &nbsp;SN1, SN2, E1, E2, stéréochimie, diagrammes énergétiques</li>
+        <li><span class="badge badge-blue">LICENCE</span> &nbsp;Aromaticité, SEAr, Grignard, calculs, synthèses multi-étapes</li>
+      </ul>
+    </div>
+    <div class="card accent-blue">
+      <h3>✅ Ce que vous pouvez faire</h3>
+      <p>Avec SimuOrg, vous pouvez :</p>
+      <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:.84rem;">
+        <li>⚗️ Simuler 17 mécanismes réactionnels étape par étape</li>
+        <li>🔄 Comprendre la stéréochimie R/S, E/Z, Fischer, Newman</li>
+        <li>🔮 Visualiser 18 molécules en 3D avec rotation</li>
+        <li>📈 Analyser les profils d'énergie (Ea, ΔH°, Arrhénius)</li>
+        <li>🏷️ Construire des noms IUPAC interactivement</li>
+        <li>🧮 Effectuer 6 types de calculs (masse molaire, pH, DBE…)</li>
+        <li>🎯 S'évaluer avec des quiz thématiques (5 à 12 questions)</li>
+        <li>📋 Générer un rapport de séance imprimable</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">💡</div>
+    <div><strong>Conseil d'utilisation :</strong> SimuOrg est un fichier HTML autonome. Ouvrez-le dans Chrome, Firefox ou Edge. Aucune connexion internet n'est nécessaire après chargement initial des polices. Vous pouvez le sauvegarder localement et l'utiliser hors ligne.</div>
+  </div>
+
+
+  <!-- ═══════════ 2. INTERFACE ═══════════ -->
+  <div id="interface" class="section-head">
+    <div class="section-icon si-blue">🖥️</div>
+    <div>
+      <h2>Découverte de l'Interface</h2>
+      <div class="sec-num">SECTION 02 — NAVIGATION ET ÉLÉMENTS</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Structure générale de l'interface</h3>
+    <p>L'interface de SimuOrg est divisée en <strong>4 zones principales</strong> :</p>
+    <div class="interface-diagram">
+      <div>┌─────────────────────────────────────────────────────────────┐</div>
+      <div>│ <span class="ifd-label">HEADER</span>  <span class="ifd-arrow">→</span> <span class="ifd-desc">Logo SimuOrg | Bouton 🌙 (thème) | Bouton EN (langue) | Nom auteur</span>  │</div>
+      <div>├─────────────────────────────────────────────────────────────┤</div>
+      <div>│ <span class="ifd-label">ONGLETS</span> <span class="ifd-arrow">→</span> <span class="ifd-desc">12 onglets de navigation (⚗️ MÉCANISMES, 🔄 STÉRÉO...)</span>      │</div>
+      <div>├─────────────────────────────────────────────────────────────┤</div>
+      <div>│                                                             │</div>
+      <div>│ <span class="ifd-label">CONTENU</span> <span class="ifd-arrow">→</span> <span class="ifd-desc">Zone de travail active (panneaux, canvas, formulaires)</span>    │</div>
+      <div>│                                                             │</div>
+      <div>├─────────────────────────────────────────────────────────────┤</div>
+      <div>│ <span class="ifd-label">BARRE ÉTAT</span> <span class="ifd-arrow">→</span> <span class="ifd-desc">Indicateur vert/orange | Mécanismes chargés | Score Quiz | Horloge</span> │</div>
+      <div>└─────────────────────────────────────────────────────────────┘</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card accent-gold">
+      <h3>🌙 Bouton Thème (sombre/clair)</h3>
+      <p>Cliquez sur 🌙 dans le header pour basculer entre le thème <strong>clair</strong> (défaut, fond beige chaud) et le thème <strong>sombre</strong> (fond vert très foncé). Le thème sombre est recommandé pour les sessions d'étude nocturnes — toutes les couleurs s'adaptent automatiquement.</p>
+    </div>
+    <div class="card accent-blue">
+      <h3>🌍 Bouton EN/FR (langue)</h3>
+      <p>Le bouton EN/FR permet de basculer l'interface entre le <strong>français</strong> et l'<strong>anglais</strong>. Cette fonction est disponible mais principalement cosmétique sur la barre de navigation. Le contenu pédagogique reste en français dans cette version.</p>
+    </div>
+  </div>
+
+  <div class="card accent-orange">
+    <h3>⚙️ La barre de statut (en bas de page)</h3>
+    <p>La barre de statut affiche en permanence 4 informations :</p>
+    <div class="grid-4" style="margin-top:12px;">
+      <div class="qr-item">
+        <div class="qr-key">INDICATEUR</div>
+        <div class="qr-val">Point <span class="hl">vert clignotant</span> = système prêt. <span class="hl2">Orange</span> = action en cours.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-key">STATUT</div>
+        <div class="qr-val">Message d'état (dernier mécanisme chargé, erreurs...)</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-key">STATS SESSION</div>
+        <div class="qr-val">Mécanismes explorés / Score quiz accumulé en temps réel</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-key">HORLOGE</div>
+        <div class="qr-val">Heure en temps réel — utile pour suivre la durée de session</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="callout-icon">ℹ️</div>
+    <div><strong>Navigation entre modules :</strong> Cliquez simplement sur l'onglet souhaité dans la barre de navigation. Chaque module se charge automatiquement. Vous pouvez revenir à n'importe quel module à tout moment sans perdre vos réglages de la session.</div>
+  </div>
+
+
+  <!-- ═══════════ 3. VUE D'ENSEMBLE MODULES ═══════════ -->
+  <div id="modules" class="section-head">
+    <div class="section-icon si-green">📋</div>
+    <div>
+      <h2>Vue d'ensemble des 12 Modules</h2>
+      <div class="sec-num">SECTION 03 — CARTOGRAPHIE COMPLÈTE</div>
+    </div>
+  </div>
+
+  <div class="grid-3">
+    <div class="module-card">
+      <div class="mod-icon">⚗️</div>
+      <div class="mod-title">Mécanismes</div>
+      <div class="mod-desc">17 mécanismes réactionnels détaillés (SN1, SN2, AE, AN, AR, E1, E2, SEAr, Friedel-Crafts, nitration, estérification, saponification, oxydation, diazotation, Grignard). Navigation étape par étape + animation moléculaire.</div>
+      <span class="mod-level lv-o">PRÉPA → LICENCE</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🔄</div>
+      <div class="mod-title">Stéréochimie</div>
+      <div class="mod-desc">7 concepts : centre chiral, règles CIP (R/S), isomères E/Z, diastéréoisomères, projections de Fischer et Newman, composés méso. Calculateur R/S intégré.</div>
+      <span class="mod-level lv-o">PRÉPA → LICENCE</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🧩</div>
+      <div class="mod-title">Groupes Fonctionnels</div>
+      <div class="mod-desc">Bibliothèque interactive de 20 groupes fonctionnels classés par famille. Formule, description, réactivité, visualisation canvas pour chaque groupe.</div>
+      <span class="mod-level lv-g">LYCÉE → PRÉPA</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🔗</div>
+      <div class="mod-title">Synthèse Organique</div>
+      <div class="mod-desc">Voies de synthèse par famille cible : alcools (9 voies), aldéhydes/cétones (6), acides carboxyliques (6), amines (6), esters (6), arènes (8). Réactifs et conditions pour chaque route.</div>
+      <span class="mod-level lv-b">LICENCE</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🔮</div>
+      <div class="mod-title">Molécules 3D</div>
+      <div class="mod-desc">18 molécules visualisables en 3D (méthane à glucose, alanine, benzène, aniline…). Rotation manuelle ou auto, 4 modes d'affichage. Données moléculaires complètes.</div>
+      <span class="mod-level lv-g">TOUS NIVEAUX</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">📈</div>
+      <div class="mod-title">Profil Énergétique</div>
+      <div class="mod-desc">Diagrammes d'énergie potentielle pour 7 réactions. Variation de Ea selon le substrat. Curseur de température (0–200°C). Loi d'Arrhénius. Données cinétiques k, t₁/₂.</div>
+      <span class="mod-level lv-o">PRÉPA → LICENCE</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🏷️</div>
+      <div class="mod-title">Nomenclature IUPAC</div>
+      <div class="mod-desc">Constructeur interactif de noms : type de composé, longueur de chaîne (1–10C), position du groupe fonctionnel, ramifications. Visualisation chaîne + exercice aléatoire.</div>
+      <span class="mod-level lv-g">LYCÉE → PRÉPA</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🪞</div>
+      <div class="mod-title">Isomères</div>
+      <div class="mod-desc">Explorateur d'isomères pour 6 formules brutes (C₄H₁₀, C₅H₁₂, C₄H₈, C₃H₈O, C₄H₈O, C₄H₉Br). Affichage structuré par type d'isomérie.</div>
+      <span class="mod-level lv-g">LYCÉE → PRÉPA</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🧮</div>
+      <div class="mod-title">Calculateur</div>
+      <div class="mod-desc">6 types de calculs : masse molaire, rendement de réaction, dilution (C₁V₁=C₂V₂), pH acide carboxylique, degré d'insaturation (DBE), rapport frontal (CCM/Rf).</div>
+      <span class="mod-level lv-o">PRÉPA → LICENCE</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">🎯</div>
+      <div class="mod-title">Quiz Interactif</div>
+      <div class="mod-desc">Questions à choix multiples sur 6 catégories (mécanismes, groupes fonctionnels, stéréochimie, nomenclature, synthèse, quiz général). 5, 8 ou 12 questions. Feedback instantané.</div>
+      <span class="mod-level lv-o">TOUS NIVEAUX</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">📚</div>
+      <div class="mod-title">Théorie</div>
+      <div class="mod-desc">9 fiches de cours structurées par niveau : groupes fonctionnels, nomenclature IUPAC, SN1/SN2, E1/E2, AE/AN, stéréochimie CIP, aromaticité SEAr, cinétique/thermodynamique, Grignard.</div>
+      <span class="mod-level lv-g">TOUS NIVEAUX</span>
+    </div>
+    <div class="module-card">
+      <div class="mod-icon">📋</div>
+      <div class="mod-title">Rapport de Séance</div>
+      <div class="mod-desc">Génération automatique d'un rapport de session : mécanisme étudié, substrat/nucléophile/solvant choisis, score quiz, molécule visualisée, concept de stéréochimie étudié. Impression possible.</div>
+      <span class="mod-level lv-b">TOUS NIVEAUX</span>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 4. MODULE MÉCANISMES ═══════════ -->
+  <div id="mecanismes" class="section-head">
+    <div class="section-icon si-green">⚗️</div>
+    <div>
+      <h2>Module Mécanismes — Guide Détaillé</h2>
+      <div class="sec-num">SECTION 04 — LE MODULE CENTRAL DE SIMUORG</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🗂️ Organisation du module Mécanismes</h3>
+    <p>Le module Mécanismes est le <strong>cœur de SimuOrg</strong>. Il est divisé en <strong>3 panneaux côte à côte</strong> :</p>
+    <div class="grid-3" style="margin-top:14px;">
+      <div class="qr-item">
+        <div class="qr-key">📌 PANNEAU GAUCHE — SÉLECTION</div>
+        <div class="qr-val" style="font-size:.81rem;margin-top:6px;color:var(--muted);font-weight:400;">Choisissez le type de réaction, le substrat, le nucléophile et le solvant. Boutons : ▶ Charger, → Étape suivante, ↺ Recommencer, ⏵ Auto-play.<br>Affiche aussi : conditions optimales, produits attendus, compétition SN/E.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-key">📋 PANNEAU CENTRAL — SUIVI MÉCANISTIQUE</div>
+        <div class="qr-val" style="font-size:.81rem;margin-top:6px;color:var(--muted);font-weight:400;">Affiche chaque étape du mécanisme avec : titre, équation chimique, description détaillée, note clé. Navigation par boutons ◀/▶ ou par points de navigation.</div>
+      </div>
+      <div class="qr-item">
+        <div class="qr-key">🎨 PANNEAU DROIT — ANIMATION</div>
+        <div class="qr-val" style="font-size:.81rem;margin-top:6px;color:var(--muted);font-weight:400;">Animation moléculaire canvas (sphères colorées). Mini-profil énergétique. Légende des couleurs atomiques (C vert, O rouge, N/Nu bleu, H jaune, état de transition rose, halogène orange).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent-orange">
+    <h3>📚 Les 17 mécanismes disponibles</h3>
+    <table class="data-table" style="margin-top:10px;">
+      <thead>
+        <tr><th>GROUPE</th><th>MÉCANISME</th><th>SUBSTRAT TYPE</th><th>ÉTAPES</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Substitutions</td><td><strong>SN1</strong> — Substitution Nucléophile Unimoléculaire</td><td>Tertiaire R₃C-X</td><td>4</td></tr>
+        <tr><td>Substitutions</td><td><strong>SN2</strong> — Substitution Nucléophile Bimoléculaire</td><td>Primaire RCH₂-X</td><td>4</td></tr>
+        <tr><td>Additions</td><td><strong>AE</strong> — Addition Électrophile (alcènes)</td><td>Alcène R-CH=CH₂</td><td>4</td></tr>
+        <tr><td>Additions</td><td><strong>AN</strong> — Addition Nucléophile (carbonyles)</td><td>Aldéhyde/Cétone</td><td>4</td></tr>
+        <tr><td>Additions</td><td><strong>AR</strong> — Addition Radicalaire (anti-Markovnikov)</td><td>Alcène + HBr</td><td>4</td></tr>
+        <tr><td>Éliminations</td><td><strong>E1</strong> — Élimination Unimoléculaire</td><td>Tertiaire/secondaire</td><td>3</td></tr>
+        <tr><td>Éliminations</td><td><strong>E2</strong> — Élimination Bimoléculaire</td><td>Anti-périplanaire</td><td>3</td></tr>
+        <tr><td>Aromatiques</td><td><strong>SEAr</strong> — Substitution Électrophile Aromatique</td><td>Benzène/dérivé</td><td>3</td></tr>
+        <tr><td>Aromatiques</td><td><strong>Acylation de Friedel-Crafts</strong></td><td>Arène + RCOCl/AlCl₃</td><td>3</td></tr>
+        <tr><td>Aromatiques</td><td><strong>Nitration du Benzène</strong></td><td>Benzène + HNO₃/H₂SO₄</td><td>3</td></tr>
+        <tr><td>Fonct. Oxygénées</td><td><strong>Estérification de Fischer</strong> / Hydrolyse</td><td>Acide + Alcool</td><td>4</td></tr>
+        <tr><td>Fonct. Oxygénées</td><td><strong>Saponification</strong> (hydrolyse alcaline)</td><td>Ester + OH⁻</td><td>3</td></tr>
+        <tr><td>Fonct. Oxygénées</td><td><strong>Oxydation des Alcools</strong></td><td>Alcool 1°/2°/3°</td><td>3</td></tr>
+        <tr><td>Amines & Organomét.</td><td><strong>Diazotation des Anilines</strong></td><td>Aniline + NaNO₂/HCl</td><td>4</td></tr>
+        <tr><td>Amines & Organomét.</td><td><strong>Réactif de Grignard</strong></td><td>R-X + Mg → R-MgX</td><td>4</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>🔬 Comment utiliser le module Mécanismes — Pas à pas</h3>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Sélectionnez le type de réaction</h4>
+          <p>Dans le menu déroulant "TYPE DE RÉACTION", choisissez le mécanisme à explorer (ex : SN1). Les mécanismes sont classés par groupe : Substitutions, Additions, Éliminations, Aromatiques, Fonctions oxygénées, Amines & organométalliques.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Définissez les conditions réactionnelles</h4>
+          <p>Choisissez le <strong>substrat</strong> (tertiaire, secondaire, primaire, allylique/benzylique), le <strong>nucléophile/réactif</strong> (OH⁻, Br⁻, CN⁻, NH₃, H₂O, R-MgX, LiAlH₄, NaBH₄), et le <strong>solvant</strong> (polaire protique, polaire aprotique, apolaire).</p>
+          <div class="callout tip" style="margin-top:8px;margin-bottom:0;">
+            <div class="callout-icon">💡</div>
+            <div>Ces choix influencent les informations affichées (conditions optimales, compétition SN/E). Par exemple, choisir un substrat tertiaire + solvant polaire protique = cas optimal pour SN1.</div>
+          </div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Chargez le mécanisme</h4>
+          <p>Cliquez sur <strong>▶ CHARGER MÉCANISME</strong>. L'équation globale et l'équation bilan s'affichent dans le panneau central. Le panneau droit montre l'animation de la 1ère étape.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num orange">4</div>
+        <div class="step-body">
+          <h4>Naviguez étape par étape</h4>
+          <p>Cliquez sur <strong>→ ÉTAPE SUIVANTE</strong> ou sur les boutons ◀ / ▶ pour progresser dans le mécanisme. Chaque étape affiche : titre, équation de l'étape, description détaillée, note clé. Les points de navigation (•••) en bas indiquent l'étape actuelle.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num orange">5</div>
+        <div class="step-body">
+          <h4>Utilisez l'Auto-play pour une révision fluide</h4>
+          <p>Cliquez sur <strong>⏵ AUTO-PLAY</strong> pour que le simulateur déroule automatiquement toutes les étapes avec une pause de 2 secondes entre chacune. Idéal pour revoir un mécanisme rapidement. Cliquez à nouveau pour stopper.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num blue">6</div>
+        <div class="step-body">
+          <h4>Lisez les panneaux d'information complémentaires</h4>
+          <p>Sous les boutons de contrôle (panneau gauche) : <strong>Conditions Optimales</strong> liste les exigences pour la réaction, <strong>Produit(s) Attendu(s)</strong> donne le produit principal avec stéréochimie, <strong>Compétition SN/E</strong> explique quand et pourquoi une réaction concurrente peut l'emporter.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent-gold">
+    <h3>🎨 Lire l'animation moléculaire</h3>
+    <p>Le canvas d'animation (panneau droit) représente les molécules par des <strong>sphères colorées</strong> selon un code couleur standard :</p>
+    <div class="grid-4" style="margin-top:12px;">
+      <div class="qr-item" style="display:flex;align-items:center;gap:10px;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#a8e6cf;flex-shrink:0;"></div>
+        <div><div class="qr-key">CARBONE</div><div class="qr-val">Atome C</div></div>
+      </div>
+      <div class="qr-item" style="display:flex;align-items:center;gap:10px;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#ff6b6b;flex-shrink:0;"></div>
+        <div><div class="qr-key">OXYGÈNE</div><div class="qr-val">Atome O</div></div>
+      </div>
+      <div class="qr-item" style="display:flex;align-items:center;gap:10px;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#74b9ff;flex-shrink:0;"></div>
+        <div><div class="qr-key">AZOTE / Nu</div><div class="qr-val">N, nucléophile</div></div>
+      </div>
+      <div class="qr-item" style="display:flex;align-items:center;gap:10px;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#ffeaa7;flex-shrink:0;"></div>
+        <div><div class="qr-key">HYDROGÈNE</div><div class="qr-val">Atome H</div></div>
+      </div>
+      <div class="qr-item" style="display:flex;align-items:center;gap:10px;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#fd79a8;flex-shrink:0;"></div>
+        <div><div class="qr-key">ÉTAT ‡</div><div class="qr-val">Transition</div></div>
+      </div>
+      <div class="qr-item" style="display:flex;align-items:center;gap:10px;">
+        <div style="width:18px;height:18px;border-radius:50%;background:#fdcb6e;flex-shrink:0;"></div>
+        <div><div class="qr-key">HALOGÈNE</div><div class="qr-val">F, Cl, Br, I</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tableau comparatif SN1/SN2 et E1/E2 -->
+  <div class="card">
+    <h3>📊 Tableau comparatif — SN1 vs SN2 vs E1 vs E2</h3>
+    <p>Ce tableau récapitulatif vous aide à choisir le bon mécanisme à simuler selon vos conditions :</p>
+    <table class="data-table" style="margin-top:10px;">
+      <thead>
+        <tr><th>CRITÈRE</th><th>SN1</th><th>SN2</th><th>E1</th><th>E2</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Substrat favori</strong></td>
+          <td>3° (tertiaire)</td>
+          <td>1° (primaire)</td>
+          <td>3° (tertiaire)</td>
+          <td>1°, 2°, 3°</td>
+        </tr>
+        <tr>
+          <td><strong>Solvant</strong></td>
+          <td>Polaire protique (EtOH, H₂O)</td>
+          <td>Polaire aprotique (DMSO, DMF)</td>
+          <td>Polaire protique</td>
+          <td>Variable</td>
+        </tr>
+        <tr>
+          <td><strong>Nucléophile/Base</strong></td>
+          <td>Faible (H₂O, EtOH)</td>
+          <td>Fort, peu encombré</td>
+          <td>Base faible (EtOH)</td>
+          <td>Base forte encombrée (t-BuOK)</td>
+        </tr>
+        <tr>
+          <td><strong>Loi de vitesse</strong></td>
+          <td class="code-box" style="margin:0;padding:4px 8px;display:inline;">v = k₁[RX]</td>
+          <td class="code-box" style="margin:0;padding:4px 8px;display:inline;">v = k₂[RX][Nu]</td>
+          <td class="code-box" style="margin:0;padding:4px 8px;display:inline;">v = k₁[RX]</td>
+          <td class="code-box" style="margin:0;padding:4px 8px;display:inline;">v = k₂[RX][B]</td>
+        </tr>
+        <tr>
+          <td><strong>Stéréochimie</strong></td>
+          <td>Racémisation (50/50)</td>
+          <td>Inversion Walden (100%)</td>
+          <td>Mélange E/Z (Zaïtsev)</td>
+          <td>Stéréospécifique (anti)</td>
+        </tr>
+        <tr>
+          <td><strong>Intermédiaire</strong></td>
+          <td>Carbocation (sp²)</td>
+          <td>Aucun (concerté)</td>
+          <td>Carbocation</td>
+          <td>Aucun (concerté)</td>
+        </tr>
+        <tr>
+          <td><strong>T° élevée favorise</strong></td>
+          <td>E1 (compétition)</td>
+          <td>E2 (si base présente)</td>
+          <td>E1 sur SN1</td>
+          <td>E2 toujours</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ═══════════ 5. STÉRÉOCHIMIE ═══════════ -->
+  <div id="stereo" class="section-head">
+    <div class="section-icon si-orange">🔄</div>
+    <div>
+      <h2>Module Stéréochimie</h2>
+      <div class="sec-num">SECTION 05 — CHIRALITÉ, R/S, E/Z, PROJECTIONS</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>📐 Les 7 concepts disponibles</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Centre chiral & chiralité</h4><p>Définition, règle des 4 groupes différents, molécules chirales vs achirales, exemples visuels.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Configurations R et S (CIP)</h4><p>Règles Cahn-Ingold-Prelog complètes. Classement par Z atomique, placement du groupe 4, lecture horaire/antihoraire.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><h4>Isomères E/Z (géométriques)</h4><p>Règle de priorité sur chaque C de la double liaison, convention E (entgegen) et Z (zusammen).</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-body"><h4>Diastéréoisomères & énantiomères</h4><p>Distinction entre énantiomères (images miroir non superposables) et diastéréoisomères (stéréoisomères non-énantiomères).</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-body"><h4>Projection de Fischer</h4><p>Convention de représentation planaire : liaisons horizontales = en avant, verticales = en arrière.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-body"><h4>Projection de Newman</h4><p>Vue le long de la liaison C-C. Conformations éclipsée, décalée (anti), gauche. Barrières de rotation.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-body"><h4>Composé méso</h4><p>Molécule avec centres chiraux mais plan de symétrie interne → optiquement inactive malgré des C* chiraux.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="card accent-orange">
+      <h3>🧮 Calculateur R/S intégré</h3>
+      <p>Le module stéréochimie intègre un <strong>calculateur de configuration R/S</strong> basé sur les règles CIP. Voici comment l'utiliser :</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num orange">1</div>
+          <div class="step-body"><h4>Entrez les 4 numéros atomiques</h4><p>Dans les 4 cases (a, b, c, d), entrez les numéros atomiques Z des 4 substituants du carbone chiral. Exemple : Cl=17, O=8, C=6, H=1.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">2</div>
+          <div class="step-body"><h4>Sélectionnez le sens de rotation</h4><p>Observez les groupes 1→2→3 sur votre modèle (groupe de priorité 4 en arrière). Choisissez "Sens horaire ↻" ou "Sens antihoraire ↺".</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">3</div>
+          <div class="step-body"><h4>Calculez</h4><p>Cliquez sur CALCULER R/S. Le résultat s'affiche avec la configuration R (rotation horaire) ou S (antihoraire). Le simulateur trie automatiquement par priorité Z croissant.</p></div>
+        </div>
+      </div>
+      <div class="code-box eq" style="margin-top:12px;">Priorité 4 derrière → ↻ = R | ↺ = S</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 6. GROUPES FONCTIONNELS ═══════════ -->
+  <div id="groupes" class="section-head">
+    <div class="section-icon si-olive">🧩</div>
+    <div>
+      <h2>Module Groupes Fonctionnels</h2>
+      <div class="sec-num">SECTION 06 — BIBLIOTHÈQUE INTERACTIVE</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📚 Les 20 groupes fonctionnels de SimuOrg</h3>
+    <p>Cliquez sur une carte dans la grille pour afficher : formule, nom, famille chimique, description, réactivité caractéristique, et une visualisation canvas simplifiée.</p>
+    <table class="data-table" style="margin-top:12px;">
+      <thead><tr><th>GROUPE</th><th>FORMULE</th><th>FAMILLE</th><th>RÉACTIVITÉ CLÉ</th></tr></thead>
+      <tbody>
+        <tr><td>Alcool</td><td><code>R-OH</code></td><td>Oxygénée</td><td>Oxydation, estérification, déshydratation</td></tr>
+        <tr><td>Aldéhyde</td><td><code>R-CHO</code></td><td>Carbonylée</td><td>Addition nucléophile, oxydation (Tollens), condensation aldolique</td></tr>
+        <tr><td>Cétone</td><td><code>R-CO-R'</code></td><td>Carbonylée</td><td>Addition nucléophile (moins réactive qu'aldéhyde)</td></tr>
+        <tr><td>Acide carboxylique</td><td><code>R-COOH</code></td><td>Acide carboxylique</td><td>Estérification, saponification, décarboxylation</td></tr>
+        <tr><td>Ester</td><td><code>R-COO-R'</code></td><td>Ester</td><td>Hydrolyse acide/basique, réduction (LiAlH₄)</td></tr>
+        <tr><td>Amide</td><td><code>R-CO-NH₂</code></td><td>Azotée</td><td>Hydrolyse, réduction (LiAlH₄ → amine)</td></tr>
+        <tr><td>Amine</td><td><code>R-NH₂</code></td><td>Azotée</td><td>Diazotation, alkylation, acylation</td></tr>
+        <tr><td>Nitrile</td><td><code>R-C≡N</code></td><td>Azotée</td><td>Hydrolyse → acide, réduction → amine (+1C)</td></tr>
+        <tr><td>Halogénure alkyle</td><td><code>R-X</code></td><td>Halogénée</td><td>SN1/SN2, E1/E2, Grignard</td></tr>
+        <tr><td>Alcène</td><td><code>R-CH=CH₂</code></td><td>Hydrocarbure insaturé</td><td>AE (Markovnikov), AR (anti-Markovnikov), hydroboration</td></tr>
+        <tr><td>Alcyne</td><td><code>R-C≡C-R'</code></td><td>Hydrocarbure insaturé</td><td>Addition (× 2), acidité C-H (pKa≈25), hydratation → cétone</td></tr>
+        <tr><td>Aromatique</td><td><code>Ar-H</code></td><td>Aromatique</td><td>SEAr (nitration, halogénation, alkylation/acylation FC)</td></tr>
+        <tr><td>Phénol</td><td><code>Ar-OH</code></td><td>Phénol</td><td>Plus acide qu'alcool (pKa≈10), activant SEAr ortho/para</td></tr>
+        <tr><td>Anhydride d'acide</td><td><code>(RCO)₂O</code></td><td>Dérivé acide</td><td>Réactif d'acylation (alcools, amines)</td></tr>
+        <tr><td>Chlorure d'acyle</td><td><code>R-COCl</code></td><td>Dérivé acide</td><td>Acylation (Friedel-Crafts, formation ester/amide)</td></tr>
+        <tr><td>Époxyde</td><td><code>C-O-C (cycle)</code></td><td>Oxygénée cyclique</td><td>Ouverture nucléophile (acide → Markovnikov, base → anti-Markovnikov)</td></tr>
+        <tr><td>Réactif de Grignard</td><td><code>R-MgX</code></td><td>Organométallique</td><td>Nucléophile puissant → alcools 1°/2°/3°, acides carboxyliques</td></tr>
+        <tr><td>Diazonium</td><td><code>[Ar-N₂]⁺</code></td><td>Intermédiaire réactif</td><td>Sandmeyer (Ar-X), couplage azoïque (colorants)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ═══════════ 7. SYNTHÈSE ═══════════ -->
+  <div id="synthese" class="section-head">
+    <div class="section-icon si-red">🔗</div>
+    <div>
+      <h2>Module Synthèse Organique</h2>
+      <div class="sec-num">SECTION 07 — ROUTES DE SYNTHÈSE PAR CIBLE</div>
+    </div>
+  </div>
+
+  <div class="card accent-red">
+    <h3>🎯 Comment utiliser le module Synthèse</h3>
+    <p>Le module Synthèse est organisé par <strong>molécule cible</strong>. Sélectionnez la famille souhaitée via les boutons colorés, et SimuOrg affiche toutes les routes de synthèse disponibles avec équation et conditions.</p>
+    <div class="grid-3" style="margin-top:14px;">
+      <div class="qr-item"><div class="qr-key">ALCOOLS</div><div class="qr-val">9 routes (hydratation, NaBH₄, Grignard+HCHO, hydroboration, époxyde…)</div></div>
+      <div class="qr-item"><div class="qr-key">ALDÉHYDES & CÉTONES</div><div class="qr-val">6 routes (PCC, ozonolise, Friedel-Crafts, hydratation alcyne, aldolique…)</div></div>
+      <div class="qr-item"><div class="qr-key">ACIDES CARBOXYLIQUES</div><div class="qr-val">6 routes (KMnO₄, Tollens, Grignard+CO₂, hydrolyse ester, saponification…)</div></div>
+      <div class="qr-item"><div class="qr-key">AMINES</div><div class="qr-val">6 routes (réduction nitrile, réduction nitroarene, alkylation NH₃, Hofmann…)</div></div>
+      <div class="qr-item"><div class="qr-key">ESTERS</div><div class="qr-val">6 routes (Fischer, chlorure d'acyle, anhydride, Williamson, trans-estérification…)</div></div>
+      <div class="qr-item"><div class="qr-key">ARÈNES</div><div class="qr-val">8 routes (nitration, halogénation, Friedel-Crafts, sulfonation, Birch, KMnO₄, couplage azoïque…)</div></div>
+    </div>
+  </div>
+
+  <div class="callout important">
+    <div class="callout-icon">⭐</div>
+    <div><strong>Stratégie de rétrosynthèse :</strong> Utilisez ce module à l'envers ! Si vous devez synthétiser un composé cible, cherchez dans la catégorie correspondante quelle(s) voie(s) de synthèse existent. Remontez ensuite la chaîne : de quoi a-t-on besoin pour le réactif de départ ? Ce raisonnement rétrosynthétique est fondamental en Licence.</div>
+  </div>
+
+
+  <!-- ═══════════ 8. MOLÉCULES 3D ═══════════ -->
+  <div id="mol3d" class="section-head">
+    <div class="section-icon si-blue">🔮</div>
+    <div>
+      <h2>Module Molécules 3D</h2>
+      <div class="sec-num">SECTION 08 — VISUALISATION MOLÉCULAIRE AVANCÉE</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔬 Les 18 molécules disponibles</h3>
+      <div class="quick-ref">
+        <div class="qr-item"><div class="qr-key">Alcanes</div><div class="qr-val">Méthane, Éthane, Propane, Butane</div></div>
+        <div class="qr-item"><div class="qr-key">Alcènes / Alcynes</div><div class="qr-val">Éthylène (C=C), Acétylène (C≡C)</div></div>
+        <div class="qr-item"><div class="qr-key">Fonctions oxygénées</div><div class="qr-val">Éthanol, Acétone, Acide Acétique, Acétate d'Éthyle, Phénol</div></div>
+        <div class="qr-item"><div class="qr-key">Aromatiques</div><div class="qr-val">Benzène, Toluène, Aniline</div></div>
+        <div class="qr-item"><div class="qr-key">Azotées</div><div class="qr-val">Méthylamine</div></div>
+        <div class="qr-item"><div class="qr-key">Biomolécules</div><div class="qr-val">D-Glucose (forme ouverte), L-Alanine</div></div>
+      </div>
+    </div>
+    <div class="card accent-blue">
+      <h3>⚙️ Les 4 modes d'affichage</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num blue">🔵</div>
+          <div class="step-body"><h4>Sphères & bâtons</h4><p>Mode par défaut. Atomes comme sphères proportionnelles + liaisons comme cylindres. Meilleur équilibre lisibilité/réalisme.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">🔵</div>
+          <div class="step-body"><h4>Bâtons</h4><p>Seulement les liaisons, sans sphères atomiques. Meilleure vue de la géométrie et des angles de liaison.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">🔵</div>
+          <div class="step-body"><h4>Van der Waals</h4><p>Grosses sphères selon les rayons Van der Waals réels. Représentation de l'encombrement stérique réel.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">🔵</div>
+          <div class="step-body"><h4>Fil de fer</h4><p>Représentation minimaliste filaire. Vue claire de la squelette moléculaire et de la connectivité.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent-gold">
+    <h3>🕹️ Contrôles de rotation</h3>
+    <p>Chaque molécule peut être tournée dans l'espace 3D avec les contrôles suivants :</p>
+    <div class="grid-4" style="margin-top:12px;">
+      <div class="qr-item"><div class="qr-key">↑X / ↓X</div><div class="qr-val">Rotation autour de l'axe X (±15° par clic)</div></div>
+      <div class="qr-item"><div class="qr-key">←Y / →Y</div><div class="qr-val">Rotation autour de l'axe Y (±15° par clic)</div></div>
+      <div class="qr-item"><div class="qr-key">⊙ RESET</div><div class="qr-val">Retour à la position initiale (0°, 0°)</div></div>
+      <div class="qr-item"><div class="qr-key">⟳ AUTO</div><div class="qr-val">Rotation automatique continue autour de Y</div></div>
+    </div>
+    <div class="callout tip" style="margin-top:14px;margin-bottom:0;">
+      <div class="callout-icon">💡</div>
+      <div>Pour comprendre la <strong>géométrie moléculaire</strong>, alternez les modes d'affichage et tournez la molécule. Le benzène en mode "sphères & bâtons" montre clairement la structure plane hexagonale ; en mode Van der Waals, vous visualisez l'encombrement réel.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 9. ÉNERGIE ═══════════ -->
+  <div id="energie" class="section-head">
+    <div class="section-icon si-green">📈</div>
+    <div>
+      <h2>Module Profil Énergétique</h2>
+      <div class="sec-num">SECTION 09 — CINÉTIQUE ET THERMODYNAMIQUE</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📊 Lire un profil énergétique dans SimuOrg</h3>
+    <p>Le module énergie trace le <strong>profil d'énergie potentielle</strong> d'une réaction en fonction de la coordonnée de réaction. Les éléments clés du graphe :</p>
+    <div class="grid-2" style="margin-top:12px;">
+      <div>
+        <div class="code-box blue">Profil SN2 (concerté) :
+  Réactifs ──→ [‡ État transition] ──→ Produits
+  1 seul pic Ea — pas d'intermédiaire</div>
+        <div class="code-box blue" style="margin-top:8px;">Profil SN1 (2 étapes) :
+  Réactifs ──→ [‡₁] ──→ [C⁺ intermédiaire]
+             ──→ [‡₂] ──→ Produits
+  2 pics Ea — carbocation dans le creux</div>
+      </div>
+      <div>
+        <table class="data-table">
+          <thead><tr><th>SYMBOLE</th><th>SIGNIFICATION</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Ea</strong></td><td>Énergie d'activation (kJ/mol) — hauteur du pic ‡</td></tr>
+            <tr><td><strong>ΔH°</strong></td><td>Enthalpie de réaction (négatif = exothermique)</td></tr>
+            <tr><td><strong>‡</strong></td><td>État de transition (sommet du pic, espèce instable)</td></tr>
+            <tr><td><strong>C⁺</strong></td><td>Intermédiaire stable (dans un creux, SN1/E1)</td></tr>
+            <tr><td><strong>k</strong></td><td>Constante de vitesse (varie avec T° via Arrhénius)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="card accent-orange">
+    <h3>🌡️ Effet de la température — Curseur T°</h3>
+    <p>Le curseur de température (0–200°C) recalcule en temps réel la constante de vitesse k selon la <strong>loi d'Arrhénius</strong> :</p>
+    <div class="code-box eq">k = A · e^(-Ea / RT)     où R = 8.314 J/(mol·K), T en Kelvin</div>
+    <p style="margin-top:10px;">En augmentant T° :</p>
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:6px;margin-top:8px;font-size:.84rem;color:var(--muted);">
+      <li>↑ k augmente exponentiellement (double tous les ~10°C en règle approx.)</li>
+      <li>↑ Pour SN1/E1 : la réaction E1 (élimination) est de plus en plus favorisée sur SN1</li>
+      <li>↑ Pour les réactions réversibles (estérification) : favorise le côté thermodynamique</li>
+      <li>↓ Le t₁/₂ (demi-vie) diminue — la réaction est plus rapide</li>
+    </ul>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔬 Substrat et Ea</h3>
+      <p>Changez le type de substrat (tertiaire/secondaire/primaire) et observez comment <strong>l'énergie d'activation Ea change</strong> :</p>
+      <div class="code-box">Substrat 3° (tertiaire) → Ea basse → SN1 facile
+Substrat 2° (secondaire) → Ea moyenne → compétition
+Substrat 1° (primaire) → Ea haute (SN1) → SN2 favorisé</div>
+    </div>
+    <div class="card accent-blue">
+      <h3>⚖️ Contrôle cinétique vs thermodynamique</h3>
+      <p>Le profil énergétique illustre visuellement la différence entre :</p>
+      <div class="code-box blue">Contrôle cinétique :
+  T° basse → produit formé le plus vite
+  → Ea la plus basse → pas forcément le + stable
+
+Contrôle thermodynamique :
+  T° élevée + réversible → produit le plus stable
+  → ΔG° le plus négatif</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 10. NOMENCLATURE ═══════════ -->
+  <div id="nomen" class="section-head">
+    <div class="section-icon si-gold">🏷️</div>
+    <div>
+      <h2>Module Nomenclature IUPAC</h2>
+      <div class="sec-num">SECTION 10 — CONSTRUCTEUR INTERACTIF DE NOMS</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔧 Utiliser le constructeur</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Sélectionnez le type de composé</h4><p>Choisissez parmi : alcane, alcool (-ol), aldéhyde (-al), cétone (-one), acide carboxylique (-oïque), amine (-amine), ester, alcène (-ène).</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Réglez la longueur de chaîne</h4><p>Faites glisser le curseur de 1 à 10 carbones. La visualisation de la chaîne se met à jour en temps réel avec des blocs numérotés C1, C2, C3…</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><h4>Définissez la position du groupe fonctionnel</h4><p>Entrez le numéro de carbone portant le groupe fonctionnel. Le simulateur vérifie que ce numéro est valide (≤ longueur de chaîne).</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">4</div>
+          <div class="step-body"><h4>Ajoutez une ramification (optionnel)</h4><p>Sélectionnez méthyle, éthyle ou diméthyle, et précisez sa position sur la chaîne. Le nom complet intégrera le préfixe de ramification.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">5</div>
+          <div class="step-body"><h4>Nommez !</h4><p>Cliquez sur 🏷️ NOMMER. Le résultat IUPAC s'affiche avec explication de la construction du nom.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="card accent-gold">
+      <h3>📋 Règles IUPAC essentielles rappelées</h3>
+      <div class="code-box eq" style="margin-bottom:12px;">Préfixes numériques :
+méth(1) éth(2) prop(3) but(4) pent(5)
+hex(6) hept(7) oct(8) non(9) déc(10)</div>
+      <div class="code-box eq" style="margin-bottom:12px;">Suffixes par famille (priorité décroissante) :
+-oïque (acide) > -al (aldéhyde) > -ol (alcool)
+> -one (cétone) > -ène (alcène) > -ane (alcane)</div>
+      <div class="callout important" style="margin:0;">
+        <div class="callout-icon">⭐</div>
+        <div><strong>3 règles fondamentales :</strong><br>
+        1. Trouver la chaîne <em>principale</em> la plus longue portant le groupe prioritaire.<br>
+        2. Numéroter pour donner le numéro le <em>plus bas</em> au groupe prioritaire.<br>
+        3. Nommer les substituants par ordre alphabétique.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🎲 Exercice de nomenclature aléatoire</h3>
+    <p>Le module nomenclature intègre un générateur d'exercices. Cliquez sur <strong>🎲 GÉNÉRER UN EXERCICE</strong> pour obtenir une molécule aléatoire à nommer. Entrez votre réponse dans le champ prévu et validez pour voir si votre nom IUPAC est correct. Répétez pour vous entraîner avant un examen.</p>
+    <div class="callout tip">
+      <div class="callout-icon">💡</div>
+      <div>Stratégie d'entraînement : générez 10 exercices consécutifs chronométrés. Si vous répondez correctement en moins de 30 secondes à chacun, vous maîtrisez la nomenclature pour ce type de composé.</div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 11. CALCULS ═══════════ -->
+  <div id="calcul" class="section-head">
+    <div class="section-icon si-green">🧮</div>
+    <div>
+      <h2>Module Calculs Pratiques</h2>
+      <div class="sec-num">SECTION 11 — 6 TYPES DE CALCULS INTÉGRÉS</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>🔢 Les 6 types de calculs</h3>
+      <table class="data-table">
+        <thead><tr><th>TYPE</th><th>FORMULE UTILISÉE</th><th>EXEMPLE</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Masse molaire</strong></td>
+            <td>M = Σ (Z_i × M_i)</td>
+            <td>C₂H₆O → M = 46.07 g/mol</td>
+          </tr>
+          <tr>
+            <td><strong>Rendement (%)</strong></td>
+            <td>τ = (n_obtenu / n_théorique) × 100</td>
+            <td>Estérification : max ~67% sans manipulation</td>
+          </tr>
+          <tr>
+            <td><strong>Dilution</strong></td>
+            <td>C₁V₁ = C₂V₂</td>
+            <td>Préparer 100 mL de HCl 0.1M depuis 12M</td>
+          </tr>
+          <tr>
+            <td><strong>pH acide carboxylique</strong></td>
+            <td>pH = ½(pKa - log C)</td>
+            <td>Acide acétique 0.1M, pKa=4.76 → pH=2.88</td>
+          </tr>
+          <tr>
+            <td><strong>DBE (Degré insaturation)</strong></td>
+            <td>DBE = (2C+2+N-H-X)/2</td>
+            <td>C₆H₆ → DBE=4 (benzène = 3π + 1cycle)</td>
+          </tr>
+          <tr>
+            <td><strong>Rf (CCM)</strong></td>
+            <td>Rf = d_spot / d_solvant</td>
+            <td>Rf = 0.65 → polarité moyenne</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card accent-blue">
+      <h3>📐 Masses molaires de référence</h3>
+      <p>SimuOrg affiche en permanence les masses atomiques :</p>
+      <div class="code-box blue">H  :  1.008 g/mol
+C  : 12.011 g/mol
+N  : 14.007 g/mol
+O  : 15.999 g/mol
+F  : 18.998 g/mol
+Cl : 35.453 g/mol
+Br : 79.904 g/mol
+I  : 126.90 g/mol
+S  : 32.060 g/mol
+P  : 30.970 g/mol</div>
+      <div class="callout tip" style="margin-top:12px;margin-bottom:0;">
+        <div class="callout-icon">💡</div>
+        <div>Le bouton <strong>✕ EFFACER</strong> réinitialise les champs de saisie. La formule utilisée est toujours rappelée sous le résultat pour que vous compreniez le calcul.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📌 Guide rapide — Calcul DBE (Degré d'Insaturation)</h3>
+    <p>Le DBE (Double Bond Equivalent, ou Indice d'Insaturation) est crucial pour déduire la structure d'un composé de sa formule brute :</p>
+    <div class="code-box eq">DBE = (2C + 2 + N - H - X) / 2</div>
+    <div class="grid-3" style="margin-top:12px;">
+      <div class="qr-item"><div class="qr-key">DBE = 0</div><div class="qr-val">Molécule saturée. Ex : alcane, amine simple</div></div>
+      <div class="qr-item"><div class="qr-key">DBE = 1</div><div class="qr-val">1 double liaison C=C (alcène) ou 1 cycle</div></div>
+      <div class="qr-item"><div class="qr-key">DBE = 2</div><div class="qr-val">2 insaturations : diène, alcyne, ou cétone (C=O)</div></div>
+      <div class="qr-item"><div class="qr-key">DBE = 4</div><div class="qr-val">Benzène : cycle (1) + 3 doubles liaisons = 4</div></div>
+      <div class="qr-item"><div class="qr-key">DBE ≥ 4</div><div class="qr-val">Cycle aromatique probable</div></div>
+      <div class="qr-item"><div class="qr-key">Oxygène O</div><div class="qr-val">N'intervient pas dans le calcul DBE !</div></div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 12. QUIZ ═══════════ -->
+  <div id="quiz" class="section-head">
+    <div class="section-icon si-orange">🎯</div>
+    <div>
+      <h2>Module Quiz Interactif</h2>
+      <div class="sec-num">SECTION 12 — AUTO-ÉVALUATION PAR THÈME</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>⚙️ Configurer un quiz</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Choisissez la catégorie</h4><p><strong>Mécanismes réactionnels</strong> : SN1/SN2, E1/E2, AE/AN, SEAr. <strong>Groupes fonctionnels</strong> : formules, réactivités. <strong>Stéréochimie</strong> : R/S, E/Z, chiralité. <strong>Nomenclature IUPAC</strong>. <strong>Synthèse organique</strong>. <strong>Quiz général</strong> : mélange de toutes catégories.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Choisissez le nombre de questions</h4><p>5 questions (révision rapide, 5–10 min), 8 questions (standard, 10–15 min), 12 questions (session approfondie, 20 min).</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">3</div>
+          <div class="step-body"><h4>Démarrez et répondez</h4><p>Cliquez sur ▶ NOUVEAU QUIZ. Pour chaque question, cliquez sur l'option qui vous semble correcte. Un feedback immédiat s'affiche : vert = correct, rouge = incorrect avec explication.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">4</div>
+          <div class="step-body"><h4>Lisez les feedbacks</h4><p>Même si vous répondez correctement, <strong>lisez toujours le feedback</strong> : il contient une explication concise qui renforce la compréhension et aide à retenir l'information.</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="card accent-orange">
+      <h3>📊 Interpréter son score</h3>
+      <p>Le module affiche score, pourcentage et barre de progression. Voici comment interpréter vos résultats :</p>
+      <table class="data-table" style="margin-top:12px;">
+        <thead><tr><th>SCORE</th><th>INTERPRÉTATION</th><th>ACTION RECOMMANDÉE</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-green">≥ 85%</span></td><td>Maîtrise solide</td><td>Passez au module suivant ou niveau supérieur</td></tr>
+          <tr><td><span class="badge badge-blue">70–84%</span></td><td>Bonne compréhension</td><td>Révisez les 2-3 points faibles identifiés</td></tr>
+          <tr><td><span class="badge badge-orange">50–69%</span></td><td>Bases présentes</td><td>Retournez dans le module Théorie + Mécanismes</td></tr>
+          <tr><td><span class="badge badge-red">< 50%</span></td><td>Révision nécessaire</td><td>Recommencez depuis la Théorie, mécanismes étape par étape</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warning" style="margin-top:12px;margin-bottom:0;">
+        <div class="callout-icon">⚠️</div>
+        <div>Le score de quiz s'accumule dans la barre de statut en bas de page tout au long de la session. Vous pouvez relancer plusieurs quiz à la suite — le score total de session est conservé.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 13. STRATÉGIES ═══════════ -->
+  <div id="strategies" class="section-head">
+    <div class="section-icon si-gold">🎓</div>
+    <div>
+      <h2>Stratégies d'Utilisation Efficace</h2>
+      <div class="sec-num">SECTION 13 — MÉTHODES POUR MAXIMISER VOS APPRENTISSAGES</div>
+    </div>
+  </div>
+
+  <div class="card accent-gold">
+    <h3>🗓️ Plan de révision recommandé par SimuOrg</h3>
+    <table class="data-table">
+      <thead><tr><th>SESSION</th><th>DURÉE</th><th>OBJECTIF</th><th>MODULES À UTILISER</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Découverte</strong></td>
+          <td>45 min</td>
+          <td>Comprendre les mécanismes de base</td>
+          <td>📚 Théorie → ⚗️ SN1/SN2 (4 étapes chacun) → 🎯 Quiz mécanismes (5Q)</td>
+        </tr>
+        <tr>
+          <td><strong>Approfondissement</strong></td>
+          <td>60 min</td>
+          <td>Maîtriser substitution + élimination</td>
+          <td>⚗️ E1/E2/AE/AN → 📈 Profils énergétiques → 🎯 Quiz général (8Q)</td>
+        </tr>
+        <tr>
+          <td><strong>Stéréochimie</strong></td>
+          <td>45 min</td>
+          <td>R/S, E/Z, Fischer, Newman</td>
+          <td>🔄 7 concepts stéréochimie → 🧮 Calculateur CIP → 🎯 Quiz stéréo</td>
+        </tr>
+        <tr>
+          <td><strong>Synthèse</strong></td>
+          <td>50 min</td>
+          <td>Maîtriser les voies de synthèse</td>
+          <td>🔗 Synthèse (toutes familles) → 🧩 Groupes fonctionnels → 🎯 Quiz synthèse</td>
+        </tr>
+        <tr>
+          <td><strong>Nomenclature</strong></td>
+          <td>30 min</td>
+          <td>Nommer rapidement et correctement</td>
+          <td>🏷️ Constructeur IUPAC → 🪞 Isomères → 🎲 10 exercices aléatoires</td>
+        </tr>
+        <tr>
+          <td><strong>Révision générale</strong></td>
+          <td>60 min</td>
+          <td>Test final avant examen</td>
+          <td>🎯 Quiz général 12Q × 2 → 🔮 3D molécules → 📋 Générer rapport</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>⚡ 7 Conseils pour mieux simuler</h3>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body"><h4>Commencez toujours par la Théorie</h4><p>Avant de simuler un mécanisme, lisez la fiche théorique correspondante. Les fiches PRÉPA (SN1/SN2, E1/E2, AE/AN) et LICENCE (SEAr, cinétique) sont concises et ciblées.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body"><h4>Variez les conditions dans Mécanismes</h4><p>Rechargez le même mécanisme (ex: SN1) avec différents substrats (1°, 2°, 3°). Observez comment le panneau "Compétition SN/E" et les conditions changent.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body"><h4>Combinez Mécanismes + Énergie</h4><p>Après avoir suivi les étapes d'un mécanisme, allez dans Profil Énergétique et tracez la même réaction. Le profil 2D complète la compréhension étape par étape du panneau Mécanismes.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">4</div>
+          <div class="step-body"><h4>Utilisez le calculateur avant le quiz</h4><p>Entraînez-vous sur les calculs (masse molaire, DBE, pH) dans le module Calculs avant de passer le quiz. Les questions de quiz peuvent porter sur ces calculs.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num orange">5</div>
+          <div class="step-body"><h4>Montrez les molécules 3D pendant les mécanismes</h4><p>Ouvrez l'onglet 3D dans une deuxième fenêtre (ou passez rapidement) pour voir la structure 3D du substrat tout en étudiant son mécanisme.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">6</div>
+          <div class="step-body"><h4>Refaites le quiz jusqu'à 85%+</h4><p>Ne considérez pas un thème maîtrisé avant d'avoir atteint 85% au quiz. Si vous êtes en dessous, identifiez les questions ratées et révisez précisément ces points.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">7</div>
+          <div class="step-body"><h4>Générez votre rapport en fin de session</h4><p>Le rapport de séance sert de trace écrite de votre travail. Imprimez-le pour votre cahier de révision ou sauvegardez-le en PDF depuis votre navigateur.</p></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card accent-blue">
+      <h3>🔗 Liens entre modules — Utilisation croisée</h3>
+      <p style="margin-bottom:14px;">Les modules de SimuOrg sont conçus pour s'utiliser en <strong>complémentarité</strong>. Voici les associations les plus productives :</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num blue">A</div>
+          <div class="step-body"><h4>SN2 + Stéréochimie</h4><p>Après avoir simulé SN2 (inversion Walden), allez en Stéréochimie → "Configurations R et S" pour comprendre comment R devient S par l'inversion.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">B</div>
+          <div class="step-body"><h4>Mécanismes + Profil Énergétique</h4><p>Comparez SN1 (2 états de transition) et SN2 (1 état de transition) sur le module Énergie. Observez la différence de profil — fondamental pour l'examen.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">C</div>
+          <div class="step-body"><h4>Groupes Fonctionnels + Nomenclature</h4><p>Identifiez un groupe fonctionnel dans le module 🧩, puis allez en 🏷️ pour nommer un composé portant ce groupe. Le lien formule-nom se mémorise mieux ainsi.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">D</div>
+          <div class="step-body"><h4>Synthèse + Mécanismes</h4><p>Après avoir trouvé une voie de synthèse (ex: alcool → aldéhyde par PCC), simulez le mécanisme "Oxydation des alcools" pour comprendre comment ça marche chimiquement.</p></div>
+        </div>
+        <div class="step">
+          <div class="step-num blue">E</div>
+          <div class="step-body"><h4>Molécules 3D + Stéréochimie</h4><p>Visualisez l'alanine (L-Alanine) en 3D, puis allez en Stéréochimie → "Centre chiral" pour comprendre pourquoi le Cα est chiral. Le mode Van der Waals montre l'encombrement réel.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ 14. THÉORIE & RAPPORT ═══════════ -->
+  <div id="theorie" class="section-head">
+    <div class="section-icon si-olive">📚</div>
+    <div>
+      <h2>Modules Théorie & Rapport de Séance</h2>
+      <div class="sec-num">SECTION 14 — COURS ET BILAN</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <h3>📚 Les 9 fiches de cours (Module Théorie)</h3>
+      <table class="data-table">
+        <thead><tr><th>NIVEAU</th><th>TITRE</th><th>CONTENU CLÉ</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-green">LYCÉE</span></td><td>Groupes Fonctionnels Essentiels</td><td>Alcool, aldéhyde, cétone, acide, ester, amine — définitions + formules</td></tr>
+          <tr><td><span class="badge badge-green">LYCÉE</span></td><td>Nomenclature IUPAC — Règles</td><td>Priorité des suffixes, numérotation, préfixes numériques</td></tr>
+          <tr><td><span class="badge badge-orange">PRÉPA</span></td><td>Mécanismes SN1 et SN2</td><td>Lois de vitesse, stéréochimie, solvant, comparaison complète</td></tr>
+          <tr><td><span class="badge badge-orange">PRÉPA</span></td><td>Éliminations E1 et E2</td><td>Zaïtsev, Hofmann, anti-périplanaire, compétition avec SN</td></tr>
+          <tr><td><span class="badge badge-orange">PRÉPA</span></td><td>Additions AE et AN</td><td>Markovnikov, bromonium, angle de Bürgi-Dunitz 107°</td></tr>
+          <tr><td><span class="badge badge-orange">PRÉPA</span></td><td>Stéréochimie — Règles CIP</td><td>Configuration R/S, énantiomères, diastéréoisomères</td></tr>
+          <tr><td><span class="badge badge-blue">LICENCE</span></td><td>Aromaticité & Substitution SEAr</td><td>Règle de Hückel 4n+2, σ-complexe Wheland, orientation</td></tr>
+          <tr><td><span class="badge badge-blue">LICENCE</span></td><td>Thermodynamique & Cinétique</td><td>Contrôle cinétique/thermodynamique, loi d'Arrhénius</td></tr>
+          <tr><td><span class="badge badge-blue">LICENCE</span></td><td>Réactif de Grignard</td><td>Préparation, applications (+HCHO, +RCHO, +CO₂), conditions anhydres</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card accent-green">
+      <h3>📋 Générer et utiliser le Rapport de Séance</h3>
+      <p>Le module Rapport génère un bilan structuré de votre session de travail. Il regroupe automatiquement :</p>
+      <div class="code-box" style="font-size:.73rem;margin:12px 0;">╔═══════════════════════════════════╗
+║  SIMUORG v2.0 — RAPPORT DE SÉANCE ║
+╠═══════════════════════════════════╣
+  Nom       : Edmond Atinzoun TCHOKPON
+  Programme : Licence Physique-Chimie
+  Date/Heure: automatique
+╠═══════════════════════════════════╣
+  MÉCANISME ÉTUDIÉ
+    → Dernier mécanisme chargé
+    → Substrat / Nucléophile / Solvant choisis
+╠═══════════════════════════════════╣
+  STÉRÉOCHIMIE → Concept étudié
+  3D MOLÉCULAIRE → Molécule + mode
+  QUIZ → Score total de la session
+╚═══════════════════════════════════╝</div>
+      <div class="callout tip" style="margin:0;">
+        <div class="callout-icon">💡</div>
+        <div>Cliquez sur <strong>📋 GÉNÉRER RAPPORT</strong> puis <strong>🖨️ IMPRIMER</strong> pour sauvegarder en PDF (utilisez "Imprimer → Enregistrer en PDF" dans votre navigateur). Conservez ces rapports pour suivre votre progression.</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════ RÉCAPITULATIF FINAL ═══════════ -->
+  <div class="section-head" style="margin-top:50px;">
+    <div class="section-icon si-gold">⭐</div>
+    <div>
+      <h2>Récapitulatif — Tout SimuOrg en un coup d'œil</h2>
+      <div class="sec-num">RÉFÉRENCE RAPIDE</div>
+    </div>
+  </div>
+
+  <div class="card accent-gold">
+    <h3>🗺️ Carte de navigation SimuOrg v2.0</h3>
+    <div class="quick-ref" style="margin-top:14px;">
+      <div class="qr-item"><div class="qr-key">⚗️ MÉCANISMES</div><div class="qr-val">17 mécanismes | 4 panneaux | Auto-play | Conditions + Produits + Compétition SN/E</div></div>
+      <div class="qr-item"><div class="qr-key">🔄 STÉRÉOCHIMIE</div><div class="qr-val">7 concepts | Calculateur CIP R/S | Fischer | Newman | Méso</div></div>
+      <div class="qr-item"><div class="qr-key">🧩 GROUPES FONCT.</div><div class="qr-val">20 groupes | Grille cliquable | Canvas de visualisation | Réactivité</div></div>
+      <div class="qr-item"><div class="qr-key">🔗 SYNTHÈSE</div><div class="qr-val">6 familles | 41 routes totales | Équations + Conditions</div></div>
+      <div class="qr-item"><div class="qr-key">🔮 MOLÉCULES 3D</div><div class="qr-val">18 molécules | 4 modes | Rotation XY | Données physico-chimiques</div></div>
+      <div class="qr-item"><div class="qr-key">📈 ÉNERGIE</div><div class="qr-val">7 profils | Substrat variable | T° 0–200°C | Arrhénius | ΔH°, Ea, k</div></div>
+      <div class="qr-item"><div class="qr-key">🏷️ NOMENCLATURE</div><div class="qr-val">8 types | Chaîne 1–10C | Ramifications | Exercices aléatoires</div></div>
+      <div class="qr-item"><div class="qr-key">🪞 ISOMÈRES</div><div class="qr-val">6 formules brutes | Constitution, Position, Fonction, Stéréo</div></div>
+      <div class="qr-item"><div class="qr-key">🧮 CALCULS</div><div class="qr-val">Masse molaire | Rendement | Dilution | pH | DBE | Rf</div></div>
+      <div class="qr-item"><div class="qr-key">🎯 QUIZ</div><div class="qr-val">6 catégories | 5/8/12Q | Feedback instantané | Score cumulé</div></div>
+      <div class="qr-item"><div class="qr-key">📚 THÉORIE</div><div class="qr-val">9 fiches Lycée/Prépa/Licence | Formules | Points clés</div></div>
+      <div class="qr-item"><div class="qr-key">📋 RAPPORT</div><div class="qr-val">Bilan automatique de session | Imprimable | PDF</div></div>
+    </div>
+  </div>
+
+  <div class="callout important">
+    <div class="callout-icon">🎓</div>
+    <div><strong>Message final :</strong> SimuOrg v2.0 est un outil complet — mais un outil n'apprend pas à votre place. Pour chaque mécanisme, <em>comprenez pourquoi</em> chaque étape se produit (stabilité des intermédiaires, forces des nucléophiles, stéréochimie) plutôt que de simplement mémoriser les équations. La chimie organique est une logique, pas un catalogue à apprendre par cœur. Utilisez SimuOrg pour <strong>construire cette logique</strong>.</div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════ FOOTER ══════════════════════ -->
+<footer>
+  <div class="f-title">🧬 SimuOrg v2.0 — Guide Complet d'Utilisation</div>
+  <p>Edmond Atinzoun TCHOKPON — Licence Physique-Chimie</p>
+  <p style="margin-top:6px;font-size:.62rem;color:rgba(255,255,255,.35);">Guide généré pour accompagner le simulateur SimuOrg v2.0 | 2025</p>
+</footer>
+
+<script>
+// Smooth scroll enhancement
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+// Active nav highlight on scroll
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.guide-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current
+      ? 'var(--gold)' : 'rgba(255,255,255,.65)';
+    a.style.borderBottomColor = a.getAttribute('href') === '#' + current
+      ? 'var(--gold)' : 'transparent';
+  });
+});
+
+// Fade-in cards on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.card, .module-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(12px)';
+  el.style.transition = 'opacity .4s ease, transform .4s ease';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>

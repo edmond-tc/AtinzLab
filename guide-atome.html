@@ -1,0 +1,1984 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Interactif — Module 1 : Structure de l'Atome | Edmond Atinzoun TCHOKPON</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --ink: #0d1117;
+  --paper: #f5f0e8;
+  --cream: #ede8dc;
+  --warm: #c8a96e;
+  --copper: #b87333;
+  --rust: #c0392b;
+  --teal: #1a6b6b;
+  --deep: #0f3460;
+  --gold: #d4a017;
+  --proton-col: #e74c3c;
+  --neutron-col: #2980b9;
+  --electron-col: #f39c12;
+  --text: #1a1209;
+  --text2: #5a4a2f;
+  --border: rgba(180,140,80,0.3);
+  --shadow: 0 4px 24px rgba(100,70,20,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--text);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* GRAIN OVERLAY */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0.4;
+}
+
+/* ===== HERO ===== */
+.hero {
+  min-height: 100vh;
+  background: var(--deep);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 40px 20px;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(180,115,51,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 30%, rgba(26,107,107,0.2) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(15,52,96,0.8) 0%, transparent 60%);
+}
+
+#heroCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 800px;
+}
+
+.hero-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  color: var(--warm);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.5s forwards;
+}
+
+.hero-title em {
+  color: var(--warm);
+  font-style: italic;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.65);
+  max-width: 500px;
+  margin: 0 auto 40px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+
+.hero-author {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--warm);
+  opacity: 0;
+  animation: fadeUp 0.8s 0.9s forwards;
+  border: 1px solid rgba(200,169,110,0.4);
+  display: inline-block;
+  padding: 8px 20px;
+  border-radius: 30px;
+  margin-bottom: 30px;
+}
+
+.hero-nav {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.1s forwards;
+}
+
+.hero-nav a {
+  padding: 10px 22px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  border: 1px solid rgba(200,169,110,0.4);
+  color: #fff;
+}
+
+.hero-nav a:hover { background: var(--warm); color: var(--ink); border-color: var(--warm); }
+.hero-nav a.primary { background: var(--warm); color: var(--ink); border-color: var(--warm); }
+.hero-nav a.primary:hover { background: var(--gold); }
+
+/* ===== LAYOUT ===== */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 30px;
+}
+
+/* ===== CHAPTER HEADER ===== */
+.chapter {
+  padding: 80px 0 40px;
+}
+
+.chapter-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 4px;
+  color: var(--copper);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chapter-num::after {
+  content: '';
+  flex: 1;
+  max-width: 60px;
+  height: 1px;
+  background: var(--copper);
+}
+
+.chapter-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  color: var(--deep);
+  line-height: 1.2;
+  margin-bottom: 15px;
+}
+
+.chapter-title span { color: var(--copper); }
+
+.chapter-intro {
+  font-size: 1.05rem;
+  color: var(--text2);
+  max-width: 700px;
+  border-left: 3px solid var(--warm);
+  padding-left: 20px;
+  margin-bottom: 50px;
+}
+
+/* ===== DIVIDER ===== */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 60px 0;
+  position: relative;
+}
+
+.divider::after {
+  content: '⬡';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  background: var(--paper);
+  padding: 0 12px;
+  color: var(--warm);
+  font-size: 1.2rem;
+}
+
+/* ===== CARDS ===== */
+.concept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  margin-bottom: 50px;
+}
+
+.concept-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.concept-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(100,70,20,0.2);
+}
+
+.concept-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--warm), var(--copper));
+}
+
+.concept-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.concept-card h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--deep);
+  margin-bottom: 8px;
+}
+
+.concept-card p { font-size: 0.9rem; color: var(--text2); line-height: 1.6; }
+
+.formula-tag {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 5px 14px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--deep);
+  font-weight: 700;
+}
+
+/* ===== SIMULATION FRAMES ===== */
+.sim-frame {
+  background: var(--deep);
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 40px 0;
+  box-shadow: 0 20px 60px rgba(15,52,96,0.3);
+  border: 1px solid rgba(200,169,110,0.2);
+}
+
+.sim-header {
+  background: rgba(255,255,255,0.05);
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sim-dots { display: flex; gap: 7px; }
+.sim-dots span {
+  width: 12px; height: 12px; border-radius: 50%;
+}
+.sim-dots .r { background: #ff5f57; }
+.sim-dots .y { background: #febc2e; }
+.sim-dots .g { background: #28c840; }
+
+.sim-title-bar {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 2px;
+}
+
+.sim-body {
+  padding: 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  align-items: center;
+}
+
+@media(max-width:700px) {
+  .sim-body { grid-template-columns: 1fr; }
+}
+
+.sim-body canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  background: rgba(0,0,0,0.3);
+}
+
+.sim-controls { color: #e0d4c0; }
+
+.sim-controls h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: var(--warm);
+  margin-bottom: 15px;
+}
+
+.ctrl-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.ctrl-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  width: 90px;
+  flex-shrink: 0;
+}
+
+.slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--warm);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.slider::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+.ctrl-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--warm);
+  width: 30px;
+  text-align: right;
+}
+
+.info-box {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(200,169,110,0.2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-top: 20px;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.7);
+}
+
+.info-box strong { color: var(--warm); }
+
+/* ===== TABLE ===== */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 30px 0;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.styled-table thead {
+  background: var(--deep);
+  color: #fff;
+}
+
+.styled-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.styled-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+
+.styled-table tr:last-child td { border-bottom: none; }
+.styled-table tr:hover td { background: var(--cream); }
+
+.badge-p { display:inline-block; padding:2px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; background:rgba(231,76,60,0.1); color:var(--proton-col); border:1px solid rgba(231,76,60,0.3); }
+.badge-n { display:inline-block; padding:2px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; background:rgba(41,128,185,0.1); color:var(--neutron-col); border:1px solid rgba(41,128,185,0.3); }
+.badge-e { display:inline-block; padding:2px 10px; border-radius:12px; font-size:0.75rem; font-weight:700; background:rgba(243,156,18,0.1); color:var(--electron-col); border:1px solid rgba(243,156,18,0.3); }
+
+/* ===== CALLOUTS ===== */
+.callout {
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin: 24px 0;
+  border-left: 4px solid;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.callout-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+.callout-body { flex: 1; }
+.callout-body strong { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.callout-body p { font-size: 0.9rem; line-height: 1.6; }
+
+.callout.info { background: rgba(26,107,107,0.08); border-color: var(--teal); }
+.callout.info .callout-body strong { color: var(--teal); }
+.callout.warn { background: rgba(212,160,23,0.08); border-color: var(--gold); }
+.callout.warn .callout-body strong { color: var(--gold); }
+.callout.tip { background: rgba(184,115,51,0.08); border-color: var(--copper); }
+.callout.tip .callout-body strong { color: var(--copper); }
+.callout.key { background: rgba(15,52,96,0.08); border-color: var(--deep); }
+.callout.key .callout-body strong { color: var(--deep); }
+
+/* ===== TIMELINE ===== */
+.timeline { position: relative; padding-left: 40px; margin: 30px 0; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 14px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--copper), transparent);
+}
+
+.timeline-item {
+  position: relative;
+  margin-bottom: 30px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s;
+}
+
+.timeline-item:hover { transform: translateX(4px); }
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -33px;
+  top: 24px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--warm);
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 3px var(--warm);
+}
+
+.timeline-year {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--copper);
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+}
+
+.timeline-item h4 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  color: var(--deep);
+  margin-bottom: 6px;
+}
+
+.timeline-item p { font-size: 0.88rem; color: var(--text2); }
+
+/* ===== ORBITAL VISUAL ===== */
+.orbital-visual {
+  background: var(--deep);
+  border-radius: 16px;
+  padding: 30px;
+  text-align: center;
+  margin: 30px 0;
+}
+
+.orbital-visual canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ===== ENERGY DIAGRAM ===== */
+.energy-diagram {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 30px;
+  margin: 30px 0;
+  box-shadow: var(--shadow);
+}
+
+.energy-level-line {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.energy-level-line:hover { background: var(--cream); }
+
+.level-n {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--deep);
+  width: 35px;
+  font-weight: 700;
+}
+
+.level-line {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  position: relative;
+}
+
+.level-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text2);
+  width: 80px;
+  text-align: right;
+}
+
+.level-desc { font-size: 0.75rem; color: var(--text2); flex: 2; }
+
+/* ===== SPECTRUM ===== */
+.spectrum-container {
+  background: var(--deep);
+  border-radius: 16px;
+  padding: 25px 30px;
+  margin: 30px 0;
+}
+
+.spectrum-bar {
+  height: 40px;
+  border-radius: 8px;
+  background: linear-gradient(to right,
+    #380000, #6a0dad, #4b0082, #0000ff, #007fff,
+    #00ff7f, #ffff00, #ff7f00, #ff0000, #380000);
+  margin: 20px 0;
+  position: relative;
+}
+
+.spectrum-line {
+  position: absolute;
+  top: -8px;
+  width: 3px;
+  height: 56px;
+  border-radius: 2px;
+  transform: translateX(-50%);
+}
+
+.wavelength-labels {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.4);
+  margin-top: 5px;
+}
+
+/* ===== QUIZ ===== */
+.quiz-section {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  margin: 50px 0;
+}
+
+.quiz-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--deep);
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--border);
+}
+
+.q-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(100,70,20,0.07);
+}
+
+.q-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--copper);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.q-text {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+.q-opts { display: flex; flex-direction: column; gap: 8px; }
+
+.q-opt {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  font-size: 0.88rem;
+  transition: all 0.2s;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.q-opt:hover { border-color: var(--copper); background: #fff; }
+.q-opt .opt-letter {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.q-opt.correct { border-color: #27ae60; background: rgba(39,174,96,0.08); }
+.q-opt.correct .opt-letter { background: #27ae60; color: #fff; border-color: #27ae60; }
+.q-opt.wrong { border-color: #e74c3c; background: rgba(231,76,60,0.08); }
+.q-opt.wrong .opt-letter { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+
+.q-explain {
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.83rem;
+  line-height: 1.6;
+  display: none;
+}
+
+.q-explain.show { display: block; }
+.q-explain.good { background: rgba(39,174,96,0.08); border: 1px solid rgba(39,174,96,0.3); color: #1a6b3a; }
+.q-explain.bad { background: rgba(231,76,60,0.08); border: 1px solid rgba(231,76,60,0.3); color: #8b2020; }
+
+.score-display {
+  text-align: center;
+  padding: 30px;
+  background: var(--deep);
+  border-radius: 16px;
+  margin-top: 20px;
+  display: none;
+}
+
+.score-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--warm);
+  line-height: 1;
+}
+
+.score-txt { color: rgba(255,255,255,0.6); margin-top: 8px; font-size: 0.9rem; }
+
+.quiz-btn {
+  padding: 12px 30px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s;
+  margin-top: 15px;
+}
+
+.quiz-btn.primary { background: var(--deep); color: #fff; }
+.quiz-btn.primary:hover { background: var(--copper); }
+.quiz-btn.sec { background: var(--cream); color: var(--text); border: 1px solid var(--border); }
+.quiz-btn.sec:hover { background: var(--warm); color: #fff; }
+
+/* ===== TOC ===== */
+.toc {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media(max-width: 1200px) { .toc { display: none; } }
+
+.toc-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border);
+  border: 2px solid var(--copper);
+  transition: all 0.3s;
+  cursor: pointer;
+  position: relative;
+}
+
+.toc-dot:hover, .toc-dot.active {
+  background: var(--warm);
+  transform: scale(1.4);
+}
+
+.toc-dot::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  color: var(--text2);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.toc-dot:hover::after { opacity: 1; }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--deep);
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  padding: 40px 20px;
+  margin-top: 80px;
+}
+
+footer strong { color: var(--warm); }
+footer p { font-size: 0.85rem; line-height: 1.8; }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rotate { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== CODE BLOCK ===== */
+.code-block {
+  background: var(--ink);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.code-block code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: #e6e6e6;
+  line-height: 1.8;
+}
+
+.code-block .kw { color: #569cd6; }
+.code-block .val { color: #4ec9b0; }
+.code-block .cmt { color: #6a9955; }
+.code-block .str { color: #ce9178; }
+
+/* ===== PERIODIC MINI ===== */
+.periodic-mini {
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  gap: 2px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.elem-cell {
+  aspect-ratio: 1;
+  min-width: 28px;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.45rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.elem-cell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.elem-cell .e-sym { font-size: 0.55rem; font-weight: 700; }
+.elem-cell .e-z { font-size: 0.4rem; opacity: 0.7; }
+.elem-cell.alkali { background: rgba(231,76,60,0.2); color: #c0392b; border-color: rgba(231,76,60,0.4); }
+.elem-cell.alkaline { background: rgba(230,126,34,0.2); color: #e67e22; border-color: rgba(230,126,34,0.4); }
+.elem-cell.transition { background: rgba(241,196,15,0.2); color: #9a7d0a; border-color: rgba(241,196,15,0.4); }
+.elem-cell.post { background: rgba(39,174,96,0.2); color: #1a6b3a; border-color: rgba(39,174,96,0.4); }
+.elem-cell.metalloid { background: rgba(26,107,107,0.2); color: var(--teal); border-color: rgba(26,107,107,0.4); }
+.elem-cell.nonmetal { background: rgba(41,128,185,0.2); color: #1a4c6b; border-color: rgba(41,128,185,0.4); }
+.elem-cell.halogen { background: rgba(142,68,173,0.2); color: #6c3483; border-color: rgba(142,68,173,0.4); }
+.elem-cell.noble { background: rgba(52,73,94,0.2); color: #2c3e50; border-color: rgba(52,73,94,0.4); }
+.elem-cell.empty { background: transparent; border: none; cursor: default; }
+
+/* ===== INTERACTIVE BOHR ===== */
+#interactiveBohr { width: 100%; height: 350px; display: block; }
+
+/* ===== CONFIG BUILDER ===== */
+.config-builder {
+  background: var(--ink);
+  border-radius: 16px;
+  padding: 25px;
+  margin: 25px 0;
+}
+
+.cb-display {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  color: var(--warm);
+  background: rgba(255,255,255,0.04);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  min-height: 56px;
+  letter-spacing: 2px;
+  word-break: break-all;
+}
+
+.cb-elem-input {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.cb-elem-input select {
+  flex: 1;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.cb-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.cb-btn.fill { background: var(--warm); color: #000; }
+.cb-btn.fill:hover { background: var(--gold); }
+.cb-btn.clear { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7); }
+.cb-btn.clear:hover { background: rgba(231,76,60,0.3); color: #fff; }
+
+.cb-result {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 2;
+}
+
+.cb-result span { color: var(--warm); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- TABLE OF CONTENTS -->
+<nav class="toc">
+  <div class="toc-dot active" data-label="Introduction" onclick="scrollTo(0,0)"></div>
+  <div class="toc-dot" data-label="Particules" onclick="scrollToSection('particules')"></div>
+  <div class="toc-dot" data-label="Modèles" onclick="scrollToSection('modeles')"></div>
+  <div class="toc-dot" data-label="Bohr" onclick="scrollToSection('bohr')"></div>
+  <div class="toc-dot" data-label="Config." onclick="scrollToSection('config')"></div>
+  <div class="toc-dot" data-label="Tableau" onclick="scrollToSection('tableau')"></div>
+  <div class="toc-dot" data-label="Quiz" onclick="scrollToSection('quiz-section')"></div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-label">Guide Interactif · Chimie Générale</div>
+    <h1 class="hero-title">Structure de <em>l'Atome</em></h1>
+    <p class="hero-sub">Un guide complet, visuel et interactif pour comprendre les fondements de la matière — du noyau aux électrons.</p>
+    <div class="hero-author">✍ Edmond Atinzoun TCHOKPON · Étudiant Physique-Chimie</div>
+    <div class="hero-nav">
+      <a href="#particules" class="primary">Commencer la lecture →</a>
+      <a href="#quiz-section">Tester ses connaissances</a>
+      <a href="#config">Config. électronique</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 1: PARTICULES ===== -->
+<section id="particules">
+  <div class="container">
+    <div class="chapter reveal">
+      <div class="chapter-num">Chapitre 01</div>
+      <h2 class="chapter-title">Les <span>Particules</span> Subatomiques</h2>
+      <p class="chapter-intro">L'atome, longtemps considéré comme indivisible, est en réalité composé de trois types de particules fondamentales. Leur nombre et arrangement définissent chaque élément chimique.</p>
+    </div>
+
+    <div class="concept-grid reveal">
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(231,76,60,0.1);">⚡</div>
+        <h4>Le Proton</h4>
+        <p>Particule chargée positivement, localisée dans le noyau. Son nombre définit l'élément chimique (numéro atomique Z).</p>
+        <div class="formula-tag">charge = +1 | masse ≈ 1 uma</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(41,128,185,0.1);">🔵</div>
+        <h4>Le Neutron</h4>
+        <p>Particule neutre du noyau. Contribue à la masse sans changer l'identité chimique. Varie entre isotopes d'un même élément.</p>
+        <div class="formula-tag">charge = 0 | masse ≈ 1 uma</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(243,156,18,0.1);">✨</div>
+        <h4>L'Électron</h4>
+        <p>Particule chargée négativement, orbitant autour du noyau. Gouverne toute la chimie : liaisons, réactions, propriétés.</p>
+        <div class="formula-tag">charge = −1 | masse ≈ 0 uma</div>
+      </div>
+    </div>
+
+    <table class="styled-table reveal">
+      <thead>
+        <tr>
+          <th>Particule</th>
+          <th>Symbole</th>
+          <th>Charge</th>
+          <th>Masse (g)</th>
+          <th>Masse (uma)</th>
+          <th>Localisation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge-p">Proton</span></td>
+          <td><code>p⁺</code></td>
+          <td>+1</td>
+          <td>1.673 × 10⁻²⁴</td>
+          <td>1.007</td>
+          <td>Noyau</td>
+        </tr>
+        <tr>
+          <td><span class="badge-n">Neutron</span></td>
+          <td><code>n⁰</code></td>
+          <td>0</td>
+          <td>1.675 × 10⁻²⁴</td>
+          <td>1.009</td>
+          <td>Noyau</td>
+        </tr>
+        <tr>
+          <td><span class="badge-e">Électron</span></td>
+          <td><code>e⁻</code></td>
+          <td>−1</td>
+          <td>9.109 × 10⁻²⁸</td>
+          <td>0.00055</td>
+          <td>Couches électroniques</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info reveal">
+      <div class="callout-icon">ℹ️</div>
+      <div class="callout-body">
+        <strong>Numéro atomique Z et nombre de masse A</strong>
+        <p><strong>Z</strong> = nombre de protons (identifie l'élément) &nbsp;|&nbsp; <strong>A</strong> = Z + N (protons + neutrons) &nbsp;|&nbsp; <strong>N</strong> = A − Z (nombre de neutrons)</p>
+        <p style="margin-top:6px;">Un atome <em>neutre</em> a autant d'électrons que de protons. Un <em>ion</em> a un nombre différent.</p>
+      </div>
+    </div>
+
+    <!-- SIM: Atom builder mini -->
+    <div class="sim-frame reveal">
+      <div class="sim-header">
+        <div class="sim-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="sim-title-bar">SIMULATION 1.1 — COMPOSITION ATOMIQUE</div>
+        <div></div>
+      </div>
+      <div class="sim-body">
+        <canvas id="simAtom" width="320" height="320"></canvas>
+        <div class="sim-controls">
+          <h4>Construire votre atome</h4>
+          <div class="ctrl-row">
+            <span class="ctrl-label" style="color:#ff8888;">⚫ Protons</span>
+            <input type="range" class="slider" id="sProtons" min="0" max="20" value="6" oninput="updateSimAtom()">
+            <span class="ctrl-val" id="vProtons">6</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label" style="color:#88aaff;">⚫ Neutrons</span>
+            <input type="range" class="slider" id="sNeutrons" min="0" max="20" value="6" oninput="updateSimAtom()">
+            <span class="ctrl-val" id="vNeutrons">6</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label" style="color:#ffdd88;">⚫ Électrons</span>
+            <input type="range" class="slider" id="sElectrons" min="0" max="20" value="6" oninput="updateSimAtom()">
+            <span class="ctrl-val" id="vElectrons">6</span>
+          </div>
+          <div class="info-box">
+            <strong id="simElemName">Carbone (C)</strong><br>
+            Z = <strong id="simZ" style="color:var(--warm);">6</strong> &nbsp;|&nbsp;
+            A = <strong id="simA" style="color:var(--warm);">12</strong> &nbsp;|&nbsp;
+            N = <strong id="simN" style="color:var(--warm);">6</strong><br>
+            Charge = <strong id="simQ" style="color:var(--warm);">0</strong> &nbsp;|&nbsp;
+            <span id="simType">Atome neutre</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip reveal">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <strong>Isotopes</strong>
+        <p>Deux atomes sont des <em>isotopes</em> s'ils ont le même Z (même élément) mais un A différent (neutrons différents). Ex : ¹²C et ¹⁴C ont tous deux Z=6, mais 6 vs 8 neutrons.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== SECTION 2: MODÈLES ===== -->
+<section id="modeles">
+  <div class="container">
+    <div class="chapter reveal">
+      <div class="chapter-num">Chapitre 02</div>
+      <h2 class="chapter-title">Histoire des <span>Modèles</span> Atomiques</h2>
+      <p class="chapter-intro">La représentation de l'atome a radicalement évolué au fil des siècles, passant de la sphère indivisible à la mécanique quantique moderne.</p>
+    </div>
+
+    <div class="timeline reveal">
+      <div class="timeline-item">
+        <div class="timeline-year">~400 AV. J.-C.</div>
+        <h4>Démocrite — L'Atome Indivisible</h4>
+        <p>Premier concept philosophique de la matière comme composée de petites particules indivisibles appelées "atomos" (ἄτομος). Modèle purement spéculatif, sans base expérimentale.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1808</div>
+        <h4>Dalton — La Sphère Pleine</h4>
+        <p>Modèle boule de billard. Les atomes sont des sphères dures, indivisibles et indéformables. Chaque élément est formé d'atomes identiques. Base des premières lois de la chimie moderne.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1897</div>
+        <h4>Thomson — Le Pudding aux Raisins</h4>
+        <p>Après la découverte de l'électron, Thomson propose un atome comme une sphère de charge positive dans laquelle sont noyés des électrons (comme des raisins dans un pudding).</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1911</div>
+        <h4>Rutherford — Le Noyau Central</h4>
+        <p>Expérience de la feuille d'or : un noyau dense et positif au centre, les électrons orbitant autour dans un espace quasi vide. Problème : électrons devaient spiraler vers le noyau.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1913</div>
+        <h4>Bohr — Les Orbites Quantifiées</h4>
+        <p>Les électrons occupent des orbites circulaires à énergies discrètes. Ils n'émettent d'énergie que lors des transitions entre orbites. Explique le spectre de l'hydrogène.</p>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year">1926</div>
+        <h4>Schrödinger — Le Modèle Quantique</h4>
+        <p>Les électrons ne suivent pas d'orbites précises mais existent dans des "orbitales" — des nuages de probabilité de présence. Modèle actuel, le plus précis et complet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== SECTION 3: BOHR ===== -->
+<section id="bohr">
+  <div class="container">
+    <div class="chapter reveal">
+      <div class="chapter-num">Chapitre 03</div>
+      <h2 class="chapter-title">Le Modèle de <span>Bohr</span> et les Spectres</h2>
+      <p class="chapter-intro">Bohr postule que les électrons circulent sur des orbites d'énergie quantifiée. Toute transition entre niveaux s'accompagne d'absorption ou d'émission d'un photon.</p>
+    </div>
+
+    <div class="concept-grid reveal">
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(26,107,107,0.1);">📈</div>
+        <h4>Postulat 1 — Orbites Stables</h4>
+        <p>L'électron tourne sur une orbite circulaire sans émettre de rayonnement. L'énergie est quantifiée : E<sub>n</sub> = −13.6/n² eV</p>
+        <div class="formula-tag">Eₙ = −13.6 / n² (eV)</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(184,115,51,0.1);">⚡</div>
+        <h4>Postulat 2 — Transitions</h4>
+        <p>Un électron peut sauter d'un niveau à un autre en absorbant (montée) ou émettant (descente) un photon d'énergie ΔE = hν.</p>
+        <div class="formula-tag">ΔE = Ef − Ei = hν</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(212,160,23,0.1);">🌈</div>
+        <h4>Postulat 3 — Spectre de Raies</h4>
+        <p>Les transitions donnent un spectre discontinu de raies, unique à chaque élément — véritable "empreinte digitale" atomique.</p>
+        <div class="formula-tag">λ = hc / ΔE</div>
+      </div>
+    </div>
+
+    <!-- Energy diagram -->
+    <div class="energy-diagram reveal">
+      <h3 style="font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--deep); margin-bottom:20px;">Diagramme d'énergie — Atome d'Hydrogène</h3>
+      <div class="energy-level-line" onclick="highlightTransition(1)">
+        <span class="level-n">n = 1</span>
+        <div class="level-line" style="background:linear-gradient(90deg,#e74c3c,#c0392b); height:3px;"></div>
+        <span class="level-val">−13.60 eV</span>
+        <span class="level-desc">État fondamental — le plus stable</span>
+      </div>
+      <div class="energy-level-line" onclick="highlightTransition(2)">
+        <span class="level-n">n = 2</span>
+        <div class="level-line" style="background:linear-gradient(90deg,#e67e22,#d35400); height:3px; width:70%;"></div>
+        <span class="level-val">−3.40 eV</span>
+        <span class="level-desc">Première couche excitée</span>
+      </div>
+      <div class="energy-level-line" onclick="highlightTransition(3)">
+        <span class="level-n">n = 3</span>
+        <div class="level-line" style="background:linear-gradient(90deg,#f1c40f,#d4ac0d); height:3px; width:50%;"></div>
+        <span class="level-val">−1.51 eV</span>
+        <span class="level-desc">Série de Balmer visible (→ n=2)</span>
+      </div>
+      <div class="energy-level-line">
+        <span class="level-n">n = 4</span>
+        <div class="level-line" style="background:linear-gradient(90deg,#27ae60,#1e8449); height:3px; width:35%;"></div>
+        <span class="level-val">−0.85 eV</span>
+        <span class="level-desc">Série de Paschen IR (→ n=3)</span>
+      </div>
+      <div class="energy-level-line">
+        <span class="level-n">n = 5</span>
+        <div class="level-line" style="background:linear-gradient(90deg,#2980b9,#1a6b9a); height:3px; width:22%;"></div>
+        <span class="level-val">−0.54 eV</span>
+        <span class="level-desc">Niveaux supérieurs</span>
+      </div>
+      <div class="energy-level-line">
+        <span class="level-n">n = ∞</span>
+        <div class="level-line" style="background:rgba(0,0,0,0.2); height:1px; width:10%;"></div>
+        <span class="level-val">0 eV</span>
+        <span class="level-desc">Ionisation complète</span>
+      </div>
+      <p id="transMsg" style="margin-top:15px; font-size:0.85rem; color:var(--teal); font-style:italic; min-height:24px;"></p>
+    </div>
+
+    <!-- Interactive Bohr -->
+    <div class="sim-frame reveal">
+      <div class="sim-header">
+        <div class="sim-dots"><span class="r"></span><span class="y"></span><span class="g"></span></div>
+        <div class="sim-title-bar">SIMULATION 3.1 — MODÈLE DE BOHR INTERACTIF</div>
+        <div></div>
+      </div>
+      <div class="sim-body">
+        <canvas id="interactiveBohr" width="380" height="350"></canvas>
+        <div class="sim-controls">
+          <h4>Transitions électroniques</h4>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Niveau ni</span>
+            <input type="range" class="slider" id="sNi" min="1" max="6" value="3" oninput="updateBohr()">
+            <span class="ctrl-val" id="vNi">3</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Niveau nf</span>
+            <input type="range" class="slider" id="sNf" min="1" max="6" value="1" oninput="updateBohr()">
+            <span class="ctrl-val" id="vNf">1</span>
+          </div>
+          <div class="info-box" id="bohrInfo">
+            <strong>Transition n=3 → n=1</strong><br>
+            Type : <span id="bType" style="color:var(--warm);">Émission</span><br>
+            ΔE = <span id="bDE" style="color:var(--warm);">−12.09 eV</span><br>
+            λ = <span id="bLambda" style="color:var(--warm);">102.6 nm</span><br>
+            Domaine : <span id="bDomain" style="color:var(--warm);">Ultraviolet (Lyman)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spectrum -->
+    <div class="spectrum-container reveal">
+      <h3 style="font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--warm); margin-bottom:10px;">Spectre de l'Hydrogène — Série de Balmer (visible)</h3>
+      <p style="font-size:0.82rem; color:rgba(255,255,255,0.5); margin-bottom:5px;">Transitions vers n=2 depuis les niveaux supérieurs</p>
+      <div class="spectrum-bar">
+        <!-- Balmer series lines -->
+        <div class="spectrum-line" style="left:29%; background:#8b00ff; box-shadow:0 0 8px #8b00ff;" title="n=6→2 : 410 nm"></div>
+        <div class="spectrum-line" style="left:47%; background:#4b0082; box-shadow:0 0 8px #4b0082;" title="n=5→2 : 434 nm"></div>
+        <div class="spectrum-line" style="left:58%; background:#00bfff; box-shadow:0 0 10px #00bfff;" title="n=4→2 : 486 nm"></div>
+        <div class="spectrum-line" style="left:85%; background:#ff0000; box-shadow:0 0 12px #ff0000;" title="n=3→2 : 656 nm"></div>
+      </div>
+      <div class="wavelength-labels">
+        <span>380nm</span><span>430nm</span><span>480nm</span><span>530nm</span><span>580nm</span><span>630nm</span><span>680nm</span><span>780nm</span>
+      </div>
+      <div style="margin-top:15px; display:flex; gap:20px; flex-wrap:wrap;">
+        <div style="font-size:0.78rem; color:rgba(255,255,255,0.6);">
+          <span style="color:#8b00ff;">━</span> 410 nm · n=6→2 · Violet<br>
+          <span style="color:#4b0082;">━</span> 434 nm · n=5→2 · Indigo
+        </div>
+        <div style="font-size:0.78rem; color:rgba(255,255,255,0.6);">
+          <span style="color:#00bfff;">━</span> 486 nm · n=4→2 · Bleu-vert<br>
+          <span style="color:#ff0000;">━</span> 656 nm · n=3→2 · Rouge
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== SECTION 4: CONFIG ÉLECTRONIQUE ===== -->
+<section id="config">
+  <div class="container">
+    <div class="chapter reveal">
+      <div class="chapter-num">Chapitre 04</div>
+      <h2 class="chapter-title">Configuration <span>Électronique</span></h2>
+      <p class="chapter-intro">La distribution des électrons dans les sous-couches atomiques obéit à trois règles fondamentales. Elle détermine toutes les propriétés chimiques d'un élément.</p>
+    </div>
+
+    <div class="concept-grid reveal">
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(15,52,96,0.08);">📐</div>
+        <h4>Règle de Klechkowski</h4>
+        <p>Les sous-couches se remplissent par ordre croissant de (n + ℓ). En cas d'égalité, on remplit celle avec le n le plus petit en premier.</p>
+        <div class="formula-tag">Ordre : 1s 2s 2p 3s 3p 4s 3d 4p…</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(184,115,51,0.08);">⚖️</div>
+        <h4>Règle de Hund</h4>
+        <p>Dans une sous-couche, les électrons occupent d'abord chaque case quantique avec un spin parallèle avant de se mettre en paire.</p>
+        <div class="formula-tag">Maximiser les spins ↑↑↑ avant ↑↓</div>
+      </div>
+      <div class="concept-card">
+        <div class="concept-icon" style="background:rgba(26,107,107,0.08);">🚫</div>
+        <h4>Principe de Pauli</h4>
+        <p>Deux électrons dans le même atome ne peuvent pas avoir les 4 mêmes nombres quantiques. Conséquence : max 2 électrons par case, à spins opposés.</p>
+        <div class="formula-tag">Max 2e⁻ / case · spins ↑↓</div>
+      </div>
+    </div>
+
+    <!-- Order diagram -->
+    <div class="callout key reveal">
+      <div class="callout-icon">📋</div>
+      <div class="callout-body">
+        <strong>Ordre de remplissage des sous-couches (Klechkowski)</strong>
+        <p style="font-family:'JetBrains Mono',monospace; font-size:0.85rem; margin-top:8px; line-height:2.2; letter-spacing:1px;">
+          1s → 2s → 2p → 3s → 3p → <strong>4s → 3d</strong> → 4p → <strong>5s → 4d</strong> → 5p → <strong>6s → 4f → 5d</strong> → 6p → …
+        </p>
+        <p style="font-size:0.82rem; color:var(--text2); margin-top:5px;">⚠️ Attention : 4s se remplit AVANT 3d !</p>
+      </div>
+    </div>
+
+    <!-- Interactive config builder -->
+    <div class="config-builder reveal">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:0.7rem; color:rgba(255,255,255,0.4); letter-spacing:3px; margin-bottom:15px;">CONSTRUCTEUR DE CONFIGURATION</div>
+      <div class="cb-elem-input">
+        <select id="cbSelect" onchange="buildConfig()">
+          <option value="">— Sélectionner un élément —</option>
+        </select>
+        <button class="cb-btn fill" onclick="buildConfig()">▶ Générer</button>
+        <button class="cb-btn clear" onclick="clearConfig()">✕ Effacer</button>
+      </div>
+      <div class="cb-display" id="cbDisplay">Sélectionnez un élément pour voir sa configuration…</div>
+      <div class="cb-result" id="cbResult"></div>
+    </div>
+
+    <!-- Examples table -->
+    <table class="styled-table reveal">
+      <thead>
+        <tr>
+          <th>Élément</th>
+          <th>Z</th>
+          <th>Configuration complète</th>
+          <th>Notation abrégée</th>
+          <th>e⁻ valence</th>
+          <th>Groupe</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><b>H</b> — Hydrogène</td><td>1</td><td><code>1s¹</code></td><td><code>1s¹</code></td><td>1</td><td>1</td></tr>
+        <tr><td><b>He</b> — Hélium</td><td>2</td><td><code>1s²</code></td><td><code>1s²</code></td><td>2</td><td>18</td></tr>
+        <tr><td><b>C</b> — Carbone</td><td>6</td><td><code>1s² 2s² 2p²</code></td><td><code>[He] 2s² 2p²</code></td><td>4</td><td>14</td></tr>
+        <tr><td><b>N</b> — Azote</td><td>7</td><td><code>1s² 2s² 2p³</code></td><td><code>[He] 2s² 2p³</code></td><td>5</td><td>15</td></tr>
+        <tr><td><b>Na</b> — Sodium</td><td>11</td><td><code>1s² 2s² 2p⁶ 3s¹</code></td><td><code>[Ne] 3s¹</code></td><td>1</td><td>1</td></tr>
+        <tr><td><b>Cl</b> — Chlore</td><td>17</td><td><code>1s² 2s² 2p⁶ 3s² 3p⁵</code></td><td><code>[Ne] 3s² 3p⁵</code></td><td>7</td><td>17</td></tr>
+        <tr><td><b>Fe</b> — Fer</td><td>26</td><td><code>1s² 2s² 2p⁶ 3s² 3p⁶ 3d⁶ 4s²</code></td><td><code>[Ar] 3d⁶ 4s²</code></td><td>2</td><td>8</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn reveal">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <strong>Exceptions notables</strong>
+        <p>Le cuivre (Cu, Z=29) et le chrome (Cr, Z=24) ont des configurations "anormales" car une sous-couche d semi-pleine ou pleine confère une stabilité supplémentaire : Cu = [Ar] 3d¹⁰ 4s¹ (et non 3d⁹ 4s²)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== SECTION 5: TABLEAU PÉRIODIQUE ===== -->
+<section id="tableau">
+  <div class="container">
+    <div class="chapter reveal">
+      <div class="chapter-num">Chapitre 05</div>
+      <h2 class="chapter-title">Le Tableau <span>Périodique</span></h2>
+      <p class="chapter-intro">Organisé par Z croissant et configuration électronique, le tableau périodique révèle la périodicité des propriétés chimiques. Chaque colonne regroupe des éléments aux propriétés similaires.</p>
+    </div>
+
+    <div class="callout info reveal">
+      <div class="callout-icon">🗂</div>
+      <div class="callout-body">
+        <strong>Lecture du tableau</strong>
+        <p>Les <b>périodes</b> (lignes) correspondent aux couches électroniques remplies. Les <b>groupes</b> (colonnes) regroupent des éléments de même valence et propriétés semblables. Passez la souris sur un élément ci-dessous pour voir ses infos.</p>
+      </div>
+    </div>
+
+    <div id="periodicMini" class="periodic-mini reveal" style="min-width:500px;"></div>
+    <div id="elemDetail" style="background:#fff; border:1px solid var(--border); border-radius:12px; padding:16px 20px; margin-top:10px; font-size:0.88rem; color:var(--text2); min-height:50px; display:none;" class="reveal"></div>
+
+    <div class="concept-grid reveal" style="margin-top:40px;">
+      <div class="concept-card">
+        <h4>Rayon atomique</h4>
+        <p>Diminue de gauche à droite (Z↑ attire les e⁻ plus fort) et augmente de haut en bas (couches supplémentaires).</p>
+      </div>
+      <div class="concept-card">
+        <h4>Énergie d'ionisation</h4>
+        <p>Énergie pour arracher 1 électron. Augmente de gauche à droite, diminue de haut en bas — inverse du rayon.</p>
+      </div>
+      <div class="concept-card">
+        <h4>Électronégativité</h4>
+        <p>Capacité à attirer les électrons d'une liaison. Augmente vers F (coin supérieur droit, hors gaz nobles).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<!-- ===== QUIZ ===== -->
+<section id="quiz-section">
+  <div class="container">
+    <div class="quiz-section reveal">
+      <h3>📝 Testez vos connaissances — Module 1</h3>
+
+      <div class="q-item">
+        <div class="q-num">QUESTION 01</div>
+        <div class="q-text">Un atome de sodium possède Z = 11 et A = 23. Combien de neutrons contient-il ?</div>
+        <div class="q-opts">
+          <div class="q-opt" onclick="answer(this,'01','A')"><span class="opt-letter">A</span> 11 neutrons</div>
+          <div class="q-opt" onclick="answer(this,'01','B')"><span class="opt-letter">B</span> 12 neutrons</div>
+          <div class="q-opt" onclick="answer(this,'01','C')"><span class="opt-letter">C</span> 23 neutrons</div>
+          <div class="q-opt" onclick="answer(this,'01','D')"><span class="opt-letter">D</span> 34 neutrons</div>
+        </div>
+        <div class="q-explain" id="explain-01"></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-num">QUESTION 02</div>
+        <div class="q-text">Quelle est la configuration électronique correcte du chlore (Z = 17) ?</div>
+        <div class="q-opts">
+          <div class="q-opt" onclick="answer(this,'02','A')"><span class="opt-letter">A</span> 1s² 2s² 2p⁶ 3s¹ 3p⁶</div>
+          <div class="q-opt" onclick="answer(this,'02','B')"><span class="opt-letter">B</span> 1s² 2s² 2p⁶ 3s² 3p⁵</div>
+          <div class="q-opt" onclick="answer(this,'02','C')"><span class="opt-letter">C</span> 1s² 2s² 2p⁵ 3s² 3p⁶</div>
+          <div class="q-opt" onclick="answer(this,'02','D')"><span class="opt-letter">D</span> 1s² 2s⁶ 2p² 3s² 3p⁵</div>
+        </div>
+        <div class="q-explain" id="explain-02"></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-num">QUESTION 03</div>
+        <div class="q-text">Dans le modèle de Bohr, lorsqu'un électron passe de n=4 à n=2, il y a...</div>
+        <div class="q-opts">
+          <div class="q-opt" onclick="answer(this,'03','A')"><span class="opt-letter">A</span> Absorption d'un photon (gain d'énergie)</div>
+          <div class="q-opt" onclick="answer(this,'03','B')"><span class="opt-letter">B</span> Émission d'un photon (perte d'énergie)</div>
+          <div class="q-opt" onclick="answer(this,'03','C')"><span class="opt-letter">C</span> Aucun échange d'énergie</div>
+          <div class="q-opt" onclick="answer(this,'03','D')"><span class="opt-letter">D</span> Ionisation de l'atome</div>
+        </div>
+        <div class="q-explain" id="explain-03"></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-num">QUESTION 04</div>
+        <div class="q-text">Quel est le nombre maximum d'électrons dans la couche n = 3 ?</div>
+        <div class="q-opts">
+          <div class="q-opt" onclick="answer(this,'04','A')"><span class="opt-letter">A</span> 8</div>
+          <div class="q-opt" onclick="answer(this,'04','B')"><span class="opt-letter">B</span> 12</div>
+          <div class="q-opt" onclick="answer(this,'04','C')"><span class="opt-letter">C</span> 18</div>
+          <div class="q-opt" onclick="answer(this,'04','D')"><span class="opt-letter">D</span> 32</div>
+        </div>
+        <div class="q-explain" id="explain-04"></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-num">QUESTION 05</div>
+        <div class="q-text">¹²C et ¹⁴C sont des isotopes du carbone. Quelle affirmation est correcte ?</div>
+        <div class="q-opts">
+          <div class="q-opt" onclick="answer(this,'05','A')"><span class="opt-letter">A</span> Ils ont des propriétés chimiques très différentes</div>
+          <div class="q-opt" onclick="answer(this,'05','B')"><span class="opt-letter">B</span> ¹⁴C a 2 protons de plus que ¹²C</div>
+          <div class="q-opt" onclick="answer(this,'05','C')"><span class="opt-letter">C</span> Ils ont le même Z mais un nombre de neutrons différent</div>
+          <div class="q-opt" onclick="answer(this,'05','D')"><span class="opt-letter">D</span> Ce sont deux éléments différents</div>
+        </div>
+        <div class="q-explain" id="explain-05"></div>
+      </div>
+
+      <div class="q-item">
+        <div class="q-num">QUESTION 06</div>
+        <div class="q-text">Selon la règle de Hund, dans la sous-couche 2p contenant 3 électrons, comment sont-ils distribués ?</div>
+        <div class="q-opts">
+          <div class="q-opt" onclick="answer(this,'06','A')"><span class="opt-letter">A</span> ↑↓ | ↑ | __ (2 dans une case, 1 dans une autre)</div>
+          <div class="q-opt" onclick="answer(this,'06','B')"><span class="opt-letter">B</span> ↑ | ↑ | ↑ (1 par case, spins parallèles)</div>
+          <div class="q-opt" onclick="answer(this,'06','C')"><span class="opt-letter">C</span> ↑↓ | ↑↓ | __ (2 paires)</div>
+          <div class="q-opt" onclick="answer(this,'06','D')"><span class="opt-letter">D</span> L'ordre n'a pas d'importance</div>
+        </div>
+        <div class="q-explain" id="explain-06"></div>
+      </div>
+
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;">
+        <button class="quiz-btn primary" onclick="submitQuiz()">✓ Valider mes réponses</button>
+        <button class="quiz-btn sec" onclick="resetGuideQuiz()">🔄 Recommencer</button>
+      </div>
+
+      <div class="score-display" id="guideScore">
+        <div class="score-num" id="guideScoreNum">0/6</div>
+        <div class="score-txt" id="guideScoreTxt"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>
+    <strong>Guide Interactif — Module 1 : Structure de l'Atome</strong><br>
+    Réalisé par <strong>Edmond Atinzoun TCHOKPON</strong> · Étudiant en Physique-Chimie<br>
+    Pour lycéens, collégiens, étudiants, enseignants et tous les scientifiques<br>
+    <span style="font-size:0.75rem; opacity:0.5;">Chimie Générale · Simulations Pédagogiques Interactives</span>
+  </p>
+</footer>
+
+<script>
+// ========================================================
+// HERO CANVAS — Animated atom
+// ========================================================
+(function(){
+  const c = document.getElementById('heroCanvas');
+  const ctx = c.getContext('2d');
+  function resize(){ c.width=window.innerWidth; c.height=window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const particles = Array.from({length:80}, () => ({
+    x: Math.random()*c.width, y: Math.random()*c.height,
+    r: Math.random()*1.5+0.3,
+    a: Math.random(), s: Math.random()*0.004+0.001
+  }));
+
+  // Big atom at center
+  let t = 0;
+  const shells = [
+    {r:120, speed:0.008, e:2, color:'rgba(200,169,110,0.6)'},
+    {r:200, speed:0.005, e:8, color:'rgba(180,115,51,0.4)'},
+    {r:280, speed:0.003, e:6, color:'rgba(160,100,40,0.3)'},
+  ];
+
+  function draw(){
+    ctx.clearRect(0,0,c.width,c.height);
+    const cx=c.width/2, cy=c.height/2;
+
+    // Stars
+    particles.forEach(p => {
+      p.a += p.s; if(p.a>1||p.a<0) p.s=-p.s;
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(200,180,150,${p.a*0.3})`; ctx.fill();
+    });
+
+    // Shells
+    shells.forEach(sh => {
+      ctx.beginPath(); ctx.arc(cx,cy,sh.r,0,Math.PI*2);
+      ctx.strokeStyle=sh.color; ctx.lineWidth=1; ctx.setLineDash([6,12]); ctx.stroke(); ctx.setLineDash([]);
+      for(let i=0;i<sh.e;i++){
+        const a = (i/sh.e)*Math.PI*2 + t*sh.speed;
+        const ex=cx+Math.cos(a)*sh.r, ey=cy+Math.sin(a)*sh.r;
+        const g=ctx.createRadialGradient(ex,ey,0,ex,ey,5);
+        g.addColorStop(0,'rgba(255,220,100,0.9)'); g.addColorStop(1,'rgba(200,120,40,0)');
+        ctx.beginPath(); ctx.arc(ex,ey,4,0,Math.PI*2);
+        ctx.fillStyle=g; ctx.fill();
+      }
+    });
+
+    // Nucleus
+    const ng=ctx.createRadialGradient(cx,cy,0,cx,cy,30);
+    ng.addColorStop(0,'rgba(200,169,110,0.8)'); ng.addColorStop(1,'rgba(180,80,30,0.1)');
+    ctx.beginPath(); ctx.arc(cx,cy,28,0,Math.PI*2); ctx.fillStyle=ng; ctx.fill();
+    ctx.font='bold 13px Playfair Display'; ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('⚛', cx, cy);
+
+    t += 0.5;
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ========================================================
+// ELEMENT DATABASE
+// ========================================================
+const ELEMS = [
+  {z:1,sym:'H',name:'Hydrogène',a:1,config:'1s¹',valence:1,group:1,period:1,type:'nonmetal',col:1,row:1},
+  {z:2,sym:'He',name:'Hélium',a:4,config:'1s²',valence:2,group:18,period:1,type:'noble',col:18,row:1},
+  {z:3,sym:'Li',name:'Lithium',a:7,config:'[He] 2s¹',valence:1,group:1,period:2,type:'alkali',col:1,row:2},
+  {z:4,sym:'Be',name:'Béryllium',a:9,config:'[He] 2s²',valence:2,group:2,period:2,type:'alkaline',col:2,row:2},
+  {z:5,sym:'B',name:'Bore',a:11,config:'[He] 2s² 2p¹',valence:3,group:13,period:2,type:'metalloid',col:13,row:2},
+  {z:6,sym:'C',name:'Carbone',a:12,config:'[He] 2s² 2p²',valence:4,group:14,period:2,type:'nonmetal',col:14,row:2},
+  {z:7,sym:'N',name:'Azote',a:14,config:'[He] 2s² 2p³',valence:5,group:15,period:2,type:'nonmetal',col:15,row:2},
+  {z:8,sym:'O',name:'Oxygène',a:16,config:'[He] 2s² 2p⁴',valence:6,group:16,period:2,type:'nonmetal',col:16,row:2},
+  {z:9,sym:'F',name:'Fluor',a:19,config:'[He] 2s² 2p⁵',valence:7,group:17,period:2,type:'halogen',col:17,row:2},
+  {z:10,sym:'Ne',name:'Néon',a:20,config:'[He] 2s² 2p⁶',valence:8,group:18,period:2,type:'noble',col:18,row:2},
+  {z:11,sym:'Na',name:'Sodium',a:23,config:'[Ne] 3s¹',valence:1,group:1,period:3,type:'alkali',col:1,row:3},
+  {z:12,sym:'Mg',name:'Magnésium',a:24,config:'[Ne] 3s²',valence:2,group:2,period:3,type:'alkaline',col:2,row:3},
+  {z:13,sym:'Al',name:'Aluminium',a:27,config:'[Ne] 3s² 3p¹',valence:3,group:13,period:3,type:'post',col:13,row:3},
+  {z:14,sym:'Si',name:'Silicium',a:28,config:'[Ne] 3s² 3p²',valence:4,group:14,period:3,type:'metalloid',col:14,row:3},
+  {z:15,sym:'P',name:'Phosphore',a:31,config:'[Ne] 3s² 3p³',valence:5,group:15,period:3,type:'nonmetal',col:15,row:3},
+  {z:16,sym:'S',name:'Soufre',a:32,config:'[Ne] 3s² 3p⁴',valence:6,group:16,period:3,type:'nonmetal',col:16,row:3},
+  {z:17,sym:'Cl',name:'Chlore',a:35,config:'[Ne] 3s² 3p⁵',valence:7,group:17,period:3,type:'halogen',col:17,row:3},
+  {z:18,sym:'Ar',name:'Argon',a:40,config:'[Ne] 3s² 3p⁶',valence:8,group:18,period:3,type:'noble',col:18,row:3},
+  {z:19,sym:'K',name:'Potassium',a:39,config:'[Ar] 4s¹',valence:1,group:1,period:4,type:'alkali',col:1,row:4},
+  {z:20,sym:'Ca',name:'Calcium',a:40,config:'[Ar] 4s²',valence:2,group:2,period:4,type:'alkaline',col:2,row:4},
+  {z:26,sym:'Fe',name:'Fer',a:56,config:'[Ar] 3d⁶ 4s²',valence:2,group:8,period:4,type:'transition',col:8,row:4},
+  {z:29,sym:'Cu',name:'Cuivre',a:64,config:'[Ar] 3d¹⁰ 4s¹',valence:1,group:11,period:4,type:'transition',col:11,row:4},
+  {z:30,sym:'Zn',name:'Zinc',a:65,config:'[Ar] 3d¹⁰ 4s²',valence:2,group:12,period:4,type:'transition',col:12,row:4},
+  {z:35,sym:'Br',name:'Brome',a:80,config:'[Ar] 3d¹⁰ 4s² 4p⁵',valence:7,group:17,period:4,type:'halogen',col:17,row:4},
+  {z:36,sym:'Kr',name:'Krypton',a:84,config:'[Ar] 3d¹⁰ 4s² 4p⁶',valence:8,group:18,period:4,type:'noble',col:18,row:4},
+  {z:47,sym:'Ag',name:'Argent',a:108,config:'[Kr] 4d¹⁰ 5s¹',valence:1,group:11,period:5,type:'transition',col:11,row:5},
+  {z:79,sym:'Au',name:'Or',a:197,config:'[Xe] 4f¹⁴ 5d¹⁰ 6s¹',valence:1,group:11,period:6,type:'transition',col:11,row:6},
+];
+
+// ========================================================
+// SIM 1: ATOM BUILDER
+// ========================================================
+const simCanvas = document.getElementById('simAtom');
+const simCtx = simCanvas.getContext('2d');
+let simAngle = 0;
+
+function updateSimAtom(){
+  const p = +document.getElementById('sProtons').value;
+  const n = +document.getElementById('sNeutrons').value;
+  const e = +document.getElementById('sElectrons').value;
+  document.getElementById('vProtons').textContent = p;
+  document.getElementById('vNeutrons').textContent = n;
+  document.getElementById('vElectrons').textContent = e;
+  document.getElementById('simZ').textContent = p;
+  document.getElementById('simA').textContent = p+n;
+  document.getElementById('simN').textContent = n;
+  const q = p-e;
+  document.getElementById('simQ').textContent = q>0?'+'+q:q;
+  const el = ELEMS.find(x=>x.z===p);
+  document.getElementById('simElemName').textContent = el ? `${el.sym} — ${el.name}` : (p===0 ? 'Aucun élément' : `Élément Z=${p}`);
+  const type = q===0?'Atome neutre':q>0?`Ion ${el?el.sym:''}${Math.abs(q)>1?Math.abs(q):''}⁺`:`Ion ${el?el.sym:''}${Math.abs(q)>1?Math.abs(q):''}⁻`;
+  document.getElementById('simType').textContent = type;
+}
+
+function drawSimAtom(){
+  const c=simCanvas, ctx=simCtx, W=c.width, H=c.height, CX=W/2, CY=H/2;
+  ctx.clearRect(0,0,W,H);
+  const p=+document.getElementById('sProtons').value;
+  const n=+document.getElementById('sNeutrons').value;
+  const e=+document.getElementById('sElectrons').value;
+
+  // BG
+  ctx.fillStyle='rgba(5,15,35,0.95)';
+  ctx.beginPath(); ctx.arc(CX,CY,CX-5,0,Math.PI*2); ctx.fill();
+
+  // Shells
+  const shells=[40,75,110,145];
+  const maxPerShell=[2,8,18,32];
+  let remaining=e; let si=0;
+  while(remaining>0&&si<4){
+    const inS=Math.min(remaining,maxPerShell[si]);
+    ctx.beginPath(); ctx.arc(CX,CY,shells[si],0,Math.PI*2);
+    ctx.strokeStyle=`rgba(200,169,110,${0.15+si*0.05})`; ctx.lineWidth=1;
+    ctx.setLineDash([4,8]); ctx.stroke(); ctx.setLineDash([]);
+    for(let i=0;i<inS;i++){
+      const a=(i/inS)*Math.PI*2+simAngle/(si+1);
+      const ex=CX+Math.cos(a)*shells[si], ey=CY+Math.sin(a)*shells[si];
+      const g=ctx.createRadialGradient(ex,ey,0,ex,ey,5);
+      g.addColorStop(0,'#ffee88'); g.addColorStop(1,'rgba(255,160,0,0)');
+      ctx.beginPath(); ctx.arc(ex,ey,4,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+    }
+    remaining-=inS; si++;
+  }
+
+  // Nucleus
+  if(p+n>0){
+    const ng=ctx.createRadialGradient(CX,CY,0,CX,CY,Math.min(25,8+p*1.5));
+    ng.addColorStop(0,'rgba(255,150,100,0.9)'); ng.addColorStop(1,'rgba(180,50,30,0.1)');
+    ctx.beginPath(); ctx.arc(CX,CY,Math.min(25,8+p*1.5),0,Math.PI*2); ctx.fillStyle=ng; ctx.fill();
+  }
+  // Symbol
+  const el=ELEMS.find(x=>x.z===p);
+  ctx.font=`bold ${p>0?'18':'14'}px serif`;
+  ctx.fillStyle='rgba(255,255,255,0.9)'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(el?el.sym:(p>0?`Z=${p}`:'?'),CX,CY);
+
+  simAngle+=0.02;
+  requestAnimationFrame(drawSimAtom);
+}
+drawSimAtom();
+updateSimAtom();
+
+// ========================================================
+// SIM 3: BOHR INTERACTIVE
+// ========================================================
+const bohrC = document.getElementById('interactiveBohr');
+const bohrX = bohrC.getContext('2d');
+let bohrT = 0, currentShell = 3;
+
+const ENERGIES = {1:-13.6, 2:-3.4, 3:-1.51, 4:-0.85, 5:-0.54, 6:-0.38};
+
+function updateBohr(){
+  const ni=+document.getElementById('sNi').value;
+  const nf=+document.getElementById('sNf').value;
+  document.getElementById('vNi').textContent=ni;
+  document.getElementById('vNf').textContent=nf;
+  currentShell=ni;
+
+  const dE=ENERGIES[nf]-ENERGIES[ni];
+  const lambda=Math.abs(1240/dE);
+  const type=dE<0?'Émission':'Absorption';
+  let domain='';
+  if(lambda<100) domain='Lyman (UV lointain)';
+  else if(lambda<380) domain='Lyman / Balmer (UV)';
+  else if(lambda<780) domain='Balmer (Visible)';
+  else domain='Paschen (Infrarouge)';
+
+  document.getElementById('bType').textContent=type;
+  document.getElementById('bDE').textContent=dE.toFixed(2)+' eV';
+  document.getElementById('bLambda').textContent=lambda.toFixed(1)+' nm';
+  document.getElementById('bDomain').textContent=domain;
+}
+
+function drawBohr(){
+  const c=bohrC, ctx=bohrX, W=c.width, H=c.height, CX=W/2, CY=H/2+10;
+  ctx.clearRect(0,0,W,H);
+  const bg=ctx.createRadialGradient(CX,CY,0,CX,CY,CX);
+  bg.addColorStop(0,'#061025'); bg.addColorStop(1,'#020810');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  const shellR=[40,80,120,155,183,205];
+  const cols=['#e74c3c','#e67e22','#f1c40f','#27ae60','#2980b9','#8e44ad'];
+
+  for(let i=0;i<6;i++){
+    ctx.beginPath(); ctx.arc(CX,CY,shellR[i],0,Math.PI*2);
+    ctx.strokeStyle=i===currentShell-1?cols[i]:`${cols[i]}44`;
+    ctx.lineWidth=i===currentShell-1?2:1;
+    ctx.setLineDash([5,10]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.font='10px JetBrains Mono'; ctx.fillStyle=cols[i];
+    ctx.textAlign='left'; ctx.fillText(`n=${i+1}`,CX+shellR[i]*0.69+3,CY-shellR[i]*0.69-3);
+    ctx.font='9px sans-serif'; ctx.fillStyle='rgba(200,160,80,0.5)';
+    ctx.fillText(`${Object.values(ENERGIES)[i]}eV`,CX-shellR[i]-60,CY+4);
+  }
+
+  // Nucleus
+  const ng2=ctx.createRadialGradient(CX,CY,0,CX,CY,18);
+  ng2.addColorStop(0,'rgba(230,160,80,0.9)'); ng2.addColorStop(1,'rgba(180,60,20,0.2)');
+  ctx.beginPath(); ctx.arc(CX,CY,18,0,Math.PI*2); ctx.fillStyle=ng2; ctx.fill();
+  ctx.font='bold 11px serif'; ctx.fillStyle='#fff'; ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText('H⁺',CX,CY);
+
+  // Electron
+  const r=shellR[currentShell-1];
+  const ea=bohrT*(0.035/currentShell);
+  const ex=CX+Math.cos(ea)*r, ey=CY+Math.sin(ea)*r;
+  for(let t=1;t<=7;t++){
+    const ta=ea-0.035/currentShell*t*3;
+    const tx=CX+Math.cos(ta)*r, ty=CY+Math.sin(ta)*r;
+    ctx.beginPath(); ctx.arc(tx,ty,3.5*(1-t/8),0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,200,50,${0.35*(1-t/8)})`; ctx.fill();
+  }
+  const eg=ctx.createRadialGradient(ex,ey,0,ex,ey,6);
+  eg.addColorStop(0,'#fff'); eg.addColorStop(0.4,'#ffe066'); eg.addColorStop(1,'rgba(255,140,0,0)');
+  ctx.beginPath(); ctx.arc(ex,ey,5,0,Math.PI*2); ctx.fillStyle=eg;
+  ctx.shadowBlur=12; ctx.shadowColor='#ffd700'; ctx.fill(); ctx.shadowBlur=0;
+
+  bohrT++;
+  requestAnimationFrame(drawBohr);
+}
+drawBohr();
+updateBohr();
+
+// ========================================================
+// ENERGY DIAGRAM
+// ========================================================
+const energies_eV = {1:-13.6,2:-3.4,3:-1.51,4:-0.85,5:-0.54,6:-0.38};
+function highlightTransition(from){
+  const to=1;
+  const dE=energies_eV[to]-energies_eV[from];
+  const lam=Math.abs(1240/dE);
+  let reg=lam<380?'UV':lam<780?'Visible':'Infrarouge';
+  document.getElementById('transMsg').textContent =
+    `→ n=${from} → n=${to} | ΔE = ${dE.toFixed(2)} eV | λ = ${lam.toFixed(0)} nm | ${reg}`;
+}
+
+// ========================================================
+// CONFIG BUILDER
+// ========================================================
+const cfgSubs = [
+  {label:'1s',max:2},{label:'2s',max:2},{label:'2p',max:6},
+  {label:'3s',max:2},{label:'3p',max:6},{label:'4s',max:2},
+  {label:'3d',max:10},{label:'4p',max:6},{label:'5s',max:2},
+  {label:'4d',max:10},{label:'5p',max:6},{label:'6s',max:2},
+  {label:'4f',max:14},{label:'5d',max:10},{label:'6p',max:6},
+];
+
+function toSup(n){
+  return n.toString().split('').map(c=>['⁰','¹','²','³','⁴','⁵','⁶','⁷','⁸','⁹','¹⁰'][parseInt(c)]||c).join('');
+}
+
+// Populate selects
+function populateCBSelect(){
+  const sel=document.getElementById('cbSelect');
+  ELEMS.forEach(e=>{
+    const o=document.createElement('option');
+    o.value=e.z; o.textContent=`${e.z}. ${e.sym} — ${e.name}`;
+    sel.appendChild(o);
+  });
+}
+populateCBSelect();
+
+function buildConfig(){
+  const z=parseInt(document.getElementById('cbSelect').value);
+  if(!z){clearConfig();return;}
+  let rem=z, cfg='', full='';
+  for(const s of cfgSubs){
+    if(rem<=0)break;
+    const fill=Math.min(rem,s.max);
+    full+=`${s.label}${toSup(fill)} `;
+    rem-=fill;
+  }
+  const el=ELEMS.find(x=>x.z===z);
+  document.getElementById('cbDisplay').textContent=el?el.config:full.trim();
+  if(el){
+    document.getElementById('cbResult').innerHTML=
+      `<span>${el.sym}</span> — ${el.name} &nbsp;|&nbsp; Z = <span>${el.z}</span> &nbsp;|&nbsp; A = <span>${el.a}</span><br>` +
+      `Électrons de valence : <span>${el.valence}</span> &nbsp;|&nbsp; Groupe : <span>${el.group}</span> &nbsp;|&nbsp; Période : <span>${el.period}</span>`;
+  }
+}
+
+function clearConfig(){
+  document.getElementById('cbDisplay').textContent='Sélectionnez un élément pour voir sa configuration…';
+  document.getElementById('cbResult').innerHTML='';
+  document.getElementById('cbSelect').value='';
+}
+
+// ========================================================
+// PERIODIC MINI
+// ========================================================
+function buildPeriodic(){
+  const container=document.getElementById('periodicMini');
+  container.innerHTML='';
+  // Create 7x18 grid
+  const grid=Array.from({length:7},()=>Array(18).fill(null));
+  ELEMS.forEach(e=>{
+    if(e.row<=7&&e.col<=18) grid[e.row-1][e.col-1]=e;
+  });
+  grid.forEach(row=>{
+    row.forEach(el=>{
+      const cell=document.createElement('div');
+      if(el){
+        cell.className=`elem-cell ${el.type}`;
+        cell.innerHTML=`<span class="e-z">${el.z}</span><span class="e-sym">${el.sym}</span>`;
+        cell.title=`${el.sym} — ${el.name}`;
+        cell.onclick=()=>showElem(el);
+      } else {
+        cell.className='elem-cell empty';
+      }
+      container.appendChild(cell);
+    });
+  });
+}
+buildPeriodic();
+
+function showElem(el){
+  const d=document.getElementById('elemDetail');
+  d.style.display='block';
+  d.innerHTML=`
+    <strong style="font-size:1.1rem;color:var(--deep);">${el.sym} — ${el.name}</strong><br>
+    Z = ${el.z} &nbsp;|&nbsp; A = ${el.a} &nbsp;|&nbsp; Groupe ${el.group} &nbsp;|&nbsp; Période ${el.period}<br>
+    <code style="font-size:0.85rem;color:var(--copper);">${el.config}</code>
+    &nbsp;|&nbsp; ${el.valence} électron(s) de valence
+  `;
+}
+
+// ========================================================
+// QUIZ
+// ========================================================
+const QUIZ_ANSWERS = {
+  '01': 'B', // 12 neutrons = 23-11
+  '02': 'B', // 1s² 2s² 2p⁶ 3s² 3p⁵
+  '03': 'B', // émission
+  '04': 'C', // 18 = 2×3²
+  '05': 'C', // même Z, neutrons différents
+  '06': 'B', // Hund : 1 par case
+};
+const QUIZ_EXPLAIN = {
+  '01': 'N = A − Z = 23 − 11 = 12 neutrons. Le nombre de masse A = protons + neutrons.',
+  '02': 'Cl (Z=17) : 1s² 2s² 2p⁶ 3s² 3p⁵. Total = 2+2+6+2+5 = 17 ✓',
+  '03': 'n=4 → n=2 : descente de niveau = perte d\'énergie = émission d\'un photon.',
+  '04': 'Max par couche = 2n² = 2×3² = 18. La couche n=3 peut contenir 3s²+3p⁶+3d¹⁰ = 18 e⁻.',
+  '05': 'Les isotopes ont le même Z (même élément = même protons) mais A différent (neutrons différents).',
+  '06': 'Règle de Hund : maximiser spins parallèles → 1 électron ↑ par case avant de compléter en paires.',
+};
+
+let quizSelected = {};
+let quizDone = false;
+
+function answer(el, qid, opt){
+  if(quizDone) return;
+  quizSelected[qid]=opt;
+  const opts=el.closest('.q-opts').querySelectorAll('.q-opt');
+  opts.forEach(o=>{ o.classList.remove('correct','wrong'); o.style.background=''; o.style.borderColor=''; o.style.color=''; });
+  el.style.borderColor='var(--copper)'; el.style.background='rgba(184,115,51,0.08)'; el.style.color='var(--copper)';
+}
+
+function submitQuiz(){
+  if(quizDone) return;
+  quizDone=true;
+  let score=0;
+  for(const [qid,correct] of Object.entries(QUIZ_ANSWERS)){
+    const qItem=document.getElementById(`explain-${qid}`).closest('.q-item');
+    const opts=qItem.querySelectorAll('.q-opt');
+    const letters=['A','B','C','D'];
+    opts.forEach((o,i)=>{
+      const l=letters[i];
+      o.classList.remove('correct','wrong');
+      o.style.background=''; o.style.borderColor=''; o.style.color='';
+      if(l===correct) o.classList.add('correct');
+      else if(quizSelected[qid]===l) o.classList.add('wrong');
+    });
+    const exp=document.getElementById(`explain-${qid}`);
+    const isCorrect=quizSelected[qid]===correct;
+    if(isCorrect) score++;
+    exp.className=`q-explain show ${isCorrect?'good':'bad'}`;
+    exp.textContent=(isCorrect?'✅ ':'❌ ')+QUIZ_EXPLAIN[qid];
+  }
+  const sb=document.getElementById('guideScore');
+  sb.style.display='block';
+  document.getElementById('guideScoreNum').textContent=`${score}/6`;
+  const msgs=['Continuez à étudier!','Bon effort, révisez!','Pas mal du tout!','Très bien!','Excellent!','Parfait! 🏆'];
+  document.getElementById('guideScoreTxt').textContent=msgs[score];
+  sb.scrollIntoView({behavior:'smooth'});
+}
+
+function resetGuideQuiz(){
+  quizDone=false; quizSelected={};
+  document.querySelectorAll('.q-opt').forEach(o=>{
+    o.classList.remove('correct','wrong');
+    o.style.background=''; o.style.borderColor=''; o.style.color='';
+  });
+  document.querySelectorAll('.q-explain').forEach(e=>{e.className='q-explain';e.textContent='';});
+  document.getElementById('guideScore').style.display='none';
+}
+
+// ========================================================
+// SCROLL REVEAL
+// ========================================================
+function scrollToSection(id){ document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// TOC active state
+const sections=['particules','modeles','bohr','config','tableau','quiz-section'];
+const tocDots=document.querySelectorAll('.toc-dot');
+window.addEventListener('scroll',()=>{
+  let current='';
+  sections.forEach(id=>{
+    const s=document.getElementById(id);
+    if(s&&s.getBoundingClientRect().top<window.innerHeight/2) current=id;
+  });
+  tocDots.forEach((dot,i)=>{
+    dot.classList.toggle('active',sections[i]===current||(i===0&&!current));
+  });
+});
+</script>
+</body>
+</html>

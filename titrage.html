@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimuLab Titrage — Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --panel: #0f1525;
+  --panel2: #131929;
+  --accent: #00e5ff;
+  --accent2: #76ff03;
+  --accent3: #ff6d00;
+  --danger: #ff1744;
+  --text: #e0f0ff;
+  --muted: #5a7090;
+  --border: #1e3050;
+  --glass: rgba(0,229,255,0.05);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Exo 2', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* GRID BACKGROUND */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events:none; z-index:0;
+}
+
+/* HEADER */
+header {
+  position:relative; z-index:10;
+  background: linear-gradient(135deg, #0a0e1a 0%, #0f1a2e 100%);
+  border-bottom: 1px solid var(--accent);
+  padding: 12px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+  box-shadow: 0 0 30px rgba(0,229,255,0.15);
+}
+.logo {
+  display:flex; align-items:center; gap:14px;
+}
+.logo-icon {
+  width:46px; height:46px;
+  background: linear-gradient(135deg, var(--accent), #0070ff);
+  border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; box-shadow: 0 0 20px rgba(0,229,255,0.4);
+}
+.logo-text h1 {
+  font-family:'Rajdhani', sans-serif;
+  font-size:1.5rem; font-weight:700;
+  color: var(--accent);
+  letter-spacing:2px;
+  text-shadow: 0 0 20px rgba(0,229,255,0.5);
+}
+.logo-text p {
+  font-size:0.7rem; color: var(--muted); letter-spacing:1px;
+  font-family:'Share Tech Mono', monospace;
+}
+.author-badge {
+  background: linear-gradient(135deg, #131929, #1a2540);
+  border: 1px solid var(--accent);
+  border-radius:8px; padding:8px 16px; text-align:right;
+  box-shadow: 0 0 15px rgba(0,229,255,0.1);
+}
+.author-badge .name { font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700; color:var(--accent); }
+.author-badge .info { font-size:0.65rem; color:var(--muted); font-family:'Share Tech Mono',monospace; }
+
+/* LANG TOGGLE */
+.lang-btn {
+  background: var(--panel2); border:1px solid var(--border);
+  color: var(--text); border-radius:6px; padding:6px 14px;
+  cursor:pointer; font-family:'Rajdhani',sans-serif; font-weight:600;
+  font-size:0.85rem; letter-spacing:1px; transition:all 0.2s;
+}
+.lang-btn:hover { border-color:var(--accent); color:var(--accent); }
+
+/* TABS */
+.tabs {
+  position:relative; z-index:5;
+  display:flex; gap:4px;
+  background: var(--panel); padding:12px 24px;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+}
+.tab {
+  padding:8px 20px; border-radius:8px;
+  border:1px solid var(--border);
+  background:transparent; color:var(--muted);
+  cursor:pointer; font-family:'Rajdhani',sans-serif;
+  font-weight:600; font-size:0.9rem; letter-spacing:1px;
+  transition:all 0.25s; white-space:nowrap;
+}
+.tab.active {
+  background: linear-gradient(135deg, rgba(0,229,255,0.15), rgba(0,112,255,0.1));
+  border-color:var(--accent); color:var(--accent);
+  box-shadow: 0 0 15px rgba(0,229,255,0.2);
+}
+.tab:hover:not(.active) { border-color:var(--muted); color:var(--text); }
+
+/* MAIN LAYOUT */
+.app {
+  position:relative; z-index:1;
+  display:none; padding:20px 24px;
+  gap:20px;
+  min-height: calc(100vh - 120px);
+}
+.app.active { display:flex; flex-wrap:wrap; }
+
+/* PANELS */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius:12px; padding:16px;
+  position:relative; overflow:hidden;
+}
+.panel::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity:0.5;
+}
+.panel-title {
+  font-family:'Rajdhani',sans-serif; font-weight:700;
+  font-size:0.85rem; letter-spacing:2px; color:var(--accent);
+  text-transform:uppercase; margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+
+/* LAB SETUP PANEL */
+.setup-panel { flex:0 0 280px; }
+.form-group { margin-bottom:14px; }
+.form-group label {
+  display:block; font-size:0.72rem; color:var(--muted);
+  letter-spacing:1px; margin-bottom:5px;
+  font-family:'Share Tech Mono',monospace;
+}
+.form-group select, .form-group input {
+  width:100%; background:var(--panel2);
+  border:1px solid var(--border); color:var(--text);
+  border-radius:6px; padding:8px 10px;
+  font-family:'Exo 2',sans-serif; font-size:0.85rem;
+  outline:none; transition:border-color 0.2s;
+}
+.form-group select:focus, .form-group input:focus {
+  border-color:var(--accent);
+  box-shadow: 0 0 10px rgba(0,229,255,0.1);
+}
+.btn {
+  width:100%; padding:10px; border-radius:8px;
+  border:none; cursor:pointer; font-family:'Rajdhani',sans-serif;
+  font-weight:700; font-size:1rem; letter-spacing:2px;
+  transition:all 0.25s; margin-top:6px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #0070ff);
+  color:#000;
+  box-shadow: 0 0 20px rgba(0,229,255,0.3);
+}
+.btn-primary:hover { transform:translateY(-1px); box-shadow: 0 4px 25px rgba(0,229,255,0.5); }
+.btn-danger {
+  background: transparent; color:var(--danger);
+  border:1px solid var(--danger);
+}
+.btn-danger:hover { background:var(--danger); color:#fff; }
+
+/* LAB VISUAL */
+.lab-visual { flex:0 0 320px; }
+.burette-container {
+  display:flex; flex-direction:column; align-items:center;
+  gap:10px; padding:10px;
+}
+.burette-wrapper {
+  display:flex; align-items:flex-start; gap:20px;
+}
+/* Burette SVG */
+.burette-svg { position:relative; }
+/* Beaker */
+.beaker-area { display:flex; flex-direction:column; align-items:center; margin-top:20px; }
+
+/* INSTRUMENTS */
+.instruments {
+  display:flex; gap:10px; flex-wrap:wrap; justify-content:center;
+  margin-top:10px;
+}
+.instrument {
+  background:var(--panel2); border:1px solid var(--border);
+  border-radius:10px; padding:10px 14px; text-align:center;
+  min-width:80px;
+}
+.instrument .value {
+  font-family:'Share Tech Mono',monospace;
+  font-size:1.3rem; font-weight:bold;
+  color:var(--accent2);
+  text-shadow: 0 0 10px rgba(118,255,3,0.5);
+}
+.instrument .unit { font-size:0.65rem; color:var(--muted); margin-top:2px; }
+.instrument .label { font-size:0.65rem; color:var(--muted); letter-spacing:1px; }
+
+/* CONTROLS */
+.controls {
+  display:flex; gap:8px; justify-content:center; margin-top:12px; flex-wrap:wrap;
+}
+.ctrl-btn {
+  padding:8px 16px; border-radius:6px;
+  border:1px solid var(--border); background:var(--panel2);
+  color:var(--text); cursor:pointer;
+  font-family:'Rajdhani',sans-serif; font-weight:600;
+  font-size:0.85rem; letter-spacing:1px;
+  transition:all 0.2s;
+}
+.ctrl-btn:hover { border-color:var(--accent); color:var(--accent); }
+.ctrl-btn.active-drop {
+  background: rgba(0,229,255,0.1); border-color:var(--accent); color:var(--accent);
+  box-shadow: 0 0 10px rgba(0,229,255,0.2);
+}
+
+/* CHART */
+.chart-panel { flex:1; min-width:280px; }
+canvas { width:100%!important; border-radius:6px; }
+
+/* DATA TABLE */
+.data-panel { flex:0 0 220px; }
+.data-table {
+  width:100%; border-collapse:collapse; font-size:0.78rem;
+  font-family:'Share Tech Mono',monospace;
+}
+.data-table th {
+  background:rgba(0,229,255,0.08); color:var(--accent);
+  padding:6px 8px; text-align:center;
+  border-bottom:1px solid var(--border);
+  font-size:0.7rem; letter-spacing:1px;
+}
+.data-table td {
+  padding:5px 8px; text-align:center;
+  border-bottom:1px solid rgba(30,48,80,0.5);
+  color:var(--text);
+}
+.data-table tr:hover td { background:rgba(0,229,255,0.04); }
+.equivalence-row td { color:var(--accent3)!important; font-weight:bold; }
+
+/* STATUS BAR */
+.status-bar {
+  position:relative; z-index:5;
+  background:var(--panel); border-top:1px solid var(--border);
+  padding:8px 24px; display:flex; align-items:center; gap:20px;
+  font-family:'Share Tech Mono',monospace; font-size:0.72rem; color:var(--muted);
+}
+.status-indicator { display:flex; align-items:center; gap:6px; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--accent2);
+  box-shadow:0 0 6px var(--accent2); animation:pulse 1.5s infinite; }
+.dot.red { background:var(--danger); box-shadow:0 0 6px var(--danger); }
+.dot.orange { background:var(--accent3); box-shadow:0 0 6px var(--accent3); }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* SOLUTION COLOR in beaker */
+.solution-color { transition: background 0.8s ease; }
+
+/* CONDUCTIMETRY */
+.cond-panel { flex:1; min-width:280px; }
+
+/* SPECTRO */
+.spectro-panel { width:100%; }
+
+/* THEORY */
+.theory-panel { width:100%; }
+.theory-content {
+  display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));
+  gap:16px; margin-top:10px;
+}
+.theory-card {
+  background:var(--panel2); border:1px solid var(--border);
+  border-radius:10px; padding:16px;
+}
+.theory-card h3 {
+  font-family:'Rajdhani',sans-serif; font-weight:700;
+  color:var(--accent); margin-bottom:10px; font-size:1rem;
+  letter-spacing:1px;
+}
+.theory-card p, .theory-card li {
+  font-size:0.82rem; color:#9ab; line-height:1.6;
+}
+.theory-card ul { padding-left:16px; }
+.formula {
+  background:#070c18; border:1px solid var(--border);
+  border-radius:6px; padding:10px; margin:8px 0;
+  font-family:'Share Tech Mono',monospace;
+  color:var(--accent2); font-size:0.85rem; text-align:center;
+}
+.level-badge {
+  display:inline-block; padding:2px 8px; border-radius:4px;
+  font-size:0.65rem; font-weight:600; letter-spacing:1px;
+  margin-bottom:8px;
+}
+.level-lycee { background:rgba(118,255,3,0.15); color:var(--accent2); border:1px solid var(--accent2); }
+.level-prepa { background:rgba(255,109,0,0.15); color:var(--accent3); border:1px solid var(--accent3); }
+.level-licence { background:rgba(0,229,255,0.15); color:var(--accent); border:1px solid var(--accent); }
+
+/* REPORT */
+.report-panel { width:100%; }
+.report-box {
+  background:var(--panel2); border:1px solid var(--border);
+  border-radius:8px; padding:20px;
+  font-family:'Share Tech Mono',monospace; font-size:0.8rem;
+  color:var(--text); line-height:1.8;
+}
+.report-section { margin-bottom:14px; }
+.report-section h4 {
+  color:var(--accent); font-family:'Rajdhani',sans-serif;
+  font-size:0.9rem; letter-spacing:2px; margin-bottom:6px;
+}
+.highlight { color:var(--accent2); }
+.eq-highlight { color:var(--accent3); }
+
+/* RESPONSIVE */
+@media(max-width:768px) {
+  header { flex-wrap:wrap; gap:10px; }
+  .setup-panel, .lab-visual, .data-panel { flex:1 1 100%; }
+  .chart-panel { flex:1 1 100%; }
+}
+
+/* Animated scan line */
+.scanline {
+  position:fixed; top:0; left:0; right:0; height:2px;
+  background: linear-gradient(90deg, transparent 0%, var(--accent) 50%, transparent 100%);
+  opacity:0.15; animation:scan 4s linear infinite; pointer-events:none; z-index:9999;
+}
+@keyframes scan { from{top:0} to{top:100vh} }
+
+/* BEAKER SVG colors per pH */
+</style>
+</head>
+<body>
+
+<div class="scanline"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">⚗️</div>
+    <div class="logo-text">
+      <h1 id="appTitle">SIMULAB TITRAGE</h1>
+      <p id="appSub">SIMULATEUR DE LABORATOIRE VIRTUEL — v2.0</p>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">EN</button>
+    <div class="author-badge">
+      <div class="name">Edmond Atinzoun TCHOKPON</div>
+      <div class="info" id="authorInfo">LICENCE PHYSIQUE-CHIMIE | SIMULAB 2025</div>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('acidobase')" id="tab-acidobase">⚗️ pH-MÉTRIE</button>
+  <button class="tab" onclick="showTab('conductimetrie')" id="tab-conductimetrie">⚡ CONDUCTIMÉTRIE</button>
+  <button class="tab" onclick="showTab('spectro')" id="tab-spectro">🌈 SPECTROPHOTOMÉTRIE</button>
+  <button class="tab" onclick="showTab('theorie')" id="tab-theorie">📚 THÉORIE</button>
+  <button class="tab" onclick="showTab('rapport')" id="tab-rapport">📋 RAPPORT</button>
+</div>
+
+<!-- ============================== ACIDOBASE TAB ============================== -->
+<div class="app active" id="app-acidobase">
+
+  <!-- SETUP -->
+  <div class="panel setup-panel">
+    <div class="panel-title">🔧 <span id="lbl-config">CONFIGURATION TP</span></div>
+
+    <div class="form-group">
+      <label id="lbl-level">NIVEAU SCOLAIRE</label>
+      <select id="level" onchange="updateLevel()">
+        <option value="lycee">Lycée / Terminale</option>
+        <option value="prepa">Classes Préparatoires</option>
+        <option value="licence">Licence / Université</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-titrant">SOLUTION TITRANTE (Burette)</label>
+      <select id="titrant">
+        <option value="NaOH">NaOH — Soude</option>
+        <option value="HCl">HCl — Acide chlorhydrique</option>
+        <option value="H2SO4">H₂SO₄ — Acide sulfurique</option>
+        <option value="KOH">KOH — Potasse</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-titree">SOLUTION TITRÉE (Bécher)</label>
+      <select id="titree">
+        <option value="HCl">HCl — Acide chlorhydrique</option>
+        <option value="AcOH">CH₃COOH — Acide acétique</option>
+        <option value="NaOH">NaOH — Soude</option>
+        <option value="NH3">NH₃ — Ammoniac</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-c-titrant">CONCENTRATION TITRANTE (mol/L)</label>
+      <input type="number" id="cTitrant" value="0.1" step="0.01" min="0.001" max="1">
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-c-titree">CONCENTRATION TITRÉE (mol/L)</label>
+      <input type="number" id="cTitree" value="0.1" step="0.01" min="0.001" max="1">
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-volume">VOLUME TITRÉE V₀ (mL)</label>
+      <input type="number" id="v0" value="20" step="1" min="5" max="50">
+    </div>
+
+    <div class="form-group">
+      <label id="lbl-indicator">INDICATEUR COLORÉ</label>
+      <select id="indicator">
+        <option value="pp">Phénolphtaléine (8–10)</option>
+        <option value="btb">BTB (6–7.6)</option>
+        <option value="mv">Méthyl violet (0–2)</option>
+        <option value="he">Hélianthine (3.1–4.4)</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" onclick="startTitration()" id="btn-start">▶ DÉMARRER TP</button>
+    <button class="btn btn-danger" onclick="resetTitration()" style="margin-top:8px;" id="btn-reset">↺ RÉINITIALISER</button>
+  </div>
+
+  <!-- LAB VISUAL -->
+  <div class="panel lab-visual">
+    <div class="panel-title">🔬 <span id="lbl-labo">LABORATOIRE VIRTUEL</span></div>
+    <div class="burette-container">
+      <svg width="260" height="420" viewBox="0 0 260 420" id="labSVG">
+        <!-- BURETTE -->
+        <defs>
+          <linearGradient id="burGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#1a3060"/>
+            <stop offset="30%" style="stop-color:#2a4a80"/>
+            <stop offset="70%" style="stop-color:#1a3060"/>
+            <stop offset="100%" style="stop-color:#0d1a40"/>
+          </linearGradient>
+          <linearGradient id="solutionGrad" id2="solutionGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:rgba(0,200,255,0.3)"/>
+            <stop offset="50%" style="stop-color:rgba(0,200,255,0.5)"/>
+            <stop offset="100%" style="stop-color:rgba(0,200,255,0.3)"/>
+          </linearGradient>
+          <clipPath id="burClip">
+            <rect x="105" y="30" width="30" height="250" rx="2"/>
+          </clipPath>
+        </defs>
+
+        <!-- Support + pince -->
+        <rect x="60" y="10" width="4" height="380" fill="#1a2a4a" rx="2"/>
+        <rect x="64" y="55" width="50" height="6" fill="#1e3a6a" rx="3"/>
+        <ellipse cx="114" cy="58" rx="4" ry="8" fill="#2a4a8a"/>
+
+        <!-- Burette body -->
+        <rect x="105" y="30" width="30" height="250" rx="3" fill="url(#burGrad)" opacity="0.8" stroke="#00e5ff" stroke-width="0.5"/>
+
+        <!-- Solution in burette -->
+        <rect x="107" y="32" width="26" id="burette-solution" height="200" fill="rgba(0,180,255,0.35)" clip-path="url(#burClip)"/>
+
+        <!-- Graduations burette -->
+        <g stroke="#00e5ff" stroke-width="0.4" opacity="0.6" font-family="Share Tech Mono" font-size="8" fill="#00e5ff">
+          <line x1="105" y1="32" x2="118" y2="32"/><text x="137" y="35">0</text>
+          <line x1="105" y1="57" x2="114" y2="57"/><text x="137" y="60">5</text>
+          <line x1="105" y1="82" x2="118" y2="82"/><text x="137" y="85">10</text>
+          <line x1="105" y1="107" x2="114" y2="107"/><text x="137" y="110">15</text>
+          <line x1="105" y1="132" x2="118" y2="132"/><text x="137" y="135">20</text>
+          <line x1="105" y1="157" x2="114" y2="157"/><text x="137" y="160">25</text>
+          <line x1="105" y1="182" x2="118" y2="182"/><text x="137" y="185">30</text>
+          <line x1="105" y1="207" x2="114" y2="207"/><text x="137" y="210">35</text>
+          <line x1="105" y1="232" x2="118" y2="232"/><text x="137" y="235">40</text>
+          <line x1="105" y1="257" x2="114" y2="257"/><text x="137" y="260">45</text>
+        </g>
+
+        <!-- Robinet -->
+        <rect x="115" y="278" width="10" height="16" rx="3" fill="#1e3a6a" stroke="#00e5ff" stroke-width="0.5"/>
+        <rect x="104" y="283" width="32" height="5" rx="2" fill="#2a5090" id="robi" style="cursor:pointer" onclick="toggleDrop()" />
+
+        <!-- Pointe burette -->
+        <polygon points="118,295 122,295 120,315" fill="#1a3060" stroke="#00e5ff" stroke-width="0.3"/>
+
+        <!-- Goutte animée -->
+        <ellipse id="drop" cx="120" cy="320" rx="2.5" ry="3" fill="rgba(0,200,255,0.8)" opacity="0" />
+
+        <!-- Agitateur magnétique (base) -->
+        <rect x="70" y="380" width="120" height="30" rx="6" fill="#0f1525" stroke="#1e3050" stroke-width="1"/>
+        <text x="130" y="399" text-anchor="middle" font-family="Share Tech Mono" font-size="8" fill="#5a7090">AGITATEUR MAGNÉTIQUE</text>
+        <ellipse cx="130" cy="378" rx="8" ry="3" fill="#1e3a6a" id="stirrer" style="transform-origin:130px 378px;animation:spin 1s linear infinite paused" id="stirrer"/>
+
+        <!-- Bécher -->
+        <path d="M 82 345 L 75 375 L 185 375 L 178 345 Z" fill="rgba(10,20,40,0.6)" stroke="#1e4080" stroke-width="1.5"/>
+        <!-- Solution dans bécher -->
+        <path id="beaker-solution" d="M 83 360 L 77 375 L 183 375 L 177 360 Z" fill="rgba(0,200,255,0.25)" />
+        <!-- Barreaux magnétique -->
+        <rect x="115" y="371" width="30" height="5" rx="2" fill="#2a4a8a" id="magbar" style="transform-origin:130px 373px;animation:spin 1s linear infinite paused"/>
+        <!-- pH-mètre électrode -->
+        <rect x="155" y="325" width="6" height="35" rx="2" fill="#1a3060" stroke="#00e5ff" stroke-width="0.5" opacity="0.9"/>
+        <text x="153" y="322" font-family="Share Tech Mono" font-size="7" fill="#00e5ff">pH</text>
+        <!-- Bécher labels -->
+        <text id="beaker-label" x="130" y="392" text-anchor="middle" font-family="Share Tech Mono" font-size="7" fill="#5a7090">HCl (aq)</text>
+
+        <!-- Indicateur coloré zone -->
+        <text id="indicator-color-text" x="80" y="358" font-family="Share Tech Mono" font-size="7" fill="#76ff03" opacity="0.8"></text>
+      </svg>
+
+      <!-- MESURES INSTRUMENTS -->
+      <div class="instruments">
+        <div class="instrument">
+          <div class="value" id="ph-display">7.00</div>
+          <div class="unit">pH</div>
+          <div class="label" id="lbl-phm">PH-MÈTRE</div>
+        </div>
+        <div class="instrument">
+          <div class="value" id="v-display">0.0</div>
+          <div class="unit">mL</div>
+          <div class="label" id="lbl-vol">VOLUME</div>
+        </div>
+        <div class="instrument">
+          <div class="value" id="veq-display">—</div>
+          <div class="unit">mL</div>
+          <div class="label" id="lbl-veq">Véq</div>
+        </div>
+      </div>
+
+      <!-- CONTRÔLES -->
+      <div class="controls">
+        <button class="ctrl-btn" onclick="addDrop(0.5)" id="btn-drop">+ 0.5 mL</button>
+        <button class="ctrl-btn" onclick="addDrop(1)" id="btn-drop1">+ 1 mL</button>
+        <button class="ctrl-btn" onclick="addDrop(5)" id="btn-drop5">+ 5 mL</button>
+        <button class="ctrl-btn" id="btn-auto" onclick="autoTitrate()">⚡ AUTO</button>
+      </div>
+      <div style="text-align:center;margin-top:8px;">
+        <span id="reaction-eq" style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:#5a7090;"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="panel chart-panel">
+    <div class="panel-title">📈 <span id="lbl-curve">COURBE DE TITRAGE — pH = f(V)</span></div>
+    <canvas id="phChart" height="280"></canvas>
+    <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--muted);">
+        <span id="lbl-eq-point">▶ Point équivalence :</span>
+        <span id="eq-info" style="color:var(--accent3)"> — </span>
+      </div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.72rem;color:var(--muted);">
+        <span id="lbl-c-calc">▶ Concentration calculée :</span>
+        <span id="c-calc" style="color:var(--accent2)"> — </span>
+      </div>
+    </div>
+    <!-- Derivative curve -->
+    <div class="panel-title" style="margin-top:14px;">📊 <span id="lbl-deriv">DÉRIVÉE dpH/dV</span></div>
+    <canvas id="derivChart" height="150"></canvas>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="panel data-panel">
+    <div class="panel-title">📋 <span id="lbl-table">TABLEAU DE MESURES</span></div>
+    <div style="max-height:380px;overflow-y:auto;">
+      <table class="data-table">
+        <thead>
+          <tr><th id="th-v">V (mL)</th><th id="th-ph">pH</th><th id="th-dpH">ΔpH/ΔV</th></tr>
+        </thead>
+        <tbody id="data-tbody"></tbody>
+      </table>
+    </div>
+    <button class="btn btn-primary" style="margin-top:10px;font-size:0.8rem;" onclick="exportCSV()" id="btn-export">⬇ EXPORTER CSV</button>
+  </div>
+</div>
+
+<!-- ============================== CONDUCTIMETRIE TAB ============================== -->
+<div class="app" id="app-conductimetrie">
+  <div class="panel" style="width:100%">
+    <div class="panel-title">⚡ <span id="lbl-cond-title">TITRAGE CONDUCTIMÉTRIQUE</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:20px;">
+
+      <div style="flex:0 0 260px;">
+        <div class="form-group">
+          <label>SOLUTION TITRANTE</label>
+          <select id="cond-titrant">
+            <option value="NaOH">NaOH</option>
+            <option value="HCl">HCl</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>SOLUTION TITRÉE</label>
+          <select id="cond-titree">
+            <option value="HCl">HCl (fort)</option>
+            <option value="AcOH">CH₃COOH (faible)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>C TITRANTE (mol/L)</label>
+          <input type="number" id="cond-cTitrant" value="0.1" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>C TITRÉE (mol/L)</label>
+          <input type="number" id="cond-cTitree" value="0.1" step="0.01">
+        </div>
+        <div class="form-group">
+          <label>V₀ (mL)</label>
+          <input type="number" id="cond-v0" value="20" step="1">
+        </div>
+        <button class="btn btn-primary" onclick="runConductimetrie()">▶ SIMULER</button>
+        <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:0.7rem;color:var(--muted);margin-bottom:4px;">CONDUCTIMÈTRE</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:2rem;color:#76ff03;text-shadow:0 0 15px #76ff03;" id="cond-display">—</div>
+          <div style="font-size:0.65rem;color:var(--muted);">mS/cm</div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;">
+        <canvas id="condChart" height="320"></canvas>
+        <div style="margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:0.75rem;color:var(--muted);">
+          <span>Véq conductimétrique : </span><span id="cond-eq" style="color:var(--accent3);">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== SPECTRO TAB ============================== -->
+<div class="app" id="app-spectro">
+  <div class="panel" style="width:100%">
+    <div class="panel-title">🌈 SPECTROPHOTOMÉTRIE — Loi de Beer-Lambert</div>
+    <div style="display:flex;flex-wrap:wrap;gap:20px;">
+      <div style="flex:0 0 260px;">
+        <div class="form-group">
+          <label>ESPÈCE COLORÉE</label>
+          <select id="spectro-species" onchange="updateSpectro()">
+            <option value="KMnO4">KMnO₄ (violet — λmax=525nm)</option>
+            <option value="Cu">CuSO₄ (bleu — λmax=800nm)</option>
+            <option value="Fe">Fe(SCN) (rouge — λmax=450nm)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>LONGUEUR D'ONDE λ (nm)</label>
+          <input type="range" id="lambda-slider" min="380" max="780" value="525" oninput="updateLambda(this.value)" style="width:100%;accent-color:var(--accent)">
+          <div style="text-align:center;font-family:'Share Tech Mono',monospace;font-size:0.85rem;color:var(--accent)" id="lambda-val">525 nm</div>
+        </div>
+        <div class="form-group">
+          <label>COEFFICIENT EXTINCTION ε (L·mol⁻¹·cm⁻¹)</label>
+          <input type="number" id="epsilon" value="2400" step="100">
+        </div>
+        <div class="form-group">
+          <label>LONGUEUR TRAJET l (cm)</label>
+          <input type="number" id="trajet" value="1" step="0.1">
+        </div>
+        <button class="btn btn-primary" onclick="runSpectro()">▶ TRACER ÉTALONNAGE</button>
+
+        <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-size:0.65rem;font-family:'Share Tech Mono',monospace;color:var(--muted);">ABSORBANCE MESURÉE</div>
+          <div style="font-size:2rem;font-family:'Share Tech Mono',monospace;color:var(--accent);text-shadow:0 0 15px var(--accent);" id="abs-display">—</div>
+          <div style="margin-top:8px;font-size:0.65rem;color:var(--muted);">CONCENTRATION INCONNUE</div>
+          <div style="font-size:1.2rem;font-family:'Share Tech Mono',monospace;color:var(--accent2);" id="conc-unknown">—</div>
+        </div>
+
+        <div class="form-group" style="margin-top:12px;">
+          <label>ABSORBANCE INCONNUE (mesure)</label>
+          <input type="number" id="abs-unknown" step="0.01" min="0" max="3" placeholder="ex: 0.45" oninput="calcConcentration()">
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;">
+        <!-- Color band -->
+        <div id="color-band" style="height:30px;border-radius:6px;margin-bottom:12px;background:linear-gradient(90deg,#7B00FF,#0000FF,#00FFFF,#00FF00,#FFFF00,#FF7F00,#FF0000);position:relative;">
+          <div id="lambda-marker" style="position:absolute;top:0;bottom:0;width:3px;background:white;left:50%;box-shadow:0 0 8px white;"></div>
+        </div>
+        <canvas id="spectroChart" height="200"></canvas>
+        <canvas id="calChart" height="200" style="margin-top:14px;"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================== THEORIE TAB ============================== -->
+<div class="app" id="app-theorie">
+  <div class="panel theory-panel">
+    <div class="panel-title">📚 COURS — DOSAGES & TITRAGES</div>
+    <div class="theory-content">
+
+      <div class="theory-card">
+        <span class="level-badge level-lycee">LYCÉE</span>
+        <h3>Principe du Titrage</h3>
+        <p>Un titrage est une technique qui permet de déterminer la concentration d'une solution (titrée) à l'aide d'une solution de concentration connue (titrante).</p>
+        <div class="formula">n(A) = n(B) au point équivalence</div>
+        <p>Au point d'équivalence, les réactifs sont introduits en proportions stœchiométriques.</p>
+      </div>
+
+      <div class="theory-card">
+        <span class="level-badge level-lycee">LYCÉE</span>
+        <h3>Indicateurs Colorés</h3>
+        <ul>
+          <li><b>Phénolphtaléine</b> : incolore → rose (pH 8–10)</li>
+          <li><b>BTB</b> : jaune → vert → bleu (pH 6–7.6)</li>
+          <li><b>Hélianthine</b> : rouge → jaune (pH 3.1–4.4)</li>
+          <li><b>Méthyl violet</b> : jaune → violet (pH 0–2)</li>
+        </ul>
+        <div class="formula">Véq × C_titrante = V₀ × C_titrée</div>
+      </div>
+
+      <div class="theory-card">
+        <span class="level-badge level-prepa">PRÉPA</span>
+        <h3>pH et Équilibre Acide-Base</h3>
+        <div class="formula">pH = pKa + log([A⁻]/[HA])</div>
+        <p>Equation de Henderson-Hasselbalch. À mi-neutralisation : pH = pKa.</p>
+        <div class="formula">pOH = 14 - pH<br>Ke = [H⁺][OH⁻] = 10⁻¹⁴</div>
+        <p>Acide fort : pH = -log(Ca)<br>Base forte : pH = 14 + log(Cb)</p>
+      </div>
+
+      <div class="theory-card">
+        <span class="level-badge level-prepa">PRÉPA</span>
+        <h3>Conductimétrie</h3>
+        <p>La conductivité σ dépend de la nature et la concentration des ions en solution.</p>
+        <div class="formula">σ = Σ λᵢ × Cᵢ</div>
+        <p>Au point d'équivalence HCl + NaOH → NaCl + H₂O, on observe un minimum de conductivité (remplacement des ions H⁺ très mobiles).</p>
+      </div>
+
+      <div class="theory-card">
+        <span class="level-badge level-licence">LICENCE</span>
+        <h3>Loi de Beer-Lambert</h3>
+        <div class="formula">A = ε · l · C</div>
+        <p>A = absorbance (sans unité)<br>ε = coefficient d'extinction molaire (L·mol⁻¹·cm⁻¹)<br>l = longueur du trajet optique (cm)<br>C = concentration (mol/L)</p>
+        <p>La droite d'étalonnage A = f(C) permet de déterminer une concentration inconnue.</p>
+      </div>
+
+      <div class="theory-card">
+        <span class="level-badge level-licence">LICENCE</span>
+        <h3>Calcul de Concentration</h3>
+        <div class="formula">C_titrée = (C_titrante × Véq) / V₀</div>
+        <p>Pour un acide faible (ex: AcOH avec NaOH) :</p>
+        <div class="formula">pKa = pH_demi-équivalence</div>
+        <p>La courbe dérivée dpH/dV permet de localiser précisément le point d'équivalence même si le saut de pH est peu marqué.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================== RAPPORT TAB ============================== -->
+<div class="app" id="app-rapport">
+  <div class="panel report-panel">
+    <div class="panel-title">📋 RAPPORT DE TP AUTOMATIQUE</div>
+    <div class="report-box" id="report-content">
+      <div style="text-align:center;color:var(--muted);padding:40px;">
+        ⚗️ Effectuez un titrage pH-métrique pour générer le rapport automatique.
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button class="btn btn-primary" style="flex:1" onclick="generateReport()" id="btn-report">📋 GÉNÉRER RAPPORT</button>
+      <button class="btn" style="flex:1;background:rgba(118,255,3,0.1);border-color:var(--accent2);color:var(--accent2)" onclick="printReport()">🖨️ IMPRIMER</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-indicator"><div class="dot" id="status-dot"></div><span id="status-text">Prêt — Configurez le TP</span></div>
+  <span>|</span>
+  <span id="status-level-info">Niveau : Lycée</span>
+  <span>|</span>
+  <span>SimuLab v2.0 — Edmond Atinzoun TCHOKPON</span>
+  <span style="margin-left:auto" id="status-time"></span>
+</div>
+
+<!-- CHART.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+
+<style>
+@keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+#stirrer, #magbar { animation:spin 0.8s linear infinite paused; }
+.spinning #stirrer, .spinning #magbar { animation-play-state:running; }
+</style>
+
+<script>
+// ============ STATE ============
+let lang = 'fr';
+let titrationData = { volumes:[], pHs:[], running:false, veq:null, cTitree_calc:null };
+let phChart = null, derivChart = null, condChart = null, spectroChart = null, calChart = null;
+
+// ============ TRANSLATIONS ============
+const T = {
+  fr: {
+    appTitle:'SIMULAB TITRAGE', appSub:'SIMULATEUR DE LABORATOIRE VIRTUEL — v2.0',
+    authorInfo:'LICENCE PHYSIQUE-CHIMIE | SIMULAB 2025',
+    'lbl-config':'CONFIGURATION TP', 'lbl-level':'NIVEAU SCOLAIRE',
+    'lbl-titrant':'SOLUTION TITRANTE (Burette)', 'lbl-titree':'SOLUTION TITRÉE (Bécher)',
+    'lbl-c-titrant':'CONCENTRATION TITRANTE (mol/L)', 'lbl-c-titree':'CONCENTRATION TITRÉE (mol/L)',
+    'lbl-volume':'VOLUME TITRÉE V₀ (mL)', 'lbl-indicator':'INDICATEUR COLORÉ',
+    'btn-start':'▶ DÉMARRER TP', 'btn-reset':'↺ RÉINITIALISER',
+    'lbl-labo':'LABORATOIRE VIRTUEL', 'lbl-curve':'COURBE DE TITRAGE — pH = f(V)',
+    'lbl-deriv':'DÉRIVÉE dpH/dV', 'lbl-table':'TABLEAU DE MESURES',
+    'btn-export':'⬇ EXPORTER CSV', 'lbl-phm':'PH-MÈTRE', 'lbl-vol':'VOLUME', 'lbl-veq':'Véq',
+    'th-v':'V (mL)', 'th-ph':'pH', 'th-dpH':'ΔpH/ΔV',
+    'lbl-eq-point':'▶ Point équivalence :','lbl-c-calc':'▶ Concentration calculée :',
+    'lbl-cond-title':'TITRAGE CONDUCTIMÉTRIQUE',
+    'btn-report':'📋 GÉNÉRER RAPPORT',
+    'status-ready':'Prêt — Configurez le TP',
+    langBtn:'EN'
+  },
+  en: {
+    appTitle:'SIMULAB TITRATION', appSub:'VIRTUAL LABORATORY SIMULATOR — v2.0',
+    authorInfo:'DEGREE PHYSICS-CHEMISTRY | SIMULAB 2025',
+    'lbl-config':'LAB CONFIGURATION', 'lbl-level':'SCHOOL LEVEL',
+    'lbl-titrant':'TITRANT SOLUTION (Burette)', 'lbl-titree':'ANALYTE SOLUTION (Beaker)',
+    'lbl-c-titrant':'TITRANT CONCENTRATION (mol/L)', 'lbl-c-titree':'ANALYTE CONCENTRATION (mol/L)',
+    'lbl-volume':'ANALYTE VOLUME V₀ (mL)', 'lbl-indicator':'COLOR INDICATOR',
+    'btn-start':'▶ START LAB', 'btn-reset':'↺ RESET',
+    'lbl-labo':'VIRTUAL LABORATORY', 'lbl-curve':'TITRATION CURVE — pH = f(V)',
+    'lbl-deriv':'DERIVATIVE dpH/dV', 'lbl-table':'DATA TABLE',
+    'btn-export':'⬇ EXPORT CSV', 'lbl-phm':'PH METER', 'lbl-vol':'VOLUME', 'lbl-veq':'Veq',
+    'th-v':'V (mL)', 'th-ph':'pH', 'th-dpH':'ΔpH/ΔV',
+    'lbl-eq-point':'▶ Equivalence point:', 'lbl-c-calc':'▶ Calculated concentration:',
+    'lbl-cond-title':'CONDUCTIMETRIC TITRATION',
+    'btn-report':'📋 GENERATE REPORT',
+    'status-ready':'Ready — Configure the lab',
+    langBtn:'FR'
+  }
+};
+
+function toggleLang() {
+  lang = lang === 'fr' ? 'en' : 'fr';
+  const t = T[lang];
+  for(const [id, val] of Object.entries(t)) {
+    const el = document.getElementById(id);
+    if(el) el.textContent = val;
+  }
+  document.getElementById('tab-acidobase').textContent = lang==='fr'?'⚗️ pH-MÉTRIE':'⚗️ pH-METRY';
+  document.getElementById('tab-conductimetrie').textContent = lang==='fr'?'⚡ CONDUCTIMÉTRIE':'⚡ CONDUCTIMETRY';
+  document.getElementById('tab-theorie').textContent = lang==='fr'?'📚 THÉORIE':'📚 THEORY';
+  document.getElementById('tab-rapport').textContent = lang==='fr'?'📋 RAPPORT':'📋 REPORT';
+}
+
+// ============ TABS ============
+function showTab(name) {
+  document.querySelectorAll('.app').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('app-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+// ============ pH CALCULATION ============
+function calcpH(V_added, setup) {
+  const { cA, cB, V0, typeA, typeB } = setup;
+  const nA = cA * V0 / 1000;
+  const nB = cB * V_added / 1000;
+
+  // pKa values
+  const pKa_map = { AcOH:4.75, NH3:9.25, HF:3.17 };
+
+  // Strong acid / strong base
+  if((typeA==='strong_acid'&&typeB==='strong_base')||(typeA==='strong_base'&&typeB==='strong_acid')) {
+    if(V_added===0) {
+      return typeA==='strong_acid' ? -Math.log10(cA) : 14+Math.log10(cA);
+    }
+    const Vtot=(V0+V_added)/1000;
+    if(typeA==='strong_acid') {
+      const excess_A = nA - nB;
+      if(Math.abs(excess_A)<1e-8) return 7.0;
+      if(excess_A>0) return -Math.log10(excess_A/Vtot);
+      return 14+Math.log10(-excess_A/Vtot);
+    } else {
+      const excess_A = nA - nB;
+      if(Math.abs(excess_A)<1e-8) return 7.0;
+      if(excess_A>0) return 14+Math.log10(excess_A/Vtot);
+      return -Math.log10(-excess_A/Vtot);
+    }
+  }
+
+  // Weak acid + strong base
+  if(typeA==='weak_acid'&&typeB==='strong_base') {
+    const pKa = pKa_map[setup.acidName]||4.75;
+    const Vtot=(V0+V_added)/1000;
+    if(nB>=nA) {
+      if(Math.abs(nB-nA)<1e-8) return 7+0.5*pKa+0.5*Math.log10(cA);
+      const excess_B=(nB-nA)/Vtot;
+      return 14+Math.log10(excess_B);
+    }
+    if(nB<1e-8) return 0.5*(pKa-Math.log10(cA));
+    return pKa+Math.log10(nB/(nA-nB));
+  }
+
+  // Strong acid + weak base
+  if(typeA==='strong_acid'&&typeB==='weak_base') {
+    const pKb = 14-(pKa_map[setup.baseName]||9.25);
+    const Vtot=(V0+V_added)/1000;
+    if(nB>=nA) {
+      const excess_B=(nB-nA)/Vtot;
+      return 14-0.5*(pKb-Math.log10(excess_B+1e-15));
+    }
+    if(nB<1e-8) return -Math.log10(cA);
+    const pKa_NH4=14-pKb;
+    return pKa_NH4+Math.log10(nB/(nA-nB));
+  }
+
+  return 7;
+}
+
+function getSetup() {
+  const titrantSel = document.getElementById('titrant').value;
+  const titreeSel = document.getElementById('titree').value;
+  const cTitrant = parseFloat(document.getElementById('cTitrant').value);
+  const cTitree = parseFloat(document.getElementById('cTitree').value);
+  const V0 = parseFloat(document.getElementById('v0').value);
+
+  const strongAcids = ['HCl','H2SO4','HBr'];
+  const strongBases = ['NaOH','KOH'];
+  const weakAcids = ['AcOH','HF'];
+  const weakBases = ['NH3'];
+
+  let typeA = strongAcids.includes(titreeSel)?'strong_acid':weakAcids.includes(titreeSel)?'weak_acid':strongBases.includes(titreeSel)?'strong_base':'weak_base';
+  let typeB = strongBases.includes(titrantSel)?'strong_base':strongAcids.includes(titrantSel)?'strong_acid':weakBases.includes(titrantSel)?'weak_base':'strong_base';
+
+  return { cA:cTitree, cB:cTitrant, V0, typeA, typeB, acidName:titreeSel, baseName:titrantSel };
+}
+
+function getVeq(setup) {
+  return (setup.cA * setup.V0) / setup.cB;
+}
+
+// ============ TITRATION ============
+function startTitration() {
+  titrationData = { volumes:[], pHs:[], running:true, veq:null };
+  document.getElementById('data-tbody').innerHTML='';
+  const setup = getSetup();
+  titrationData.setup = setup;
+  titrationData.veq = getVeq(setup);
+
+  const pH0 = calcpH(0, setup);
+  titrationData.volumes.push(0);
+  titrationData.pHs.push(pH0);
+  updateDisplay(0, pH0);
+  updateLabSVG(0, pH0, 0);
+
+  initChart();
+  updateChart();
+  setReactionEq();
+
+  document.getElementById('status-dot').className='dot orange';
+  document.getElementById('status-text').textContent = lang==='fr'?'TP en cours — Ajoutez le titrant':'Lab running — Add titrant';
+  document.getElementById('labSVG').classList.add('spinning');
+}
+
+function addDrop(vol) {
+  if(!titrationData.running) { alert(lang==='fr'?'Démarrez le TP d\'abord !':'Start the lab first!'); return; }
+  const currentV = titrationData.volumes[titrationData.volumes.length-1];
+  const newV = currentV + vol;
+  if(newV > 50) return;
+
+  const setup = titrationData.setup;
+  const pH = calcpH(newV, setup);
+  titrationData.volumes.push(newV);
+  titrationData.pHs.push(pH);
+
+  updateDisplay(newV, pH);
+  updateChart();
+  addTableRow(newV, pH);
+  updateLabSVG(newV, pH, titrationData.veq);
+  animateDrop();
+  checkEquivalence(newV, pH, setup);
+}
+
+function autoTitrate() {
+  if(!titrationData.running) { alert(lang==='fr'?'Démarrez le TP d\'abord !':'Start the lab first!'); return; }
+  // fill in steps
+  const setup = titrationData.setup;
+  const veq = titrationData.veq;
+  const steps = [0.5,0.5,0.5,0.5,0.5,1,1,1,1,1,0.5,0.5,0.2,0.2,0.2,0.1,0.1,0.1,0.2,0.5,1,1,1,2,2];
+  let i=0;
+  const currentV = titrationData.volumes[titrationData.volumes.length-1];
+  let cumV = currentV;
+
+  const interval = setInterval(()=>{
+    if(i>=steps.length||cumV>=45){ clearInterval(interval); return; }
+    cumV += steps[i++];
+    const pH = calcpH(cumV, setup);
+    titrationData.volumes.push(cumV);
+    titrationData.pHs.push(pH);
+    updateDisplay(cumV, pH);
+    updateChart();
+    addTableRow(cumV, pH);
+    updateLabSVG(cumV, pH, veq);
+    checkEquivalence(cumV, pH, setup);
+  }, 80);
+}
+
+function checkEquivalence(v, pH, setup) {
+  const veq = titrationData.veq;
+  if(titrationData.veq_marked) return;
+  if(Math.abs(v - veq) < 0.3 || (titrationData.volumes.length>2&&Math.abs(pH-7)<0.5&&setup.typeA==='strong_acid')) {
+    titrationData.veq_marked = true;
+    const cCalc = (setup.cB * veq) / setup.V0;
+    titrationData.cTitree_calc = cCalc;
+    document.getElementById('eq-info').textContent = `V = ${veq.toFixed(2)} mL | pH = ${pH.toFixed(2)}`;
+    document.getElementById('c-calc').textContent = `C = ${cCalc.toFixed(4)} mol/L`;
+    document.getElementById('veq-display').textContent = veq.toFixed(1);
+    document.getElementById('status-dot').className='dot';
+    document.getElementById('status-text').textContent = lang==='fr'?`Équivalence détectée ! Véq = ${veq.toFixed(2)} mL`:`Equivalence detected! Veq = ${veq.toFixed(2)} mL`;
+  }
+}
+
+function updateDisplay(v, pH) {
+  document.getElementById('ph-display').textContent = pH.toFixed(2);
+  document.getElementById('v-display').textContent = v.toFixed(1);
+}
+
+function addTableRow(v, pH) {
+  const tbody = document.getElementById('data-tbody');
+  const n = titrationData.volumes.length;
+  let dpH = '—';
+  if(n>=2) {
+    const dv = titrationData.volumes[n-1]-titrationData.volumes[n-2];
+    const dpHv = (titrationData.pHs[n-1]-titrationData.pHs[n-2])/dv;
+    dpH = dpHv.toFixed(2);
+  }
+  const veq = titrationData.veq;
+  const isEq = Math.abs(v-veq)<0.3;
+  const tr = document.createElement('tr');
+  if(isEq) tr.className='equivalence-row';
+  tr.innerHTML=`<td>${v.toFixed(1)}</td><td>${pH.toFixed(2)}</td><td>${dpH}</td>`;
+  tbody.appendChild(tr);
+  tbody.parentElement.scrollTop=tbody.parentElement.scrollHeight;
+}
+
+// ============ SVG LAB UPDATE ============
+function updateLabSVG(v, pH, veq) {
+  // Burette level (solution depletes as we add)
+  const maxH = 228;
+  const fraction = v/50;
+  const burSol = document.getElementById('burette-solution');
+  const newH = maxH*(1-fraction);
+  burSol.setAttribute('height', Math.max(0,newH));
+  burSol.setAttribute('y', 32+maxH*fraction);
+
+  // Beaker color by pH
+  const beakerSol = document.getElementById('beaker-solution');
+  const color = pHtoColor(pH);
+  beakerSol.setAttribute('fill', color);
+
+  // Update indicator text
+  const indColor = getIndicatorColor(pH, document.getElementById('indicator').value);
+  document.getElementById('indicator-color-text').textContent = indColor.label;
+  document.getElementById('indicator-color-text').setAttribute('fill', indColor.color);
+
+  // Update beaker label
+  document.getElementById('beaker-label').textContent = document.getElementById('titree').value+' + '+v.toFixed(1)+'mL';
+}
+
+function pHtoColor(pH) {
+  if(pH<2) return 'rgba(255,0,0,0.35)';
+  if(pH<4) return 'rgba(255,100,0,0.35)';
+  if(pH<6) return 'rgba(255,200,0,0.35)';
+  if(pH<7.5) return 'rgba(0,255,100,0.3)';
+  if(pH<9) return 'rgba(0,100,255,0.35)';
+  if(pH<11) return 'rgba(100,0,255,0.35)';
+  return 'rgba(180,0,255,0.4)';
+}
+
+function getIndicatorColor(pH, ind) {
+  if(ind==='pp') {
+    if(pH<8.2) return {label:'PP: incolore', color:'#aaa'};
+    return {label:'PP: rose ●', color:'#ff69b4'};
+  }
+  if(ind==='btb') {
+    if(pH<6) return {label:'BTB: jaune ●', color:'#ffff00'};
+    if(pH<7.6) return {label:'BTB: vert ●', color:'#76ff03'};
+    return {label:'BTB: bleu ●', color:'#00bfff'};
+  }
+  if(ind==='he') {
+    if(pH<3.1) return {label:'Hélianthine: rouge ●', color:'#ff1744'};
+    if(pH<4.4) return {label:'Hélianthine: orange ●', color:'#ff6d00'};
+    return {label:'Hélianthine: jaune ●', color:'#ffff00'};
+  }
+  return {label:'', color:'#aaa'};
+}
+
+function animateDrop() {
+  const drop = document.getElementById('drop');
+  drop.setAttribute('opacity','0.8');
+  drop.setAttribute('cy','320');
+  let y=320;
+  const anim = setInterval(()=>{
+    y+=3;
+    drop.setAttribute('cy',y);
+    if(y>350){drop.setAttribute('opacity','0');clearInterval(anim);}
+  },16);
+}
+
+// ============ CHARTS ============
+function initChart() {
+  if(phChart) { phChart.destroy(); phChart=null; }
+  if(derivChart) { derivChart.destroy(); derivChart=null; }
+
+  const ctxPh = document.getElementById('phChart').getContext('2d');
+  phChart = new Chart(ctxPh, {
+    type:'line',
+    data:{ labels:[], datasets:[{
+      label:'pH = f(V)',
+      data:[], borderColor:'#00e5ff',
+      backgroundColor:'rgba(0,229,255,0.05)',
+      borderWidth:2, pointRadius:3,
+      pointBackgroundColor:'#00e5ff',
+      tension:0.3, fill:true
+    }]},
+    options:{
+      responsive:true, animation:{duration:100},
+      scales:{
+        x:{ title:{display:true,text:'Volume ajouté (mL)',color:'#5a7090'},
+            ticks:{color:'#5a7090'}, grid:{color:'rgba(30,48,80,0.5)'},
+            min:0, max:50 },
+        y:{ title:{display:true,text:'pH',color:'#5a7090'},
+            ticks:{color:'#5a7090'}, grid:{color:'rgba(30,48,80,0.5)'},
+            min:0, max:14 }
+      },
+      plugins:{
+        legend:{labels:{color:'#5a7090',font:{family:'Share Tech Mono'}}},
+        tooltip:{backgroundColor:'#0f1525',titleColor:'#00e5ff',bodyColor:'#e0f0ff'}
+      }
+    }
+  });
+
+  const ctxD = document.getElementById('derivChart').getContext('2d');
+  derivChart = new Chart(ctxD, {
+    type:'line',
+    data:{ labels:[], datasets:[{
+      label:'dpH/dV',
+      data:[], borderColor:'#ff6d00',
+      backgroundColor:'rgba(255,109,0,0.08)',
+      borderWidth:2, pointRadius:2,
+      tension:0.3, fill:true
+    }]},
+    options:{
+      responsive:true, animation:{duration:100},
+      scales:{
+        x:{ ticks:{color:'#5a7090'}, grid:{color:'rgba(30,48,80,0.5)'} },
+        y:{ ticks:{color:'#5a7090'}, grid:{color:'rgba(30,48,80,0.5)'} }
+      },
+      plugins:{
+        legend:{labels:{color:'#5a7090',font:{family:'Share Tech Mono'}}},
+        tooltip:{backgroundColor:'#0f1525',titleColor:'#ff6d00',bodyColor:'#e0f0ff'}
+      }
+    }
+  });
+}
+
+function updateChart() {
+  const vs = titrationData.volumes;
+  const pHs = titrationData.pHs;
+  if(!phChart) return;
+
+  phChart.data.labels = vs.map(v=>v.toFixed(1));
+  phChart.data.datasets[0].data = pHs;
+  phChart.update('none');
+
+  // derivative
+  const derivs = [];
+  const dvols = [];
+  for(let i=1;i<vs.length;i++) {
+    const dv=vs[i]-vs[i-1];
+    if(dv>0) {
+      derivs.push((pHs[i]-pHs[i-1])/dv);
+      dvols.push(((vs[i]+vs[i-1])/2).toFixed(1));
+    }
+  }
+  derivChart.data.labels = dvols;
+  derivChart.data.datasets[0].data = derivs;
+  derivChart.update('none');
+}
+
+// ============ RESET ============
+function resetTitration() {
+  titrationData = { volumes:[], pHs:[], running:false, veq:null };
+  document.getElementById('data-tbody').innerHTML='';
+  document.getElementById('ph-display').textContent='7.00';
+  document.getElementById('v-display').textContent='0.0';
+  document.getElementById('veq-display').textContent='—';
+  document.getElementById('eq-info').textContent='—';
+  document.getElementById('c-calc').textContent='—';
+  document.getElementById('status-dot').className='dot red';
+  document.getElementById('status-text').textContent=lang==='fr'?'Réinitialisé':'Reset';
+  document.getElementById('labSVG').classList.remove('spinning');
+  if(phChart){phChart.destroy();phChart=null;}
+  if(derivChart){derivChart.destroy();derivChart=null;}
+  // reset burette
+  document.getElementById('burette-solution').setAttribute('height','200');
+  document.getElementById('burette-solution').setAttribute('y','32');
+  document.getElementById('beaker-solution').setAttribute('fill','rgba(0,200,255,0.25)');
+}
+
+// ============ REACTION EQUATION ============
+function setReactionEq() {
+  const t = document.getElementById('titrant').value;
+  const a = document.getElementById('titree').value;
+  const eqs = {
+    'NaOH-HCl':'NaOH + HCl → NaCl + H₂O',
+    'NaOH-AcOH':'NaOH + CH₃COOH → CH₃COONa + H₂O',
+    'NaOH-NH3':'— (mélange basique)',
+    'HCl-NaOH':'HCl + NaOH → NaCl + H₂O',
+    'HCl-AcOH':'— (deux acides)'
+  };
+  document.getElementById('reaction-eq').textContent = eqs[t+'-'+a]||t+' + '+a+' → produits';
+}
+
+// ============ LEVEL INFO ============
+function updateLevel() {
+  const lv = document.getElementById('level').value;
+  const lbl = { lycee:'Lycée / Terminale', prepa:'Classes Préparatoires', licence:'Licence / Université' };
+  document.getElementById('status-level-info').textContent = (lang==='fr'?'Niveau':'Level')+' : '+lbl[lv];
+}
+
+// ============ EXPORT CSV ============
+function exportCSV() {
+  let csv = 'V (mL),pH\n';
+  titrationData.volumes.forEach((v,i)=>{ csv+=`${v.toFixed(2)},${titrationData.pHs[i].toFixed(3)}\n`; });
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='titrage_TCHOKPON.csv';
+  a.click();
+}
+
+// ============ CONDUCTIMETRY ============
+function runConductimetrie() {
+  if(condChart){condChart.destroy();condChart=null;}
+  const cB = parseFloat(document.getElementById('cond-cTitrant').value);
+  const cA = parseFloat(document.getElementById('cond-cTitree').value);
+  const V0 = parseFloat(document.getElementById('cond-v0').value);
+  const veq = cA*V0/cB;
+  const typeA = document.getElementById('cond-titree').value;
+
+  // Molar conductivities (simplified, mS·cm²/mol)
+  // H+: 350, OH-: 198, Na+: 50, Cl-: 76, AcO-: 41
+  const lam = { H:350, OH:198, Na:50, Cl:76, AcO:41 };
+
+  const vols=[],conds=[];
+  for(let v=0;v<=40;v+=0.5) {
+    const Vtot=(V0+v)/1000;
+    const nA=cA*V0/1000;
+    const nB=cB*v/1000;
+    let sigma=0;
+    if(typeA==='HCl') {
+      // Strong acid NaOH titration
+      if(nB<nA) {
+        const cH=(nA-nB)/Vtot;
+        const cCl=nA/Vtot;
+        const cNa=nB/Vtot;
+        sigma=(lam.H*cH+lam.Cl*cCl+lam.Na*cNa)*0.1;
+      } else {
+        const cOH=(nB-nA)/Vtot;
+        const cCl=nA/Vtot;
+        const cNa=nB/Vtot;
+        sigma=(lam.OH*cOH+lam.Cl*cCl+lam.Na*cNa)*0.1;
+      }
+    } else {
+      // Weak acid AcOH
+      if(nB<nA) {
+        const cAcO=nB/Vtot;
+        const cNa=nB/Vtot;
+        sigma=(lam.AcO*cAcO+lam.Na*cNa)*0.1+0.02;
+      } else {
+        const cOH=(nB-nA)/Vtot;
+        const cNa=nB/Vtot;
+        const cAcO=nA/Vtot;
+        sigma=(lam.OH*cOH+lam.Na*cNa+lam.AcO*cAcO)*0.1;
+      }
+    }
+    vols.push(v.toFixed(1));
+    conds.push(sigma.toFixed(4));
+    if(Math.abs(v-veq)<0.3) document.getElementById('cond-display').textContent=sigma.toFixed(3);
+  }
+
+  document.getElementById('cond-eq').textContent=`Véq = ${veq.toFixed(2)} mL`;
+
+  const ctx=document.getElementById('condChart').getContext('2d');
+  condChart=new Chart(ctx,{
+    type:'line',
+    data:{labels:vols,datasets:[{
+      label:'σ = f(V) (mS/cm)',
+      data:conds, borderColor:'#76ff03',
+      backgroundColor:'rgba(118,255,3,0.05)',
+      borderWidth:2, pointRadius:2, tension:0.1, fill:true
+    }]},
+    options:{
+      responsive:true,
+      plugins:{
+        legend:{labels:{color:'#5a7090',font:{family:'Share Tech Mono'}}},
+        tooltip:{backgroundColor:'#0f1525',titleColor:'#76ff03',bodyColor:'#e0f0ff'},
+        annotation:{}
+      },
+      scales:{
+        x:{title:{display:true,text:'V ajouté (mL)',color:'#5a7090'},ticks:{color:'#5a7090'},grid:{color:'rgba(30,48,80,0.4)'}},
+        y:{title:{display:true,text:'σ (mS/cm)',color:'#5a7090'},ticks:{color:'#5a7090'},grid:{color:'rgba(30,48,80,0.4)'}}
+      }
+    }
+  });
+}
+
+// ============ SPECTROPHOTOMETRY ============
+function updateLambda(val) {
+  document.getElementById('lambda-val').textContent = val+' nm';
+  // Move marker
+  const pct=(val-380)/(780-380)*100;
+  document.getElementById('lambda-marker').style.left=pct+'%';
+  calcAbsorbance();
+}
+
+function updateSpectro() {
+  const sp = document.getElementById('spectro-species').value;
+  const lambdaMap={KMnO4:525,Cu:800,Fe:450};
+  const epsMap={KMnO4:2400,Cu:12,Fe:7000};
+  document.getElementById('lambda-slider').value=lambdaMap[sp];
+  document.getElementById('lambda-val').textContent=lambdaMap[sp]+' nm';
+  document.getElementById('epsilon').value=epsMap[sp];
+  updateLambda(lambdaMap[sp]);
+}
+
+function gaussianAbs(lambda, lambdaMax, height) {
+  return height*Math.exp(-Math.pow(lambda-lambdaMax,2)/3000);
+}
+
+function runSpectro() {
+  if(spectroChart){spectroChart.destroy();}
+  if(calChart){calChart.destroy();}
+
+  const sp=document.getElementById('spectro-species').value;
+  const eps=parseFloat(document.getElementById('epsilon').value);
+  const l=parseFloat(document.getElementById('trajet').value);
+  const lambdaMap={KMnO4:525,Cu:800,Fe:450};
+  const colorMap={KMnO4:'#a855f7',Cu:'#3b82f6',Fe:'#ef4444'};
+  const lmax=lambdaMap[sp];
+  const col=colorMap[sp];
+
+  // Spectrum
+  const lambdas=[],absSp=[];
+  for(let lam=380;lam<=780;lam+=5) {
+    lambdas.push(lam);
+    absSp.push(gaussianAbs(lam,lmax,1.2).toFixed(4));
+  }
+  const ctxS=document.getElementById('spectroChart').getContext('2d');
+  spectroChart=new Chart(ctxS,{
+    type:'line',
+    data:{labels:lambdas,datasets:[{
+      label:"Spectre d'absorption — "+sp,
+      data:absSp, borderColor:col,
+      backgroundColor:col.replace(')',',0.1)').replace('rgb','rgba'),
+      borderWidth:2, pointRadius:0, tension:0.4, fill:true
+    }]},
+    options:{
+      responsive:true,
+      plugins:{legend:{labels:{color:'#5a7090',font:{family:'Share Tech Mono'}}}},
+      scales:{
+        x:{title:{display:true,text:'λ (nm)',color:'#5a7090'},ticks:{color:'#5a7090',maxTicksLimit:10},grid:{color:'rgba(30,48,80,0.4)'}},
+        y:{title:{display:true,text:'Absorbance',color:'#5a7090'},ticks:{color:'#5a7090'},grid:{color:'rgba(30,48,80,0.4)'},min:0}
+      }
+    }
+  });
+
+  // Calibration curve
+  const concs=[0,0.02,0.04,0.06,0.08,0.1,0.15,0.2];
+  const absC=concs.map(c=>(eps*l*c).toFixed(4));
+  const ctxC=document.getElementById('calChart').getContext('2d');
+  calChart=new Chart(ctxC,{
+    type:'line',
+    data:{labels:concs.map(c=>(c*1000).toFixed(0)),datasets:[{
+      label:'Droite d\'étalonnage A = f(C)',
+      data:absC, borderColor:'#00e5ff',
+      backgroundColor:'rgba(0,229,255,0.05)',
+      borderWidth:2, pointRadius:5,
+      pointBackgroundColor:'#00e5ff', tension:0, fill:true
+    }]},
+    options:{
+      responsive:true,
+      plugins:{legend:{labels:{color:'#5a7090',font:{family:'Share Tech Mono'}}}},
+      scales:{
+        x:{title:{display:true,text:'C (mmol/L)',color:'#5a7090'},ticks:{color:'#5a7090'},grid:{color:'rgba(30,48,80,0.4)'}},
+        y:{title:{display:true,text:'Absorbance',color:'#5a7090'},ticks:{color:'#5a7090'},grid:{color:'rgba(30,48,80,0.4)'},min:0}
+      }
+    }
+  });
+}
+
+function calcConcentration() {
+  const eps=parseFloat(document.getElementById('epsilon').value);
+  const l=parseFloat(document.getElementById('trajet').value);
+  const A=parseFloat(document.getElementById('abs-unknown').value);
+  if(!isNaN(A)&&eps>0&&l>0) {
+    const C=A/(eps*l);
+    document.getElementById('abs-display').textContent=A.toFixed(3);
+    document.getElementById('conc-unknown').textContent=(C*1000).toFixed(2)+' mmol/L';
+  }
+}
+
+function calcAbsorbance() {
+  const eps=parseFloat(document.getElementById('epsilon').value)||2400;
+  const c=0.05; // example concentration
+  const A=eps*1*c;
+  document.getElementById('abs-display').textContent=A.toFixed(3);
+}
+
+// ============ REPORT ============
+function generateReport() {
+  const box=document.getElementById('report-content');
+  if(!titrationData.volumes.length) {
+    box.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px;">⚗️ Effectuez un titrage pH-métrique d\'abord.</div>';
+    return;
+  }
+  const titrant=document.getElementById('titrant').value;
+  const titree=document.getElementById('titree').value;
+  const cT=document.getElementById('cTitrant').value;
+  const cA=document.getElementById('cTitree').value;
+  const V0=document.getElementById('v0').value;
+  const veq=titrationData.veq?titrationData.veq.toFixed(2):'—';
+  const cCalc=titrationData.cTitree_calc?titrationData.cTitree_calc.toFixed(4):'—';
+  const level=document.getElementById('level').options[document.getElementById('level').selectedIndex].text;
+  const date=new Date().toLocaleDateString('fr-FR');
+
+  box.innerHTML=`
+  <div class="report-section">
+    <h4>━━━ RAPPORT DE TP — TITRAGE ACIDO-BASIQUE ━━━</h4>
+    <p>Auteur : <span class="highlight">Edmond Atinzoun TCHOKPON</span></p>
+    <p>Niveau : <span class="highlight">${level}</span> | Date : <span class="highlight">${date}</span></p>
+  </div>
+  <div class="report-section">
+    <h4>1. OBJECTIF</h4>
+    <p>Déterminer la concentration de la solution de ${titree} par titrage avec ${titrant}.</p>
+  </div>
+  <div class="report-section">
+    <h4>2. CONDITIONS EXPÉRIMENTALES</h4>
+    <p>Solution titrante : ${titrant} | C = ${cT} mol/L</p>
+    <p>Solution titrée : ${titree} | C théorique = ${cA} mol/L | V₀ = ${V0} mL</p>
+    <p>Équipements : pH-mètre, burette 50 mL, agitateur magnétique</p>
+    <p>Équation de réaction : ${document.getElementById('reaction-eq').textContent||'—'}</p>
+  </div>
+  <div class="report-section">
+    <h4>3. RÉSULTATS</h4>
+    <p>Nombre de points mesurés : <span class="highlight">${titrationData.volumes.length}</span></p>
+    <p>Volume équivalent : <span class="eq-highlight">Véq = ${veq} mL</span></p>
+    <p>pH à l'équivalence : <span class="highlight">${titrationData.veq?calcpH(titrationData.veq,titrationData.setup).toFixed(2):'—'}</span></p>
+  </div>
+  <div class="report-section">
+    <h4>4. CALCUL DE CONCENTRATION</h4>
+    <p>Relation : C_titrée × V₀ = C_titrante × Véq</p>
+    <p>C(${titree}) = (${cT} × ${veq}) / ${V0} = <span class="eq-highlight">${cCalc} mol/L</span></p>
+    <p>Concentration théorique : ${cA} mol/L</p>
+    <p>Erreur relative : <span class="highlight">${titrationData.cTitree_calc?((Math.abs(titrationData.cTitree_calc-parseFloat(cA))/parseFloat(cA))*100).toFixed(1):'—'} %</span></p>
+  </div>
+  <div class="report-section">
+    <h4>5. CONCLUSION</h4>
+    <p>Le titrage pH-métrique permet de déterminer précisément le point d'équivalence par l'identification du saut de pH ou du maximum de la courbe dérivée dpH/dV. La concentration déterminée est conforme à la valeur théorique.</p>
+  </div>
+  <div style="margin-top:20px;text-align:center;color:var(--muted);font-size:0.7rem;">
+    ── SimuLab v2.0 | Edmond Atinzoun TCHOKPON | Licence Physique-Chimie ──
+  </div>`;
+}
+
+function printReport() {
+  window.print();
+}
+
+// ============ CLOCK ============
+function updateClock() {
+  const now=new Date();
+  document.getElementById('status-time').textContent=now.toLocaleTimeString('fr-FR');
+}
+setInterval(updateClock,1000);
+updateClock();
+
+// ============ INIT SPECTRO ============
+updateSpectro();
+</script>
+</body>
+</html>

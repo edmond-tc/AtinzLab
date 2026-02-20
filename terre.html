@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimuTR v1.0 — Chimie des Terres Rares | Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Fira+Code:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f4f1ec;--ink:#1a1410;--panel:#ffffff;--panel2:#ede8df;
+  --p1:#7b3f00;--p2:#1a4a6b;--p3:#2d6a4f;--p4:#6b0f3a;--p5:#4a4a00;
+  --gold:#c8920a;--silver:#8a8a9a;--muted:#7a6f64;--border:#ddd5c4;
+  --light:#faf7f2;--shadow:rgba(28,20,16,0.1);
+  --ln:#c0392b;--ce:#27ae60;--pr:#8e44ad;--nd:#2980b9;--pm:#e67e22;
+  --sm:#16a085;--eu:#d35400;--gd:#2c3e50;--tb:#1abc9c;--dy:#e74c3c;
+  --ho:#3498db;--er:#9b59b6;--tm:#f39c12;--yb:#1e8bc3;--lu:#27ae60;
+  --sc:#e67e22;--y:#8e44ad;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");}
+
+/* ── HEADER ── */
+header{position:relative;z-index:10;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);border-bottom:3px solid var(--gold);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 30px rgba(0,0,50,.5);}
+.logo{display:flex;align-items:center;gap:14px;}
+.logo-atom{width:50px;height:50px;border-radius:50%;background:conic-gradient(#c8920a,#e8b84b,#c8920a,#7b3f00,#c8920a);display:flex;align-items:center;justify-content:center;font-size:22px;animation:atomSpin 8s linear infinite;box-shadow:0 0 20px rgba(200,146,10,.5);}
+@keyframes atomSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.logo-text h1{font-family:'Fraunces',serif;font-size:1.65rem;font-weight:700;color:white;letter-spacing:3px;}
+.logo-text p{font-size:.58rem;color:rgba(255,255,255,.55);letter-spacing:2px;font-family:'Fira Code',monospace;}
+.header-right{display:flex;align-items:center;gap:9px;}
+.author-tag{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:6px 13px;text-align:right;}
+.author-tag .n{font-family:'Fraunces',serif;font-size:.85rem;font-weight:700;color:var(--gold);}
+.author-tag .i{font-size:.56rem;color:rgba(255,255,255,.5);font-family:'Fira Code',monospace;letter-spacing:1px;}
+.hbtn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:white;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.76rem;transition:all .2s;}
+.hbtn:hover{background:rgba(255,255,255,.22);}
+
+/* ── TABS ── */
+.tabs{position:relative;z-index:5;background:var(--panel);border-bottom:2px solid var(--border);padding:7px 18px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:6px 14px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.73rem;letter-spacing:.3px;transition:all .22s;white-space:nowrap;}
+.tab.active{background:var(--p1);border-color:var(--p1);color:white;box-shadow:0 3px 12px rgba(123,63,0,.3);}
+.tab:hover:not(.active){border-color:var(--p1);color:var(--p1);}
+
+/* ── APP PANELS ── */
+.app{display:none;padding:16px 18px;gap:14px;flex-wrap:wrap;position:relative;z-index:1;min-height:calc(100vh - 150px);}
+.app.active{display:flex;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;box-shadow:0 2px 14px var(--shadow);}
+.panel::before{content:'';position:absolute;top:0;left:16px;right:16px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.3;border-radius:2px;}
+.ptitle{font-family:'Fraunces',serif;font-size:.84rem;font-weight:700;color:var(--p1);letter-spacing:1px;margin-bottom:13px;display:flex;align-items:center;gap:7px;}
+
+/* ── FORM ── */
+.fg{margin-bottom:10px;}
+.fg label{display:block;font-size:.62rem;color:var(--muted);letter-spacing:1.2px;margin-bottom:3px;font-family:'Fira Code',monospace;text-transform:uppercase;}
+.fg select,.fg input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--ink);border-radius:6px;padding:7px 9px;font-family:'Manrope',sans-serif;font-size:.82rem;outline:none;transition:border-color .2s;}
+.fg select:focus,.fg input:focus{border-color:var(--p1);}
+.btn{width:100%;padding:8px;border-radius:7px;border:none;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.6px;transition:all .22s;margin-top:4px;}
+.btn-p{background:var(--p1);color:white;box-shadow:0 3px 11px rgba(123,63,0,.3);}
+.btn-p:hover{background:#6a3500;transform:translateY(-1px);}
+.btn-o{background:var(--p2);color:white;}
+.btn-o:hover{background:#153d5a;}
+.btn-b{background:var(--p3);color:white;}
+.btn-b:hover{background:#245a42;}
+
+/* ── PERIODIC TABLE ── */
+.pt-grid{display:grid;gap:3px;margin:10px 0;}
+.pt-cell{border-radius:5px;padding:5px 4px;text-align:center;cursor:pointer;transition:all .2s;border:1.5px solid transparent;min-width:52px;}
+.pt-cell:hover{transform:scale(1.08);z-index:10;position:relative;box-shadow:0 4px 16px rgba(0,0,0,.25);}
+.pt-cell.sel{border-color:var(--gold)!important;box-shadow:0 0 0 2px var(--gold);}
+.pt-symbol{font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;}
+.pt-num{font-family:'Fira Code',monospace;font-size:.58rem;color:rgba(0,0,0,.5);}
+.pt-name{font-size:.52rem;color:rgba(0,0,0,.6);margin-top:1px;font-family:'Manrope',sans-serif;}
+.pt-tr{background:linear-gradient(135deg,#fff3cd,#fde68a);border:1.5px solid #c8920a;}
+.pt-sc{background:linear-gradient(135deg,#e8d5f0,#d4b0e8);border:1.5px solid #8e44ad;}
+.pt-y{background:linear-gradient(135deg,#d5e8f0,#b0d4e8);border:1.5px solid #2980b9;}
+.pt-empty{background:transparent;border:none;cursor:default;}
+.pt-empty:hover{transform:none;box-shadow:none;}
+
+/* ── ELEMENT CARD ── */
+.elem-card{background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid var(--gold);border-radius:12px;padding:18px;color:white;}
+.elem-symbol-big{font-family:'Fraunces',serif;font-size:3.5rem;font-weight:700;color:var(--gold);line-height:1;}
+.elem-num-big{font-family:'Fira Code',monospace;font-size:.8rem;color:rgba(255,255,255,.5);margin-bottom:4px;}
+.elem-name-big{font-family:'Fraunces',serif;font-size:1.2rem;color:white;margin-bottom:12px;}
+.elem-data{display:flex;flex-direction:column;gap:5px;font-size:.76rem;font-family:'Fira Code',monospace;}
+.elem-data .row{display:flex;justify-content:space-between;padding:4px 8px;background:rgba(255,255,255,.06);border-radius:4px;}
+.elem-data .key{color:rgba(255,255,255,.5);}
+.elem-data .val{color:var(--gold);font-weight:600;}
+.config-4f{background:#1c1410;border:1px solid var(--gold);border-radius:7px;padding:8px;font-family:'Fira Code',monospace;font-size:.75rem;color:#a8e6cf;margin-top:8px;text-align:center;line-height:1.7;}
+
+/* ── INFO BOXES ── */
+.info-box{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:9px;font-size:.8rem;line-height:1.7;}
+.info-box h4{font-family:'Fraunces',serif;font-size:.88rem;color:var(--p1);margin-bottom:6px;}
+.code-dark{background:#1a1a2e;color:#a8e6cf;font-family:'Fira Code',monospace;font-size:.78rem;border-radius:6px;padding:9px 12px;margin:7px 0;line-height:1.8;border-left:3px solid var(--gold);}
+.code-dark.blue{border-left-color:#3498db;}
+.code-dark.green{border-left-color:var(--p3);}
+
+/* ── STEP BOXES ── */
+.step-box{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:13px;margin-bottom:8px;display:none;animation:fadeIn .3s ease;}
+.step-box.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.step-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.step-badge{width:26px;height:26px;border-radius:50%;background:var(--p1);color:white;font-family:'Fira Code',monospace;font-size:.72rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-title{font-weight:700;font-size:.88rem;color:var(--p1);}
+.step-desc{font-size:.79rem;color:var(--muted);line-height:1.65;}
+.step-note{background:rgba(123,63,0,.1);border-radius:5px;padding:4px 9px;font-size:.7rem;color:var(--p1);font-family:'Fira Code',monospace;margin-top:6px;}
+.step-nav{display:flex;gap:7px;align-items:center;justify-content:center;margin-top:10px;}
+.step-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .25s;cursor:pointer;}
+.step-dot.active{background:var(--p1);width:17px;border-radius:4px;}
+
+/* ── QUIZ ── */
+.quiz-card{background:var(--panel2);border:2px solid var(--border);border-radius:11px;padding:16px;margin-bottom:11px;}
+.quiz-q{font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:11px;line-height:1.55;}
+.quiz-opts{display:flex;flex-direction:column;gap:6px;}
+.quiz-opt{background:var(--panel);border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;cursor:pointer;font-size:.8rem;transition:all .18s;text-align:left;font-family:'Manrope',sans-serif;}
+.quiz-opt:hover{border-color:var(--p1);background:rgba(123,63,0,.06);}
+.quiz-opt.correct{background:#d4edda;border-color:#2d6a4f;color:#1a4a33;}
+.quiz-opt.wrong{background:#f8d7da;border-color:#9b2226;color:#6b0f13;}
+.quiz-feedback{margin-top:9px;border-radius:7px;padding:9px 13px;font-size:.79rem;line-height:1.6;display:none;}
+.quiz-feedback.show{display:block;}
+.qf-c{background:#d4edda;color:#1a4a33;border-left:4px solid #2d6a4f;}
+.qf-w{background:#f8d7da;color:#6b0f13;border-left:4px solid #9b2226;}
+.quiz-score{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:700;color:var(--p1);text-align:center;margin:7px 0;}
+
+/* ── THEORY CARDS ── */
+.thy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;}
+.thy-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:15px;}
+.thy-card h3{font-family:'Fraunces',serif;font-weight:700;color:var(--p1);margin-bottom:8px;font-size:.93rem;}
+.thy-card p,.thy-card li{font-size:.78rem;color:var(--muted);line-height:1.65;}
+.fbox{background:#1a1a2e;border-radius:6px;padding:8px;margin:6px 0;font-family:'Fira Code',monospace;color:#a8e6cf;font-size:.76rem;text-align:center;}
+.lvl-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.58rem;font-weight:700;letter-spacing:1px;margin-bottom:7px;font-family:'Fira Code',monospace;}
+.lv-l1{background:rgba(45,106,79,.15);color:#2d6a4f;border:1px solid #2d6a4f;}
+.lv-l2{background:rgba(26,74,107,.15);color:#1a4a6b;border:1px solid #1a4a6b;}
+.lv-l3{background:rgba(107,15,58,.15);color:#6b0f3a;border:1px solid #6b0f3a;}
+
+/* ── APP CARDS (apps, magnetics, etc.) ── */
+.app-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px;}
+.app-card{background:var(--panel2);border:1.5px solid var(--border);border-radius:9px;padding:13px;cursor:pointer;transition:all .2s;}
+.app-card:hover,.app-card.sel{background:var(--p1);border-color:var(--p1);color:white;}
+.app-card:hover .app-sub,.app-card.sel .app-sub{color:rgba(255,255,255,.7);}
+.app-name{font-weight:700;font-size:.83rem;margin-bottom:4px;}
+.app-sub{font-size:.7rem;color:var(--muted);font-family:'Fira Code',monospace;}
+
+/* ── CANVAS ── */
+canvas{display:block;border-radius:8px;}
+.energy-canvas{border-radius:8px;background:#1a1a2e;border:1px solid var(--border);}
+
+/* ── MINE CARDS ── */
+.mine-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;}
+.mine-card{background:var(--panel2);border:1.5px solid var(--border);border-radius:9px;padding:13px;transition:all .2s;cursor:pointer;}
+.mine-card:hover{border-color:var(--gold);box-shadow:0 4px 14px rgba(200,146,10,.2);}
+.mine-name{font-weight:700;font-size:.88rem;color:var(--p1);margin-bottom:4px;}
+.mine-loc{font-size:.7rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;}
+.mine-bar-wrap{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin:4px 0;}
+.mine-bar{height:100%;background:linear-gradient(90deg,var(--gold),#e8b84b);border-radius:3px;transition:width .6s ease;}
+.mine-detail{display:none;margin-top:10px;font-size:.76rem;color:var(--muted);line-height:1.7;border-top:1px solid var(--border);padding-top:8px;}
+.mine-card.open .mine-detail{display:block;}
+
+/* ── EXTRACTION STEPS ── */
+.extr-flow{display:flex;flex-direction:column;gap:0;}
+.extr-step{display:flex;align-items:stretch;gap:0;}
+.extr-line{display:flex;flex-direction:column;align-items:center;width:36px;flex-shrink:0;}
+.extr-dot{width:20px;height:20px;border-radius:50%;background:var(--p1);border:2px solid var(--gold);flex-shrink:0;}
+.extr-connector{width:2px;flex:1;background:linear-gradient(180deg,var(--gold),rgba(200,146,10,.2));min-height:20px;}
+.extr-content{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:8px;flex:1;}
+.extr-title{font-weight:700;font-size:.86rem;color:var(--p1);margin-bottom:4px;}
+.extr-desc{font-size:.76rem;color:var(--muted);line-height:1.6;}
+.extr-chem{background:#1a1a2e;color:#a8e6cf;font-family:'Fira Code',monospace;font-size:.72rem;border-radius:5px;padding:5px 9px;margin-top:6px;line-height:1.7;}
+
+/* ── STATUS BAR ── */
+.statusbar{position:relative;z-index:5;background:var(--panel);border-top:2px solid var(--border);padding:6px 20px;display:flex;align-items:center;gap:16px;font-family:'Fira Code',monospace;font-size:.63rem;color:var(--muted);flex-wrap:wrap;}
+.sdot{width:6px;height:6px;border-radius:50%;background:#c8920a;box-shadow:0 0 5px #c8920a;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.sindic{display:flex;align-items:center;gap:5px;}
+
+/* ── DARK MODE ── */
+body.dark{--bg:#0a0e1a;--ink:#e8ddd4;--panel:#111827;--panel2:#0f172a;--border:#1e293b;--muted:#8a9e8c;--shadow:rgba(0,0,0,.5);}
+body.dark .elem-card{background:linear-gradient(135deg,#0d1117,#1a1a2e);}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-atom">⚛</div>
+    <div class="logo-text"><h1>SIMUTR</h1><p>SIMULATEUR DE CHIMIE DES TERRES RARES — v1.0</p></div>
+  </div>
+  <div class="header-right">
+    <button class="hbtn" onclick="toggleTheme()">🌙</button>
+    <div class="author-tag"><div class="n">Edmond Atinzoun TCHOKPON</div><div class="i">LICENCE PHYSIQUE-CHIMIE | SIMUTR 2025</div></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="showTab('tableau')" id="tab-tableau">⚛️ TABLEAU PÉRIODIQUE</button>
+  <button class="tab" onclick="showTab('proprietes')" id="tab-proprietes">🔬 PROPRIÉTÉS 4f</button>
+  <button class="tab" onclick="showTab('complexes')" id="tab-complexes">🧲 COMPLEXES</button>
+  <button class="tab" onclick="showTab('gisements')" id="tab-gisements">🌍 GISEMENTS</button>
+  <button class="tab" onclick="showTab('extraction')" id="tab-extraction">⚙️ EXTRACTION</button>
+  <button class="tab" onclick="showTab('applications')" id="tab-applications">🏭 APPLICATIONS</button>
+  <button class="tab" onclick="showTab('magnetisme')" id="tab-magnetisme">🧲 MAGNÉTISME</button>
+  <button class="tab" onclick="showTab('luminescence')" id="tab-luminescence">💡 LUMINESCENCE</button>
+  <button class="tab" onclick="showTab('calcul')" id="tab-calcul">🧮 CALCULS</button>
+  <button class="tab" onclick="showTab('quiz')" id="tab-quiz">🎯 QUIZ</button>
+  <button class="tab" onclick="showTab('theorie')" id="tab-theorie">📚 THÉORIE</button>
+  <button class="tab" onclick="showTab('rapport')" id="tab-rapport">📋 RAPPORT</button>
+</div>
+
+<!-- ══════ 1. TABLEAU PÉRIODIQUE ══════ -->
+<div class="app active" id="app-tableau">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">⚛️ TABLEAU PÉRIODIQUE — TERRES RARES (REE) & ÉLÉMENTS ASSOCIÉS</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;">
+      <div style="flex:1;min-width:500px;">
+        <div style="font-size:.7rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:10px;display:flex;gap:14px;flex-wrap:wrap;">
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:linear-gradient(135deg,#fff3cd,#fde68a);border:1px solid #c8920a;display:inline-block;"></span>Lanthanides (La–Lu)</span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:linear-gradient(135deg,#e8d5f0,#d4b0e8);border:1px solid #8e44ad;display:inline-block;"></span>Scandium (Sc)</span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="width:14px;height:14px;border-radius:3px;background:linear-gradient(135deg,#d5e8f0,#b0d4e8);border:1px solid #2980b9;display:inline-block;"></span>Yttrium (Y)</span>
+        </div>
+        <!-- Lanthanides grid -->
+        <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:680px;">
+          <div id="pt-57" class="pt-cell pt-tr" onclick="selectElement(57)"><div class="pt-num">57</div><div class="pt-symbol">La</div><div class="pt-name">Lanthane</div></div>
+          <div id="pt-58" class="pt-cell pt-tr" onclick="selectElement(58)"><div class="pt-num">58</div><div class="pt-symbol">Ce</div><div class="pt-name">Cérium</div></div>
+          <div id="pt-59" class="pt-cell pt-tr" onclick="selectElement(59)"><div class="pt-num">59</div><div class="pt-symbol">Pr</div><div class="pt-name">Praséodyme</div></div>
+          <div id="pt-60" class="pt-cell pt-tr" onclick="selectElement(60)"><div class="pt-num">60</div><div class="pt-symbol">Nd</div><div class="pt-name">Néodyme</div></div>
+          <div id="pt-61" class="pt-cell pt-tr" onclick="selectElement(61)"><div class="pt-num">61</div><div class="pt-symbol">Pm</div><div class="pt-name">Prométhium</div></div>
+          <div id="pt-62" class="pt-cell pt-tr" onclick="selectElement(62)"><div class="pt-num">62</div><div class="pt-symbol">Sm</div><div class="pt-name">Samarium</div></div>
+          <div id="pt-63" class="pt-cell pt-tr" onclick="selectElement(63)"><div class="pt-num">63</div><div class="pt-symbol">Eu</div><div class="pt-name">Europium</div></div>
+          <div id="pt-64" class="pt-cell pt-tr" onclick="selectElement(64)"><div class="pt-num">64</div><div class="pt-symbol">Gd</div><div class="pt-name">Gadolinium</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:680px;margin-top:3px;">
+          <div id="pt-65" class="pt-cell pt-tr" onclick="selectElement(65)"><div class="pt-num">65</div><div class="pt-symbol">Tb</div><div class="pt-name">Terbium</div></div>
+          <div id="pt-66" class="pt-cell pt-tr" onclick="selectElement(66)"><div class="pt-num">66</div><div class="pt-symbol">Dy</div><div class="pt-name">Dysprosium</div></div>
+          <div id="pt-67" class="pt-cell pt-tr" onclick="selectElement(67)"><div class="pt-num">67</div><div class="pt-symbol">Ho</div><div class="pt-name">Holmium</div></div>
+          <div id="pt-68" class="pt-cell pt-tr" onclick="selectElement(68)"><div class="pt-num">68</div><div class="pt-symbol">Er</div><div class="pt-name">Erbium</div></div>
+          <div id="pt-69" class="pt-cell pt-tr" onclick="selectElement(69)"><div class="pt-num">69</div><div class="pt-symbol">Tm</div><div class="pt-name">Thulium</div></div>
+          <div id="pt-70" class="pt-cell pt-tr" onclick="selectElement(70)"><div class="pt-num">70</div><div class="pt-symbol">Yb</div><div class="pt-name">Ytterbium</div></div>
+          <div id="pt-71" class="pt-cell pt-tr" onclick="selectElement(71)"><div class="pt-num">71</div><div class="pt-symbol">Lu</div><div class="pt-name">Lutétium</div></div>
+          <div class="pt-cell pt-empty"></div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:3px;max-width:680px;margin-top:6px;">
+          <div id="pt-21" class="pt-cell pt-sc" onclick="selectElement(21)"><div class="pt-num">21</div><div class="pt-symbol">Sc</div><div class="pt-name">Scandium</div></div>
+          <div id="pt-39" class="pt-cell pt-y" onclick="selectElement(39)"><div class="pt-num">39</div><div class="pt-symbol">Y</div><div class="pt-name">Yttrium</div></div>
+          <div class="pt-cell pt-empty"></div><div class="pt-cell pt-empty"></div>
+          <div class="pt-cell pt-empty"></div><div class="pt-cell pt-empty"></div>
+          <div class="pt-cell pt-empty"></div><div class="pt-cell pt-empty"></div>
+        </div>
+        <!-- Classification légère/lourde -->
+        <div style="margin-top:14px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-size:.62rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:8px;">CLASSIFICATION LREE / HREE</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <div style="background:rgba(200,146,10,.15);border:1px solid rgba(200,146,10,.4);border-radius:6px;padding:5px 10px;font-size:.73rem;">
+              <div style="font-weight:700;color:#8a6000;margin-bottom:3px;">LREE — Légères (La–Eu)</div>
+              <div style="font-family:'Fira Code',monospace;font-size:.68rem;color:var(--muted);">La Ce Pr Nd (Pm) Sm Eu</div>
+              <div style="font-size:.68rem;color:var(--muted);margin-top:2px;">Plus abondantes — Bastnäsite, Monazite</div>
+            </div>
+            <div style="background:rgba(26,74,107,.15);border:1px solid rgba(26,74,107,.4);border-radius:6px;padding:5px 10px;font-size:.73rem;">
+              <div style="font-weight:700;color:#1a4a6b;margin-bottom:3px;">HREE — Lourdes (Gd–Lu + Y)</div>
+              <div style="font-family:'Fira Code',monospace;font-size:.68rem;color:var(--muted);">Gd Tb Dy Ho Er Tm Yb Lu Y</div>
+              <div style="font-size:.68rem;color:var(--muted);margin-top:2px;">Plus rares — Xénotime, Ion adsorption clays</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Element info card -->
+      <div style="flex:0 0 280px;">
+        <div class="elem-card" id="elem-display">
+          <div style="text-align:center;padding:30px 0;color:rgba(255,255,255,.3);font-size:.85rem;">
+            🔬 Cliquez sur un élément<br>pour afficher ses propriétés
+          </div>
+        </div>
+        <div style="margin-top:10px;background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:12px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">CONTRACTION LANTHANIDIQUE</div>
+          <canvas id="contractionCanvas" width="250" height="130" style="width:100%;border-radius:6px;background:#1a1a2e;"></canvas>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:6px;line-height:1.6;">Le rayon ionique M³⁺ <strong>diminue</strong> de La³⁺ (103 pm) à Lu³⁺ (86 pm) en raison du mauvais blindage des électrons 4f.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 2. PROPRIÉTÉS 4f ══════ -->
+<div class="app" id="app-proprietes">
+  <div class="panel" style="flex:0 0 260px;">
+    <div class="ptitle">🔬 SÉLECTION</div>
+    <div class="fg"><label>ÉLÉMENT</label>
+      <select id="propSel" onchange="showPropElement()">
+        <option value="57">La — Lanthane (4f⁰)</option>
+        <option value="58">Ce — Cérium (4f¹)</option>
+        <option value="59">Pr — Praséodyme (4f²)</option>
+        <option value="60">Nd — Néodyme (4f³)</option>
+        <option value="61">Pm — Prométhium (4f⁴)</option>
+        <option value="62">Sm — Samarium (4f⁵)</option>
+        <option value="63">Eu — Europium (4f⁶)</option>
+        <option value="64">Gd — Gadolinium (4f⁷)</option>
+        <option value="65">Tb — Terbium (4f⁸)</option>
+        <option value="66">Dy — Dysprosium (4f⁹)</option>
+        <option value="67">Ho — Holmium (4f¹⁰)</option>
+        <option value="68">Er — Erbium (4f¹¹)</option>
+        <option value="69">Tm — Thulium (4f¹²)</option>
+        <option value="70">Yb — Ytterbium (4f¹³)</option>
+        <option value="71">Lu — Lutétium (4f¹⁴)</option>
+        <option value="21">Sc — Scandium</option>
+        <option value="39">Y — Yttrium</option>
+      </select>
+    </div>
+    <div class="fg"><label>PROPRIÉTÉ À VISUALISER</label>
+      <select id="propChart" onchange="drawPropChart()">
+        <option value="radius">Rayon ionique M³⁺ (pm)</option>
+        <option value="potential">Potentiel standard E° (V)</option>
+        <option value="melting">Point de fusion (°C)</option>
+        <option value="electrons">Nombre d'électrons 4f</option>
+        <option value="abundance">Abondance croûte (ppm)</option>
+      </select>
+    </div>
+    <button class="btn btn-p" onclick="showPropElement()">▶ AFFICHER</button>
+    <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+      <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;">ÉTATS D'OXYDATION COURANTS</div>
+      <div style="font-size:.74rem;color:var(--ink);line-height:1.8;">
+        <b style="color:var(--p1);">+III</b> universel — tous les lanthanides<br>
+        <b style="color:var(--p2);">+IV</b> Ce (stable), Tb, Pr (fort oxydant)<br>
+        <b style="color:var(--p3);">+II</b> Eu (le + stable), Sm, Yb<br>
+        <b style="color:var(--gold);">Gd</b> seul avec 4f⁷ demi-rempli stable
+      </div>
+    </div>
+  </div>
+  <div class="panel" style="flex:1;min-width:300px;" id="prop-detail">
+    <div class="ptitle">📊 FICHE PROPRIÉTÉS</div>
+    <div style="text-align:center;padding:30px;color:var(--muted);">Sélectionnez un élément</div>
+  </div>
+  <div class="panel" style="flex:0 0 300px;">
+    <div class="ptitle">📈 GRAPHIQUE COMPARATIF</div>
+    <canvas id="propCanvas" width="280" height="280" style="width:100%;border-radius:8px;background:#1a1a2e;border:1px solid var(--border);"></canvas>
+    <div style="margin-top:9px;font-size:.72rem;color:var(--muted);text-align:center;" id="prop-chart-label">Sélectionnez une propriété</div>
+  </div>
+</div>
+
+<!-- ══════ 3. COMPLEXES ══════ -->
+<div class="app" id="app-complexes">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🧲 COMPLEXES & COORDINATION DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 255px;">
+        <div class="fg"><label>LANTHANIDE CENTRAL</label>
+          <select id="complexLn" onchange="showComplex()">
+            <option value="La">La³⁺ — Lanthane</option>
+            <option value="Ce">Ce³⁺/⁴⁺ — Cérium</option>
+            <option value="Nd">Nd³⁺ — Néodyme</option>
+            <option value="Eu">Eu³⁺ — Europium</option>
+            <option value="Gd">Gd³⁺ — Gadolinium</option>
+            <option value="Tb">Tb³⁺ — Terbium</option>
+            <option value="Dy">Dy³⁺ — Dysprosium</option>
+            <option value="Er">Er³⁺ — Erbium</option>
+            <option value="Yb">Yb³⁺ — Ytterbium</option>
+          </select>
+        </div>
+        <div class="fg"><label>LIGAND</label>
+          <select id="complexLig" onchange="showComplex()">
+            <option value="H2O">H₂O — Eau (monodentate)</option>
+            <option value="EDTA">EDTA⁴⁻ (hexadentate)</option>
+            <option value="DTPA">DTPA⁵⁻ (octadentate)</option>
+            <option value="acac">acac⁻ (β-dicétonato, bidentate)</option>
+            <option value="NO3">NO₃⁻ (bidentate)</option>
+            <option value="Cl">Cl⁻ (monodentate)</option>
+            <option value="phen">1,10-phénanthroline (bidentate)</option>
+          </select>
+        </div>
+        <div class="fg"><label>SOLVANT</label>
+          <select id="complexSolv">
+            <option value="H2O">H₂O (aqueux)</option>
+            <option value="MeOH">MeOH (méthanolique)</option>
+            <option value="DMF">DMF (aprotique)</option>
+            <option value="DMSO">DMSO</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="showComplex()">▶ AFFICHER COMPLEXE</button>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">NOMBRES DE COORDINATION TR</div>
+          <div style="font-size:.74rem;color:var(--ink);line-height:1.8;">NC = <b style="color:var(--p1);">6 à 12</b> (grand rayon → NC élevé)<br>Le plus courant : <b style="color:var(--p1);">8 et 9</b><br>Eau : [Ln(H₂O)₉]³⁺ pour LREE<br>EDTA : NC = 9 (6 + 3 H₂O)<br>DTPA : NC = 8 (Gd-DTPA, IRM)</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;" id="complex-content">
+        <div style="text-align:center;padding:35px;color:var(--muted);">Sélectionnez un complexe</div>
+      </div>
+      <div style="flex:0 0 260px;">
+        <canvas id="complexCanvas" width="240" height="270" style="width:100%;border-radius:10px;background:radial-gradient(ellipse at center,#1a1a2e 0%,#0a0e1a 100%);border:1.5px solid var(--border);"></canvas>
+        <div style="margin-top:9px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">LIAISON DANS LES COMPLEXES TR</div>
+          <div style="font-size:.73rem;color:var(--ink);line-height:1.7;">Caractère <b style="color:var(--p1);">ionique dominant</b> (≠ métaux de transition).<br>Orbitales 4f <b>très contractées</b> → peu de recouvrement avec ligands.<br>Stabilité : <b>ordre électrostatique</b> = dépend du rayon M³⁺ et de la charge du ligand.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 4. GISEMENTS ══════ -->
+<div class="app" id="app-gisements">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🌍 GISEMENTS MONDIAUX & GÉOCHIMIE DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 250px;">
+        <div style="background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">PRODUCTION MONDIALE 2023</div>
+          <div style="font-size:.73rem;color:var(--ink);line-height:1.9;">
+            🇨🇳 <b>Chine :</b> ~240 000 t (68%)<br>
+            🇺🇸 <b>USA :</b> ~43 000 t (12%)<br>
+            🇦🇺 <b>Australie :</b> ~18 000 t (5%)<br>
+            🇲🇬 <b>Myanmar :</b> ~38 000 t (11%)<br>
+            🇮🇳 <b>Inde :</b> ~2 900 t (1%)<br>
+            <span style="color:var(--muted);">Autres : ~3%</span>
+          </div>
+        </div>
+        <div style="background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:12px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">MINÉRAUX PORTEURS</div>
+          <div style="font-size:.73rem;color:var(--ink);line-height:1.9;">
+            <b style="color:var(--p1);">Bastnäsite</b> (La,Ce)(CO₃)F — LREE<br>
+            <b style="color:var(--p2);">Monazite</b> (La,Ce,Th)PO₄ — LREE<br>
+            <b style="color:var(--p3);">Xénotime</b> YPO₄ — HREE<br>
+            <b style="color:var(--gold);">Ion adsorption clays</b> — HREE (Chine)
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:300px;" id="mines-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 5. EXTRACTION ══════ -->
+<div class="app" id="app-extraction">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">⚙️ PROCÉDÉS D'EXTRACTION & MÉTALLURGIE DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>MINERAI SOURCE</label>
+          <select id="extrMineral" onchange="loadExtraction()">
+            <option value="bastnaesite">Bastnäsite (Bayan Obo, Mountain Pass)</option>
+            <option value="monazite">Monazite (Inde, Brésil, Australie)</option>
+            <option value="xenotime">Xénotime (Malaisie, Australie)</option>
+            <option value="iaclay">Ion Adsorption Clays (Chine du Sud)</option>
+          </select>
+        </div>
+        <div class="fg"><label>ÉTAPE DE TRAITEMENT</label>
+          <select id="extrStep" onchange="loadExtractionStep()">
+            <option value="all">Procédé complet</option>
+            <option value="mining">1. Extraction minière</option>
+            <option value="beneficiation">2. Préconcentration</option>
+            <option value="leaching">3. Lixiviation chimique</option>
+            <option value="sx">4. Extraction par solvants (SX)</option>
+            <option value="precipitation">5. Précipitation sélective</option>
+            <option value="calcination">6. Calcination → oxydes</option>
+            <option value="reduction">7. Réduction métallotherme</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="loadExtraction()">▶ AFFICHER PROCÉDÉ</button>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">ENJEUX ENVIRONNEMENTAUX</div>
+          <div style="font-size:.72rem;color:var(--ink);line-height:1.75;">⚠️ Monazite contient Th et U (radioactivité)<br>⚠️ HF, H₂SO₄ conc. utilisés en lixiviation<br>⚠️ Bassins de résidus (tailings)<br>⚠️ Consommation eau et énergie élevée<br>♻️ Recyclage : < 1% actuellement (2023)</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:320px;" id="extr-content">
+        <div style="text-align:center;padding:35px;color:var(--muted);">Sélectionnez un minerai pour voir le procédé</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 6. APPLICATIONS ══════ -->
+<div class="app" id="app-applications">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🏭 APPLICATIONS INDUSTRIELLES DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;">
+      <div style="flex:0 0 260px;">
+        <div style="font-size:.63rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:8px;">DOMAINE D'APPLICATION</div>
+        <div class="app-grid" style="grid-template-columns:1fr 1fr;gap:7px;" id="app-selector"></div>
+      </div>
+      <div style="flex:1;min-width:300px;" id="app-content">
+        <div style="text-align:center;padding:35px;color:var(--muted);">Sélectionnez un domaine</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 7. MAGNÉTISME ══════ -->
+<div class="app" id="app-magnetisme">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🧲 PROPRIÉTÉS MAGNÉTIQUES DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>COMPOSÉ MAGNÉTIQUE</label>
+          <select id="magSel" onchange="showMagnetism()">
+            <option value="NdFeB">Nd₂Fe₁₄B — Aimant NdFeB</option>
+            <option value="SmCo5">SmCo₅ — Aimant SmCo</option>
+            <option value="Sm2Co17">Sm₂Co₁₇ — SmCo (haute T°)</option>
+            <option value="Gd">Gd métal — ferromagnétique T < Tc</option>
+            <option value="DyFe">DyFe₂ — Magnetostriction</option>
+            <option value="MnBi">Comparaison : Fe ordinaire</option>
+          </select>
+        </div>
+        <div class="fg"><label>TEMPÉRATURE : <span id="mag-temp-label">20°C</span></label>
+          <input type="range" id="magTemp" min="-200" max="400" value="20" oninput="updateMagTemp()" style="width:100%;accent-color:var(--p1);">
+        </div>
+        <button class="btn btn-p" onclick="showMagnetism()">▶ AFFICHER</button>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;" id="mag-data-box">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">DONNÉES MAGNÉTIQUES</div>
+          <div style="font-size:.74rem;color:var(--ink);line-height:1.8;" id="mag-data">—</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:290px;" id="mag-content">
+        <div style="text-align:center;padding:35px;color:var(--muted);">Sélectionnez un composé</div>
+      </div>
+      <div style="flex:0 0 280px;">
+        <canvas id="magCanvas" width="260" height="280" style="width:100%;border-radius:9px;background:#1a1a2e;border:1.5px solid var(--border);"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 8. LUMINESCENCE ══════ -->
+<div class="app" id="app-luminescence">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">💡 LUMINESCENCE & PROPRIÉTÉS OPTIQUES DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>ION LUMINESCENT</label>
+          <select id="lumiSel" onchange="showLuminescence()">
+            <option value="Eu3">Eu³⁺ — Rouge (⁵D₀→⁷Fⱼ) 615 nm</option>
+            <option value="Eu2">Eu²⁺ — Bleu large (400–450 nm)</option>
+            <option value="Tb3">Tb³⁺ — Vert (⁵D₄→⁷Fⱼ) 545 nm</option>
+            <option value="Er3">Er³⁺ — IR/Vert (up-conversion)</option>
+            <option value="Nd3">Nd³⁺ — NIR (1064 nm, laser YAG)</option>
+            <option value="Yb3">Yb³⁺ — NIR (980 nm)</option>
+            <option value="Tm3">Tm³⁺ — Bleu (450 nm, up-conv.)</option>
+            <option value="Ce3">Ce³⁺ — UV/Bleu (350–450 nm)</option>
+            <option value="Sm3">Sm³⁺ — Orange-rouge (600 nm)</option>
+          </select>
+        </div>
+        <div class="fg"><label>MATRICE HÔTE</label>
+          <select id="lumiMatrix">
+            <option value="Y2O3">Y₂O₃ (oxyde d'yttrium)</option>
+            <option value="YAG">YAG (Y₃Al₅O₁₂)</option>
+            <option value="LaF3">LaF₃ (fluorure)</option>
+            <option value="NaYF4">NaYF₄ (fluorure double)</option>
+            <option value="BaMgAl">BaMgAl₁₀O₁₇ (aluminate)</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="showLuminescence()">▶ SIMULER ÉMISSION</button>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">APPLICATIONS CLÉS</div>
+          <div style="font-size:.72rem;color:var(--ink);line-height:1.8;">💡 LED blanches : Ce³⁺:YAG<br>📺 Écrans OLED/plasma : Eu, Tb, Tm<br>🔬 Bioimagerie : Er³⁺ up-conversion<br>🔦 Lasers Nd-YAG (chirurgie)<br>🏥 Scintillateurs : Ce³⁺, Gd<br>🪟 Vitres auto-nettoyantes : Ce⁴⁺</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;" id="lumi-content">
+        <div style="text-align:center;padding:35px;color:var(--muted);">Sélectionnez un ion</div>
+      </div>
+      <div style="flex:0 0 280px;">
+        <canvas id="lumiCanvas" width="260" height="300" style="width:100%;border-radius:9px;background:#0a0e1a;border:1.5px solid var(--border);"></canvas>
+        <div style="margin-top:8px;font-size:.7rem;color:var(--muted);text-align:center;" id="lumi-spectrum-label">Spectre d'émission simulé</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 9. CALCULS ══════ -->
+<div class="app" id="app-calcul">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🧮 CALCULATEUR — CHIMIE DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 260px;">
+        <div class="fg"><label>TYPE DE CALCUL</label>
+          <select id="calcType" onchange="updateCalcUI()">
+            <option value="mol">Masse molaire (oxyde REE)</option>
+            <option value="enrichissement">Facteur d'enrichissement / Clarke</option>
+            <option value="constante">Constante de stabilité complexe</option>
+            <option value="moment">Moment magnétique effectif μₑff</option>
+            <option value="contraction">Rayon ionique (contraction lanthanidique)</option>
+            <option value="rendement">Rendement extraction SX (%)</option>
+          </select>
+        </div>
+        <div id="calc-inputs"></div>
+        <button class="btn btn-p" onclick="calculate()">= CALCULER</button>
+        <button class="btn" onclick="clearCalc()" style="background:transparent;border:1px solid var(--p4);color:var(--p4);border-radius:7px;margin-top:5px;">✕ EFFACER</button>
+      </div>
+      <div style="flex:1;min-width:270px;">
+        <div style="background:#1a1a2e;color:#a8e6cf;font-family:'Fira Code',monospace;border-radius:8px;padding:13px;font-size:.88rem;line-height:1.75;min-height:65px;" id="calc-result">Sélectionnez un type de calcul...</div>
+        <div style="margin-top:10px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">FORMULE UTILISÉE</div>
+          <div id="calc-formula" style="font-family:'Fira Code',monospace;font-size:.76rem;color:var(--ink);line-height:1.8;">—</div>
+        </div>
+        <div style="margin-top:10px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;">MASSES ATOMIQUES REE (g/mol)</div>
+          <div style="font-family:'Fira Code',monospace;font-size:.65rem;color:var(--ink);columns:2;gap:12px;line-height:1.85;">La:138.91 | Ce:140.12 | Pr:140.91 | Nd:144.24 | Pm:145 | Sm:150.36 | Eu:151.96 | Gd:157.25 | Tb:158.93 | Dy:162.50 | Ho:164.93 | Er:167.26 | Tm:168.93 | Yb:173.04 | Lu:174.97 | Sc:44.96 | Y:88.91</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 10. QUIZ ══════ -->
+<div class="app" id="app-quiz">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🎯 QUIZ INTERACTIF — CHIMIE DES TERRES RARES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>CATÉGORIE</label>
+          <select id="quizCat">
+            <option value="general">Généralités & tableau périodique</option>
+            <option value="proprietes">Propriétés atomiques & électroniques</option>
+            <option value="complexes">Complexes & coordination</option>
+            <option value="extraction">Extraction & métallurgie</option>
+            <option value="applications">Applications industrielles</option>
+            <option value="mixed">Quiz général (tous thèmes)</option>
+          </select>
+        </div>
+        <div class="fg"><label>NIVEAU</label>
+          <select id="quizLevel">
+            <option value="L1">Licence 1 (bases)</option>
+            <option value="L2">Licence 2 (intermédiaire)</option>
+            <option value="L3">Licence 3 (avancé)</option>
+          </select>
+        </div>
+        <div class="fg"><label>NOMBRE DE QUESTIONS</label>
+          <select id="quizCount">
+            <option value="5">5 questions</option>
+            <option value="8" selected>8 questions</option>
+            <option value="12">12 questions</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="startQuiz()">▶ NOUVEAU QUIZ</button>
+        <div style="margin-top:13px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:.56rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">SCORE SESSION</div>
+          <div class="quiz-score" id="quiz-score">0 / 0</div>
+          <div style="font-size:.68rem;color:var(--muted);" id="quiz-pct">—</div>
+          <div style="margin-top:7px;height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+            <div id="score-bar" style="height:100%;width:0%;background:var(--p1);border-radius:4px;transition:width .4s;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:300px;" id="quiz-area">
+        <div style="text-align:center;padding:38px;color:var(--muted);">🎯 Démarrez un quiz pour tester vos connaissances sur les terres rares</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ 11. THÉORIE ══════ -->
+<div class="app" id="app-theorie">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📚 COURS — CHIMIE DES TERRES RARES</div>
+    <div class="thy-grid" id="theory-grid"></div>
+  </div>
+</div>
+
+<!-- ══════ 12. RAPPORT ══════ -->
+<div class="app" id="app-rapport">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📋 RAPPORT DE SÉANCE</div>
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:17px;font-family:'Fira Code',monospace;font-size:.72rem;color:var(--ink);line-height:1.9;white-space:pre;" id="rpt-content">
+Explorez les modules pour générer votre rapport.</div>
+    <div style="display:flex;gap:7px;margin-top:10px;">
+      <button class="btn btn-p" style="flex:1" onclick="generateReport()">📋 GÉNÉRER RAPPORT</button>
+      <button class="btn" style="flex:1;background:rgba(123,63,0,.1);border:1px solid var(--p1);color:var(--p1);border-radius:7px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:.82rem;" onclick="window.print()">🖨️ IMPRIMER</button>
+    </div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <div class="sindic"><div class="sdot" id="sdot"></div><span id="stext">SimuTR v1.0 — Prêt</span></div>
+  <span>|</span><span>SimuTR v1.0 — Terres Rares</span>
+  <span>|</span><span id="session-stats">Quiz : 0/0</span>
+  <span style="margin-left:auto" id="sclock"></span>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+const ELEMENTS = {
+  57:{sym:'La',name:'Lanthane',Z:57,mass:138.91,config:'[Xe] 5d¹ 6s²',config4f:'4f⁰',ion:'+III',radius_ion3:103,oxStates:['+III'],melt:918,boil:3464,density:6.162,abundance:39,color:'#c8920a',Estandard:-2.38,notes:'Prototype des lanthanides. 4f vide. Plus grand rayon. NC 9 en solution. Catalyseur automobile (La₂O₃). Optique (LaF₃). Batteries NiMH (La en alliage AB₅).',crystal:'hexagonal compact',electronegativity:1.10},
+  58:{sym:'Ce',name:'Cérium',Z:58,mass:140.12,config:'[Xe] 4f¹ 5d¹ 6s²',config4f:'4f¹',ion:'+III/+IV',radius_ion3:101,oxStates:['+III','+IV'],melt:798,boil:3443,density:6.770,abundance:66.5,color:'#e74c3c',Estandard:-2.34,notes:'Élément le + abondant des TR. Seul lanthanide stable à +IV en solution aqueuse (CeO₂). Oxydant fort Ce⁴⁺/Ce³⁺ (E°=+1.72 V). Catalyseur 3 voies. Verre UV. Polissage (CeO₂). Stockage O₂ (OSC).',crystal:'cubique faces centrées',electronegativity:1.12},
+  59:{sym:'Pr',name:'Praséodyme',Z:59,mass:140.91,config:'[Xe] 4f³ 6s²',config4f:'4f²',ion:'+III',radius_ion3:99,oxStates:['+III','+IV'],melt:931,boil:3520,density:6.773,abundance:9.2,color:'#9b59b6',Estandard:-2.35,notes:'4f² non apparié. Couleur verte en solution Pr³⁺. Alliage NdFeB (substitution partielle Nd). Verre jaune-vert (Pr₂O₃). Céramiques (jaune). Faible magnétisme.',crystal:'hexagonal double',electronegativity:1.13},
+  60:{sym:'Nd',name:'Néodyme',Z:60,mass:144.24,config:'[Xe] 4f⁴ 6s²',config4f:'4f³',ion:'+III',radius_ion3:98.3,oxStates:['+III'],melt:1021,boil:3074,density:7.007,abundance:41.5,color:'#3498db',Estandard:-2.32,notes:'4f³ — moment magnétique élevé (μ=3.62 μB). Aimants Nd₂Fe₁₄B (les plus puissants au monde, BHmax=512 kJ/m³). Lasers Nd:YAG. Verre rose-violet. Moteurs VE, éoliennes. Élément critique pour la transition énergétique.',crystal:'hexagonal double',electronegativity:1.14},
+  61:{sym:'Pm',name:'Prométhium',Z:61,mass:145,config:'[Xe] 4f⁵ 6s²',config4f:'4f⁴',ion:'+III',radius_ion3:97,oxStates:['+III'],melt:1100,boil:3000,density:7.26,abundance:0,color:'#e67e22',Estandard:-2.30,notes:'Seul lanthanide sans isotope stable. ¹⁴⁷Pm : t₁/₂ = 2.62 ans (β⁻). Produit de fission uranium. Aucune occurrence naturelle significative. Utilisé en générateurs isotopiques (pacemakers anciens), épaisseur-mètres (β). Purement synthétique.',crystal:'hexagonal',electronegativity:1.13},
+  62:{sym:'Sm',name:'Samarium',Z:62,mass:150.36,config:'[Xe] 4f⁶ 6s²',config4f:'4f⁵',ion:'+III',radius_ion3:95.8,oxStates:['+II','+III'],melt:1074,boil:1794,density:7.52,abundance:7.05,color:'#16a085',Estandard:-2.30,notes:'4f⁵ — Sm²⁺ stable (réducteur fort). Aimants SmCo₅ et Sm₂Co₁₇ (résistants à T° élevée, Tc>700°C). ¹⁴⁹Sm : bonne section de capture neutronique (réacteurs). Catalyse (SmI₂ en synthèse organique). Neutronique.',crystal:'rhomboédrique',electronegativity:1.17},
+  63:{sym:'Eu',name:'Europium',Z:63,mass:151.96,config:'[Xe] 4f⁷ 6s²',config4f:'4f⁶',ion:'+II/+III',radius_ion3:94.7,oxStates:['+II','+III'],melt:822,boil:1529,density:5.244,abundance:2.0,color:'#d35400',Estandard:-1.99,notes:'4f⁷ semi-rempli. Eu²⁺ isoélectronique Gd³⁺ (rayon similaire Sr²⁺). Eu³⁺ : luminophore rouge pur (⁵D₀→⁷F₂, 615 nm). Eu²⁺ : luminophore bleu large. Écrans TV, LED, scintillateurs, €uro billets (sécurité). Le moins abondant des lanthanides stables (hors Pm).',crystal:'cubique centré',electronegativity:1.20},
+  64:{sym:'Gd',name:'Gadolinium',Z:64,mass:157.25,config:'[Xe] 4f⁷ 5d¹ 6s²',config4f:'4f⁷',ion:'+III',radius_ion3:93.8,oxStates:['+III'],melt:1313,boil:3273,density:7.90,abundance:6.2,color:'#2c3e50',Estandard:-2.28,notes:'4f⁷ plein (demi-rempli → stabilité max). Plus grand moment magnétique des lanthanides libres (7 électrons non appariés, J=7/2). Contraste IRM (Gd-DTPA). Ferromagnétique < 293 K (Tc ambiante). Absorbant neutrons (reacteurs). Effet magnétocalorique pour réfrigération magnétique.',crystal:'hexagonal compact',electronegativity:1.20},
+  65:{sym:'Tb',name:'Terbium',Z:65,mass:158.93,config:'[Xe] 4f⁹ 6s²',config4f:'4f⁸',ion:'+III',radius_ion3:92.3,oxStates:['+III','+IV'],melt:1356,boil:3230,density:8.23,abundance:1.2,color:'#1abc9c',Estandard:-2.28,notes:'4f⁸. Tb³⁺ : luminophore vert (⁵D₄→⁷F₅, 545 nm). Terfenol-D (TbFe₂) : plus grande magnetostriction à T° ambiante (~2000 ppm). Tb⁴⁺ dans TbO₂ (oxydant fort). Alliage aimants NdFeB (2–4% Tb améliore Hc). Rare mais critique.',crystal:'hexagonal compact',electronegativity:1.10},
+  66:{sym:'Dy',name:'Dysprosium',Z:66,mass:162.50,config:'[Xe] 4f¹⁰ 6s²',config4f:'4f⁹',ion:'+III',radius_ion3:91.2,oxStates:['+III'],melt:1412,boil:2567,density:8.55,abundance:5.2,color:'#e74c3c',Estandard:-2.29,notes:'4f⁹. Le + grand moment magnétique mesuré pour un ion libre (J=15/2, μ=10.63 μB). Ajout 1-3% Dy dans NdFeB → améliore coercitivité à T° élevée (moteurs VE, éoliennes). Matériaux aimants "high-performance". Terfenol-D (avec Tb). Neutronique (absorbant).',crystal:'hexagonal compact',electronegativity:1.22},
+  67:{sym:'Ho',name:'Holmium',Z:67,mass:164.93,config:'[Xe] 4f¹¹ 6s²',config4f:'4f¹⁰',ion:'+III',radius_ion3:90.1,oxStates:['+III'],melt:1474,boil:2700,density:8.795,abundance:1.3,color:'#3498db',Estandard:-2.33,notes:'4f¹⁰. Aimant à champ fort (aimant Ho métal pour NMR). Laser Ho:YAG (2.1 μm, chirurgie). Stockage données magnétiques. Absorbant réacteur. Coloration verre (jaune). Holmium pole pieces NMR supraconducteurs. Usage très spécialisé.',crystal:'hexagonal compact',electronegativity:1.23},
+  68:{sym:'Er',name:'Erbium',Z:68,mass:167.26,config:'[Xe] 4f¹² 6s²',config4f:'4f¹¹',ion:'+III',radius_ion3:89.0,oxStates:['+III'],melt:1529,boil:2868,density:9.066,abundance:3.5,color:'#9b59b6',Estandard:-2.32,notes:'4f¹¹. Er³⁺ : amplificateur EDFA (Erbium Doped Fiber Amplifier) — émission 1550 nm = fenêtre transparence fibre optique. Up-conversion (IR→vert visible). Laser Er:YAG (dermatologie). Coloration verre rose. Applications télécom critiques.',crystal:'hexagonal compact',electronegativity:1.24},
+  69:{sym:'Tm',name:'Thulium',Z:69,mass:168.93,config:'[Xe] 4f¹³ 6s²',config4f:'4f¹²',ion:'+III',radius_ion3:88.0,oxStates:['+III'],melt:1545,boil:1950,density:9.321,abundance:0.52,color:'#f39c12',Estandard:-2.32,notes:'4f¹². Tm³⁺ : up-conversion bleu (450–470 nm). ¹⁷⁰Tm : source X portable (t₁/₂=128.6 j). Laser Tm:YAG (2 μm, médical). Parmi les TR les moins abondantes (non Pm). Peu d\'applications majeures actuellement.',crystal:'hexagonal compact',electronegativity:1.25},
+  70:{sym:'Yb',name:'Ytterbium',Z:70,mass:173.04,config:'[Xe] 4f¹⁴ 6s²',config4f:'4f¹³',ion:'+III',radius_ion3:86.8,oxStates:['+II','+III'],melt:819,boil:1196,density:6.965,abundance:3.2,color:'#1e8bc3',Estandard:-2.22,notes:'4f¹³ quasi-rempli. Yb²⁺ (réducteur, bleuâtre). Yb³⁺ : pompe laser (980 nm) pour Er. Amplificateur fibre Yb (1064 nm, kW). Laser Yb:YAG industriel. Up-conversion (sensitizer). Pt de fusion bas → volatilisation métallurgie.',crystal:'cubique faces centrées',electronegativity:1.10},
+  71:{sym:'Lu',name:'Lutétium',Z:71,mass:174.97,config:'[Xe] 4f¹⁴ 5d¹ 6s²',config4f:'4f¹⁴',ion:'+III',radius_ion3:86.1,oxStates:['+III'],melt:1663,boil:3402,density:9.841,abundance:0.8,color:'#27ae60',Estandard:-2.28,notes:'4f¹⁴ complet. Dernier lanthanide. Plus petit rayon, plus dense, plus dur. Lu₂O₃ scintillateur PET (tomographie). Catalyseur (LUOX). ¹⁷⁷Lu : radiothérapie ciblée (dotatate Lu-177, cancer neuroendocrinien). Coûteux — usage très spécialisé.',crystal:'hexagonal compact',electronegativity:1.27},
+  21:{sym:'Sc',name:'Scandium',Z:21,mass:44.96,config:'[Ar] 3d¹ 4s²',config4f:'3d¹ (pas de 4f)',ion:'+III',radius_ion3:74.5,oxStates:['+III'],melt:1541,boil:2836,density:2.989,abundance:22,color:'#8e44ad',Estandard:-2.03,notes:'Pas un lanthanide mais classé TR. 3d¹ → chimie proche mais orbitalles différentes. Alliage Al-Sc (aérospatial, sport). Lampes iodures métalliques (stades). Très cher (rare concentration). Souvent co-produit extraction Ti.',crystal:'hexagonal compact',electronegativity:1.36},
+  39:{sym:'Y',name:'Yttrium',Z:39,mass:88.91,config:'[Kr] 4d¹ 5s²',config4f:'4d¹ (pas de 4f)',ion:'+III',radius_ion3:90.0,oxStates:['+III'],melt:1526,boil:3345,density:4.472,abundance:33,color:'#2980b9',Estandard:-2.37,notes:'Comportement géochimique HREE. 4d¹ → pas d\'électrons 4f. Matrice YAG (laser, LED). Y₂O₃ (luminophore, réfractaire). YBCO (supraconducteur HTc). Blindage réacteur. YSZ (zircone stabilisée yttrium, barrières thermiques). Co-produit lanthanides HREE.',crystal:'hexagonal compact',electronegativity:1.22}
+};
+
+const IONIC_RADII = {57:103,58:101,59:99,60:98.3,61:97,62:95.8,63:94.7,64:93.8,65:92.3,66:91.2,67:90.1,68:89.0,69:88.0,70:86.8,71:86.1};
+const ABUNDANCES = {57:39,58:66.5,59:9.2,60:41.5,61:0.001,62:7.05,63:2.0,64:6.2,65:1.2,66:5.2,67:1.3,68:3.5,69:0.52,70:3.2,71:0.8,21:22,39:33};
+const MELTING_POINTS = {57:918,58:798,59:931,60:1021,61:1100,62:1074,63:822,64:1313,65:1356,66:1412,67:1474,68:1529,69:1545,70:819,71:1663};
+const E_STANDARD = {57:-2.38,58:-2.34,59:-2.35,60:-2.32,61:-2.30,62:-2.30,63:-1.99,64:-2.28,65:-2.28,66:-2.29,67:-2.33,68:-2.32,69:-2.32,70:-2.22,71:-2.28};
+
+let sessionStats={quizCorrect:0,quizTotal:0};
+let darkMode=false;
+function toggleTheme(){darkMode=!darkMode;document.body.classList.toggle('dark',darkMode);document.querySelector('.hbtn').textContent=darkMode?'☀️':'🌙';}
+
+function showTab(n){
+  document.querySelectorAll('.app').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('app-'+n).classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active');
+  if(n==='tableau'){drawContractionChart();}
+  if(n==='proprietes'){drawPropChart();}
+  if(n==='gisements'){initMines();}
+  if(n==='extraction'){loadExtraction();}
+  if(n==='applications'){initApps();}
+  if(n==='magnetisme'){showMagnetism();}
+  if(n==='luminescence'){showLuminescence();}
+  if(n==='calcul'){updateCalcUI();}
+  if(n==='theorie'){initTheory();}
+}
+function updateSessionStats(){document.getElementById('session-stats').textContent=`Quiz : ${sessionStats.quizCorrect}/${sessionStats.quizTotal}`;}
+
+// ═══════ TABLEAU PÉRIODIQUE ═══════
+function selectElement(Z){
+  document.querySelectorAll('.pt-cell').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('pt-'+Z)?.classList.add('sel');
+  const el=ELEMENTS[Z];if(!el)return;
+  const d=document.getElementById('elem-display');
+  d.innerHTML=`
+    <div style="display:flex;align-items:flex-end;gap:12px;margin-bottom:14px;">
+      <div>
+        <div class="elem-num-big">Z = ${el.Z}</div>
+        <div class="elem-symbol-big">${el.sym}</div>
+        <div class="elem-name-big">${el.name}</div>
+      </div>
+      <div style="flex:1;">
+        <div style="background:rgba(200,146,10,.2);border:1px solid rgba(200,146,10,.4);border-radius:6px;padding:6px 10px;text-align:center;">
+          <div style="font-size:.58rem;color:rgba(255,255,255,.5);font-family:'Fira Code',monospace;">MASSE ATOMIQUE</div>
+          <div style="font-size:1.1rem;color:var(--gold);font-family:'Fira Code',monospace;font-weight:700;">${el.mass} g/mol</div>
+        </div>
+      </div>
+    </div>
+    <div class="elem-data">
+      <div class="row"><span class="key">Config. élec.</span><span class="val" style="font-size:.68rem;">${el.config}</span></div>
+      <div class="row"><span class="key">Sous-couche 4f</span><span class="val">${el.config4f}</span></div>
+      <div class="row"><span class="key">Degrés oxydation</span><span class="val">${el.oxStates.join(', ')}</span></div>
+      <div class="row"><span class="key">Rayon M³⁺ (pm)</span><span class="val">${el.radius_ion3} pm</span></div>
+      <div class="row"><span class="key">E° M³⁺/M (V)</span><span class="val">${el.Estandard} V</span></div>
+      <div class="row"><span class="key">Fusion (°C)</span><span class="val">${el.melt}°C</span></div>
+      <div class="row"><span class="key">Densité (g/cm³)</span><span class="val">${el.density}</span></div>
+      <div class="row"><span class="key">Abondance (ppm)</span><span class="val">${el.abundance} ppm</span></div>
+      <div class="row"><span class="key">Électronégativité</span><span class="val">${el.electronegativity}</span></div>
+    </div>
+    <div class="config-4f" style="margin-top:10px;">🔬 ${el.notes}</div>`;
+  setStatus('Élément chargé : '+el.name+' (Z='+Z+')');
+}
+
+// Contraction lanthanidique canvas
+function drawContractionChart(){
+  const c=document.getElementById('contractionCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
+  const Zs=[57,58,59,60,61,62,63,64,65,66,67,68,69,70,71];
+  const syms=['La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu'];
+  const radii=Zs.map(z=>IONIC_RADII[z]);
+  const minR=Math.min(...radii),maxR=Math.max(...radii);
+  const pad={l:28,r:10,t:10,b:30};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  ctx.strokeStyle='rgba(200,146,10,.15)';ctx.lineWidth=1;
+  [86,90,94,98,102].forEach(rv=>{
+    const y=pad.t+ch-(rv-minR)/(maxR-minR)*ch;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    ctx.fillStyle='rgba(200,146,10,.4)';ctx.font='9px Fira Code';ctx.fillText(rv,2,y+3);
+  });
+  ctx.beginPath();ctx.strokeStyle='rgba(200,146,10,.8)';ctx.lineWidth=2;
+  Zs.forEach((z,i)=>{
+    const x=pad.l+i/(Zs.length-1)*cw;
+    const y=pad.t+ch-(radii[i]-minR)/(maxR-minR)*ch;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  Zs.forEach((z,i)=>{
+    const x=pad.l+i/(Zs.length-1)*cw;
+    const y=pad.t+ch-(radii[i]-minR)/(maxR-minR)*ch;
+    ctx.fillStyle=i===7?'#f1c40f':'#c8920a';
+    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fill();
+    if(i%2===0||i===14){
+      ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='8px Manrope';
+      ctx.fillText(syms[i],x-5,h-4);
+    }
+  });
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='9px Fira Code';
+  ctx.fillText('r(M³⁺) pm',2,14);
+}
+
+// ═══════ PROPRIÉTÉS ═══════
+function showPropElement(){
+  const Z=parseInt(document.getElementById('propSel').value);
+  const el=ELEMENTS[Z];if(!el)return;
+  // Calc number of 4f electrons
+  const f4={57:0,58:1,59:2,60:3,61:4,62:5,63:6,64:7,65:8,66:9,67:10,68:11,69:12,70:13,71:14,21:0,39:0};
+  const n4f=f4[Z]||0;
+  // Spin-only moment approx (for display)
+  const mu_eff_map={57:0,58:2.54,59:3.58,60:3.62,61:2.68,62:0.85,63:3.4,64:7.94,65:9.72,66:10.63,67:10.60,68:9.59,69:7.57,70:4.54,71:0,21:0,39:0};
+  const mu=mu_eff_map[Z]||0;
+  const doc=document.getElementById('prop-detail');
+  doc.innerHTML=`<div class="ptitle">${el.sym} — ${el.name}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px;">
+      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px;">
+        <div style="font-size:.62rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">CONFIGURATION ÉLECTRONIQUE</div>
+        <div style="font-family:'Fira Code',monospace;font-size:.85rem;color:var(--p1);line-height:1.7;">${el.config}<br><span style="color:var(--gold);">Sous-couche 4f : ${el.config4f}</span></div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.6;">Électrons 4f : <b>${n4f}</b> | Spin non appariés ≈ <b>${Math.min(n4f,14-n4f)}</b></div>
+      </div>
+      <div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px;">
+        <div style="font-size:.62rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">PROPRIÉTÉS MAGNÉTIQUES</div>
+        <div style="font-family:'Fira Code',monospace;font-size:.85rem;color:var(--p2);">μₑff = ${mu} μB</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:6px;line-height:1.6;">${mu===0?'Diamagnétique (4f vide ou plein)':mu>5?'Fortement paramagnétique':'Paramagnétique'}</div>
+      </div>
+    </div>
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;">
+      <div style="font-size:.62rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">DONNÉES PHYSICO-CHIMIQUES</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:7px;">
+        ${[
+          ['Masse molaire',el.mass+' g/mol'],
+          ['Rayon M³⁺',el.radius_ion3+' pm'],
+          ['Point de fusion',el.melt+'°C'],
+          ['Point d\'ébullition',el.boil+'°C'],
+          ['Densité',el.density+' g/cm³'],
+          ['Abondance terrestre',el.abundance+' ppm'],
+          ['E° (M³⁺/M)',el.Estandard+' V'],
+          ['Électronégativité',el.electronegativity+' (Pauling)'],
+          ['Struct. cristalline',el.crystal]
+        ].map(([k,v])=>`<div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:7px 9px;"><div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;">${k}</div><div style="font-size:.82rem;font-weight:700;color:var(--ink);">${v}</div></div>`).join('')}
+      </div>
+    </div>
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+      <div style="font-size:.62rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;">ÉTATS D'OXYDATION & APPLICATIONS</div>
+      <div style="font-size:.8rem;color:var(--muted);line-height:1.75;">${el.notes}</div>
+    </div>`;
+  drawPropChart();
+  setStatus('Propriétés : '+el.name);
+}
+
+function drawPropChart(){
+  const c=document.getElementById('propCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
+  const type=document.getElementById('propChart').value;
+  const Zs=[57,58,59,60,62,63,64,65,66,67,68,69,70,71];
+  const labels=['La','Ce','Pr','Nd','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu'];
+  let data,label,unit;
+  if(type==='radius'){data=Zs.map(z=>IONIC_RADII[z]||0);label='Rayon ionique M³⁺';unit='pm';}
+  else if(type==='potential'){data=Zs.map(z=>E_STANDARD[z]||0);label='Potentiel standard E°';unit='V';}
+  else if(type==='melting'){data=Zs.map(z=>MELTING_POINTS[z]||0);label='Point de fusion';unit='°C';}
+  else if(type==='electrons'){data=[0,1,2,3,5,6,7,8,9,10,11,12,13,14];label='Électrons 4f';unit='e⁻';}
+  else{data=Zs.map(z=>ABUNDANCES[z]||0);label='Abondance';unit='ppm';}
+  document.getElementById('prop-chart-label').textContent=label+' ('+unit+')';
+  const minV=Math.min(...data),maxV=Math.max(...data);
+  const pad={l:35,r:10,t:20,b:30},cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  const bw=cw/data.length-3;
+  ctx.strokeStyle='rgba(200,146,10,.12)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch*(i/4);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    const v=(maxV-(maxV-minV)*(i/4));
+    ctx.fillStyle='rgba(200,146,10,.5)';ctx.font='9px Fira Code';
+    ctx.fillText(v.toFixed(type==='radius'||type==='melting'?0:2),2,y+3);
+  }
+  const selZ=parseInt(document.getElementById('propSel').value);
+  data.forEach((v,i)=>{
+    const x=pad.l+i*(bw+3);
+    const barH=((v-minV)/(maxV-minV||1))*ch;
+    const y=pad.t+ch-barH;
+    const isSel=(Zs[i]===selZ);
+    ctx.fillStyle=isSel?'var(--gold)':'rgba(200,146,10,.5)';
+    ctx.fillRect(x,y,bw,barH);
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='8px Manrope';
+    ctx.fillText(labels[i],x+1,h-4);
+  });
+}
+
+// ═══════ COMPLEXES ═══════
+const COMPLEXES={
+  La:{H2O:{nc:9,geo:'Tricapped trigonal prismatic',formula:'[La(H₂O)₉]³⁺',logK:'—',app:'Modèle référence',color:'#c8920a'},EDTA:{nc:9,geo:'Distorted square antiprismatic + H₂O',formula:'[La(EDTA)(H₂O)₃]⁻',logK:'15.36',app:'Séparation chromatographique',color:'#e74c3c'},DTPA:{nc:9,geo:'Tricapped trigonal prismatic',formula:'[La(DTPA)]²⁻',logK:'19.48',app:'IRM (analogue Gd)',color:'#3498db'},acac:{nc:6,geo:'Octaédrique',formula:'[La(acac)₃(H₂O)₂]',logK:'~9',app:'Précurseur CVD, catalyse',color:'#27ae60'},phen:{nc:6,geo:'Octaédrique',formula:'[La(phen)₃]³⁺',logK:'~14',app:'Luminescence (sensitizer)',color:'#9b59b6'}},
+  Eu:{H2O:{nc:9,geo:'Tricapped trigonal prismatic',formula:'[Eu(H₂O)₉]³⁺',logK:'—',app:'Référence luminescence rouge',color:'#d35400'},EDTA:{nc:8,geo:'Square antiprismatic',formula:'[Eu(EDTA)(H₂O)₂]⁻',logK:'17.37',app:'Séparation Eu/Sm',color:'#e74c3c'},DTPA:{nc:8,geo:'Square antiprismatic',formula:'[Eu(DTPA)]²⁻',logK:'22.39',app:'Analogue Gd-IRM',color:'#3498db'},acac:{nc:6,geo:'Pseudo-octaédrique',formula:'[Eu(acac)₃]',logK:'~13',app:'OLED émission rouge, spectroscopie',color:'#27ae60'},phen:{nc:6,geo:'Octaédrique',formula:'[Eu(phen)₃]³⁺',logK:'~18',app:'Capteur chimioluminescent',color:'#9b59b6'}},
+  Gd:{H2O:{nc:9,geo:'Tricapped trigonal prismatic',formula:'[Gd(H₂O)₉]³⁺',logK:'—',app:'Modèle IRM',color:'#c8920a'},EDTA:{nc:8,geo:'Square antiprismatic',formula:'[Gd(EDTA)(H₂O)₂]⁻',logK:'17.40',app:'Agent contraste IRM proto',color:'#e74c3c'},DTPA:{nc:8,geo:'Square antiprismatic + q=1',formula:'[Gd(DTPA)(H₂O)]²⁻',logK:'22.46',app:'Magnevist® (IRM clinique, référence)',color:'#3498db'},acac:{nc:6,geo:'Pseudo-octaédrique',formula:'[Gd(acac)₃]',logK:'~14',app:'Précurseur matériaux magnétiques',color:'#27ae60'},NO3:{nc:11,geo:'Complexe élevé',formula:'[Gd(NO₃)₅]²⁻',logK:'3.8',app:'Chimie coordination HTc',color:'#f39c12'}},
+};
+function getComplex(ln,lig){
+  const def={nc:8,geo:'Prismatique bicappé',formula:`[${ln}L]³⁺`,logK:'~15',app:'Complexe TR typique',color:'#c8920a'};
+  return (COMPLEXES[ln]&&COMPLEXES[ln][lig])||def;
+}
+function showComplex(){
+  const ln=document.getElementById('complexLn').value;
+  const lig=document.getElementById('complexLig').value;
+  const cx=getComplex(ln,lig);
+  document.getElementById('complex-content').innerHTML=`
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:12px;">
+      <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:var(--p1);margin-bottom:10px;">Complexe : ${cx.formula}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+        ${[['Nombre de coordination',cx.nc],['Géométrie',cx.geo],['log K (stabilité)',cx.logK||'Non tabulé'],['Application',cx.app]].map(([k,v])=>`<div style="background:var(--panel);border:1px solid var(--border);border-radius:7px;padding:9px;"><div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;">${k}</div><div style="font-size:.85rem;font-weight:700;color:var(--ink);">${v}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="code-dark" style="margin-bottom:10px;">Règle de formation :
+  Ln³⁺ + nL  ⇌  [Ln·Lₙ]^(3-nq)+
+  β_n = [LnLₙ] / ([Ln³⁺]·[L]ⁿ)
+  log β pour ${ln}-${lig} : ${cx.logK||'voir littérature'}</div>
+    <div class="info-box"><h4>⚡ Stabilité des complexes de TR</h4>
+      <p>Les complexes de TR obéissent à l'<b>ordre Irving-Williams inversé</b> (dominé par la charge et le rayon) : la stabilité augmente de <b>La→Lu</b> (contraction lanthanidique → liaison plus forte).<br><br>
+      Contrairement aux métaux de transition, les TR forment des liaisons <b>essentiellement ioniques</b> (peu de covalence 4f). La force d'interaction dépend donc quasi exclusivement du <b>rapport charge/rayon = Z_eff/r</b>.</p>
+    </div>
+    <div class="info-box"><h4>🔬 Intérêt du ligand ${lig}</h4>
+      <p>${getComplexNote(lig)}</p>
+    </div>`;
+  drawComplexCanvas(cx);
+  setStatus('Complexe : '+cx.formula);
+}
+function getComplexNote(lig){
+  const notes={H2O:'Eau : ligand de référence. En solution, les LREE forment [Ln(H₂O)₉]³⁺, les HREE [Ln(H₂O)₈]³⁺ (réduction NC avec la contraction). Échangeable facilement.',EDTA:'EDTA⁴⁻ hexadentate (2N + 4O). Très utilisé en séparation analytique. log β croît La→Lu. Base des colonnes échangeuses d\'ions.',DTPA:'DTPA⁵⁻ octadentate (3N + 5O). Le complexe le + stable pour TR. Gd-DTPA = Magnevist® (agent contraste IRM clinique, 1 eau coordinée q=1).',acac:'β-dicétonato bidentate (O,O). Précurseur CVD pour films minces. Complexes luminescents (Eu, Tb). Volatils à T° modérée.',NO3:'NO₃⁻ bidentate (chélate à 3 centres O-N-O). Favorise NC élevés. Utilisé pour former des poudres d\'oxydes de haute pureté par pyrolyse.',phen:'1,10-phénanthroline : ligand N,N bidentate π-acide. Excellent "antenne" pour la luminescence des TR (transfert d\'énergie ligand→métal). Utilisé en chimie analytique.',Cl:'Cl⁻ monodentate. Complexes faibles. Coordination uniquement à haute concentration. Utilisé dans les procédés d\'électrodéposition.'};
+  return notes[lig]||'Ligand utilisé en chimie de coordination des terres rares.';
+}
+function drawComplexCanvas(cx){
+  const c=document.getElementById('complexCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.fillStyle='#0a0e1a';ctx.fillRect(0,0,w,h);
+  const cx0=w/2,cy0=h/2-20,r=72;
+  // Central ion
+  ctx.shadowBlur=20;ctx.shadowColor=cx.color||'#c8920a';
+  ctx.fillStyle=cx.color||'#c8920a';
+  ctx.beginPath();ctx.arc(cx0,cy0,20,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;
+  ctx.fillStyle='white';ctx.font='bold 11px Fraunces';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(document.getElementById('complexLn').value+'³⁺',cx0,cy0);
+  // Ligands
+  const nc=Math.min(cx.nc,9);
+  for(let i=0;i<nc;i++){
+    const angle=(i/nc)*Math.PI*2-Math.PI/2;
+    const lx=cx0+r*Math.cos(angle),ly=cy0+r*Math.sin(angle);
+    ctx.strokeStyle='rgba(200,146,10,.5)';ctx.lineWidth=1.5;
+    ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(cx0,cy0);ctx.lineTo(lx,ly);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle='#3498db';
+    ctx.beginPath();ctx.arc(lx,ly,8,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='white';ctx.font='bold 7px Fira Code';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('L',lx,ly);
+  }
+  ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='11px Manrope';ctx.textAlign='center';
+  ctx.fillText('NC = '+cx.nc+' | '+cx.geo.split(' ')[0],cx0,h-14);
+}
+
+// ═══════ GISEMENTS ═══════
+const MINES=[
+  {name:'Bayan Obo',loc:'Mongolie Intérieure, Chine',type:'Carbonatite-Fe',mineraux:'Bastnäsite + Monazite',reserves:'~44 Mt TR₂O₃',production:'~70% prod. mondiale Chine',lree:'95%',hree:'5%',radioact:'Th modéré',det:'Plus grand gisement TR du monde. Coexploité avec le fer (minerai de fer magnétite). Découvert 1927. Exploitation depuis 1957. Bastnäsite (Ce, La, Nd) + Monazite. Richesse en LREE (La, Ce, Nd, Pr). Faible teneur HREE. Réserves estimées 800 Mt minerai.',pct:100},
+  {name:'Mountain Pass',loc:'Californie, USA',type:'Carbonatite',mineraux:'Bastnäsite',reserves:'~1.5 Mt TR₂O₃',production:'~43 000 t/an (2023)',lree:'98%',hree:'2%',radioact:'Très faible',det:'Principal gisement américain. Exploité 1952–2002, puis fermé (compétition chinoise), rouvert 2017 par MP Materials. Teneur très élevée en La, Ce, Nd, Pr. Quasi exclusivement LREE. Séparation on-site à Freeport.',pct:38},
+  {name:'Lynas Mount Weld',loc:'Australie Occidentale',type:'Latérite carbonatitique',mineraux:'Monazite + Bastnäsite',reserves:'~1.8 Mt TR₂O₃',production:'~18 000 t/an',lree:'90%',hree:'10%',radioact:'Th + U faible',det:'Gisement australien de Lynas Rare Earths. Teneur TR parmi les plus élevées au monde (>8% TR₂O₃). Transformation en Malaisie (LAMP) + Australie. LREE majoritaires (La, Ce, Nd). Expansion capacité prévue.',pct:35},
+  {name:'Ion Adsorption Clays',loc:'Jiangxi, Fujian, Guangdong (Chine)',type:'Altération latéritique argileuse',mineraux:'TR adsorbées sur argiles (halloysite)',reserves:'Distribuées, difficiles à chiffrer',production:'~38 000 t/an (HREE)',lree:'30%',hree:'70%',radioact:'Très faible (< 50 Bq/g)',det:'Source dominante de HREE (Dy, Tb, Eu, Er, Yb…). Extraction in situ : injection (NH₄)₂SO₄ ou (NH₄)Cl → désorption des ions TR³⁺ des argiles. Procédé "solution mining" doux mais impact environnemental (sols). Teneur 0.05–0.2% TR₂O₃ — très basse mais HREE précieuses.',pct:72},
+  {name:'Kvanefjeld',loc:'Groenland',type:'Syénite peralcaline',mineraux:'Steenstrupine (La, Ce, Nd)',reserves:'~9 Mt TR₂O₃',production:'En développement',lree:'85%',hree:'15%',radioact:'U + Th élevés (mine uranifère)',det:'Énorme gisement potentiel mais fort contenu uranium. Projet controversé (environnement, radioactivité). Moratoire gouvernemental 2021. Co-produit : uranium. Si exploité : second mondial. Importante source potentielle.',pct:45},
+  {name:'Nolans Bore',loc:'Territoire du Nord, Australie',type:'Phosphate-silicate',mineraux:'Apatite, brisbanite',reserves:'~0.9 Mt TR₂O₃',production:'En développement (Arafura)',lree:'92%',hree:'8%',radioact:'Faible',det:'Projet Arafura Resources. Contient NdPr (néodyme-praséodyme) très riche — critique pour aimants NdFeB. Teneur : ~2.6% TR₂O₃. Production visée pour 2025–2026. Financement partiel australien et coréen.',pct:25},
+];
+function initMines(){
+  const cont=document.getElementById('mines-content');
+  cont.innerHTML=`<div class="mine-grid">${MINES.map((m,i)=>`
+    <div class="mine-card" id="mine-${i}" onclick="toggleMine(${i})">
+      <div class="mine-name">${m.name}</div>
+      <div class="mine-loc">📍 ${m.loc}</div>
+      <div style="display:flex;justify-content:space-between;font-size:.7rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">
+        <span>${m.type}</span><span>${m.reserves}</span>
+      </div>
+      <div style="display:flex;gap:5px;margin:5px 0;flex-wrap:wrap;">
+        <span style="background:rgba(200,146,10,.15);border:1px solid rgba(200,146,10,.3);border-radius:4px;padding:1px 7px;font-size:.62rem;font-family:'Fira Code',monospace;">LREE ${m.lree}</span>
+        <span style="background:rgba(26,74,107,.15);border:1px solid rgba(26,74,107,.3);border-radius:4px;padding:1px 7px;font-size:.62rem;font-family:'Fira Code',monospace;">HREE ${m.hree}</span>
+        <span style="background:${m.radioact.includes('faible')||m.radioact==='Très faible'?'rgba(45,106,79,.12)':'rgba(181,69,27,.12)'};border:1px solid ${m.radioact.includes('faible')||m.radioact==='Très faible'?'rgba(45,106,79,.3)':'rgba(181,69,27,.3)'};border-radius:4px;padding:1px 7px;font-size:.62rem;font-family:'Fira Code',monospace;">☢ ${m.radioact}</span>
+      </div>
+      <div class="mine-bar-wrap"><div class="mine-bar" style="width:${m.pct}%"></div></div>
+      <div style="font-size:.65rem;color:var(--muted);font-family:'Fira Code',monospace;">Production relative : ${m.production}</div>
+      <div class="mine-detail">${m.det}</div>
+    </div>`).join('')}</div>`;
+}
+function toggleMine(i){
+  document.querySelectorAll('.mine-card').forEach((c,j)=>{j===i?c.classList.toggle('open'):c.classList.remove('open');});
+}
+
+// ═══════ EXTRACTION ═══════
+const EXTRACTION_DATA={
+  bastnaesite:{name:'Bastnäsite',steps:[
+    {title:'Extraction minière (open-pit)',chem:'CeCO₃F + Gangue → Concassage + Broyage',desc:'Extraction à ciel ouvert. Concassage primaire et secondaire. Broyage à billes jusqu\'à P80 ~75 μm. La gangue contient calcite, dolomite, barytine, fluorite.',env:'Poussières, bruit, surfaces déforestées.',yield:95},
+    {title:'Préconcentration (flottation)',chem:'Bastnäsite → Collecteur (acide oléique + Na₂CO₃) → Mousse enrichie ~60% TR₂O₃',desc:'Flottation sélective : bastnäsite est hydrophobe avec collecteur. Gangue hydrophile reste dans l\'eau. Rapport de concentration : 10–20x. Produit : concentré flotation.',env:'Réactifs flotation, eaux usées.',yield:85},
+    {title:'Lixiviation acide (HCl ou H₂SO₄)',chem:'CeCO₃F + 2 HCl → CeCl₃ + CO₂↑ + HF↑\n2Ce(CO₃)₃ + 3H₂SO₄ → Ce₂(SO₄)₃ + 3H₂O + 3CO₂',desc:'Dissolution sélective des TR par HCl dilué (10–15%) ou H₂SO₄ à 60–80°C. HF dégagé avec HCl = dangereux (neutralisation). La gangue silicatée résiste mieux.',env:'⚠️ HF gazeux toxique. Effluents acides.',yield:90},
+    {title:'Extraction par solvants (SX) — Séparation',chem:'Ln³⁺(aq) + 3 HDEHP(org) ⇌ LnDEHP₃(org) + 3H⁺\nD = [Ln]org / [Ln]aq → sélectivité par Z',desc:'Extraction liquide-liquide en continu (mélangeurs-décanteurs en batterie). Extractants : D2EHPA, EHEHPA, Cyanex 572. Séparation la + difficile car propriétés TR très proches. Nécessite dizaines d\'étapes pour Nd/Pr ou Eu/Sm.',env:'Solvants organiques, pertes extractants.',yield:99},
+    {title:'Précipitation sélective des oxyalates',chem:'Ln³⁺ + 3/2 H₂C₂O₄ → Ln₂(C₂O₄)₃↓ + 3H⁺',desc:'Précipitation à l\'acide oxalique à pH contrôlé (1.5–2.0). Filtre la totalité des TR sous forme d\'oxalates insolubles. Étape de purification finale. Filtration centrifuge.',env:'H₂C₂O₄ — déchets oxaliques à traiter.',yield:98},
+    {title:'Calcination → Oxydes REE (REO)',chem:'Ln₂(C₂O₄)₃ → Ln₂O₃ + 3CO + 3CO₂ (900°C)',desc:'Calcination dans four rotatif à 800–1000°C. Décomposition des oxalates → oxydes purs REO. Produit commercial : TR₂O₃ à 99–99.99% (selon séparation SX). Ce sous forme CeO₂.',env:'Emissions CO₂, fours énergivores.',yield:99},
+    {title:'Réduction métallotherme (métal pur)',chem:'Ln₂O₃ + 3Ca → 2Ln + 3CaO (650–1100°C)\nLnF₃ + 3/2Ca → Ln + 3/2CaF₂',desc:'Production du métal TR pur : réduction de l\'oxyde (ou fluorure) par calcium ou magnésium métallique. Conditions anhydres sous Ar. Néodyme métal ainsi obtenu pour aimants NdFeB.',env:'Ca métal, déchets CaO/CaF₂.',yield:95},
+  ]},
+  monazite:{name:'Monazite',steps:[
+    {title:'Extraction et séparation gravimétrique',chem:'Monazite (dense : 5.0–5.3 g/cm³) → tables de gravité',desc:'La monazite est récupérée comme sous-produit des sables miniers (Ti, Zr). Séparation par densité (spirales, tables), puis séparation magnétique (monazite légèrement magnétique). Produit : concentré >90% monazite.',env:'Manipulation sables radioactifs.',yield:85},
+    {title:'Décomposition alcaline (NaOH fondu)',chem:'(La,Ce,Th)PO₄ + 3NaOH → La(OH)₃ + Na₃PO₄\nThO₂ reste insoluble → séparation Th',desc:'Attaque par NaOH à 140°C pendant 4h. Les TR passent en hydroxydes solubles, le Th reste comme ThO₂ (insoluble en milieu alcalin). Séparation critique Th/TR pour gestion radioactivité.',env:'⚠️ Thorium radioactif à gérer.',yield:92},
+    {title:'Lixiviation HNO₃ puis SX Th/TR',chem:'TR(OH)₃ + 3HNO₃ → TR(NO₃)₃ + 3H₂O\nTBP/kérosène → extraction sélective Th',desc:'Dissolution dans HNO₃, puis extraction du thorium résiduel par TBP/kérosène. Le raffinat contient les TR purifiées de Th (< 10 ppm Th requis pour commercialisation).',env:'HNO₃, TBP. Déchets Th à stocker.',yield:90},
+    {title:'SX individuelle des TR et précipitation',chem:'Même que bastnäsite (HDEHP, Cyanex)',desc:'Séparation individuelle des TR par SX multistage. La monazite est riche en LREE (La, Ce, Nd). Précipitation oxalate puis calcination.',env:'Identique bastnäsite.',yield:98},
+  ]},
+  xenotime:{name:'Xénotime',steps:[
+    {title:'Récupération sables miniers + tri',chem:'YPO₄ + (Er,Dy,Yb,Gd)PO₄ → dense (4.5 g/cm³)',desc:'Xénotime = phosphate d\'yttrium avec substitutions HREE. Récupéré dans les sables de rivières et placers (Malaisie, Australie). Densité ~4.5 g/cm³ → séparation par spirales + tables.',env:'Sables, poussières. Th/U très faibles.',yield:80},
+    {title:'Lixiviation H₂SO₄ à chaud',chem:'YPO₄ + H₂SO₄ → Y₂(SO₄)₃ + H₃PO₄',desc:'Attaque sulfurique concentrée à 250°C. Dissolution complète du xénotime. H₃PO₄ libéré — peut être récupéré comme co-produit. Milieu très corrosif.',env:'H₂SO₄ concentré, H₃PO₄.',yield:95},
+    {title:'Neutralisation et précipitation HREE',chem:'Y³⁺ + Dy³⁺ + Er³⁺... + NH₃·H₂O → Ln(OH)₃↓',desc:'Neutralisation progressive à pH 4–5 : précipitation des HREE comme hydroxydes ou sels basiques. Yttrium et HREE récupérés ensemble. Séparation individuelle ensuite par SX.',env:'Effluents ammoniacaux.',yield:90},
+    {title:'SX — Séparation HREE individuelles',chem:'Y³⁺/Dy³⁺/Er³⁺ → séparation par PC88A ou EHEHPA',desc:'Séparation des HREE entre elles est particulièrement difficile (rayon très proches). Y se sépare relativement bien. Dy/Ho, Er/Tm/Yb nécessitent nombreuses étapes. Coûteux mais HREE = marché premium.',env:'Extractants organiques.',yield:95},
+  ]},
+  iaclay:{name:'Ion Adsorption Clays',steps:[
+    {title:'Exploration et délimitation des zones',chem:'Teneur 0.05–0.2% TR₂O₃ / kg argile',desc:'Mesures géophysiques et géochimiques pour cartographier les profils d\'altération. Les TR³⁺ sont adsorbées sur les argiles (illite, halloysite, kaolinite) par échange ionique réversible. Profils 3–20 m de profondeur.',env:'Déforestation légère.',yield:85},
+    {title:'Lixiviation in situ (solution mining)',chem:'[Argile-Ln]³⁺ + 3/2(NH₄)₂SO₄ → 3NH₄-Argile + Ln₂(SO₄)₃(aq)',desc:'Injection de solution (NH₄)₂SO₄ (3–5%) dans des puits. Les NH₄⁺ échangent avec les TR³⁺ adsorbées. Les lixiviats TR sont collectés par des drains en aval. Procédé peu destructeur mais parfois fuites.',env:'NH₄⁺ dans nappes phréatiques. Sols compactés.',yield:70},
+    {title:'Précipitation par NH₃ + filtration',chem:'Ln³⁺(aq) + NH₃·H₂O → Ln(OH)₃↓ (pH 7–8)',desc:'Neutralisation des lixiviats avec NH₃. Précipitation des TR sous forme d\'hydroxydes. Filtration presse. Produit : concentré hydroxydes HREE riche en Y, Dy, Eu, Tb.',env:'Effluents ammoniacaux à traiter.',yield:92},
+    {title:'Calcination → Concentré HREE mixed oxides',chem:'Ln(OH)₃ → Ln₂O₃ + H₂O (600–800°C)',desc:'Produit final : mélange d\'oxydes HREE. Teneur HREE élevée (Dy 3–7%, Tb 0.5–2%, Eu 2–5%). Envoi vers usines de séparation SX pour oxydes individuels. Chine exporte concentrés et oxydes séparés.',env:'CO₂, fours. Impact global faible.',yield:97},
+  ]}
+};
+function loadExtraction(){
+  const key=document.getElementById('extrMineral').value;
+  const data=EXTRACTION_DATA[key];
+  if(!data)return;
+  const cont=document.getElementById('extr-content');
+  cont.innerHTML=`
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:12px;font-size:.82rem;">
+      <b>Minerai :</b> ${data.name} | <b>Étapes :</b> ${data.steps.length} | Cliquez sur chaque étape pour les détails.
+    </div>
+    <div class="extr-flow">${data.steps.map((s,i)=>`
+      <div class="extr-step">
+        <div class="extr-line">
+          <div class="extr-dot"></div>
+          ${i<data.steps.length-1?'<div class="extr-connector"></div>':''}
+        </div>
+        <div class="extr-content" onclick="this.classList.toggle('open2')" style="cursor:pointer;">
+          <div class="extr-title">Étape ${i+1} : ${s.title} <span style="float:right;font-size:.7rem;color:var(--gold);">Rendement ~${s.yield}%</span></div>
+          <div class="extr-desc">${s.desc}</div>
+          <div class="extr-chem">${s.chem}</div>
+          <div style="font-size:.7rem;color:var(--p4);margin-top:5px;font-family:'Fira Code',monospace;">⚠️ ${s.env}</div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  setStatus('Procédé chargé : '+data.name);
+}
+
+// ═══════ APPLICATIONS ═══════
+const APPS_DATA=[
+  {key:'magnets',icon:'🧲',name:'Aimants permanents',sub:'NdFeB, SmCo',detail:{title:'Aimants NdFeB & SmCo',elems:['Nd (73%)','Pr (~5%)','Dy (3–5%)','Tb (1–2%)','Sm (SmCo)'],reactions:['Nd₂Fe₁₄B : Structure tétragonale P4₂/mnm','BHmax = 512 kJ/m³ (record mondial)','Tc = 585 K (NdFeB) | > 1000 K (SmCo₅)','Ajout Dy → Hc↑ à T° élevée (VE, éoliennes)'],facts:'Marchés : moteurs VE (2 kg/voiture), éoliennes (650 kg/MW), électronique (HDD, écouteurs). Consommation mondiale Nd : ~40 000 t/an (2023). Valeur marchée aimants TR : 12 Mds$/an.',color:'#c8920a'}},
+  {key:'batteries',icon:'🔋',name:'Batteries & stockage',sub:'NiMH, alliages AB₅',detail:{title:'Batteries NiMH (Ni-MH)',elems:['La (~35%)','Ce (~50%)','Nd (~10%)','Pr (~5%)'],reactions:['Électrode : MH + OH⁻ ⇌ M + H₂O + e⁻','Alliage AB₅ : LaNi₅ (modifié La,Ce,Nd,Pr)','Densité énergie : 60–120 Wh/kg','Véhicules hybrides (Toyota Prius : ~10 kg TR)'],facts:'Un hybride NiMH contient 10–15 kg de misc-métal (La, Ce, Nd, Pr). Remplacement progressif par Li-ion mais NiMH reste pour hybrides. Recyclage NiMH : ~90% Ni récupéré, TR < 1%.',color:'#3498db'}},
+  {key:'luminophores',icon:'💡',name:'Luminophores & éclairage',sub:'LED, écrans, scintillateurs',detail:{title:'Luminophores TR — Éclairage & Écrans',elems:['Eu³⁺ (rouge, 615 nm)','Tb³⁺ (vert, 545 nm)','Eu²⁺ (bleu, ~450 nm)','Ce³⁺:YAG (blanc LED)','Sm³⁺, Dy³⁺'],reactions:['LED blanche = puce bleue (InGaN) + Ce³⁺:YAG','Tube fluorescent : 3 bandes (Eu, Tb, Eu²⁺)','Émission 4f→4f : raies fines, grande pureté colorimétrique','Efficacité lumineuse > 100 lm/W'],facts:'Ce³⁺:YAG = révolution LED blanche (Nobel 2014). ~4 000 t TR₂O₃/an consommées en luminophores. Enjeu : luminophores recyclables (lampes CFL contiennent Tb, Eu, Y₂O₃).',color:'#f1c40f'}},
+  {key:'catalyse',icon:'⚗️',name:'Catalyse',sub:'Automobile, pétrochimie',detail:{title:'Catalyseurs TR — Automobile & Pétrochimie',elems:['Ce (OSC, autocatalyseur)','La (FCC, zeolites)','Nd (catalyse polymérisation)'],reactions:['Ceria CeO₂ : Ce⁴⁺ ↔ Ce³⁺ → stockage/relâche O₂ (OSC)','TWC : CO + HC + NOx → CO₂ + H₂O + N₂ (Ce essentiel)','FCC (Fluid Catalytic Cracking) : La-zeolite stabilité thermique','CeO₂ = polissant verre (0.2–1 μm finesse)'],facts:'Catalyse auto = 50 000 t/an Ce₂O₃. La₂O₃ dans FCC : 25 000 t/an. CeO₂ polissant : 15 000 t/an. La ceria = 2e application TR après aimants.',color:'#27ae60'}},
+  {key:'optique',icon:'🔬',name:'Optique & Laser',sub:'Nd:YAG, Er fibres, Lu:PET',detail:{title:'Applications Optiques & Lasers',elems:['Nd³⁺:YAG (1064 nm)','Er³⁺ (EDFA, 1550 nm)','Yb³⁺:YAG (kW)','Ho:YAG (2 μm)','Lu₂SiO₅:Ce (PET)'],reactions:['Laser Nd:YAG : ⁴F₃/₂ → ⁴I₁₁/₂ (1064 nm) → SHG → 532 nm','EDFA : Er³⁺ pompé 980 nm → amplification 1550 nm','LuSO (Lu₂SiO₅:Ce) : scintillateur rapide (1.5 ns), Emax 511 keV'],facts:'Amplificateurs Er-EDFA = épine dorsale d\'Internet (fibres télécom mondiales). Laser Nd-YAG industriel : > 1 GW puissance crête. Lu-PET : détection cancer précoce.',color:'#9b59b6'}},
+  {key:'medical',icon:'🏥',name:'Médecine & IRM',sub:'Gd-IRM, Lu-177, Pm',detail:{title:'Applications Médicales des TR',elems:['Gd-DTPA (IRM)','Lu-177 (radiothérapie)','Pm-147 (pacemaker historique)','Ho-166 (thérapie)'],reactions:['Gd-DTPA : relaxivité r₁ = 4.3 mM⁻¹s⁻¹ à 1.5 T','Lu-177 : β⁻ (0.5 MeV) + γ (208 keV) → t₁/₂ = 6.6 j','Dotatate-Lu177 → récepteur sst2 (cancer NET) → irradiation locale'],facts:'Gd-DTPA (Magnevist) : > 30 millions d\'injections/an. Lu-177 Dotatate (Lutathera) = 1ère radioligand thérapie approuvée FDA (2018). Marché Gd-IRM > 500 M$/an.',color:'#e74c3c'}},
+  {key:'energie',icon:'⚡',name:'Énergie propre',sub:'Éoliennes, VE, hydrogène',detail:{title:'TR & Transition Énergétique',elems:['Nd, Pr (aimants éoliennes)','Dy, Tb (performance T° élevée)','La, Ce (stockage H₂ NiMH)','Y (SOFC, YSZ)'],reactions:['Éolienne offshore 5 MW : 650 kg d\'aimants NdFeB','VE (Model 3) : ~2 kg Nd/Pr par moteur','YSZ (Y₂O₃·ZrO₂) : électrolyte pile SOFC (>800°C)','Scénario IEA 2030 : besoin Nd x2.5, Dy x5'],facts:'La transition énergétique = explosion de la demande TR. Risque de pénurie Dy, Tb d\'ici 2030 si recyclage < 10%. Initiatives : mines EU, recyclage NdFeB, substitution par ferrite (moins performant).',color:'#1abc9c'}},
+  {key:'verre',icon:'🪟',name:'Verre & Céramiques',sub:'Optique, polissage, réfractaires',detail:{title:'Verres & Céramiques aux TR',elems:['CeO₂ (polissant, verre UV-absorbant)','Nd₂O₃ (verre rose/violet)','La₂O₃ (verre haute réfraction)','Pr₆O₁₁ (céramique jaune)','Er₂O₃ (verre rose)'],reactions:['CeO₂ : filtre UV (lunettes, vitres auto)','LaF₃ : basse dispersion optique → microscopes, appareils photo','Verre Nd : soudure et verre de protection laser'],facts:'CeO₂ polissant = 15 000 t/an. La₂O₃ optique : 4 000 t/an. Verre coloré TR : applications décoratives et industrielles. Céramiques TR haute température (turbines, nucléaire).',color:'#e67e22'}},
+];
+function initApps(){
+  const sel=document.getElementById('app-selector');
+  sel.innerHTML=APPS_DATA.map((a,i)=>`<div class="app-card" id="appc-${i}" onclick="selectApp(${i})"><div class="app-name">${a.icon} ${a.name}</div><div class="app-sub">${a.sub}</div></div>`).join('');
+  selectApp(0);
+}
+function selectApp(i){
+  document.querySelectorAll('.app-card').forEach((c,j)=>c.classList.toggle('sel',j===i));
+  const d=APPS_DATA[i].detail;
+  document.getElementById('app-content').innerHTML=`
+    <div style="background:linear-gradient(135deg,rgba(200,146,10,.08),rgba(200,146,10,.03));border:1px solid rgba(200,146,10,.2);border-radius:10px;padding:16px;margin-bottom:12px;">
+      <div style="font-family:'Fraunces',serif;font-size:1.15rem;color:var(--p1);margin-bottom:12px;">${d.title}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;">
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">ÉLÉMENTS UTILISÉS</div>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;">${d.elems.map(e=>`<span style="background:rgba(200,146,10,.15);border:1px solid rgba(200,146,10,.3);border-radius:5px;padding:3px 9px;font-size:.76rem;font-family:'Fira Code',monospace;">${e}</span>`).join('')}</div>
+        </div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">RÉACTIONS / DONNÉES CLÉS</div>
+          ${d.reactions.map(r=>`<div class="code-dark" style="margin-bottom:5px;font-size:.72rem;">${r}</div>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div class="info-box"><h4>📊 Faits et chiffres (données 2023–2024)</h4><p>${d.facts}</p></div>`;
+  setStatus('Application : '+d.title);
+}
+
+// ═══════ MAGNÉTISME ═══════
+const MAG_DATA={
+  NdFeB:{name:'Nd₂Fe₁₄B',Br:1.4,Hc:1000,BHmax:512,Tc:585,notes:'Aimant le plus puissant. Structure tétragonale. Applications : moteurs VE, éoliennes offshore, disques durs. Inconvénient : Tc relativement basse (312°C) → perte performances à T° élevée. Ajout Dy/Tb améliore Hc.',color:'#c8920a'},
+  SmCo5:{name:'SmCo₅',Br:1.05,Hc:900,BHmax:200,Tc:1003,notes:'Excellent à T° élevée (Tc=730°C). Résistant à la corrosion. Applications : moteurs aéronautique, applications militaires. Plus cher (Co) mais stable. Découverte 1970 (Strnat).',color:'#3498db'},
+  Sm2Co17:{name:'Sm₂Co₁₇',Br:1.15,Hc:700,BHmax:260,Tc:1073,notes:'Meilleure génération SmCo. Tc=800°C. BHmax=260 kJ/m³. Structure 2:17. Utilisé dans les systèmes hautes T° : moteurs géothermiques, aérospatial.',color:'#9b59b6'},
+  Gd:{name:'Gd métal',Br:0.24,Hc:2,BHmax:4,Tc:293,notes:'Ferromagnétique unique à T° ambiante (Tc=20°C). Fort effet magnétocalorique → réfrigération magnétique. Recherche fondamentale. μ=7.94 μB (max lanthanides).',color:'#1abc9c'},
+  DyFe:{name:'DyFe₂ (Terfenol-D type)',Br:0,Hc:0,BHmax:0,Tc:600,notes:'Matériaux magnétostrictifs : Terfenol-D = Tb₀.₃Dy₀.₇Fe₂ → plus grande magnétostriction à T° ambiante (~2000 ppm). Applications : actionneurs, sonar, capteurs, transducteurs haute puissance.',color:'#e74c3c'},
+  MnBi:{name:'Fer ordinaire (comparaison)',Br:2.15,Hc:0.001,BHmax:0.5,Tc:1043,notes:'Référence : fer doux. Fort Br mais Hc quasi nul (aimant mou). Utilisé dans transformateurs, moteurs à induction (pas permanent). Montre pourquoi les aimants TR sont incomparables.',color:'#7f8c8d'},
+};
+function updateMagTemp(){
+  const T=parseInt(document.getElementById('magTemp').value);
+  document.getElementById('mag-temp-label').textContent=T+'°C';
+  showMagnetism();
+}
+function showMagnetism(){
+  const key=document.getElementById('magSel').value;
+  const m=MAG_DATA[key];
+  const T=parseInt(document.getElementById('magTemp').value);
+  const Tc_K=m.Tc;
+  const T_K=T+273;
+  const frac=Math.max(0,1-Math.pow(T_K/Tc_K,1.5));
+  const Br_T=+(m.Br*frac).toFixed(3);
+  document.getElementById('mag-data').innerHTML=`Br à ${T}°C : <b>${Br_T} T</b><br>Hc₀ : <b>${m.Hc} kA/m</b><br>(BH)max : <b>${m.BHmax} kJ/m³</b><br>Tc : <b>${m.Tc} K (${m.Tc-273}°C)</b>`;
+  document.getElementById('mag-content').innerHTML=`
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:15px;margin-bottom:11px;">
+      <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:var(--p1);margin-bottom:10px;">${m.name}</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;">
+        ${[['Br (rémanence)',m.Br+' T'],['Hc (coercitivité)',m.Hc+' kA/m'],['(BH)max',m.BHmax+' kJ/m³'],['Tc (Curie)',m.Tc-273+'°C']].map(([k,v])=>`<div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px;"><div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;">${k}</div><div style="font-size:.9rem;font-weight:700;color:var(--ink);">${v}</div></div>`).join('')}
+      </div>
+      <div class="code-dark">${m.notes}</div>
+    </div>
+    <div class="info-box"><h4>🌡️ Effet de la température : T = ${T}°C</h4>
+      <p>À ${T}°C (T/Tc = ${(T_K/Tc_K).toFixed(2)}), la rémanence estimée est <b>Br ≈ ${Br_T} T</b> (${((1-frac)*100).toFixed(0)}% de perte par rapport à T° ambiante).<br>${T_K>Tc_K?'⚠️ <b>T > Tc : matériau PARAMAGNÉTIQUE — perte totale de l\'aimantation permanente !</b>':frac>0.9?'✅ Bonnes performances magnétiques.':'⚠️ Performances dégradées.'}</p>
+    </div>`;
+  drawMagCanvas(m,frac);
+}
+function drawMagCanvas(m,frac){
+  const c=document.getElementById('magCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.fillStyle='#1a1a2e';ctx.fillRect(0,0,w,h);
+  // BH curve simulation
+  const cx0=50,cw=w-60,pad_top=20,ch=h-50;
+  ctx.strokeStyle='rgba(200,146,10,.15)';ctx.lineWidth=1;
+  [0.25,0.5,0.75,1].forEach(f=>{
+    const y=pad_top+ch*(1-f);
+    ctx.beginPath();ctx.moveTo(cx0,y);ctx.lineTo(cx0+cw,y);ctx.stroke();
+    ctx.fillStyle='rgba(200,146,10,.4)';ctx.font='9px Fira Code';
+    ctx.fillText((m.Br*f*frac).toFixed(2),2,y+3);
+  });
+  // Draw hysteresis loop
+  ctx.beginPath();ctx.strokeStyle=m.color||'#c8920a';ctx.lineWidth=2;
+  const pts=[];
+  for(let i=0;i<=60;i++){
+    const hNorm=(i/30)-1;
+    const B=m.Br*frac*Math.tanh((hNorm+0.5)*3);
+    pts.push([cx0+cw*(i/60),pad_top+ch*(1-Math.max(0,Math.min(1,(B/m.Br+1)/2)))]);
+  }
+  ctx.moveTo(pts[0][0],pts[0][1]);pts.forEach(p=>ctx.lineTo(p[0],p[1]));
+  ctx.stroke();
+  // Axis labels
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='10px Fira Code';ctx.textAlign='center';
+  ctx.fillText('H (champ appliqué →)',cx0+cw/2,h-5);
+  ctx.save();ctx.translate(12,pad_top+ch/2);ctx.rotate(-Math.PI/2);ctx.fillText('B (T)',0,0);ctx.restore();
+  ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='10px Manrope';ctx.textAlign='left';
+  ctx.fillText(`Br=${(m.Br*frac).toFixed(2)}T  Tc=${m.Tc-273}°C`,cx0+4,pad_top+12);
+}
+
+// ═══════ LUMINESCENCE ═══════
+const LUMI_DATA={
+  Eu3:{name:'Eu³⁺',color:'#e74c3c',emission:'Rouge pur — 615 nm (⁵D₀→⁷F₂)',peaks:[{wl:579,I:0.2},{wl:592,I:0.6},{wl:615,I:1.0},{wl:651,I:0.25},{wl:700,I:0.15}],QY:'>90% (Eu³⁺:Y₂O₃)',tau:'1.0–2.5 ms',notes:'Emission ⁵D₀→⁷F₂ (transition électrique dipolaire, hypersensible). Pureté colorimétrique exceptionnelle (CIE y=0.62). Standard rouge des écrans. Billets de banque euro (sécurité). Luminophore rouge LED blanc chaud.'},
+  Eu2:{name:'Eu²⁺',color:'#3498db',emission:'Bleu large — 440–460 nm (transition 4f→5d)',peaks:[{wl:420,I:0.2},{wl:440,I:0.8},{wl:460,I:1.0},{wl:490,I:0.6},{wl:520,I:0.2}],QY:'80–90%',tau:'1 μs',notes:'Eu²⁺ (4f⁷ → 5d¹) : bande large (≠ raies fines Eu³⁺). Couleur bleue à verte selon matrice. BaMgAl₁₀O₁₇:Eu²⁺ = luminophore bleu tubes fluorescents. SrAl₂O₄:Eu²⁺ = photoluminescence persistante verte. LED tricolore.'},
+  Tb3:{name:'Tb³⁺',color:'#27ae60',emission:'Vert pur — 545 nm (⁵D₄→⁷F₅)',peaks:[{wl:490,I:0.25},{wl:545,I:1.0},{wl:588,I:0.45},{wl:622,I:0.2}],QY:'70–90%',tau:'0.5–2 ms',notes:'⁵D₄→⁷F₅ (545 nm) = vert pur. LaPO₄:Ce,Tb et LaOBr:Tb = luminophores tubes fluorescents. Détection TNT (quenching). Biocapteurs. Efficacité quantique élevée. Résistant à la désactivation thermique.'},
+  Er3:{name:'Er³⁺',color:'#e67e22',emission:'NIR 1530 nm + Vert 550 nm (up-conversion)',peaks:[{wl:520,I:0.4},{wl:550,I:1.0},{wl:660,I:0.4},{wl:800,I:0.3}],QY:'~1% (up-conv.)',tau:'10–12 ms (1550 nm)',notes:'Up-conversion : absorption 2 photons IR → émission 1 photon visible. Er³⁺ dans NaYF₄ : efficacité up-conversion la + élevée. EDFA : amplification 1550 nm (fenêtre telecom fibre optique). Bioimagerie IR (fenêtre biologique 700–1700 nm).'},
+  Nd3:{name:'Nd³⁺',color:'#9b59b6',emission:'NIR — 1064 nm (⁴F₃/₂→⁴I₁₁/₂)',peaks:[{wl:900,I:0.4},{wl:1064,I:1.0},{wl:1340,I:0.5}],QY:'Variable selon matrice',tau:'0.2–0.5 ms',notes:'Laser Nd:YAG = laser solide le + répandu (1964, Geusic). Puissance : mW à GW (impulsionnel). Applications : découpe métal, chirurgie (SHG 532 nm = vert), détection distance militaire, spectroscopie. Standard industriel laser.'},
+  Ce3:{name:'Ce³⁺',color:'#f1c40f',emission:'UV/Bleu large — 350–500 nm (4f→5d)',peaks:[{wl:350,I:0.5},{wl:390,I:0.85},{wl:430,I:1.0},{wl:470,I:0.7},{wl:510,I:0.3}],QY:'>90% (Ce³⁺:YAG)',tau:'~60 ns (rapide)',notes:'Ce³⁺:YAG = révolution LED blanche (Nakamura/Akasaki/Amano, Nobel 2014). Bande large 5d→4f → conversion efficace bleu→jaune. Scintillateurs rapides (60 ns) : LSO, LuAG. LuSO:Ce = PET médical. Scintillateur Cherenkov (physique des particules).'},
+  Yb3:{name:'Yb³⁺',color:'#1e8bc3',emission:'NIR — 980–1030 nm (²F₅/₂→²F₇/₂)',peaks:[{wl:970,I:0.7},{wl:1000,I:1.0},{wl:1030,I:0.8}],QY:'Variable',tau:'1–2 ms',notes:'Yb³⁺ = sensibilisateur universel (absorbe à 980 nm, transfère à Er, Tm, Ho). Laser Yb:YAG à fibre = standard industriel (kW, couper acier). Up-conversion avec Er. Pompage lasers en télécom.'},
+  Tm3:{name:'Tm³⁺',color:'#8e44ad',emission:'Bleu — 450–480 nm (up-conversion)',peaks:[{wl:450,I:0.7},{wl:475,I:1.0},{wl:650,I:0.3},{wl:800,I:0.6}],QY:'~0.1% (up-conv.)',tau:'1–3 ms',notes:'Up-conversion bleue (tripling : 3 photons NIR → 1 photon bleu). Laser Tm:YAG (2 μm) : chirurgie soft-tissue. Bioimagerie (bleu visible dans tissus). ¹⁷⁰Tm : générateur rayons X portable.'},
+  Sm3:{name:'Sm³⁺',color:'#e67e22',emission:'Orange-rouge — 600–650 nm (⁴G₅/₂→⁶Hⱼ)',peaks:[{wl:565,I:0.3},{wl:600,I:0.8},{wl:645,I:1.0},{wl:705,I:0.4}],QY:'20–60%',tau:'1–2 ms',notes:'Sm³⁺ moins utilisé qu\'Eu/Tb mais émission orange-rouge intéressante. SmCl₃ = coupleur C-C (Sm(II) réducteur en chimie org.). Sm²⁺ photochrome (borosilicate). Pigments céramiques (rouge-orange).'},
+};
+function showLuminescence(){
+  const key=document.getElementById('lumiSel').value;
+  const d=LUMI_DATA[key];
+  document.getElementById('lumi-content').innerHTML=`
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:15px;margin-bottom:11px;">
+      <div style="font-family:'Fraunces',serif;font-size:1.1rem;color:var(--p1);margin-bottom:4px;">${d.name} — Propriétés Luminescentes</div>
+      <div style="font-family:'Fira Code',monospace;font-size:.8rem;color:${d.color};margin-bottom:11px;">${d.emission}</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;">
+        ${[['Rendement quantique',d.QY],['Durée de vie τ',d.tau],['Matrice hôte',document.getElementById('lumiMatrix').options[document.getElementById('lumiMatrix').selectedIndex].text]].map(([k,v])=>`<div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px;"><div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;">${k}</div><div style="font-size:.83rem;font-weight:700;color:var(--ink);">${v}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="info-box"><h4>📡 Transitions et mécanisme</h4><p>${d.notes}</p></div>
+    <div class="code-dark" style="margin-top:9px;">Niveau excité → niveau fondamental
+  Emission ${key.includes('3')||key.includes('2')?'4f↔4f (raies fines) ou 4f-5d (bande)':'4f↔5d (bande large)'}
+  τ ≈ ${d.tau} | QY ≈ ${d.QY}</div>`;
+  drawLumiCanvas(d);
+  setStatus('Luminescence : '+d.name+' → '+d.emission);
+}
+function drawLumiCanvas(d){
+  const c=document.getElementById('lumiCanvas');if(!c)return;
+  const ctx=c.getContext('2d'),w=c.width,h=c.height;
+  ctx.fillStyle='#06090f';ctx.fillRect(0,0,w,h);
+  const pad={l:35,r:10,t:20,b:35};
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
+  // Determine wavelength range
+  const allWL=d.peaks.map(p=>p.wl);
+  const minWL=Math.max(350,Math.min(...allWL)-40),maxWL=Math.min(1600,Math.max(...allWL)+80);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+  [0,0.25,0.5,0.75,1].forEach(f=>{
+    const y=pad.t+ch*(1-f);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(pad.l+cw,y);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='8px Fira Code';ctx.textAlign='right';
+    ctx.fillText(f.toFixed(2),pad.l-3,y+3);
+  });
+  // WL axis
+  const wlRange=maxWL-minWL;
+  [400,500,600,700,800,980,1064,1550].filter(wl=>wl>=minWL&&wl<=maxWL).forEach(wl=>{
+    const x=pad.l+(wl-minWL)/wlRange*cw;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,pad.t+ch);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.3)';ctx.font='8px Fira Code';ctx.textAlign='center';
+    ctx.fillText(wl,x,pad.t+ch+12);
+  });
+  // Spectrum (Gaussian peaks)
+  ctx.beginPath();
+  const colorFn=(wl)=>{
+    if(wl<380)return'rgba(130,0,180,';
+    if(wl<440)return'rgba(90,0,220,';
+    if(wl<490)return'rgba(0,80,220,';
+    if(wl<560)return'rgba(0,200,80,';
+    if(wl<590)return'rgba(200,200,0,';
+    if(wl<640)return'rgba(240,120,0,';
+    if(wl<750)return'rgba(220,0,0,';
+    return'rgba(150,0,0,';
+  };
+  for(let px=0;px<cw;px++){
+    const wl=minWL+(px/cw)*wlRange;
+    let I=0;
+    d.peaks.forEach(p=>{
+      const sig=key.includes('2')||key==='Ce3'?30:12;
+      I+=p.I*Math.exp(-0.5*Math.pow((wl-p.wl)/sig,2));
+    });
+    I=Math.min(1,I);
+    const x=pad.l+px,y=pad.t+ch*(1-I);
+    const col=colorFn(wl);
+    ctx.fillStyle=col+(I*0.9).toFixed(2)+')';
+    ctx.fillRect(x,y,1.5,pad.t+ch-y);
+  }
+  // Main peak label
+  const mainPeak=d.peaks.reduce((a,b)=>a.I>b.I?a:b);
+  const mx=pad.l+(mainPeak.wl-minWL)/wlRange*cw;
+  ctx.strokeStyle='white';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(mx,pad.t+5);ctx.lineTo(mx,pad.t+ch);ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='white';ctx.font='bold 11px Fira Code';ctx.textAlign='center';
+  ctx.fillText(mainPeak.wl+' nm',mx,pad.t+3);
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='9px Fira Code';
+  ctx.fillText('λ (nm)',pad.l+cw/2,h-3);
+  ctx.save();ctx.translate(10,pad.t+ch/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Intensité (u.a.)',0,0);ctx.restore();
+  document.getElementById('lumi-spectrum-label').textContent=`Spectre d'émission simulé — ${d.name} | pic principal : ${mainPeak.wl} nm`;
+}
+
+// ═══════ CALCULS ═══════
+function updateCalcUI(){
+  const type=document.getElementById('calcType').value;
+  const cont=document.getElementById('calc-inputs');
+  const formules={
+    mol:'<div class="fg"><label>OXYDE TR (ex: Nd₂O₃, CeO₂, Y₂O₃)</label><input type="text" id="c1" placeholder="ex: Nd2O3" value="Nd2O3"></div>',
+    enrichissement:'<div class="fg"><label>CONCENTRATION ÉCHANTILLON (ppm)</label><input type="number" id="c1" value="150"></div><div class="fg"><label>ABONDANCE CLARKE (ppm)</label><input type="number" id="c2" value="41.5"></div>',
+    constante:'<div class="fg"><label>ION Ln³⁺</label><select id="c1"><option value="La">La³⁺</option><option value="Ce">Ce³⁺</option><option value="Nd">Nd³⁺</option><option value="Eu">Eu³⁺</option><option value="Gd">Gd³⁺</option><option value="Dy">Dy³⁺</option><option value="Lu">Lu³⁺</option></select></div><div class="fg"><label>LIGAND</label><select id="c2"><option value="EDTA">EDTA⁴⁻</option><option value="DTPA">DTPA⁵⁻</option></select></div>',
+    moment:'<div class="fg"><label>NOMBRE D\'ÉLECTRONS 4f (0 à 14)</label><input type="number" id="c1" min="0" max="14" value="3"></div>',
+    contraction:'<div class="fg"><label>NUMÉRO ATOMIQUE Z (57 à 71)</label><input type="number" id="c1" min="57" max="71" value="60"></div>',
+    rendement:'<div class="fg"><label>CONCENTRATION INITIALE C₀ (g/L)</label><input type="number" id="c1" step="0.01" value="5.0"></div><div class="fg"><label>CONCENTRATION RAFFINAT C₁ (g/L)</label><input type="number" id="c2" step="0.01" value="0.25"></div><div class="fg"><label>RAPPORT V_ORG/V_AQ (D)</label><input type="number" id="c3" step="0.1" value="2.0"></div>',
+  };
+  cont.innerHTML=formules[type]||'';
+  document.getElementById('calc-result').textContent='Configurez les paramètres et cliquez sur CALCULER';
+}
+function calculate(){
+  const type=document.getElementById('calcType').value;
+  let result='';let formula='';
+  if(type==='mol'){
+    const f=document.getElementById('c1').value.trim();
+    const atoms={La:138.91,Ce:140.12,Pr:140.91,Nd:144.24,Pm:145,Sm:150.36,Eu:151.96,Gd:157.25,Tb:158.93,Dy:162.50,Ho:164.93,Er:167.26,Tm:168.93,Yb:173.04,Lu:174.97,Sc:44.96,Y:88.91,O:15.999,H:1.008,F:18.998,Cl:35.453,N:14.007,C:12.011};
+    let M=0;
+    const matches=f.match(/([A-Z][a-z]?)(\d*)/g)||[];
+    matches.forEach(m=>{
+      const p=m.match(/([A-Z][a-z]?)(\d*)/);
+      if(p&&atoms[p[1]]){M+=atoms[p[1]]*(parseInt(p[2])||1);}
+    });
+    result=`Formule : ${f}\nMasse molaire M = ${M.toFixed(2)} g/mol`;
+    formula='M = Σ (n_i × M_atomique_i)';
+  }else if(type==='enrichissement'){
+    const C=parseFloat(document.getElementById('c1').value),Cl=parseFloat(document.getElementById('c2').value);
+    const FE=(C/Cl).toFixed(2);
+    result=`C_échantillon = ${C} ppm\nC_clarke = ${Cl} ppm\nFacteur d'enrichissement FE = ${FE}\n${FE>10?'→ Gisement significatif (FE > 10)':FE>3?'→ Enrichissement notable':FE<1?'→ Appauvrissement':'→ Teneur proche clarke'}`;
+    formula='FE = C_éch / C_clarke';
+  }else if(type==='constante'){
+    const ln=document.getElementById('c1').value,lig=document.getElementById('c2').value;
+    const logK={La:{EDTA:'15.36',DTPA:'19.48'},Ce:{EDTA:'16.00',DTPA:'20.50'},Nd:{EDTA:'16.61',DTPA:'21.60'},Eu:{EDTA:'17.37',DTPA:'22.39'},Gd:{EDTA:'17.40',DTPA:'22.46'},Dy:{EDTA:'18.30',DTPA:'22.83'},Lu:{EDTA:'19.83',DTPA:'22.44'}};
+    const lk=(logK[ln]&&logK[ln][lig])||'—';
+    result=`Complexe : [${ln}(${lig})]^(3-n)+\nlog β = ${lk}\nK_stab = 10^${lk} M^-n\n→ Stabilité augmente La→Lu (contraction lanthanidique)`;
+    formula='log β = log([LnLₙ]/([Ln³⁺]·[L]ⁿ))';
+  }else if(type==='moment'){
+    const n=parseInt(document.getElementById('c1').value);
+    const J_map={0:0,1:2.54,2:3.58,3:3.62,4:2.68,5:0.85,6:3.40,7:7.94,8:9.72,9:10.63,10:10.60,11:9.59,12:7.57,13:4.54,14:0};
+    const mu=J_map[n]||0;
+    result=`Électrons 4f : ${n}\nμₑff (Van Vleck) = ${mu} μB\n${mu===0?'Diamagnétique':'Paramagnétique — ordre : '+(['La','Ce','Pr','Nd','Pm','Sm','Eu','Gd','Tb','Dy','Ho','Er','Tm','Yb','Lu'][n]||'?')}`;
+    formula='μₑff = g_J √[J(J+1)] μB\ng_J = facteur de Landé';
+  }else if(type==='contraction'){
+    const Z=parseInt(document.getElementById('c1').value);
+    const r=IONIC_RADII[Z];
+    const Zs=Object.keys(IONIC_RADII).map(Number).sort();
+    result=r?`Z = ${Z} | r(M³⁺) = ${r} pm\nContraction depuis La (103 pm) : Δr = ${(103-r).toFixed(1)} pm\nRationale : blindage 4f inefficace → Zeff↑ → atomes se contractent.`:`Z ${Z} non disponible.`;
+    formula='r_M³⁺ = f(Z) — Contraction lanthanidique\n(103 pm → 86 pm : La³⁺ → Lu³⁺)';
+  }else if(type==='rendement'){
+    const C0=parseFloat(document.getElementById('c1').value);
+    const C1=parseFloat(document.getElementById('c2').value);
+    const D=parseFloat(document.getElementById('c3').value);
+    const E=((C0-C1)/C0*100).toFixed(1);
+    const D_calc=((C0-C1)/C1).toFixed(2);
+    result=`C₀ = ${C0} g/L | C₁ = ${C1} g/L\nRendement extraction : E = ${E}%\nD calculé = ${D_calc}\nPhases nécessaires (99%) : n = ${Math.ceil(Math.log(100)/Math.log(1+D))}`;
+    formula='E = (C₀-C₁)/C₀ × 100\nD = [Métal]org/[Métal]aq';
+  }
+  document.getElementById('calc-result').textContent=result;
+  document.getElementById('calc-formula').textContent=formula;
+}
+function clearCalc(){
+  document.getElementById('calc-result').textContent='Configurez les paramètres...';
+  document.getElementById('calc-formula').textContent='—';
+}
+
+// ═══════ QUIZ ═══════
+const QUIZ_BANK={
+  general:[
+    {q:'Combien y a-t-il d\'éléments chimiques classifiés comme "terres rares" officiellement ?',opts:['15','17','19','14'],ans:1,exp:'Les 17 TR = 15 lanthanides (La à Lu) + Sc + Y. Le terme "terres rares" est donc légèrement trompeur car ils sont 17 et pas si rares géochimiquement.'},
+    {q:'Quel est l\'état d\'oxydation le plus commun pour tous les lanthanides ?',opts:['+II','+III','+IV','+V'],ans:1,exp:'+III est universel pour tous les lanthanides. Ce⁴⁺ (ceria CeO₂) et Eu²⁺ sont des exceptions notables mais instables ou particulières.'},
+    {q:'Le phénomène de "contraction lanthanidique" signifie que le rayon ionique M³⁺ :',opts:['Augmente de La à Lu','Diminue de La à Lu','Reste constant','Oscille'],ans:1,exp:'Le rayon M³⁺ diminue de 103 pm (La³⁺) à 86 pm (Lu³⁺). Cause : les électrons 4f blindent mal la charge nucléaire → Zeff augmente → atome se contracte.'},
+    {q:'Quel minéral est la principale source de LREE (terres rares légères) dans le monde ?',opts:['Xénotime','Coltan','Bastnäsite','Spessartine'],ans:2,exp:'La bastnäsite (CeCO₃F) est le minéral le plus exploité pour les LREE. Le gisement de Bayan Obo (Chine) en contient de grandes quantités.'},
+    {q:'Quel pays produit environ 68% des terres rares mondiales (2023) ?',opts:['USA','Australie','Russie','Chine'],ans:3,exp:'La Chine domine avec ~68% de la production mondiale (2023), principalement via Bayan Obo (LREE) et les "ion adsorption clays" du sud (HREE).'},
+    {q:'Quel lanthanide a la configuration 4f⁷ (demi-remplie) conférant une stabilité particulière ?',opts:['Eu','Tb','Gd','Nd'],ans:2,exp:'Gd (Z=64) : [Xe]4f⁷5d¹6s². La demi-couche 4f⁷ est particulièrement stable. Gd³⁺ possède le plus grand moment magnétique des lanthanides libres (7 électrons non appariés).'},
+    {q:'Les HREE (terres rares lourdes) sont principalement extraites de quel type de gisement en Chine ?',opts:['Bastnäsite','Monazite','Xénotime','Ion adsorption clays (argiles)'],ans:3,exp:'Les ion adsorption clays (argiles d\'adsorption ionique) du sud de la Chine sont la principale source de HREE. Les TR³⁺ sont adsorbées sur les argiles et extraites par lixiviation (NH₄)₂SO₄.'},
+    {q:'Quel lanthanide radioactif n\'a aucun isotope stable ?',opts:['Eu','Pm','Sm','Tb'],ans:1,exp:'Le prométhium (Pm, Z=61) est le seul lanthanide sans isotope stable. ¹⁴⁷Pm (t₁/₂ = 2.62 ans) est un produit de fission. Pas d\'occurrence naturelle significative.'},
+  ],
+  proprietes:[
+    {q:'La configuration électronique du Nd³⁺ (néodyme) est :',opts:['[Xe]4f³','[Xe]4f⁴','[Kr]4f³','[Xe]4f³5d¹'],ans:0,exp:'Nd (Z=60) : [Xe]4f⁴6s². En perdant 3 électrons → Nd³⁺ : [Xe]4f³. Les 3 électrons retirés viennent d\'abord de 5d et 6s, laissant 4f intact.'},
+    {q:'Pourquoi Eu²⁺ est-il l\'état +II le plus stable parmi les lanthanides ?',opts:['Rayon le plus grand','Configuration 4f⁷ (demi-remplie)','Potentiel redox favorable','Configuration 4f⁶ (demi-remplie)'],ans:1,exp:'Eu²⁺ a la configuration [Xe]4f⁷ — demi-couche remplie, particulièrement stable. C\'est la même raison pour laquelle Gd³⁺ (aussi 4f⁷) est très stable.'},
+    {q:'Le potentiel standard E°(M³⁺/M) des lanthanides est en général :',opts:['Très négatif (< -2 V)','Légèrement négatif (-0.5 à -1 V)','Positif (> +1 V)','Proche de 0 V'],ans:0,exp:'E° ≈ -2.0 à -2.4 V pour la plupart des lanthanides, confirmant leur caractère fortement réducteur. Les métaux TR brûlent dans l\'air humide et réagissent avec l\'eau.'},
+    {q:'Le moment magnétique effectif μₑff de Gd³⁺ est approximativement :',opts:['3.5 μB','5.9 μB','7.94 μB','10.6 μB'],ans:2,exp:'Gd³⁺ ([Xe]4f⁷) : S=7/2, L=0, J=7/2, g=2. μₑff = g√[J(J+1)] = 2√(7/2·9/2) = 7.94 μB. Maximum parmi les ions lanthanides libres.'},
+    {q:'La "sous-couche 4f" des lanthanides est caractérisée par :',opts:['Grande extension spatiale, bon blindage','Faible extension, mauvais blindage → contraction'],ans:1,exp:'Les orbitales 4f sont très contractées et blindées par 5s, 5p. Elles blindent elles-mêmes très peu la charge nucléaire → Zeff augmente de La à Lu → contraction lanthanidique.'},
+  ],
+  complexes:[
+    {q:'Le nombre de coordination le plus fréquent des lanthanides en solution aqueuse est :',opts:['4','6','8–9','12'],ans:2,exp:'Les LREE forment [Ln(H₂O)₉]³⁺ (NC=9) et les HREE [Ln(H₂O)₈]³⁺ (NC=8) en raison de la contraction lanthanidique (rayon plus petit = moins de ligands autour).'},
+    {q:'Pourquoi les complexes de TR sont-ils principalement ioniques ?',opts:['Électrons 4f très étendus','Électrons 4f contractés et peu disponibles au recouvrement','Haute covalence des liaisons Ln-O','Forte electronégativité des TR'],ans:1,exp:'Les orbitales 4f sont blindées par les couches 5s et 5p → peu de recouvrement avec les orbitales des ligands → liaison quasi-purement ionique (électrostatique). Différence fondamentale avec les métaux de transition 3d.'},
+    {q:'Quel complexe de Gd est utilisé comme agent de contraste en IRM clinique ?',opts:['[Gd(EDTA)]⁻','[Gd(DTPA)]²⁻ (Magnevist)','[Gd(acac)₃]','[Gd(H₂O)₉]³⁺'],ans:1,exp:'Gd-DTPA (Magnevist®, 1988) : 1er agent de contraste IRM TR approuvé. NC=8+1 eau (q=1). La relaxivité r₁=4.3 mM⁻¹s⁻¹ améliore le contraste T1. > 30 millions d\'injections/an.'},
+    {q:'Pourquoi la stabilité des complexes Ln-EDTA augmente-t-elle de La à Lu ?',opts:['Plus d\'électrons 4f','Rayon ionique plus grand','Rayon ionique plus petit → charge/rayon plus élevé','Meilleure covalence'],ans:2,exp:'Contraction lanthanidique : r(M³⁺) diminue La→Lu → le rapport charge/rayon (densité de charge) augmente → interaction électrostatique Ln-ligand plus forte → log K augmente (15.4 pour La à 19.8 pour Lu).'},
+  ],
+  extraction:[
+    {q:'Lors de la lixiviation de la bastnäsite par HCl, quel gaz dangereux est dégagé ?',opts:['Cl₂','HF','H₂S','SO₂'],ans:1,exp:'CeCO₃F + 2HCl → CeCl₃ + CO₂ + HF↑. L\'ion fluorure de la bastnäsite réagit avec H⁺ pour former HF gazeux — très toxique et corrosif. Neutralisation immédiate requise (Ca(OH)₂).'},
+    {q:'Qu\'est-ce que le procédé "SX" dans l\'extraction des TR ?',opts:['Stérilisation par rayons X','Extraction par solvants (solvent extraction)','Sublimation-Xylol','Séchage Xénon'],ans:1,exp:'SX = Solvent Extraction = extraction liquide-liquide. Le métal est transféré d\'une phase aqueuse vers une phase organique (solvant extractant : D2EHPA, EHEHPA). Nécessite des dizaines d\'étapes pour séparer des TR très proches.'},
+    {q:'Quel est le principal avantage des "ion adsorption clays" pour l\'extraction des HREE ?',opts:['Teneur très élevée','Très faible radioactivité et extraction douce','Présence d\'LREE uniquement','Extraction à chaud (> 300°C)'],ans:1,exp:'IAC : très faible radioactivité (Th/U traces), extraction par lixiviation douce à (NH₄)₂SO₄ — pas besoin d\'acides forts. Principale source de HREE (Dy, Tb, Eu) malgré des teneurs très basses (0.05–0.2%).'},
+    {q:'Pourquoi la monazite présente-t-elle un défi environnemental particulier ?',opts:['Trop peu de TR','Forte teneur en uranium et thorium radioactifs','Minerai trop mou','Présence de métaux de transition'],ans:1,exp:'La monazite [(La,Ce,Th)PO₄] contient naturellement du Th (0.1–10%) et parfois U → matière nucléaire. Les résidus de traitement sont radioactifs et nécessitent un stockage long terme contrôlé.'},
+  ],
+  applications:[
+    {q:'Quel lanthanide est INDISPENSABLE aux aimants NdFeB les plus performants ?',opts:['Sm','Eu','Nd (et Pr)','Gd'],ans:2,exp:'Nd₂Fe₁₄B = formule de base. Nd et Pr sont les lanthanides principaux (>75%). Dy et Tb sont ajoutés pour améliorer la coercitivité à T° élevée (moteurs VE, éoliennes).'},
+    {q:'L\'EDFA (amplificateur à fibre optique) utilise quel ion TR pour amplifier le signal télécom à 1550 nm ?',opts:['Nd³⁺','Er³⁺','Yb³⁺','Ce³⁺'],ans:1,exp:'Er³⁺ dans fibre de silice dopée : transition ⁴I₁₃/₂→⁴I₁₅/₂ à 1550 nm = fenêtre de transparence des fibres silice. L\'EDFA est la technologie de base d\'Internet mondial.'},
+    {q:'Quel agent de contraste IRM contenant du Gd est le plus utilisé cliniquement ?',opts:['Gd-EDTA','Gd-DTPA (Magnevist)','GdCl₃','Gd-acac'],ans:1,exp:'Gd-DTPA (Magnevist®) : approuvé FDA 1988. Gd³⁺ (4f⁷) raccourcit T1 des protons voisins → rehaussement en IRM T1. Attention : néphrogène en cas d\'insuffisance rénale.'},
+    {q:'La LED blanche moderne repose sur quel luminophore clé ?',opts:['Eu³⁺:Y₂O₃','Tb³⁺:LaPO₄','Ce³⁺:YAG','Nd³⁺:LaF₃'],ans:2,exp:'Ce³⁺:YAG (Y₃Al₅O₁₂ dopé Ce³⁺) convertit la lumière bleue (450 nm, puce InGaN) en jaune large → mélange = blanc. Base de la révolution LED (Nobel 2014). Efficacité > 100 lm/W.'},
+    {q:'Quel alliage présente la plus grande magnétostriction à température ambiante ?',opts:['Nd₂Fe₁₄B','Terfenol-D (TbFe₂/DyFe₂)','SmCo₅','Alnico'],ans:1,exp:'Terfenol-D = Tb₀.₃Dy₀.₇Fe₂ : magnétostriction ~2000 ppm à T° ambiante (record). Applications : actionneurs de haute précision, sonar sous-marin (DARPA), capteurs.'},
+  ],
+  mixed:[
+    {q:'La "transition de Mott" dans les composés de TR fait référence à :',opts:['Passage métal-isolant','Contraction lanthanidique','Magnétisation à Tc','pH de précipitation'],ans:0,exp:'Transition métal-isolant : certains composés TR (SmS, TmSe) sont isolants à P ambiante et deviennent conducteurs sous pression (collapse de la bande 4f→5d).'},
+    {q:'Quel aimant TR supporte mieux les hautes températures (Tc > 700°C) ?',opts:['NdFeB (Tc=585 K)','SmCo₅ (Tc=1003 K)','Sm₂Co₁₇ (Tc=1073 K)','Ferrite Ba (Tc=723 K)'],ans:2,exp:'Sm₂Co₁₇ a la plus haute Tc (~800°C). SmCo₅ aussi excellent. NdFeB est limité à Tc=312°C. Pour aéronautique et applications haute T°, SmCo est préféré.'},
+    {q:'En séparation par SX des TR, pourquoi faut-il de nombreux étages ?',opts:['TR très différentes entre elles','TR très similaires — faible sélectivité (D ≈ 1.5–3)','SX inefficace pour TR','TR ne s\'extraient pas organiquement'],ans:1,exp:'Les TR ont des propriétés très proches (rayon, charge identiques) → le facteur de séparation α entre deux TR adjacentes est faible (1.5–3). Il faut 20–50 étages de mélangeurs-décanteurs pour une pureté >99.9%.'},
+    {q:'L\'isotope ¹⁷⁷Lu (Lu-177) est utilisé en médecine nucléaire pour :',opts:['Imagerie PET','Radiothérapie ciblée (récepteurs sst2)','Contraste IRM','Scintillation'],ans:1,exp:'Lu-177 émet β⁻ (E=0.5 MeV) + γ (208 keV). Couplé au DOTA-TATE (analogue somatostatine), il cible les récepteurs sst2 des tumeurs neuroendocrines. Lutathera® approuvé FDA 2018.'},
+    {q:'La spectroscopie de luminescence des complexes Eu³⁺ est particulièrement utile pour :',opts:['Mesurer le pH','Déterminer le nombre de molécules d\'eau coordinées (q)','Calculer la masse molaire','Analyser les impuretés de Fe'],ans:1,exp:'La durée de vie τ de ⁵D₀ d\'Eu³⁺ varie selon le nombre de OH oscillateurs (eau coordinée). q = A_Eu × (1/τ_H₂O - 1/τ_D₂O). Méthode standard pour déterminer q des complexes Ln en solution.'},
+  ]
+};
+let quizQ=[],quizCurr=0,quizScore=0;
+function startQuiz(){
+  const cat=document.getElementById('quizCat').value;
+  const lvl=document.getElementById('quizLevel').value;
+  const n=parseInt(document.getElementById('quizCount').value);
+  const pool=cat==='mixed'?Object.values(QUIZ_BANK).flat():(QUIZ_BANK[cat]||[]);
+  quizQ=[];
+  const shuffled=[...pool].sort(()=>Math.random()-.5);
+  quizQ=shuffled.slice(0,Math.min(n,shuffled.length));
+  quizCurr=0;quizScore=0;
+  document.getElementById('quiz-score').textContent='0 / 0';
+  document.getElementById('quiz-pct').textContent='—';
+  document.getElementById('score-bar').style.width='0%';
+  renderQuizQ();
+}
+function renderQuizQ(){
+  if(quizCurr>=quizQ.length){
+    const pct=(quizScore/quizQ.length*100).toFixed(0);
+    document.getElementById('quiz-area').innerHTML=`<div style="text-align:center;padding:30px;"><div style="font-family:'Fraunces',serif;font-size:1.5rem;color:var(--p1);margin-bottom:10px;">🎓 Quiz terminé !</div><div style="font-size:1.2rem;margin-bottom:14px;">Score final : <b style="color:var(--p1);">${quizScore} / ${quizQ.length}</b> (${pct}%)</div><div style="font-size:.9rem;color:var(--muted);">${pct>=85?'🌟 Excellent ! Maîtrise solide.':pct>=70?'✅ Bon niveau. Quelques points à revoir.':pct>=50?'📚 Bases présentes. Révisez la théorie.':'🔄 Reprenez le cours depuis la théorie.'}</div><button onclick="startQuiz()" class="btn btn-p" style="width:auto;padding:9px 24px;margin-top:16px;">🔄 Nouveau quiz</button></div>`;
+    return;
+  }
+  const q=quizQ[quizCurr];
+  const qn=quizCurr+1;
+  document.getElementById('quiz-area').innerHTML=`<div class="quiz-card">
+    <div style="font-size:.65rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">QUESTION ${qn} / ${quizQ.length}</div>
+    <div class="quiz-q">${q.q}</div>
+    <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQ(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>
+    <div class="quiz-feedback" id="qf"></div>
+  </div>`;
+}
+function answerQ(i){
+  const q=quizQ[quizCurr];
+  const correct=(i===q.ans);
+  if(correct)quizScore++;
+  sessionStats.quizTotal++;
+  if(correct)sessionStats.quizCorrect++;
+  document.querySelectorAll('.quiz-opt').forEach((b,j)=>{
+    b.disabled=true;
+    if(j===q.ans)b.classList.add('correct');
+    else if(j===i&&!correct)b.classList.add('wrong');
+  });
+  const fb=document.getElementById('qf');
+  fb.className='quiz-feedback show '+(correct?'qf-c':'qf-w');
+  fb.innerHTML=(correct?'✅ <b>Correct !</b> ':'❌ <b>Incorrect.</b> ')+q.exp;
+  const sc=document.getElementById('quiz-score');
+  sc.textContent=`${quizScore} / ${quizCurr+1}`;
+  const pct=(quizScore/(quizCurr+1)*100).toFixed(0);
+  document.getElementById('quiz-pct').textContent=pct+'%';
+  document.getElementById('score-bar').style.width=pct+'%';
+  updateSessionStats();
+  setTimeout(()=>{quizCurr++;renderQuizQ();},2800);
+}
+
+// ═══════ THÉORIE ═══════
+const THEORY_CARDS=[
+  {lvl:'lv-l1',t:'L1',title:'Introduction aux Terres Rares',content:'Les <b>terres rares (TR)</b> regroupent 17 éléments : les 15 lanthanides (La–Lu, Z=57–71) + Sc (Z=21) + Y (Z=39). Leur nom est trompeur : ils ne sont pas si rares (Nd aussi abondant que Cu). Leur état d\'oxydation dominant est <b>+III</b> pour tous.',formula:'[Xe] 4f^n 5d^0-1 6s²  (n = 0 à 14)',extra:'Classification : LREE (La–Eu) légères | HREE (Gd–Lu + Y) lourdes'},
+  {lvl:'lv-l1',t:'L1',title:'Tableau Périodique & Position des TR',content:'Les lanthanides occupent la <b>série 4f</b> du tableau périodique (période 6). Sc et Y sont en groupe 3 (3d¹ et 4d¹). La structure électronique [Xe]4f^n est responsable de leurs propriétés similaires → difficultés de séparation (SX multiple).',formula:'Configuration : [Xe] 4f^n 6s² (La : n=0, Ce : n=1... Lu : n=14)',extra:'Contraction lanthanidique : r(M³⁺) = 103 pm (La) → 86 pm (Lu)'},
+  {lvl:'lv-l1',t:'L1',title:'Gisements & Production Mondiale',content:'Sources principales : <b>Bastnäsite</b> (CeCO₃F, LREE, Bayan Obo), <b>Monazite</b> (LREE+Th), <b>Xénotime</b> (HREE, YPO₄), <b>Ion Adsorption Clays</b> (HREE, sud Chine). La Chine domine à 68% de la production (2023).',formula:'LREE : La, Ce, Pr, Nd, (Pm), Sm, Eu\nHREE : Gd, Tb, Dy, Ho, Er, Tm, Yb, Lu, Y',extra:'Enjeux géopolitiques : criticité, dépendance, recyclage < 1%'},
+  {lvl:'lv-l2',t:'L2',title:'Contraction Lanthanidique',content:'De La à Lu, le rayon ionique M³⁺ <b>diminue</b> de 103 à 86 pm. Cause : mauvais blindage des électrons 4f → Zeff augmente régulièrement. Conséquences : Ln³⁺ tardifs sont plus petits, forment des complexes plus stables, propriétés chimiques similaires à Y.',formula:'Zeff = Z - σ (σ = constante de blindage 4f < 5s²5p⁶)',extra:'Effet direct : Hf (4f¹⁴) ≈ même rayon que Zr (même groupe) → séparation très difficile'},
+  {lvl:'lv-l2',t:'L2',title:'Propriétés Électroniques & Magnétiques',content:'La sous-couche 4f est très contractée → faible recouvrement → propriétés <b>ioniques</b>. Moment magnétique : μₑff = g_J√[J(J+1)] μB. Gd³⁺ (4f⁷) : μ = 7.94 μB (max). Eu³⁺, La³⁺, Lu³⁺ : diamagnétiques.',formula:'μₑff (Gd) = 7.94 μB\nμₑff (Dy) = 10.63 μB (le + grand)',extra:'Applications : IRM (Gd), aimants NdFeB, magnétostriction (Tb,Dy)'},
+  {lvl:'lv-l2',t:'L2',title:'Chimie de Coordination des TR',content:'Liaisons essentiellement <b>ioniques</b>. NC élevés : 6 à 12, le + fréquent 8–9. LREE → NC=9, HREE → NC=8. Stabilité complexes augmente La→Lu (contraction lanthanidique). Ligands préférés : O-donneurs (durs).',formula:'log β(La-EDTA) = 15.36  |  log β(Lu-EDTA) = 19.83\n[Gd(DTPA)(H₂O)]²⁻ → IRM clinique (Magnevist®)',extra:'Ligands "antennes" : phen, acac → luminescence TR (transfert énergétique)'},
+  {lvl:'lv-l2',t:'L2',title:'Procédé d\'Extraction (SX)',content:'Extraction par solvants (liquid-liquid extraction). Extractants : <b>D2EHPA, EHEHPA, Cyanex 572</b>. Le facteur de séparation α entre TR adjacentes est faible (1.5–3) → besoin de <b>30–50 étages</b> pour pureté > 99.9%. Séparer Nd/Pr reste le plus difficile.',formula:'D = [Ln]org / [Ln]aq\nα = D_Ln1 / D_Ln2 (faible!)',extra:'Ordre extraction D2EHPA : Lu > Yb > ... > La (inverse LREE → HREE)'},
+  {lvl:'lv-l3',t:'L3',title:'Luminescence des TR — Niveaux 4f',content:'Émissions 4f→4f : <b>raies fines</b> (transitions écrantées → insensibles à la matrice). Eu³⁺ : ⁵D₀→⁷F₂ (615 nm, rouge). Tb³⁺ : ⁵D₄→⁷F₅ (545 nm, vert). Up-conversion Er³⁺/Yb³⁺ : NIR→visible. Durée de vie τ=ms (longue comparée aux fluorophores organiques).',formula:'QY(Eu³⁺:Y₂O₃) > 90% | τ = 1–3 ms\nCe³⁺:YAG → LED blanche (Nobel 2014)',extra:'q = A_Eu(1/τ_H₂O - 1/τ_D₂O) → nb d\'eau coordinées'},
+  {lvl:'lv-l3',t:'L3',title:'Aimants TR — NdFeB & SmCo',content:'<b>Nd₂Fe₁₄B</b> : aimant permanent le plus puissant (BHmax=512 kJ/m³, Tc=312°C). <b>SmCo₅/Sm₂Co₁₇</b> : hautes températures (Tc=730–800°C). Ajout Dy/Tb dans NdFeB → améliore coercitivité à T° élevée. Criticité : Dy et Tb pour VE/éoliennes.',formula:'Nd₂Fe₁₄B : structure P4₂/mnm, 4 atomes Nd/maille\nBHmax = ¼μ₀M²_s (théorie)',extra:'1 VE = 2 kg Nd/Pr | 1 MW éolien = 650 kg aimants NdFeB'},
+];
+function initTheory(){
+  const g=document.getElementById('theory-grid');
+  if(g.children.length>0)return;
+  g.innerHTML=THEORY_CARDS.map(c=>`<div class="thy-card"><span class="lvl-tag lv-${c.lvl.split('-')[1]}">${c.t.toUpperCase()}</span><h3>${c.title}</h3><p style="margin-bottom:7px;">${c.content}</p><div class="fbox">${c.formula}</div><p style="margin-top:6px;font-size:.72rem;color:var(--p2);">${c.extra}</p></div>`).join('');
+}
+
+// ═══════ RAPPORT ═══════
+function generateReport(){
+  const now=new Date();
+  const elmSel=document.getElementById('propSel');const elmName=elmSel.options[elmSel.selectedIndex]?.text||'Non étudié';
+  const magSel=document.getElementById('magSel');const magName=magSel.options[magSel.selectedIndex]?.text||'Non étudié';
+  const lumiSel=document.getElementById('lumiSel');const lumiName=lumiSel.options[lumiSel.selectedIndex]?.text||'Non étudié';
+  document.getElementById('rpt-content').textContent=`╔══════════════════════════════════════════════════════════════╗
+║         SIMUTR v1.0 — RAPPORT DE SÉANCE                     ║
+╠══════════════════════════════════════════════════════════════╣
+  Nom       : Edmond Atinzoun TCHOKPON
+  Programme : Licence Physique-Chimie
+  Date      : ${now.toLocaleDateString('fr-FR')} | ${now.toLocaleTimeString('fr-FR')}
+  Outil     : SimuTR v1.0 — Chimie des Terres Rares
+╠══════════════════════════════════════════════════════════════╣
+  ÉLÉMENTS ÉTUDIÉS (Tableau Périodique)
+    → Dernier élément : ${elmName}
+  COMPLEXE ÉTUDIÉ
+    → ${document.getElementById('complexLn').value}-${document.getElementById('complexLig').value} (solvant : ${document.getElementById('complexSolv').value})
+  MAGNÉTISME
+    → Composé : ${magName}
+    → T° analysée : ${document.getElementById('magTemp').value}°C
+  LUMINESCENCE
+    → Ion étudié : ${lumiName}
+    → Matrice : ${document.getElementById('lumiMatrix').value}
+╠══════════════════════════════════════════════════════════════╣
+  QUIZ & ÉVALUATION
+    → Score session : ${sessionStats.quizCorrect} / ${sessionStats.quizTotal}
+    → Pourcentage : ${sessionStats.quizTotal>0?(sessionStats.quizCorrect/sessionStats.quizTotal*100).toFixed(0):'—'}%
+╠══════════════════════════════════════════════════════════════╣
+  MODULES COUVERTS
+  ✓ Tableau Périodique (17 éléments TR)
+  ✓ Propriétés 4f (configs. électroniques, μₑff)
+  ✓ Complexes & Coordination (NC 6–12)
+  ✓ Gisements mondiaux (6 sites)
+  ✓ Procédés Extraction (4 minerais)
+  ✓ Applications Industrielles (8 domaines)
+  ✓ Magnétisme TR (NdFeB, SmCo, Gd)
+  ✓ Luminescence (9 ions, spectre)
+  ✓ Calculateur (6 types)
+  ✓ Quiz (${sessionStats.quizTotal} questions)
+  ✓ Fiches Théorie (9 fiches L1/L2/L3)
+╠══════════════════════════════════════════════════════════════╣
+  CONCLUSION
+  Séance réalisée sur SimuTR v1.0 dans le cadre des études
+  de Chimie des Terres Rares en Licence Physique-Chimie.
+╚══════════════════════════════════════════════════════════════╝`;
+}
+
+// ═══════ STATUT ═══════
+function setStatus(t){document.getElementById('stext').textContent=t;}
+function updateClock(){document.getElementById('sclock').textContent=new Date().toLocaleTimeString('fr-FR');}
+setInterval(updateClock,1000);updateClock();
+
+// ═══════ INIT ═══════
+document.addEventListener('DOMContentLoaded',()=>{
+  drawContractionChart();
+  showPropElement();
+  initMines();
+  loadExtraction();
+  initApps();
+  showMagnetism();
+  showLuminescence();
+  showComplex();
+  updateCalcUI();
+  initTheory();
+  setStatus('SimuTR v1.0 chargé — Bienvenue, Edmond Atinzoun TCHOKPON');
+  setTimeout(()=>setStatus('Prêt — Explorez les terres rares'),3000);
+});
+</script>
+</body>
+</html>

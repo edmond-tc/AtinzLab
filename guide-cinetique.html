@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide d'Utilisation — SimuKin Cinétique</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=Figtree:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#faf9f6;
+  --cream:#f3f0e8;
+  --ink:#1a1209;
+  --accent:#c84b0a;
+  --accent-light:#fdeee6;
+  --accent2:#1a6b3c;
+  --accent2-light:#e8f5ee;
+  --accent3:#1a3a8b;
+  --accent3-light:#e8edf8;
+  --gold:#b8860b;
+  --gold-light:#fef9e7;
+  --muted:#6b6355;
+  --border:#ddd8cc;
+  --dark:#0d0a06;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Figtree',sans-serif;line-height:1.7;font-size:16px;}
+
+/* ── BANNER ── */
+.top-bar{
+  background:var(--dark);color:rgba(255,255,255,0.6);
+  text-align:center;padding:5px 20px;
+  font-size:.68rem;letter-spacing:3px;
+  font-family:'IBM Plex Mono',monospace;text-transform:uppercase;
+}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(150deg,#1a0d06 0%,#c84b0a 50%,#8b2500 100%);
+  color:white;padding:80px 40px 65px;position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 20% 50%, rgba(255,200,100,0.08) 0%,transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(255,100,50,0.1) 0%,transparent 50%);
+}
+.hero::after{
+  content:'⚡';position:absolute;right:5%;top:10%;
+  font-size:280px;opacity:.04;line-height:1;
+  pointer-events:none;
+}
+.hero-inner{max-width:920px;margin:0 auto;position:relative;z-index:1;}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);
+  border-radius:40px;padding:5px 16px;margin-bottom:22px;
+  font-family:'IBM Plex Mono',monospace;font-size:.68rem;letter-spacing:3px;color:rgba(255,220,150,.9);
+}
+.hero h1{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.4rem,5.5vw,4.2rem);
+  line-height:1.12;margin-bottom:18px;font-weight:700;
+}
+.hero h1 em{font-style:italic;font-weight:400;color:rgba(255,200,100,.9);}
+.hero p{font-size:1.05rem;color:rgba(255,255,255,.75);max-width:560px;margin-bottom:28px;}
+.author-pill{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  border-radius:40px;padding:9px 20px;font-size:.85rem;
+}
+.author-pill .dot{width:9px;height:9px;border-radius:50%;background:#fbbf24;box-shadow:0 0 8px #fbbf24;}
+.pill-nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:28px;}
+.pill{
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
+  color:rgba(255,255,255,.85);padding:5px 14px;border-radius:20px;
+  font-size:.74rem;text-decoration:none;font-family:'IBM Plex Mono',monospace;
+  transition:all .2s;
+}
+.pill:hover{background:rgba(255,255,255,.22);color:white;}
+
+/* ── PAGE ── */
+.page{max-width:980px;margin:0 auto;padding:64px 28px;}
+
+/* ── SECTION ── */
+.section{margin-bottom:72px;}
+.sec-head{
+  display:flex;align-items:flex-start;gap:22px;
+  padding-bottom:20px;border-bottom:2px solid var(--border);margin-bottom:30px;
+}
+.sec-num{
+  font-family:'Playfair Display',serif;font-size:4.5rem;
+  color:var(--border);line-height:1;flex-shrink:0;margin-top:-10px;
+}
+.sec-meta .eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:.63rem;
+  letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:4px;
+}
+.sec-meta h2{
+  font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;
+  color:var(--ink);line-height:1.2;
+}
+
+/* ── GRID CARDS ── */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-bottom:20px;}
+.card{
+  background:white;border:1px solid var(--border);border-radius:10px;
+  padding:20px;position:relative;transition:transform .2s,box-shadow .2s;
+}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.07);}
+.card-icon{font-size:1.9rem;margin-bottom:10px;}
+.card h3{font-size:.95rem;font-weight:600;color:var(--ink);margin-bottom:6px;}
+.card p{font-size:.81rem;color:var(--muted);line-height:1.6;}
+.tag{
+  position:absolute;top:14px;right:14px;
+  font-family:'IBM Plex Mono',monospace;font-size:.58rem;letter-spacing:1px;
+  padding:2px 8px;border-radius:3px;text-transform:uppercase;font-weight:500;
+}
+.tg-o{background:var(--accent-light);color:var(--accent);}
+.tg-g{background:var(--accent2-light);color:var(--accent2);}
+.tg-b{background:var(--accent3-light);color:var(--accent3);}
+.tg-y{background:var(--gold-light);color:var(--gold);}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;}
+.step{
+  display:flex;gap:20px;padding:18px 0;
+  border-left:2px solid var(--border);
+  margin-left:17px;padding-left:26px;position:relative;
+}
+.step::before{
+  content:attr(data-n);
+  position:absolute;left:-17px;top:18px;
+  width:32px;height:32px;
+  background:var(--accent);color:white;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:.78rem;font-weight:500;
+}
+.step:last-child{border-left-color:transparent;}
+.step h4{font-weight:600;font-size:.97rem;color:var(--ink);margin-bottom:5px;}
+.step p{font-size:.83rem;color:var(--muted);}
+.step code{
+  background:var(--cream);padding:1px 7px;border-radius:4px;
+  font-family:'IBM Plex Mono',monospace;font-size:.8rem;color:var(--accent);
+}
+
+/* ── FORMULA ── */
+.formula{
+  background:var(--dark);color:#fbbf24;
+  border-radius:8px;padding:16px 20px;
+  font-family:'IBM Plex Mono',monospace;font-size:.85rem;
+  margin:14px 0;position:relative;
+}
+.formula::before{
+  content:'FORMULE';position:absolute;top:8px;right:12px;
+  font-size:.55rem;letter-spacing:2px;color:rgba(251,191,36,.3);
+}
+.formula .cmmt{color:rgba(251,191,36,.4);font-size:.76rem;}
+.formula .hl{color:#86efac;}
+
+/* ── INFO BOX ── */
+.box{
+  border-radius:8px;padding:15px 18px;margin:14px 0;
+  display:flex;gap:14px;align-items:flex-start;
+}
+.box.tip{background:var(--accent2-light);border-left:4px solid var(--accent2);}
+.box.warn{background:var(--gold-light);border-left:4px solid var(--gold);}
+.box.info{background:var(--accent3-light);border-left:4px solid var(--accent3);}
+.box.hot{background:var(--accent-light);border-left:4px solid var(--accent);}
+.box-icon{font-size:1.2rem;flex-shrink:0;margin-top:1px;}
+.box p{font-size:.83rem;color:var(--ink);line-height:1.65;}
+.box strong{font-weight:600;}
+
+/* ── ONGLET CARDS ── */
+.onglets{display:flex;flex-direction:column;gap:12px;}
+.ong{background:white;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.ong-head{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 20px;background:var(--cream);border-bottom:1px solid var(--border);
+}
+.ong-emoji{font-size:1.4rem;}
+.ong-head h3{font-size:.95rem;font-weight:600;}
+.ong-head .ong-lvl{
+  margin-left:auto;font-family:'IBM Plex Mono',monospace;
+  font-size:.62rem;letter-spacing:1px;color:var(--muted);
+}
+.ong-body{padding:18px 20px;}
+.ong-body p{font-size:.84rem;color:#374151;line-height:1.7;margin-bottom:8px;}
+.ong-body ul{padding-left:18px;}
+.ong-body li{font-size:.83rem;color:var(--muted);margin-bottom:4px;}
+.ong-body li strong{color:var(--ink);}
+
+/* ── TABLE ── */
+.tbl{width:100%;border-collapse:collapse;font-size:.83rem;}
+.tbl th{
+  background:var(--dark);color:white;
+  padding:10px 14px;text-align:left;
+  font-family:'IBM Plex Mono',monospace;font-size:.7rem;
+  letter-spacing:1px;font-weight:500;
+}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+.tbl tr:nth-child(even) td{background:var(--cream);}
+.tbl tr:hover td{background:var(--accent-light);}
+.badge{
+  display:inline-block;padding:2px 8px;border-radius:4px;
+  font-size:.68rem;font-weight:600;font-family:'IBM Plex Mono',monospace;
+}
+.bg-o{background:var(--accent-light);color:var(--accent);}
+.bg-g{background:var(--accent2-light);color:var(--accent2);}
+.bg-b{background:var(--accent3-light);color:var(--accent3);}
+
+/* ── ORDER CARDS ── */
+.order-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;}
+.order-card{
+  border-radius:10px;padding:18px;border:2px solid;
+}
+.oc0{border-color:#38bdf8;background:#f0faff;}
+.oc1{border-color:#10b981;background:#f0fdf4;}
+.oc2{border-color:#8b5cf6;background:#faf5ff;}
+.order-card .oc-num{
+  font-family:'IBM Plex Mono',monospace;font-size:2.5rem;font-weight:500;
+  line-height:1;margin-bottom:8px;
+}
+.oc0 .oc-num{color:#0ea5e9;}
+.oc1 .oc-num{color:#059669;}
+.oc2 .oc-num{color:#7c3aed;}
+.order-card h4{font-size:.9rem;font-weight:600;margin-bottom:6px;}
+.order-card p,.order-card li{font-size:.78rem;color:var(--muted);line-height:1.6;}
+.order-card ul{padding-left:14px;}
+.oc-formula{
+  font-family:'IBM Plex Mono',monospace;font-size:.75rem;
+  background:rgba(0,0,0,.06);border-radius:4px;padding:4px 8px;
+  margin-top:8px;
+}
+
+/* ── PROTOCOL BOX ── */
+.protocol{
+  background:white;border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;margin-bottom:18px;
+}
+.protocol-head{
+  padding:14px 20px;display:flex;align-items:center;gap:12px;color:white;
+}
+.protocol-body{padding:20px;}
+.checklist{display:flex;flex-direction:column;gap:8px;}
+.ci{
+  display:flex;align-items:flex-start;gap:12px;
+  background:var(--cream);border:1px solid var(--border);
+  border-radius:6px;padding:10px 14px;
+}
+.cb{
+  width:20px;height:20px;border-radius:4px;border:2px solid var(--border);
+  flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;
+  font-size:.7rem;
+}
+.cb.done{background:var(--accent2);border-color:var(--accent2);color:white;}
+.ci p{font-size:.83rem;color:var(--ink);}
+.ci p span{color:var(--muted);font-size:.77rem;}
+
+/* ── GLOSSARY ── */
+.glossary{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;}
+.gitem{
+  background:white;border:1px solid var(--border);border-radius:6px;padding:14px 16px;
+}
+.gterm{
+  font-family:'IBM Plex Mono',monospace;font-size:.8rem;
+  color:var(--accent);font-weight:500;margin-bottom:4px;
+}
+.gdef{font-size:.79rem;color:var(--muted);line-height:1.55;}
+
+/* ── TIPS GRID ── */
+.tips{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+.tip-card{
+  background:white;border:1px solid var(--border);border-left:4px solid;
+  border-radius:0 8px 8px 0;padding:16px;
+}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--dark);color:rgba(255,255,255,.45);
+  text-align:center;padding:44px 20px;
+  font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:1px;
+}
+footer strong{color:#fbbf24;}
+footer p+p{margin-top:6px;}
+
+/* ── DIVIDER ── */
+.divider{text-align:center;color:var(--border);letter-spacing:10px;margin:10px 0 28px;font-size:1.1rem;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hero{padding:44px 18px;}
+  .page{padding:40px 16px;}
+  .sec-num{font-size:3rem;}
+  .grid{grid-template-columns:1fr;}
+}
+@media print{.top-bar,.pill-nav{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">SimuKin v1.0 — Guide officiel d'utilisation — Edmond Atinzoun TCHOKPON — Licence Physique-Chimie</div>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">⚡ Manuel d'utilisation complet</div>
+    <h1>Guide d'utilisation<br><em>SimuKin Cinétique</em></h1>
+    <p>Tout ce qu'il faut savoir pour simuler, analyser et comprendre la cinétique chimique comme dans un vrai laboratoire.</p>
+    <div class="author-pill">
+      <span class="dot"></span>
+      <strong>Edmond Atinzoun TCHOKPON</strong> — Licence Physique-Chimie
+    </div>
+    <div class="pill-nav">
+      <a href="#intro" class="pill">01 · Introduction</a>
+      <a href="#interface" class="pill">02 · Interface</a>
+      <a href="#demarrage" class="pill">03 · Démarrage rapide</a>
+      <a href="#onglets" class="pill">04 · Les onglets</a>
+      <a href="#ordres" class="pill">05 · Ordres de réaction</a>
+      <a href="#niveaux" class="pill">06 · Par niveau</a>
+      <a href="#protocoles" class="pill">07 · Protocoles TP</a>
+      <a href="#formules" class="pill">08 · Formules clés</a>
+      <a href="#mecas" class="pill">09 · Mécanismes</a>
+      <a href="#glossaire" class="pill">10 · Glossaire</a>
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+<!-- ══ 01 — INTRO ══ -->
+<section class="section" id="intro">
+  <div class="sec-head">
+    <div class="sec-num">01</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Présentation</div>
+      <h2>Qu'est-ce que SimuKin ?</h2>
+    </div>
+  </div>
+  <p style="font-size:1rem;color:#374151;max-width:700px;margin-bottom:24px;">
+    <strong>SimuKin</strong> est un simulateur interactif de cinétique chimique, conçu pour reproduire les expériences de suivi cinétique réalisées en laboratoire. Il couvre les ordres 0, 1 et 2, la loi d'Arrhénius, les mécanismes réactionnels et quatre méthodes de suivi expérimental.
+  </p>
+  <div class="grid">
+    <div class="card">
+      <div class="tag tg-o">Gratuit</div>
+      <div class="card-icon">🌐</div>
+      <h3>100 % dans le navigateur</h3>
+      <p>Aucune installation. Ouvrez simplement le fichier <em>.html</em> dans Chrome, Firefox ou Safari. Fonctionne hors ligne.</p>
+    </div>
+    <div class="card">
+      <div class="tag tg-g">Réaliste</div>
+      <div class="card-icon">⚗️</div>
+      <h3>Réacteur virtuel animé</h3>
+      <p>Particules A (réactif) et P (produit) animées en temps réel. Barre de progression, PLAY/PAUSE, avance et recul temporels.</p>
+    </div>
+    <div class="card">
+      <div class="tag tg-b">Complet</div>
+      <div class="card-icon">📡</div>
+      <h3>4 méthodes de suivi</h3>
+      <p>Spectrophotométrie, conductimétrie, suivi par pression (gaz) — exactement comme en TP réel.</p>
+    </div>
+    <div class="card">
+      <div class="tag tg-y">Pédagogique</div>
+      <div class="card-icon">🔗</div>
+      <h3>5 mécanismes détaillés</h3>
+      <p>SN1, SN2, radicalaire, Michaelis-Menten, consécutif A→B→C — avec loi de vitesse et AEQS.</p>
+    </div>
+  </div>
+  <div class="box tip">
+    <span class="box-icon">💡</span>
+    <p><strong>Compatibilité :</strong> Testé sur Chrome 110+, Firefox 115+, Safari 16+, Edge. Recommandé : écran ≥ 1200 px pour voir tous les panneaux côte à côte. Sur mobile, basculez en mode paysage.</p>
+  </div>
+</section>
+
+<!-- ══ 02 — INTERFACE ══ -->
+<section class="section" id="interface">
+  <div class="sec-head">
+    <div class="sec-num">02</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Navigation</div>
+      <h2>Présentation de l'interface</h2>
+    </div>
+  </div>
+  <p style="color:#374151;margin-bottom:20px;">L'interface SimuKin est organisée en <strong>6 zones claires</strong> :</p>
+  <div class="grid">
+    <div class="card"><div class="card-icon">🔝</div><h3>En-tête (Header)</h3><p>Logo SimuKin, nom de l'auteur <em>Edmond Atinzoun TCHOKPON</em>, bouton FR/EN pour changer la langue.</p></div>
+    <div class="card"><div class="card-icon">📑</div><h3>Barre d'onglets</h3><p>6 modules : Cinétique, Arrhénius, Suivi expérimental, Mécanisme, Théorie, Rapport. Cliquez pour naviguer.</p></div>
+    <div class="card"><div class="card-icon">🔧</div><h3>Panneau de configuration</h3><p>À gauche : type de réaction, ordre, constante k, [A]₀, durée, température. Tous les paramètres du TP.</p></div>
+    <div class="card"><div class="card-icon">🧪</div><h3>Réacteur virtuel</h3><p>Équation réactionnelle, animation des particules, instruments (pH, temps, t½, conversion), barre de progression.</p></div>
+    <div class="card"><div class="card-icon">📈</div><h3>Zone graphique (3 courbes)</h3><p>[C]=f(t), vitesse v=f(t), linéarisation pour détermination de l'ordre — toutes en temps réel.</p></div>
+    <div class="card"><div class="card-icon">📊</div><h3>Barre de statut</h3><p>État de la simulation, t½ détectée, heure en temps réel. Indicateur coloré (vert = ok, orange = en cours).</p></div>
+  </div>
+</section>
+
+<!-- ══ 03 — DÉMARRAGE RAPIDE ══ -->
+<section class="section" id="demarrage">
+  <div class="sec-head">
+    <div class="sec-num">03</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Tutoriel</div>
+      <h2>Démarrage rapide — Première simulation</h2>
+    </div>
+  </div>
+  <p style="color:#374151;margin-bottom:24px;">Réalisez votre première simulation cinétique en moins de 3 minutes en suivant ces étapes :</p>
+
+  <div class="steps">
+    <div class="step" data-n="1">
+      <div>
+        <h4>Ouvrir SimuKin</h4>
+        <p>Double-cliquez sur <code>simulateur_cinetique_TCHOKPON.html</code>. L'onglet ⚡ Cinétique s'affiche par défaut avec la réaction <em>A → Produits</em>.</p>
+      </div>
+    </div>
+    <div class="step" data-n="2">
+      <div>
+        <h4>Choisir la réaction</h4>
+        <p>Dans le menu <strong>RÉACTION</strong>, sélectionnez parmi : A → Produits, A + B → Produits, A ⇌ B (réversible), ou A → B → C (consécutif). Commencez par <strong>A → Produits</strong>.</p>
+      </div>
+    </div>
+    <div class="step" data-n="3">
+      <div>
+        <h4>Sélectionner l'ordre de réaction</h4>
+        <p>Choisissez <strong>Ordre 1</strong> pour commencer — c'est le plus courant (radioactivité, décompositions, violet de cristal…). La loi de vitesse <code>v = k·[A]</code> s'affiche automatiquement.</p>
+      </div>
+    </div>
+    <div class="step" data-n="4">
+      <div>
+        <h4>Régler les paramètres</h4>
+        <p>Valeurs recommandées pour démarrer : <strong>k = 0,05 s⁻¹</strong> | <strong>[A]₀ = 1,0 mol/L</strong> | <strong>Durée = 100 s</strong> | <strong>T = 298 K</strong>. Ces valeurs correspondent à un TP classique.</p>
+      </div>
+    </div>
+    <div class="step" data-n="5">
+      <div>
+        <h4>Cliquer sur "▶ SIMULER"</h4>
+        <p>Les 3 courbes s'affichent instantanément. La demi-vie t½ = ln(2)/k = <strong>13,86 s</strong> est calculée et affichée. Les particules se mettent à jour dans le réacteur virtuel.</p>
+      </div>
+    </div>
+    <div class="step" data-n="6">
+      <div>
+        <h4>Utiliser le lecteur PLAY/PAUSE</h4>
+        <p>Cliquez sur <strong>▶ PLAY</strong> pour voir l'évolution temporelle animée : les particules orange (A) diminuent, les vertes (P) augmentent. Utilisez <strong>⏮ -5s</strong> et <strong>+5s ⏭</strong> pour naviguer dans le temps.</p>
+      </div>
+    </div>
+    <div class="step" data-n="7">
+      <div>
+        <h4>Comparer les 3 ordres</h4>
+        <p>Cliquez sur <strong>⚖ COMPARER ORDRES</strong> pour superposer les courbes ordre 0, 1 et 2 sur un seul graphique — très utile pour comprendre visuellement la différence entre les ordres.</p>
+      </div>
+    </div>
+    <div class="step" data-n="8">
+      <div>
+        <h4>Explorer les autres onglets</h4>
+        <p>Allez sur <strong>🌡️ Arrhénius</strong> pour voir l'influence de la température, <strong>📡 Suivi Exp.</strong> pour les méthodes de mesure, <strong>🔗 Mécanisme</strong> pour les étapes élémentaires.</p>
+      </div>
+    </div>
+    <div class="step" data-n="9">
+      <div>
+        <h4>Générer le rapport & exporter</h4>
+        <p>Cliquez sur l'onglet <strong>📋 Rapport</strong> → "Générer Rapport" pour obtenir le compte-rendu complet. Exportez le tableau en CSV depuis le bouton <strong>⬇ CSV</strong>.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="box warn">
+    <span class="box-icon">⚠️</span>
+    <p><strong>Important :</strong> Le bouton <strong>⚖ COMPARER ORDRES</strong> n'est disponible qu'après avoir cliqué sur "▶ SIMULER". De même, le rapport ne se génère qu'après une simulation effectuée.</p>
+  </div>
+</section>
+
+<!-- ══ 04 — ONGLETS ══ -->
+<section class="section" id="onglets">
+  <div class="sec-head">
+    <div class="sec-num">04</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Modules</div>
+      <h2>Les 6 onglets en détail</h2>
+    </div>
+  </div>
+
+  <div class="onglets">
+
+    <div class="ong">
+      <div class="ong-head">
+        <span class="ong-emoji">⚡</span>
+        <h3>CINÉTIQUE — Module principal</h3>
+        <span class="ong-lvl">TOUS NIVEAUX</span>
+      </div>
+      <div class="ong-body">
+        <p>Le cœur de SimuKin. Il permet de simuler l'évolution temporelle d'une réaction chimique avec 4 types de réactions et les ordres 0, 1 et 2.</p>
+        <ul>
+          <li><strong>Réacteur virtuel :</strong> animation de molécules A (orange) qui se transforment en produits P (vert) au fil du temps.</li>
+          <li><strong>Courbe [C] = f(t) :</strong> décroissance de [A] selon l'ordre choisi. En mode "Consécutif", affiche aussi [B] et [C].</li>
+          <li><strong>Courbe v = f(t) :</strong> vitesse de réaction en fonction du temps — montre la diminution de la vitesse à mesure que [A] diminue.</li>
+          <li><strong>Linéarisation :</strong> transforme les données pour obtenir une droite selon l'ordre (voir section Ordres).</li>
+          <li><strong>Lecteur temporel :</strong> PLAY/PAUSE + avance/recul par pas de 5 s pour observer l'évolution pas à pas.</li>
+          <li><strong>Barre de conversion :</strong> affiche le taux d'avancement de la réaction en % avec une barre de progression animée.</li>
+        </ul>
+        <div class="box info" style="margin-top:10px;">
+          <span class="box-icon">ℹ️</span>
+          <p>Le bouton <strong>⚖ COMPARER ORDRES</strong> superpose sur un seul graphique les courbes pour les ordres 0, 1 et 2 avec les mêmes k et [A]₀. C'est l'outil idéal pour comprendre la différence de comportement.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head">
+        <span class="ong-emoji">🌡️</span>
+        <h3>ARRHÉNIUS — Influence de la température</h3>
+        <span class="ong-lvl">PRÉPA / LICENCE</span>
+      </div>
+      <div class="ong-body">
+        <p>Module dédié à la loi d'Arrhénius et à l'effet de la température sur la constante de vitesse k.</p>
+        <ul>
+          <li><strong>Profil énergétique SVG :</strong> diagramme interactif montrant Ea, l'état de transition ‡ et ΔH de réaction.</li>
+          <li><strong>Slider Ea :</strong> faites glisser de 10 à 200 kJ/mol pour voir le profil énergétique se reconstruire en temps réel.</li>
+          <li><strong>Courbe k = f(T) :</strong> courbe exponentielle montrant l'augmentation rapide de k avec T.</li>
+          <li><strong>Linéarisation ln(k) = f(1/T) :</strong> droite dont la pente = −Ea/R — utilisée expérimentalement pour mesurer Ea.</li>
+          <li><strong>Facteur d'accélération :</strong> calcule combien de fois k augmente entre 298 K et 350 K.</li>
+        </ul>
+        <div class="box tip" style="margin-top:10px;">
+          <span class="box-icon">💡</span>
+          <p>Règle pratique : pour une Ea de 50 kJ/mol, la constante k double environ tous les 10°C. Pour Ea = 100 kJ/mol, k quadruple tous les 10°C !</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head">
+        <span class="ong-emoji">📡</span>
+        <h3>SUIVI EXPÉRIMENTAL — 3 méthodes</h3>
+        <span class="ong-lvl">PRÉPA / LICENCE</span>
+      </div>
+      <div class="ong-body">
+        <p>Simule les trois principales méthodes de suivi cinétique utilisées en laboratoire. Cliquez sur les boutons de méthode pour basculer.</p>
+        <ul>
+          <li><strong>🌈 Spectrophotométrie :</strong> suivi de A(t) = A₀·e^(−kt). Affiche A(t) et ln(A(t)) sur le même graphe — la droite ln(A) = f(t) donne directement k par la pente.</li>
+          <li><strong>⚡ Conductimétrie :</strong> suivi de σ(t) pour estérification ou saponification. La variation de conductivité est liée à la consommation/production d'ions.</li>
+          <li><strong>💨 Pression (gaz) :</strong> suivi de la pression totale P_tot(t) pour des décompositions gazeuses (N₂O₅, azométhane). P augmente car 1 mol de réactif donne > 1 mol de gaz.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head">
+        <span class="ong-emoji">🔗</span>
+        <h3>MÉCANISME — Étapes élémentaires</h3>
+        <span class="ong-lvl">PRÉPA / LICENCE</span>
+      </div>
+      <div class="ong-body">
+        <p>Présente 5 mécanismes réactionnels avec toutes leurs étapes élémentaires, loi de vitesse et approximations.</p>
+        <ul>
+          <li><strong>SN1 :</strong> ionisation lente (ECD) + attaque rapide. v = k[RX]. Ordre 1.</li>
+          <li><strong>SN2 :</strong> mécanisme concerté en une étape. v = k[Nu⁻][RX]. Ordre 2. Inversion de Walden.</li>
+          <li><strong>Radicalaire :</strong> initiation / propagation (×10⁶) / terminaison. Ordre 3/2 apparent avec AEQS sur les radicaux.</li>
+          <li><strong>Michaelis-Menten :</strong> cinétique enzymatique. v = vmax·[S]/(Km+[S]). AEQS sur le complexe ES.</li>
+          <li><strong>Consécutif A→B→C :</strong> équations différentielles couplées, t_max de [B], cas limites k₁≪k₂ et k₁≫k₂.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head">
+        <span class="ong-emoji">📚</span>
+        <h3>THÉORIE — Fiches de cours</h3>
+        <span class="ong-lvl">TOUS NIVEAUX</span>
+      </div>
+      <div class="ong-body">
+        <p>8 fiches de cours résumées par niveau, avec toutes les formules essentielles :</p>
+        <ul>
+          <li>Vitesse de réaction | Loi de vitesse et ordres | Demi-vie t½</li>
+          <li>Loi d'Arrhénius | Mécanismes – AEQS | Réactions consécutives</li>
+          <li>Michaelis-Menten | Détermination graphique de l'ordre</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="ong">
+      <div class="ong-head">
+        <span class="ong-emoji">📋</span>
+        <h3>RAPPORT — Compte-rendu automatique</h3>
+        <span class="ong-lvl">TOUS NIVEAUX</span>
+      </div>
+      <div class="ong-body">
+        <p>Génère automatiquement un rapport de TP structuré après toute simulation. Sections : Objectif · Paramètres · Résultats · Méthode de détermination de l'ordre · Conclusion scientifique.</p>
+        <ul>
+          <li>Calcule automatiquement la demi-vie, le taux de conversion final et la loi de linéarisation utilisée.</li>
+          <li>Bouton 🖨️ Imprimer pour exporter en PDF via le navigateur.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══ 05 — ORDRES ══ -->
+<section class="section" id="ordres">
+  <div class="sec-head">
+    <div class="sec-num">05</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Cinétique</div>
+      <h2>Les ordres de réaction — Comparatif complet</h2>
+    </div>
+  </div>
+
+  <div class="order-cards">
+    <div class="order-card oc0">
+      <div class="oc-num">0</div>
+      <h4>Ordre Zéro</h4>
+      <p>La vitesse est constante, indépendante de [A].</p>
+      <div class="oc-formula">[A] = [A]₀ − k·t</div>
+      <ul style="margin-top:8px;">
+        <li>Courbe [A]=f(t) : <strong>droite</strong></li>
+        <li>Pente = −k</li>
+        <li>t½ = [A]₀ / 2k</li>
+        <li>t½ dépend de [A]₀</li>
+      </ul>
+      <p style="margin-top:8px;font-size:.76rem;"><em>Exemples : catalyse hétérogène, réactions à surface saturée</em></p>
+    </div>
+    <div class="order-card oc1">
+      <div class="oc-num">1</div>
+      <h4>Ordre Un</h4>
+      <p>La vitesse est proportionnelle à [A].</p>
+      <div class="oc-formula">[A] = [A]₀ · e^(−k·t)</div>
+      <ul style="margin-top:8px;">
+        <li>Courbe ln[A]=f(t) : <strong>droite</strong></li>
+        <li>Pente = −k</li>
+        <li>t½ = ln(2) / k ≈ 0,693/k</li>
+        <li><strong>t½ indépendant de [A]₀ !</strong></li>
+      </ul>
+      <p style="margin-top:8px;font-size:.76rem;"><em>Exemples : décompositions, radioactivité, SN1, violet de cristal</em></p>
+    </div>
+    <div class="order-card oc2">
+      <div class="oc-num">2</div>
+      <h4>Ordre Deux</h4>
+      <p>La vitesse est proportionnelle à [A]².</p>
+      <div class="oc-formula">1/[A] = 1/[A]₀ + k·t</div>
+      <ul style="margin-top:8px;">
+        <li>Courbe 1/[A]=f(t) : <strong>droite</strong></li>
+        <li>Pente = +k</li>
+        <li>t½ = 1 / (k·[A]₀)</li>
+        <li>t½ diminue quand [A]₀ augmente</li>
+      </ul>
+      <p style="margin-top:8px;font-size:.76rem;"><em>Exemples : bimolécualire 2A→P, SN2, dimérisation</em></p>
+    </div>
+  </div>
+
+  <div class="box hot" style="margin-top:20px;">
+    <span class="box-icon">🔍</span>
+    <p><strong>Comment déterminer l'ordre dans SimuKin ?</strong> Regardez l'onglet <em>Linéarisation</em> (3ᵉ graphique). La courbe tracée est la transformation qui donne une droite selon l'ordre choisi. Si la droite est parfaite → ordre correct ! Comparez en changeant l'ordre dans le menu pour voir quelle linéarisation donne la droite la plus rectiligne.</p>
+  </div>
+
+  <h3 style="margin-top:24px;margin-bottom:12px;font-size:1rem;font-weight:600;">Méthodes graphiques de linéarisation :</h3>
+  <table class="tbl">
+    <thead><tr><th>Ordre</th><th>Tracé linéaire</th><th>Pente</th><th>Ordonnée origine</th><th>t½</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge bg-b">0</span></td><td>[A] = f(t)</td><td>−k</td><td>[A]₀</td><td>[A]₀ / 2k</td></tr>
+      <tr><td><span class="badge bg-g">1</span></td><td>ln[A] = f(t)</td><td>−k</td><td>ln[A]₀</td><td>ln(2) / k</td></tr>
+      <tr><td><span class="badge" style="background:#f5f3ff;color:#7c3aed;">2</span></td><td>1/[A] = f(t)</td><td>+k</td><td>1/[A]₀</td><td>1/(k·[A]₀)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ 06 — NIVEAUX ══ -->
+<section class="section" id="niveaux">
+  <div class="sec-head">
+    <div class="sec-num">06</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Pédagogie</div>
+      <h2>Utilisation par niveau scolaire</h2>
+    </div>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>Niveau</th><th>Onglets recommandés</th><th>Réactions conseillées</th><th>Objectifs pédagogiques</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="badge bg-g">Lycée / Term.</span></td>
+        <td>⚡ Cinétique, 📚 Théorie</td>
+        <td>A → P, ordre 1</td>
+        <td>Lire une courbe [C]=f(t), notion de t½, loi v=k[A]</td>
+      </tr>
+      <tr>
+        <td><span class="badge bg-o">Classes Prépa</span></td>
+        <td>⚡ Cinétique, 🌡️ Arrhénius, 🔗 Mécanisme</td>
+        <td>Ordre 0,1,2 — comparaison, SN1/SN2</td>
+        <td>Linéarisation, détermination de k et Ea, mécanismes, AEQS</td>
+      </tr>
+      <tr>
+        <td><span class="badge bg-b">Licence</span></td>
+        <td>Tous les onglets</td>
+        <td>Consécutif, Michaelis-Menten, suivi spectro/pression</td>
+        <td>Résolution d'équations différentielles couplées, suivi expérimental, rapport complet</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="box info" style="margin-top:18px;">
+    <span class="box-icon">🎓</span>
+    <p><strong>Pour les enseignants :</strong> SimuKin peut être utilisé en TD/TP virtuel avant une séance en présentiel, ou en devoir maison. Les CSV exportés peuvent être traités dans Excel, Python (pandas/matplotlib) ou Origin pour une analyse complète.</p>
+  </div>
+</section>
+
+<!-- ══ 07 — PROTOCOLES ══ -->
+<section class="section" id="protocoles">
+  <div class="sec-head">
+    <div class="sec-num">07</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Travaux pratiques</div>
+      <h2>Protocoles de TP virtuels</h2>
+    </div>
+  </div>
+
+  <!-- TP 1 -->
+  <div class="protocol">
+    <div class="protocol-head" style="background:linear-gradient(135deg,#059669,#10b981);">
+      <span style="font-size:1.4rem;">🟢</span>
+      <div>
+        <div style="font-size:.62rem;letter-spacing:2px;opacity:.8;font-family:'IBM Plex Mono',monospace;">TP LYCÉE / PRÉPA — ORDRE 1</div>
+        <div style="font-weight:600;font-size:1rem;">Décomposition du peroxyde d'hydrogène H₂O₂</div>
+      </div>
+    </div>
+    <div class="protocol-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Réaction :</strong> A → Produits | Ordre 1 <span>— H₂O₂ → H₂O + ½O₂ en présence de KI</span></p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Paramètres :</strong> k = 0,03 s⁻¹ | [A]₀ = 0,5 mol/L | T = 298 K | Durée = 120 s</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Suivi :</strong> Onglet 📡 → Spectrophotométrie → Réaction "violet de cristal"</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Graphique :</strong> Vérifier que ln[A] = f(t) est une droite de pente −k = −0,03</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>t½ attendue :</strong> ln(2)/0,03 = <strong>23,1 s</strong> — lire sur l'instrument t½</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Rapport :</strong> Onglet 📋 → Générer Rapport → confirmer ordre 1</p></div>
+      </div>
+      <div class="formula" style="margin-top:14px;">
+        <span class="hl">H₂O₂ → H₂O + ½O₂</span><br>
+        v = k·[H₂O₂] <span class="cmmt">→ ordre 1 — t½ = ln2/k indépendant de [H₂O₂]₀</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TP 2 -->
+  <div class="protocol">
+    <div class="protocol-head" style="background:linear-gradient(135deg,#7c3aed,#a855f7);">
+      <span style="font-size:1.4rem;">🔵</span>
+      <div>
+        <div style="font-size:.62rem;letter-spacing:2px;opacity:.8;font-family:'IBM Plex Mono',monospace;">TP PRÉPA / LICENCE — ORDRE 2</div>
+        <div style="font-weight:600;font-size:1rem;">Saponification — réaction bimolécualire</div>
+      </div>
+    </div>
+    <div class="protocol-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Réaction :</strong> A + B → Produits | Ordre 2 (ordre 1 en chaque réactif)</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Paramètres :</strong> k = 0,01 L·mol⁻¹·s⁻¹ | [A]₀ = [B]₀ = 0,1 mol/L | Durée = 200 s</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Suivi :</strong> Onglet 📡 → Conductimétrie → Saponification</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Linéarisation :</strong> Vérifier que 1/[A] = f(t) est une droite de pente +k = +0,01</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>t½ :</strong> 1/(k·[A]₀) = 1/(0,01 × 0,1) = <strong>1000 s</strong> — t½ dépend de [A]₀</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Comparer :</strong> Cliquer ⚖ COMPARER ORDRES et observer pourquoi l'ordre 2 ralentit plus vite</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TP 3 -->
+  <div class="protocol">
+    <div class="protocol-head" style="background:linear-gradient(135deg,#c84b0a,#ff6b35);">
+      <span style="font-size:1.4rem;">🟠</span>
+      <div>
+        <div style="font-size:.62rem;letter-spacing:2px;opacity:.8;font-family:'IBM Plex Mono',monospace;">TP LICENCE — ARRHÉNIUS</div>
+        <div style="font-weight:600;font-size:1rem;">Mesure de l'énergie d'activation Ea</div>
+      </div>
+    </div>
+    <div class="protocol-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Onglet :</strong> 🌡️ Arrhénius</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Paramètres :</strong> A = 10¹⁰ s⁻¹ | Ea = 75 kJ/mol | Plage T : 280 → 400 K</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Slider Ea :</strong> Faire varier Ea de 20 à 150 kJ/mol et observer la modification du profil énergétique et de la courbe k=f(T)</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Linéarisation :</strong> Lire la pente de ln(k)=f(1/T) → pente = −Ea/R → Ea = −pente × 8,314</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Vérification :</strong> pente affichée × (−8,314) doit redonner Ea = 75 000 J/mol</p></div>
+      </div>
+      <div class="formula" style="margin-top:14px;">
+        ln(k) = ln(A) − <span class="hl">Ea/R</span> · (1/T)<br>
+        <span class="cmmt">Pente = −Ea/R  |  Ea = −pente × 8,314  |  R = 8,314 J·mol⁻¹·K⁻¹</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TP 4 -->
+  <div class="protocol">
+    <div class="protocol-head" style="background:linear-gradient(135deg,#0369a1,#0ea5e9);">
+      <span style="font-size:1.4rem;">🔷</span>
+      <div>
+        <div style="font-size:.62rem;letter-spacing:2px;opacity:.8;font-family:'IBM Plex Mono',monospace;">TP LICENCE — RÉACTIONS CONSÉCUTIVES</div>
+        <div style="font-weight:600;font-size:1rem;">Suivi de A → B → C — maximum de [B]</div>
+      </div>
+    </div>
+    <div class="protocol-body">
+      <div class="checklist">
+        <div class="ci"><div class="cb done">✓</div><p><strong>Réaction :</strong> A → B → C (Consécutif) | Ordre 1 | k₁ = 0,05 s⁻¹ | k₂ = 0,025 s⁻¹ (auto)</p></div>
+        <div class="ci"><div class="cb done">✓</div><p><strong>Sélection :</strong> Menu RÉACTION → "A → B → C" | [A]₀ = 1,0 mol/L | Durée = 150 s</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Observation :</strong> [B] passe par un maximum (intermédiaire réactionnel)</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Calcul t_max :</strong> t_max = ln(k₂/k₁)/(k₂−k₁) = ln(0,5)/(−0,025) ≈ 27,7 s</p></div>
+        <div class="ci"><div class="cb">□</div><p><strong>Vérification AEQS :</strong> Si k₂ ≫ k₁ → [B] reste très faible, v globale ≈ k₁·[A]</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ 08 — FORMULES ══ -->
+<section class="section" id="formules">
+  <div class="sec-head">
+    <div class="sec-num">08</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Référence</div>
+      <h2>Toutes les formules clés</h2>
+    </div>
+  </div>
+
+  <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+    <div>
+      <h3 style="font-size:.82rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;letter-spacing:1px;margin-bottom:8px;">▶ LOIS INTÉGRÉES</h3>
+      <div class="formula">Ord. 0 : <span class="hl">[A] = [A]₀ − k·t</span><br>Ord. 1 : <span class="hl">[A] = [A]₀·e^(−k·t)</span><br>Ord. 2 : <span class="hl">1/[A] = 1/[A]₀ + k·t</span></div>
+    </div>
+    <div>
+      <h3 style="font-size:.82rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;letter-spacing:1px;margin-bottom:8px;">▶ DEMI-VIE t½</h3>
+      <div class="formula">Ord. 0 : <span class="hl">t½ = [A]₀ / 2k</span><br>Ord. 1 : <span class="hl">t½ = ln(2) / k ≈ 0,693/k</span><br>Ord. 2 : <span class="hl">t½ = 1 / (k·[A]₀)</span></div>
+    </div>
+    <div>
+      <h3 style="font-size:.82rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;letter-spacing:1px;margin-bottom:8px;">▶ ARRHÉNIUS</h3>
+      <div class="formula">k = A · exp(−Ea/RT)<br><span class="hl">ln(k) = ln(A) − Ea/(R·T)</span><br><span class="cmmt">Pente ln(k)=f(1/T) → −Ea/R</span></div>
+    </div>
+    <div>
+      <h3 style="font-size:.82rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;letter-spacing:1px;margin-bottom:8px;">▶ BEER-LAMBERT (suivi spectro)</h3>
+      <div class="formula">A(t) = ε · l · C(t)<br><span class="hl">A(t) = A₀ · e^(−k·t)</span><br><span class="cmmt">→ ln(A) = f(t) droite de pente −k</span></div>
+    </div>
+    <div>
+      <h3 style="font-size:.82rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;letter-spacing:1px;margin-bottom:8px;">▶ RÉACTIONS CONSÉCUTIVES</h3>
+      <div class="formula">d[B]/dt = k₁[A] − k₂[B]<br><span class="hl">t_max = ln(k₂/k₁)/(k₂−k₁)</span><br><span class="cmmt">AEQS : d[B]/dt ≈ 0 si k₂≫k₁</span></div>
+    </div>
+    <div>
+      <h3 style="font-size:.82rem;color:var(--accent);font-family:'IBM Plex Mono',monospace;letter-spacing:1px;margin-bottom:8px;">▶ MICHAELIS-MENTEN</h3>
+      <div class="formula"><span class="hl">v = vmax·[S] / (Km + [S])</span><br>Lineweaver-Burk :<br>1/v = Km/(vmax·[S]) + 1/vmax</div>
+    </div>
+  </div>
+
+  <div class="box warn" style="margin-top:10px;">
+    <span class="box-icon">⚠️</span>
+    <p><strong>Rappel unités :</strong> k a des unités qui dépendent de l'ordre. Ordre 0 : mol·L⁻¹·s⁻¹ | Ordre 1 : s⁻¹ | Ordre 2 : L·mol⁻¹·s⁻¹. Vérifiez toujours l'homogénéité de la loi v = k·[A]ⁿ !</p>
+  </div>
+</section>
+
+<!-- ══ 09 — MÉCANISMES ══ -->
+<section class="section" id="mecas">
+  <div class="sec-head">
+    <div class="sec-num">09</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Mécanismes</div>
+      <h2>Résumé des 5 mécanismes</h2>
+    </div>
+  </div>
+  <table class="tbl">
+    <thead><tr><th>Mécanisme</th><th>Étapes clés</th><th>Loi de vitesse</th><th>Ordre</th><th>Particularité</th></tr></thead>
+    <tbody>
+      <tr><td><strong>SN1</strong></td><td>Ionisation (lente) + attaque (rapide)</td><td>v = k·[RX]</td><td>1</td><td>Mélange racémique, favorisé en C tertiaire</td></tr>
+      <tr><td><strong>SN2</strong></td><td>Mécanisme concerté, 1 seule étape</td><td>v = k·[Nu⁻]·[RX]</td><td>2</td><td>Inversion de Walden, stéréospécifique</td></tr>
+      <tr><td><strong>Radicalaire</strong></td><td>Initiation / Propagation ×n / Terminaison</td><td>v ∝ [RH]·[X₂]^½</td><td>3/2</td><td>AEQS sur X•, chaînes de 10³–10⁶ cycles</td></tr>
+      <tr><td><strong>Michaelis-Menten</strong></td><td>E+S⇌ES → E+P (AEQS sur ES)</td><td>v = vmax·[S]/(Km+[S])</td><td>Variable</td><td>Ordre 1 si [S]≪Km | Ordre 0 si [S]≫Km</td></tr>
+      <tr><td><strong>Consécutif A→B→C</strong></td><td>A→B (k₁) + B→C (k₂) simultanés</td><td>v_glob = k₁[A]</td><td>1</td><td>[B] passe par un maximum à t_max</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ══ 10 — GLOSSAIRE ══ -->
+<section class="section" id="glossaire">
+  <div class="sec-head">
+    <div class="sec-num">10</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Référence</div>
+      <h2>Glossaire des termes clés</h2>
+    </div>
+  </div>
+  <div class="glossary">
+    <div class="gitem"><div class="gterm">Cinétique chimique</div><div class="gdef">Domaine étudiant la vitesse des réactions chimiques, les facteurs qui l'influencent (T, C, catalyseur) et les mécanismes réactionnels.</div></div>
+    <div class="gitem"><div class="gterm">Vitesse de réaction v</div><div class="gdef">Variation de concentration par unité de temps : v = −d[A]/dt. Unité : mol·L⁻¹·s⁻¹.</div></div>
+    <div class="gitem"><div class="gterm">Constante de vitesse k</div><div class="gdef">Proportionnalité entre v et les concentrations. Dépend de T via Arrhénius. Ses unités dépendent de l'ordre.</div></div>
+    <div class="gitem"><div class="gterm">Ordre de réaction</div><div class="gdef">Exposant de la concentration dans la loi de vitesse. Déterminé expérimentalement (0, 1 ou 2 le plus souvent).</div></div>
+    <div class="gitem"><div class="gterm">Demi-vie t½</div><div class="gdef">Temps pour que [A] diminue de moitié. Pour l'ordre 1 : t½ = ln2/k, indépendant de [A]₀ (propriété fondamentale).</div></div>
+    <div class="gitem"><div class="gterm">Énergie d'activation Ea</div><div class="gdef">Énergie minimale que doivent posséder les molécules pour réagir. Plus Ea est grande, plus la réaction est lente.</div></div>
+    <div class="gitem"><div class="gterm">État de transition ‡</div><div class="gdef">Configuration de plus haute énergie atteinte lors de la transformation des réactifs en produits. Correspond au sommet du profil énergétique.</div></div>
+    <div class="gitem"><div class="gterm">AEQS</div><div class="gdef">Approximation de l'État Quasi-Stationnaire. Valide pour un intermédiaire réactionnel I instable : d[I]/dt ≈ 0. Simplifie la loi de vitesse.</div></div>
+    <div class="gitem"><div class="gterm">ECD (étape cinétiquement déterminante)</div><div class="gdef">L'étape la plus lente d'un mécanisme. Elle impose la loi de vitesse globale à la réaction totale.</div></div>
+    <div class="gitem"><div class="gterm">Facteur préexponentiel A</div><div class="gdef">Dans la loi d'Arrhénius, A représente la fréquence de collisions efficaces et le facteur stérique. Unité : même que k.</div></div>
+    <div class="gitem"><div class="gterm">Linéarisation</div><div class="gdef">Transformation mathématique des données pour obtenir une droite. Permet de déterminer graphiquement l'ordre et k.</div></div>
+    <div class="gitem"><div class="gterm">Taux de conversion</div><div class="gdef">Fraction du réactif A consommée : x = ([A]₀−[A])/[A]₀ × 100%. Affiché en % dans le réacteur virtuel.</div></div>
+  </div>
+</section>
+
+<!-- ASTUCES FINALES -->
+<section class="section">
+  <div class="sec-head">
+    <div class="sec-num" style="color:var(--gold);">★</div>
+    <div class="sec-meta">
+      <div class="eyebrow">Astuces</div>
+      <h2>Conseils pour de meilleures simulations</h2>
+    </div>
+  </div>
+  <div class="tips">
+    <div class="tip-card" style="border-left-color:var(--accent2);">
+      <div style="font-size:1.5rem;margin-bottom:8px;">🎯</div>
+      <h3 style="font-size:.9rem;font-weight:600;margin-bottom:6px;">Choisir k cohérent avec la durée</h3>
+      <p style="font-size:.8rem;color:var(--muted);">Pour observer 3 à 4 demi-vies sur le graphique, réglez la durée ≈ 4 × t½. Ex : k = 0,05 s⁻¹ → t½ ≈ 14 s → durée = 60 s.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--accent);">
+      <div style="font-size:1.5rem;margin-bottom:8px;">📊</div>
+      <h3 style="font-size:.9rem;font-weight:600;margin-bottom:6px;">Exploiter la linéarisation</h3>
+      <p style="font-size:.8rem;color:var(--muted);">Le 3ᵉ graphique est crucial. Changez l'ordre et observez laquelle des 3 linéarisations donne une droite parfaite — c'est l'ordre réel.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--accent3);">
+      <div style="font-size:1.5rem;margin-bottom:8px;">🌡️</div>
+      <h3 style="font-size:.9rem;font-weight:600;margin-bottom:6px;">Règle des 10°C</h3>
+      <p style="font-size:.8rem;color:var(--muted);">Dans l'onglet Arrhénius, avec Ea ≈ 50 kJ/mol, vérifiez que k double environ tous les 10°C — c'est la règle empirique de van't Hoff.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:var(--gold);">
+      <div style="font-size:1.5rem;margin-bottom:8px;">⚡</div>
+      <h3 style="font-size:.9rem;font-weight:600;margin-bottom:6px;">Ordre 1 : propriété clé</h3>
+      <p style="font-size:.8rem;color:var(--muted);">Changez [A]₀ et remarquez que t½ reste identique pour l'ordre 1 — mais change pour les ordres 0 et 2. C'est une signature de l'ordre 1 !</p>
+    </div>
+    <div class="tip-card" style="border-left-color:#7c3aed;">
+      <div style="font-size:1.5rem;margin-bottom:8px;">💾</div>
+      <h3 style="font-size:.9rem;font-weight:600;margin-bottom:6px;">Exporter et analyser</h3>
+      <p style="font-size:.8rem;color:var(--muted);">Le CSV contient t, [A] et v. Importez dans Python avec pandas : tracez ln[A]=f(t) et faites une régression linéaire pour obtenir k précisément.</p>
+    </div>
+    <div class="tip-card" style="border-left-color:#0ea5e9;">
+      <div style="font-size:1.5rem;margin-bottom:8px;">🔄</div>
+      <h3 style="font-size:.9rem;font-weight:600;margin-bottom:6px;">Changer de langue</h3>
+      <p style="font-size:.8rem;color:var(--muted);">Le bouton FR/EN en haut à droite traduit toute l'interface. Utile pour les étudiants en échange ou pour apprendre le vocabulaire anglais de cinétique chimique.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider">· · · ·</div>
+
+<div style="background:white;border:1px solid var(--border);border-radius:12px;padding:32px;text-align:center;margin-bottom:60px;">
+  <div style="font-size:2.2rem;margin-bottom:14px;">⚡</div>
+  <h3 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:10px;">Bonne simulation cinétique !</h3>
+  <p style="color:var(--muted);font-size:.88rem;max-width:500px;margin:0 auto;">SimuKin est conçu pour rendre la cinétique chimique accessible, visuelle et intuitive. Explorez tous les modules, testez différents paramètres et comparez les résultats avec votre cours.</p>
+  <div style="margin-top:20px;display:inline-flex;align-items:center;gap:10px;background:var(--cream);border:1px solid var(--border);border-radius:40px;padding:10px 22px;">
+    <strong style="color:var(--accent);">Edmond Atinzoun TCHOKPON</strong>
+    <span style="color:var(--muted);font-size:.8rem;">— Licence Physique-Chimie</span>
+  </div>
+</div>
+
+</div><!-- /page -->
+
+<footer>
+  <p>Guide d'utilisation officiel — <strong>SimuKin v1.0 — Cinétique Chimique</strong></p>
+  <p>Créé par <strong>Edmond Atinzoun TCHOKPON</strong> — Licence Physique-Chimie</p>
+  <p style="margin-top:6px;font-size:.62rem;opacity:.5;">Usage pédagogique — Lycée · Classes Préparatoires · Licence Universitaire</p>
+</footer>
+
+</body>
+</html>

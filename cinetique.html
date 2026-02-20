@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimuKin — Cinétique Chimique | Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080f;
+  --surface:#0d0f1c;
+  --surface2:#12152a;
+  --surface3:#181c35;
+  --p1:#ff6b35;   /* orange — cinétique */
+  --p2:#00d4aa;   /* teal */
+  --p3:#a78bfa;   /* violet */
+  --p4:#fbbf24;   /* gold */
+  --p5:#38bdf8;   /* sky */
+  --danger:#f43f5e;
+  --text:#e8eaf6;
+  --muted:#4a5080;
+  --border:#1e2245;
+  --c0:#ff6b35;
+  --c1:#00d4aa;
+  --c2:#a78bfa;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* NOISE OVERLAY */
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.4;
+}
+
+/* HEADER */
+header{
+  position:relative;z-index:10;
+  background:linear-gradient(135deg,#07080f 0%,#0d0f1c 100%);
+  border-bottom:1px solid var(--border);
+  padding:14px 28px;display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 0 40px rgba(255,107,53,0.08);
+}
+.logo{display:flex;align-items:center;gap:14px;}
+.logo-gem{
+  width:48px;height:48px;
+  background:linear-gradient(135deg,var(--p1),#ff9500);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;box-shadow:0 0 24px rgba(255,107,53,0.5);
+  animation:gemPulse 3s ease-in-out infinite;
+}
+@keyframes gemPulse{0%,100%{box-shadow:0 0 24px rgba(255,107,53,0.5)}50%{box-shadow:0 0 40px rgba(255,107,53,0.8)}}
+.logo-text h1{font-family:'Syne',sans-serif;font-size:1.6rem;font-weight:800;color:var(--p1);letter-spacing:3px;text-shadow:0 0 30px rgba(255,107,53,0.4);}
+.logo-text p{font-size:0.68rem;color:var(--muted);letter-spacing:2px;font-family:'JetBrains Mono',monospace;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.author-tag{
+  background:var(--surface2);border:1px solid var(--p1);
+  border-radius:8px;padding:8px 16px;text-align:right;
+  box-shadow:0 0 16px rgba(255,107,53,0.1);
+}
+.author-tag .n{font-family:'Syne',sans-serif;font-size:0.92rem;font-weight:700;color:var(--p1);}
+.author-tag .i{font-size:0.62rem;color:var(--muted);font-family:'JetBrains Mono',monospace;}
+.lang-btn{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);border-radius:6px;padding:7px 16px;cursor:pointer;
+  font-family:'Syne',sans-serif;font-weight:600;font-size:0.82rem;letter-spacing:1px;
+  transition:all .2s;
+}
+.lang-btn:hover{border-color:var(--p1);color:var(--p1);}
+
+/* TABS */
+.tabs{
+  position:relative;z-index:5;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 28px;display:flex;gap:6px;overflow-x:auto;
+}
+.tab{
+  padding:8px 18px;border-radius:8px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-family:'Syne',sans-serif;font-weight:600;font-size:0.82rem;letter-spacing:1px;
+  transition:all .25s;white-space:nowrap;
+}
+.tab.active{background:linear-gradient(135deg,rgba(255,107,53,.18),rgba(255,149,0,.08));border-color:var(--p1);color:var(--p1);box-shadow:0 0 18px rgba(255,107,53,.2);}
+.tab:hover:not(.active){border-color:var(--muted);color:var(--text);}
+
+/* APP LAYOUT */
+.app{display:none;padding:20px 28px;gap:18px;flex-wrap:wrap;position:relative;z-index:1;min-height:calc(100vh - 130px);}
+.app.active{display:flex;}
+
+/* PANEL */
+.panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:18px;position:relative;overflow:hidden;
+}
+.panel::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--p1),transparent);opacity:.6;
+}
+.ptitle{
+  font-family:'Syne',sans-serif;font-weight:700;font-size:.78rem;
+  letter-spacing:2px;color:var(--p1);text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;
+}
+
+/* FORM */
+.fg{margin-bottom:12px;}
+.fg label{display:block;font-size:.7rem;color:var(--muted);letter-spacing:1px;margin-bottom:4px;font-family:'JetBrains Mono',monospace;}
+.fg select,.fg input[type=number],.fg input[type=range]{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);border-radius:6px;padding:8px 10px;
+  font-family:'Nunito',sans-serif;font-size:.84rem;outline:none;transition:border-color .2s;
+}
+.fg select:focus,.fg input:focus{border-color:var(--p1);box-shadow:0 0 10px rgba(255,107,53,.12);}
+.fg input[type=range]{padding:4px 0;accent-color:var(--p1);}
+
+/* BUTTONS */
+.btn{width:100%;padding:10px;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;letter-spacing:2px;transition:all .25s;margin-top:5px;}
+.btn-p{background:linear-gradient(135deg,var(--p1),#ff9500);color:#000;box-shadow:0 0 22px rgba(255,107,53,.3);}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 4px 28px rgba(255,107,53,.5);}
+.btn-s{background:linear-gradient(135deg,var(--p2),#00a88a);color:#000;}
+.btn-s:hover{transform:translateY(-1px);}
+.btn-d{background:transparent;color:var(--danger);border:1px solid var(--danger);}
+.btn-d:hover{background:var(--danger);color:#fff;}
+.btn-sm{width:auto;padding:7px 14px;font-size:.76rem;margin:0;}
+
+/* INSTRUMENTS */
+.instruments{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px;}
+.instr{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:10px 14px;text-align:center;min-width:78px;
+}
+.instr .val{font-family:'JetBrains Mono',monospace;font-size:1.25rem;font-weight:500;color:var(--p2);text-shadow:0 0 10px rgba(0,212,170,.5);}
+.instr .unit{font-size:.6rem;color:var(--muted);margin-top:2px;}
+.instr .lbl{font-size:.6rem;color:var(--muted);letter-spacing:1px;}
+
+/* DATA TABLE */
+.dtable{width:100%;border-collapse:collapse;font-size:.76rem;font-family:'JetBrains Mono',monospace;}
+.dtable th{background:rgba(255,107,53,.1);color:var(--p1);padding:6px 8px;text-align:center;border-bottom:1px solid var(--border);font-size:.68rem;letter-spacing:1px;}
+.dtable td{padding:5px 8px;text-align:center;border-bottom:1px solid rgba(30,34,69,.5);color:var(--text);}
+.dtable tr:hover td{background:rgba(255,107,53,.04);}
+
+/* STATUS */
+.statusbar{
+  position:relative;z-index:5;background:var(--surface);
+  border-top:1px solid var(--border);padding:8px 28px;
+  display:flex;align-items:center;gap:20px;
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--muted);flex-wrap:wrap;
+}
+.sindic{display:flex;align-items:center;gap:6px;}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--p2);box-shadow:0 0 6px var(--p2);animation:blink 1.5s infinite;}
+.sdot.orange{background:var(--p1);box-shadow:0 0 6px var(--p1);}
+.sdot.red{background:var(--danger);box-shadow:0 0 6px var(--danger);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* MOLECULE ANIMATION */
+.mol-canvas{border-radius:8px;background:var(--surface2);border:1px solid var(--border);}
+
+/* REACTION DISPLAY */
+.rxn-box{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;
+  font-family:'JetBrains Mono',monospace;font-size:.9rem;
+  text-align:center;color:var(--p2);margin-bottom:12px;
+  letter-spacing:1px;
+}
+.rxn-box .arrow{color:var(--p1);}
+
+/* ENERGY DIAGRAM */
+.energy-svg{width:100%;height:180px;}
+
+/* MECHANISM */
+.mech-step{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;margin-bottom:8px;
+  display:flex;align-items:flex-start;gap:12px;
+}
+.mech-num{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--p1);color:#000;font-family:'Syne',sans-serif;
+  font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.mech-text{font-size:.82rem;color:var(--text);line-height:1.6;}
+.mech-text .eq{color:var(--p2);font-family:'JetBrains Mono',monospace;font-size:.78rem;}
+
+/* THEORY CARDS */
+.thy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;}
+.thy-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.thy-card h3{font-family:'Syne',sans-serif;font-weight:700;color:var(--p1);margin-bottom:10px;font-size:.95rem;letter-spacing:1px;}
+.thy-card p,.thy-card li{font-size:.81rem;color:#8a9cc0;line-height:1.65;}
+.thy-card ul{padding-left:16px;}
+.formula{background:#05060e;border:1px solid var(--border);border-radius:6px;padding:10px;margin:8px 0;font-family:'JetBrains Mono',monospace;color:var(--p4);font-size:.82rem;text-align:center;}
+.lvl-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.62rem;font-weight:700;letter-spacing:1px;margin-bottom:8px;font-family:'JetBrains Mono',monospace;}
+.lv-g{background:rgba(0,212,170,.15);color:var(--p2);border:1px solid var(--p2);}
+.lv-o{background:rgba(255,107,53,.15);color:var(--p1);border:1px solid var(--p1);}
+.lv-v{background:rgba(167,139,250,.15);color:var(--p3);border:1px solid var(--p3);}
+
+/* REPORT */
+.rpt-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--text);line-height:1.9;}
+.rpt-sec{margin-bottom:14px;}
+.rpt-sec h4{color:var(--p1);font-family:'Syne',sans-serif;font-size:.88rem;letter-spacing:2px;margin-bottom:6px;}
+.hl{color:var(--p2);}.hl2{color:var(--p4);}
+
+/* COLORS per order */
+.order-0{color:#38bdf8;}
+.order-1{color:#00d4aa;}
+.order-2{color:#a78bfa;}
+
+canvas{border-radius:6px;}
+
+@media(max-width:768px){
+  header{flex-wrap:wrap;gap:10px;}
+  .app{padding:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-gem">⚡</div>
+    <div class="logo-text">
+      <h1 id="appTitle">SIMUKIN</h1>
+      <p id="appSub">SIMULATEUR DE CINÉTIQUE CHIMIQUE — v1.0</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">EN</button>
+    <div class="author-tag">
+      <div class="n">Edmond Atinzoun TCHOKPON</div>
+      <div class="i" id="authorInfo">LICENCE PHYSIQUE-CHIMIE | SIMUKIN 2025</div>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('cinetique')" id="tab-cinetique">⚡ CINÉTIQUE</button>
+  <button class="tab" onclick="showTab('arrhenius')" id="tab-arrhenius">🌡️ ARRHENIUS</button>
+  <button class="tab" onclick="showTab('suivi')" id="tab-suivi">📡 SUIVI EXP.</button>
+  <button class="tab" onclick="showTab('mecanisme')" id="tab-mecanisme">🔗 MÉCANISME</button>
+  <button class="tab" onclick="showTab('theorie')" id="tab-theorie">📚 THÉORIE</button>
+  <button class="tab" onclick="showTab('rapport')" id="tab-rapport">📋 RAPPORT</button>
+</div>
+
+<!-- ══════════════ CINÉTIQUE TAB ══════════════ -->
+<div class="app active" id="app-cinetique">
+
+  <!-- CONFIG -->
+  <div class="panel" style="flex:0 0 270px;">
+    <div class="ptitle">🔧 <span id="lbl-config">CONFIGURATION</span></div>
+
+    <div class="fg">
+      <label id="lbl-reaction">RÉACTION</label>
+      <select id="rxnType" onchange="updateRxn()">
+        <option value="decomp">A → Produits</option>
+        <option value="bimol">A + B → Produits</option>
+        <option value="reversible">A ⇌ B</option>
+        <option value="consecutif">A → B → C</option>
+      </select>
+    </div>
+
+    <div class="fg">
+      <label id="lbl-order">ORDRE DE RÉACTION</label>
+      <select id="orderSel" onchange="updateOrder()">
+        <option value="0">Ordre 0</option>
+        <option value="1" selected>Ordre 1</option>
+        <option value="2">Ordre 2</option>
+      </select>
+    </div>
+
+    <div class="fg">
+      <label id="lbl-k">CONSTANTE k (s⁻¹ ou L·mol⁻¹·s⁻¹)</label>
+      <input type="number" id="kVal" value="0.05" step="0.005" min="0.001" max="2">
+    </div>
+
+    <div class="fg">
+      <label id="lbl-c0">CONCENTRATION INITIALE [A]₀ (mol/L)</label>
+      <input type="number" id="c0Val" value="1.0" step="0.1" min="0.01" max="5">
+    </div>
+
+    <div class="fg" id="fg-c0b" style="display:none;">
+      <label>[B]₀ (mol/L)</label>
+      <input type="number" id="c0bVal" value="1.0" step="0.1" min="0.01" max="5">
+    </div>
+
+    <div class="fg">
+      <label id="lbl-tmax">DURÉE SIMULATION (s)</label>
+      <input type="number" id="tmaxVal" value="100" step="10" min="10" max="1000">
+    </div>
+
+    <div class="fg">
+      <label id="lbl-temp">TEMPÉRATURE (K)</label>
+      <input type="range" id="tempVal" min="250" max="450" value="298" oninput="updateTempDisplay(this.value)">
+      <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--p1)" id="temp-disp">298 K (25 °C)</div>
+    </div>
+
+    <button class="btn btn-p" onclick="runKinetics()" id="btn-run">▶ SIMULER</button>
+    <button class="btn btn-d" onclick="resetKin()" style="margin-top:7px;" id="btn-reset">↺ RÉINITIALISER</button>
+    <button class="btn btn-s" onclick="compareOrders()" style="margin-top:7px;" id="btn-compare">⚖ COMPARER ORDRES</button>
+  </div>
+
+  <!-- LAB VISUAL + INSTRUMENTS -->
+  <div class="panel" style="flex:0 0 300px;">
+    <div class="ptitle">🔬 <span id="lbl-labo">RÉACTEUR VIRTUEL</span></div>
+    <div id="rxn-display" class="rxn-box">A <span class="arrow">→</span> Produits</div>
+
+    <!-- Molecular animation canvas -->
+    <canvas id="molCanvas" width="260" height="200" class="mol-canvas"></canvas>
+
+    <div class="instruments">
+      <div class="instr">
+        <div class="val" id="disp-ca">1.000</div>
+        <div class="unit">mol/L</div>
+        <div class="lbl">[A](t)</div>
+      </div>
+      <div class="instr">
+        <div class="val" id="disp-t">0</div>
+        <div class="unit">s</div>
+        <div class="lbl">TEMPS</div>
+      </div>
+      <div class="instr">
+        <div class="val" id="disp-t12">—</div>
+        <div class="unit">s</div>
+        <div class="lbl" id="lbl-t12">t½</div>
+      </div>
+      <div class="instr">
+        <div class="val" id="disp-conv">0.0</div>
+        <div class="unit">%</div>
+        <div class="lbl" id="lbl-conv">CONV.</div>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="margin-top:12px;">
+      <div style="font-size:.65rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:4px;" id="lbl-progress">AVANCEMENT DE LA RÉACTION</div>
+      <div style="background:var(--surface2);border-radius:10px;height:12px;overflow:hidden;border:1px solid var(--border);">
+        <div id="progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--p1),var(--p4));border-radius:10px;transition:width .3s;box-shadow:0 0 10px rgba(255,107,53,.5);"></div>
+      </div>
+    </div>
+
+    <!-- Playback controls -->
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:center;">
+      <button class="btn btn-sm" onclick="stepBack()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;">⏮ -5s</button>
+      <button class="btn btn-sm" id="btn-play" onclick="togglePlay()" style="background:linear-gradient(135deg,var(--p1),#ff9500);color:#000;border:none;border-radius:6px;font-family:'Syne',sans-serif;font-weight:700;cursor:pointer;padding:7px 20px;">▶ PLAY</button>
+      <button class="btn btn-sm" onclick="stepFwd()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:6px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;">+5s ⏭</button>
+    </div>
+
+    <div style="margin-top:10px;text-align:center;">
+      <span id="law-display" style="font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--p3);">v = k[A]</span>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="panel" style="flex:1;min-width:280px;">
+    <div class="ptitle">📈 <span id="lbl-curve1">[C] = f(t) — ÉVOLUTION DES CONCENTRATIONS</span></div>
+    <canvas id="kinChart" height="220"></canvas>
+
+    <div class="ptitle" style="margin-top:14px;">📊 <span id="lbl-curve2">VITESSE v = f(t)</span></div>
+    <canvas id="vChart" height="130"></canvas>
+
+    <div class="ptitle" style="margin-top:14px;">🔍 <span id="lbl-curve3">LINÉARISATION — DÉTERMINATION DE L'ORDRE</span></div>
+    <canvas id="linChart" height="130"></canvas>
+  </div>
+
+  <!-- DATA TABLE -->
+  <div class="panel" style="flex:0 0 210px;">
+    <div class="ptitle">📋 <span id="lbl-table">TABLEAU</span></div>
+    <div style="max-height:400px;overflow-y:auto;">
+      <table class="dtable">
+        <thead>
+          <tr><th id="th-t">t (s)</th><th id="th-ca">[A]</th><th id="th-v">v</th></tr>
+        </thead>
+        <tbody id="kin-tbody"></tbody>
+      </table>
+    </div>
+    <button class="btn btn-p" style="margin-top:10px;font-size:.75rem;" onclick="exportKinCSV()" id="btn-export">⬇ CSV</button>
+
+    <!-- Half-life box -->
+    <div style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+      <div style="font-size:.62rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;">DEMI-VIE t½</div>
+      <div id="t12-formula" style="font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--p4);">—</div>
+      <div id="t12-value" style="font-family:'JetBrains Mono',monospace;font-size:1.3rem;color:var(--p2);margin-top:4px;">—</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ ARRHENIUS TAB ══════════════ -->
+<div class="app" id="app-arrhenius">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🌡️ <span id="lbl-arrh-title">LOI D'ARRHÉNIUS — k = A·exp(−Ea/RT)</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:20px;">
+
+      <div style="flex:0 0 270px;">
+        <div class="fg">
+          <label>FACTEUR PRÉ-EXPONENTIEL A (s⁻¹)</label>
+          <input type="number" id="arrh-A" value="1e10" step="1e9">
+        </div>
+        <div class="fg">
+          <label>ÉNERGIE D'ACTIVATION Ea (kJ/mol)</label>
+          <input type="number" id="arrh-Ea" value="50" step="5" min="5" max="300">
+        </div>
+        <div class="fg">
+          <label>PLAGE T (K) — MIN</label>
+          <input type="number" id="arrh-T1" value="280" step="10">
+        </div>
+        <div class="fg">
+          <label>PLAGE T (K) — MAX</label>
+          <input type="number" id="arrh-T2" value="400" step="10">
+        </div>
+        <button class="btn btn-p" onclick="runArrhenius()">▶ CALCULER</button>
+
+        <!-- Arrhenius result -->
+        <div style="margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+          <div style="font-size:.62rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">k À 298 K</div>
+          <div id="arrh-k298" style="font-family:'JetBrains Mono',monospace;font-size:1.4rem;color:var(--p1);text-shadow:0 0 14px rgba(255,107,53,.5);margin-top:4px;">—</div>
+          <div style="font-size:.62rem;color:var(--muted);margin-top:10px;font-family:'JetBrains Mono',monospace;">k À 350 K</div>
+          <div id="arrh-k350" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--p2);margin-top:2px;">—</div>
+          <div style="font-size:.62rem;color:var(--muted);margin-top:10px;font-family:'JetBrains Mono',monospace;">FACTEUR ACCÉLÉRATION (298→350 K)</div>
+          <div id="arrh-factor" style="font-family:'JetBrains Mono',monospace;font-size:1.1rem;color:var(--p4);margin-top:2px;">—</div>
+        </div>
+
+        <!-- Ea slider -->
+        <div class="fg" style="margin-top:14px;">
+          <label>RÉGLER Ea INTERACTIVEMENT (kJ/mol)</label>
+          <input type="range" id="ea-slider" min="10" max="200" value="50" oninput="updateEaSlider(this.value)" style="accent-color:var(--p1)">
+          <div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--p1)" id="ea-disp">50 kJ/mol</div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;">
+        <!-- Energy diagram -->
+        <div class="ptitle">⚡ PROFIL ÉNERGÉTIQUE</div>
+        <svg id="energySVG" width="100%" height="200" viewBox="0 0 500 200" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;margin-bottom:14px;"></svg>
+
+        <div class="ptitle">📈 k = f(T) ET LINÉARISATION ln(k) = f(1/T)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <canvas id="arrhChart" height="200"></canvas>
+          <canvas id="arrhLinChart" height="200"></canvas>
+        </div>
+        <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);">
+          Pente de ln(k) = f(1/T) : <span id="arrh-slope" style="color:var(--p4);">—</span>
+          &nbsp;→ Ea = −pente × R = <span id="arrh-ea-calc" style="color:var(--p2);">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SUIVI EXP. TAB ══════════════ -->
+<div class="app" id="app-suivi">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📡 <span id="lbl-suivi-title">MÉTHODES DE SUIVI EXPÉRIMENTAL</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:14px;">
+      <button class="btn btn-sm" onclick="showSuivi('spectro')" id="s-spectro" style="background:rgba(167,139,250,.2);border:1px solid var(--p3);color:var(--p3);border-radius:6px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;padding:8px 16px;">🌈 SPECTROPHOTOMÈTRE</button>
+      <button class="btn btn-sm" onclick="showSuivi('conduc')" id="s-conduc" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;padding:8px 16px;">⚡ CONDUCTIMÈTRE</button>
+      <button class="btn btn-sm" onclick="showSuivi('pressure')" id="s-pressure" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;font-family:'Syne',sans-serif;font-weight:600;cursor:pointer;padding:8px 16px;">💨 PRESSION (GAZ)</button>
+    </div>
+
+    <!-- SPECTRO SUIVI -->
+    <div id="suivi-spectro" style="display:flex;flex-wrap:wrap;gap:18px;">
+      <div style="flex:0 0 260px;">
+        <div class="fg"><label>RÉACTION SUIVIE</label>
+          <select id="suivi-rxn">
+            <option value="KMnO4">2KMnO₄ + 5H₂C₂O₄ + 3H₂SO₄ → … (décoloration)</option>
+            <option value="iodine">H₂O₂ + 2I⁻ + 2H⁺ → I₂ + 2H₂O (iode)</option>
+            <option value="crystal">Violet de cristal + OH⁻ → incolore</option>
+          </select>
+        </div>
+        <div class="fg"><label>k APPARENT (s⁻¹)</label><input type="number" id="sv-k" value="0.02" step="0.005"></div>
+        <div class="fg"><label>[RÉACTIF]₀ (mol/L)</label><input type="number" id="sv-c0" value="0.5" step="0.05"></div>
+        <div class="fg"><label>ε · l (L/mol)</label><input type="number" id="sv-eps" value="5000" step="500"></div>
+        <button class="btn btn-p" onclick="runSuiviSpectro()">▶ SIMULER SUIVI</button>
+        <div style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">ABSORBANCE A(t)</div>
+          <div id="sv-abs" style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--p3);text-shadow:0 0 12px rgba(167,139,250,.5);">—</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;">
+        <canvas id="suiviSpectroChart" height="250"></canvas>
+        <div style="margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--muted);">
+          A(t) = A₀·e^(−k·t) &nbsp;→ &nbsp; <span id="sv-law" style="color:var(--p3);">ln(A) = ln(A₀) − k·t</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONDUCTIMÉTRIE SUIVI -->
+    <div id="suivi-conduc" style="display:none;flex-wrap:wrap;gap:18px;">
+      <div style="flex:0 0 260px;">
+        <div class="fg"><label>RÉACTION</label>
+          <select id="cv-rxn">
+            <option value="estherification">Estérification : AcOH + EtOH ⇌ ester</option>
+            <option value="saponification">Saponification : ester + OH⁻ → AcO⁻</option>
+          </select>
+        </div>
+        <div class="fg"><label>k (L·mol⁻¹·s⁻¹)</label><input type="number" id="cv-k" value="0.005" step="0.001"></div>
+        <div class="fg"><label>C₀ (mol/L)</label><input type="number" id="cv-c0" value="1.0" step="0.1"></div>
+        <button class="btn btn-p" onclick="runSuiviConduc()">▶ SIMULER</button>
+        <div style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">σ(t) mS/cm</div>
+          <div id="cv-sig" style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--p2);text-shadow:0 0 12px rgba(0,212,170,.5);">—</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;">
+        <canvas id="suiviCondChart" height="250"></canvas>
+      </div>
+    </div>
+
+    <!-- PRESSION SUIVI -->
+    <div id="suivi-pressure" style="display:none;flex-wrap:wrap;gap:18px;">
+      <div style="flex:0 0 260px;">
+        <div class="fg"><label>RÉACTION GAZ</label>
+          <select id="pv-rxn">
+            <option value="N2O5">N₂O₅ → 2NO₂ + ½O₂ (ordre 1)</option>
+            <option value="decomp_azomethane">CH₃N=NCH₃ → C₂H₆ + N₂ (ordre 1)</option>
+          </select>
+        </div>
+        <div class="fg"><label>k (s⁻¹)</label><input type="number" id="pv-k" value="0.01" step="0.001"></div>
+        <div class="fg"><label>P₀ (atm)</label><input type="number" id="pv-p0" value="0.5" step="0.05"></div>
+        <div class="fg"><label>T (K)</label><input type="number" id="pv-T" value="320" step="5"></div>
+        <button class="btn btn-p" onclick="runSuiviPression()">▶ SIMULER</button>
+        <div style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'JetBrains Mono',monospace;">PRESSION TOTALE (atm)</div>
+          <div id="pv-p" style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--p1);text-shadow:0 0 12px rgba(255,107,53,.5);">—</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;">
+        <canvas id="suiviPresChart" height="250"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MÉCANISME TAB ══════════════ -->
+<div class="app" id="app-mecanisme">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🔗 <span id="lbl-mech-title">MÉCANISMES RÉACTIONNELS</span></div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;margin-bottom:20px;">
+      <button onclick="showMech('sn1')" class="mech-btn" style="background:rgba(255,107,53,.15);border:1px solid var(--p1);color:var(--p1);border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:.82rem;">SN1</button>
+      <button onclick="showMech('sn2')" class="mech-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:.82rem;">SN2</button>
+      <button onclick="showMech('radical')" class="mech-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:.82rem;">RADICALAIRE</button>
+      <button onclick="showMech('michaelis')" class="mech-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:.82rem;">MICHAELIS-MENTEN</button>
+      <button onclick="showMech('consecutif')" class="mech-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:600;font-size:.82rem;">CONSÉCUTIF A→B→C</button>
+    </div>
+    <div id="mech-content"></div>
+  </div>
+</div>
+
+<!-- ══════════════ THÉORIE TAB ══════════════ -->
+<div class="app" id="app-theorie">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📚 COURS — CINÉTIQUE CHIMIQUE</div>
+    <div class="thy-grid">
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-g">LYCÉE / PRÉPA</span>
+        <h3>Vitesse de Réaction</h3>
+        <p>La vitesse de réaction mesure la variation de concentration en fonction du temps.</p>
+        <div class="formula">v = −(1/a)·d[A]/dt = (1/b)·d[B]/dt</div>
+        <p>Elle dépend de la concentration des réactifs, de la température et de la présence d'un catalyseur.</p>
+      </div>
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-g">LYCÉE / PRÉPA</span>
+        <h3>Loi de Vitesse & Ordres</h3>
+        <div class="formula">v = k · [A]ⁿ · [B]ᵐ</div>
+        <ul>
+          <li><strong class="order-0">Ordre 0 :</strong> [A] = [A]₀ − k·t</li>
+          <li><strong class="order-1">Ordre 1 :</strong> [A] = [A]₀·e^(−k·t)</li>
+          <li><strong class="order-2">Ordre 2 :</strong> 1/[A] = 1/[A]₀ + k·t</li>
+        </ul>
+        <p style="margin-top:8px;">L'ordre global est n+m. Il est déterminé expérimentalement.</p>
+      </div>
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-g">LYCÉE / PRÉPA</span>
+        <h3>Demi-vie t½</h3>
+        <p>Temps pour que la concentration soit divisée par 2.</p>
+        <div class="formula">Ord. 0 : t½ = [A]₀ / 2k<br>Ord. 1 : t½ = ln(2) / k<br>Ord. 2 : t½ = 1 / (k·[A]₀)</div>
+        <p>Pour l'ordre 1, t½ est indépendant de [A]₀ — propriété fondamentale !</p>
+      </div>
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-o">PRÉPA / LICENCE</span>
+        <h3>Loi d'Arrhénius</h3>
+        <div class="formula">k = A · exp(−Ea / RT)</div>
+        <p>A : facteur préexponentiel (fréquence de collisions)<br>Ea : énergie d'activation (J/mol)<br>R = 8,314 J·mol⁻¹·K⁻¹</p>
+        <div class="formula">ln(k) = ln(A) − Ea/(R·T)</div>
+        <p>La pente de ln(k) = f(1/T) vaut −Ea/R.</p>
+      </div>
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-o">PRÉPA / LICENCE</span>
+        <h3>Mécanismes — AEQS</h3>
+        <p>Approximation de l'État Quasi-Stationnaire (AEQS) : pour un intermédiaire réactionnel I :</p>
+        <div class="formula">d[I]/dt ≈ 0</div>
+        <p>L'étape cinétiquement déterminante (ECD) est l'étape la plus lente. Elle impose la loi de vitesse globale.</p>
+      </div>
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-v">LICENCE</span>
+        <h3>Réactions Consécutives A→B→C</h3>
+        <div class="formula">d[B]/dt = k₁[A] − k₂[B]</div>
+        <p>[B] passe par un maximum à :</p>
+        <div class="formula">t_max = ln(k₂/k₁) / (k₂−k₁)</div>
+        <p>Si k₂ ≫ k₁ : AEQS sur B → v ≈ k₁[A]<br>Si k₁ ≫ k₂ : accumulation de B</p>
+      </div>
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-v">LICENCE</span>
+        <h3>Michaelis-Menten (Enzymatique)</h3>
+        <div class="formula">v = vmax·[S] / (Km + [S])</div>
+        <p>vmax : vitesse maximale | Km : constante de Michaelis<br>À [S] = Km : v = vmax/2</p>
+        <p>Linéarisation Lineweaver-Burk :</p>
+        <div class="formula">1/v = Km/(vmax·[S]) + 1/vmax</div>
+      </div>
+
+      <div class="thy-card">
+        <span class="lvl-badge lv-v">LICENCE</span>
+        <h3>Détermination de l'Ordre</h3>
+        <p>Méthodes graphiques de linéarisation :</p>
+        <ul>
+          <li><strong class="order-0">Ordre 0 :</strong> [A] = f(t) linéaire → pente = −k</li>
+          <li><strong class="order-1">Ordre 1 :</strong> ln[A] = f(t) linéaire → pente = −k</li>
+          <li><strong class="order-2">Ordre 2 :</strong> 1/[A] = f(t) linéaire → pente = k</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ RAPPORT TAB ══════════════ -->
+<div class="app" id="app-rapport">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📋 RAPPORT DE TP AUTOMATIQUE</div>
+    <div class="rpt-box" id="rpt-content">
+      <div style="text-align:center;color:var(--muted);padding:40px;">⚡ Effectuez une simulation cinétique pour générer le rapport.</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button class="btn btn-p" style="flex:1" onclick="generateReport()">📋 GÉNÉRER RAPPORT</button>
+      <button class="btn" style="flex:1;background:rgba(0,212,170,.1);border:1px solid var(--p2);color:var(--p2);border-radius:8px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:700;letter-spacing:2px;" onclick="window.print()">🖨️ IMPRIMER</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <div class="sindic"><div class="sdot" id="sdot"></div><span id="stext">Prêt — Configurez la simulation</span></div>
+  <span>|</span><span id="slevel">Niveau : Licence</span>
+  <span>|</span><span>SimuKin v1.0 — Edmond Atinzoun TCHOKPON</span>
+  <span style="margin-left:auto" id="sclock"></span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ═══════════ STATE ═══════════
+const R_GAS = 8.314;
+let lang = 'fr';
+let kinState = { times:[], concs:[], vels:[], k:0.05, order:1, c0:1, tmax:100, running:false, playInterval:null, playIndex:0, computed:false };
+let charts = {};
+
+// ═══════════ TRANSLATIONS ═══════════
+const T = {
+  fr:{appTitle:'SIMUKIN',appSub:'SIMULATEUR DE CINÉTIQUE CHIMIQUE — v1.0',authorInfo:'LICENCE PHYSIQUE-CHIMIE | SIMUKIN 2025','lbl-config':'CONFIGURATION','lbl-reaction':'RÉACTION','lbl-order':'ORDRE DE RÉACTION','lbl-k':'CONSTANTE k','lbl-c0':'[A]₀ (mol/L)','lbl-tmax':'DURÉE (s)','lbl-temp':'TEMPÉRATURE (K)','btn-run':'▶ SIMULER','btn-reset':'↺ RÉINITIALISER','btn-compare':'⚖ COMPARER ORDRES','lbl-labo':'RÉACTEUR VIRTUEL','lbl-t12':'t½','lbl-conv':'CONV.','lbl-progress':'AVANCEMENT DE LA RÉACTION','lbl-curve1':'[C] = f(t)','lbl-curve2':'VITESSE v = f(t)','lbl-curve3':'LINÉARISATION','lbl-table':'TABLEAU','btn-export':'⬇ CSV','lbl-arrh-title':'LOI D\'ARRHÉNIUS','lbl-suivi-title':'MÉTHODES DE SUIVI','lbl-mech-title':'MÉCANISMES RÉACTIONNELS','stext-ready':'Prêt — Configurez la simulation',langBtn:'EN'},
+  en:{appTitle:'SIMUKIN',appSub:'CHEMICAL KINETICS SIMULATOR — v1.0',authorInfo:'DEGREE PHYSICS-CHEMISTRY | SIMUKIN 2025','lbl-config':'CONFIGURATION','lbl-reaction':'REACTION','lbl-order':'REACTION ORDER','lbl-k':'RATE CONSTANT k','lbl-c0':'[A]₀ (mol/L)','lbl-tmax':'DURATION (s)','lbl-temp':'TEMPERATURE (K)','btn-run':'▶ SIMULATE','btn-reset':'↺ RESET','btn-compare':'⚖ COMPARE ORDERS','lbl-labo':'VIRTUAL REACTOR','lbl-t12':'t½','lbl-conv':'CONV.','lbl-progress':'REACTION PROGRESS','lbl-curve1':'[C] = f(t)','lbl-curve2':'RATE v = f(t)','lbl-curve3':'LINEARIZATION','lbl-table':'DATA TABLE','btn-export':'⬇ CSV','lbl-arrh-title':'ARRHENIUS LAW','lbl-suivi-title':'MONITORING METHODS','lbl-mech-title':'REACTION MECHANISMS','stext-ready':'Ready — Configure simulation',langBtn:'FR'}
+};
+function toggleLang(){
+  lang = lang==='fr'?'en':'fr';
+  const t=T[lang];
+  for(const[id,val] of Object.entries(t)){const el=document.getElementById(id);if(el)el.textContent=val;}
+  document.getElementById('tab-cinetique').textContent=lang==='fr'?'⚡ CINÉTIQUE':'⚡ KINETICS';
+  document.getElementById('tab-arrhenius').textContent=lang==='fr'?'🌡️ ARRHENIUS':'🌡️ ARRHENIUS';
+  document.getElementById('tab-theorie').textContent=lang==='fr'?'📚 THÉORIE':'📚 THEORY';
+  document.getElementById('tab-rapport').textContent=lang==='fr'?'📋 RAPPORT':'📋 REPORT';
+}
+
+// ═══════════ TABS ═══════════
+function showTab(n){
+  document.querySelectorAll('.app').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('app-'+n).classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active');
+  if(n==='arrhenius') drawEnergySVG();
+}
+
+// ═══════════ KINETICS CORE ═══════════
+function concAtT(t, k, order, c0) {
+  if(order===0) return Math.max(0, c0 - k*t);
+  if(order===1) return c0 * Math.exp(-k*t);
+  if(order===2) return c0 / (1 + k*c0*t);
+  return c0;
+}
+function halfLife(k, order, c0) {
+  if(order===0) return c0/(2*k);
+  if(order===1) return Math.LN2/k;
+  if(order===2) return 1/(k*c0);
+}
+
+function runKinetics(){
+  const order = parseInt(document.getElementById('orderSel').value);
+  const k = parseFloat(document.getElementById('kVal').value);
+  const c0 = parseFloat(document.getElementById('c0Val').value);
+  const tmax = parseFloat(document.getElementById('tmaxVal').value);
+  const rxnType = document.getElementById('rxnType').value;
+
+  kinState = { times:[], concs:[], concsB:[], concsC:[], vels:[], k, order, c0, tmax, running:true, playInterval:null, playIndex:0, computed:true };
+
+  const steps = 200;
+  const dt = tmax/steps;
+  for(let i=0;i<=steps;i++){
+    const t = i*dt;
+    const c = concAtT(t,k,order,c0);
+    const v = k * Math.pow(Math.max(c,1e-10), order);
+    kinState.times.push(t);
+    kinState.concs.push(c);
+    kinState.vels.push(v);
+    // Consecutive
+    if(rxnType==='consecutif'){
+      const k2=k*0.5;
+      const cA=c0*Math.exp(-k*t);
+      const cB=rxnType==='consecutif'?c0*(k/(k2-k))*(Math.exp(-k*t)-Math.exp(-k2*t)):0;
+      const cC=c0-cA-Math.max(0,cB);
+      kinState.concsB.push(Math.max(0,cB));
+      kinState.concsC.push(Math.max(0,cC));
+    }
+  }
+
+  const t12 = halfLife(k,order,c0);
+  document.getElementById('disp-t12').textContent = t12.toFixed(1);
+  document.getElementById('t12-value').textContent = t12.toFixed(2)+' s';
+
+  // t½ formula
+  const fmls = {0:`[A]₀/2k = ${(c0/(2*k)).toFixed(2)} s`,1:`ln2/k = ${(Math.LN2/k).toFixed(2)} s`,2:`1/(k·[A]₀) = ${(1/(k*c0)).toFixed(2)} s`};
+  document.getElementById('t12-formula').textContent = fmls[order];
+
+  // law display
+  const laws = {0:'v = k',1:'v = k·[A]',2:'v = k·[A]²'};
+  document.getElementById('law-display').textContent = laws[order];
+
+  updateDisplayAt(0);
+  buildKinCharts(rxnType);
+  buildDataTable();
+  setStatus('orange','Simulation en cours...');
+  setTimeout(()=>setStatus('green',`Simulation terminée — t½ = ${t12.toFixed(2)} s`),500);
+}
+
+function buildKinCharts(rxnType){
+  // Main concentration chart
+  destroyChart('kinChart');
+  const ctx=document.getElementById('kinChart').getContext('2d');
+  const datasets=[{
+    label:'[A](t)',
+    data:kinState.concs,
+    borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,0.08)',
+    borderWidth:2.5,pointRadius:0,tension:.4,fill:true
+  }];
+  if(rxnType==='consecutif'){
+    datasets.push({label:'[B](t)',data:kinState.concsB,borderColor:'#00d4aa',backgroundColor:'rgba(0,212,170,0.06)',borderWidth:2,pointRadius:0,tension:.4,fill:true});
+    datasets.push({label:'[C](t)',data:kinState.concsC,borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.06)',borderWidth:2,pointRadius:0,tension:.4,fill:true});
+  }
+  charts.kinChart=new Chart(ctx,{type:'line',data:{labels:kinState.times.map(t=>t.toFixed(1)),datasets},options:mkOpts('t (s)','[C] (mol/L)')});
+
+  // Velocity chart
+  destroyChart('vChart');
+  const ctx2=document.getElementById('vChart').getContext('2d');
+  charts.vChart=new Chart(ctx2,{type:'line',data:{labels:kinState.times.map(t=>t.toFixed(1)),datasets:[{label:'v(t)',data:kinState.vels,borderColor:'#fbbf24',backgroundColor:'rgba(251,191,36,0.07)',borderWidth:2,pointRadius:0,tension:.4,fill:true}]},options:mkOpts('t (s)','v (mol·L⁻¹·s⁻¹)')});
+
+  // Linearization chart
+  destroyChart('linChart');
+  const ctx3=document.getElementById('linChart').getContext('2d');
+  const order=kinState.order;
+  const linY = kinState.concs.map(c=>{
+    if(order===0) return c;
+    if(order===1) return Math.log(Math.max(c,1e-15));
+    if(order===2) return 1/Math.max(c,1e-10);
+  });
+  const linLabels={0:'[A]',1:'ln[A]',2:'1/[A]'};
+  charts.linChart=new Chart(ctx3,{type:'line',data:{labels:kinState.times.map(t=>t.toFixed(1)),datasets:[{label:linLabels[order]+' = f(t)',data:linY,borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.07)',borderWidth:2,pointRadius:0,tension:0,fill:true}]},options:mkOpts('t (s)',linLabels[order])});
+}
+
+function mkOpts(xlabel,ylabel){
+  return{
+    responsive:true,animation:{duration:200},
+    plugins:{legend:{labels:{color:'#4a5080',font:{family:'JetBrains Mono',size:10}}},tooltip:{backgroundColor:'#0d0f1c',titleColor:'#ff6b35',bodyColor:'#e8eaf6'}},
+    scales:{
+      x:{title:{display:true,text:xlabel,color:'#4a5080'},ticks:{color:'#4a5080',maxTicksLimit:10},grid:{color:'rgba(30,34,69,0.6)'}},
+      y:{title:{display:true,text:ylabel,color:'#4a5080'},ticks:{color:'#4a5080'},grid:{color:'rgba(30,34,69,0.6)'}}
+    }
+  };
+}
+
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+function buildDataTable(){
+  const tbody=document.getElementById('kin-tbody');
+  tbody.innerHTML='';
+  const step=Math.max(1,Math.floor(kinState.times.length/30));
+  for(let i=0;i<kinState.times.length;i+=step){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${kinState.times[i].toFixed(1)}</td><td>${kinState.concs[i].toFixed(4)}</td><td>${kinState.vels[i].toFixed(5)}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+// ═══════════ PLAYBACK ═══════════
+function updateDisplayAt(idx){
+  const c=kinState.concs[idx]||0;
+  const t=kinState.times[idx]||0;
+  document.getElementById('disp-ca').textContent=c.toFixed(4);
+  document.getElementById('disp-t').textContent=t.toFixed(1);
+  const conv=((kinState.c0-c)/kinState.c0*100);
+  document.getElementById('disp-conv').textContent=Math.min(99.9,conv).toFixed(1);
+  document.getElementById('progress-bar').style.width=Math.min(100,conv)+'%';
+  drawMolecules(c/kinState.c0);
+}
+
+function togglePlay(){
+  if(kinState.playInterval){
+    clearInterval(kinState.playInterval);kinState.playInterval=null;
+    document.getElementById('btn-play').textContent='▶ PLAY';
+  } else {
+    if(!kinState.computed){alert(lang==='fr'?'Lancez la simulation d\'abord !':'Run simulation first!');return;}
+    if(kinState.playIndex>=kinState.times.length-1) kinState.playIndex=0;
+    document.getElementById('btn-play').textContent='⏸ PAUSE';
+    kinState.playInterval=setInterval(()=>{
+      kinState.playIndex+=2;
+      if(kinState.playIndex>=kinState.times.length){clearInterval(kinState.playInterval);kinState.playInterval=null;document.getElementById('btn-play').textContent='▶ PLAY';return;}
+      updateDisplayAt(kinState.playIndex);
+    },40);
+  }
+}
+function stepBack(){const di=Math.max(0,kinState.playIndex-10);kinState.playIndex=di;updateDisplayAt(di);}
+function stepFwd(){const di=Math.min(kinState.times.length-1,kinState.playIndex+10);kinState.playIndex=di;updateDisplayAt(di);}
+
+// ═══════════ MOLECULES ANIMATION ═══════════
+let molAnimFrame=null;
+const molState={particles:[],time:0};
+
+function initMolecules(ratio){
+  molState.particles=[];
+  const n=40;
+  for(let i=0;i<n;i++){
+    molState.particles.push({
+      x:Math.random()*240+10,y:Math.random()*180+10,
+      vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,
+      type:Math.random()<ratio?'A':'P',
+      r:Math.random()*2+4
+    });
+  }
+}
+
+function drawMolecules(ratio){
+  const canvas=document.getElementById('molCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#12152a';ctx.fillRect(0,0,W,H);
+
+  const n=40;
+  const nA=Math.round(n*ratio);
+  const nP=n-nA;
+
+  // Simple static draw
+  const seedA=Math.floor(ratio*100);
+  const rng=(s)=>{let x=Math.sin(s)*10000;return x-Math.floor(x);};
+
+  for(let i=0;i<nA;i++){
+    const x=rng(i+1)*220+20,y=rng(i+100)*160+20;
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,107,53,0.85)';ctx.fill();
+    ctx.strokeStyle='rgba(255,149,0,0.5)';ctx.lineWidth=1;ctx.stroke();
+  }
+  for(let i=0;i<nP;i++){
+    const x=rng(i+200)*220+20,y=rng(i+300)*160+20;
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle='rgba(0,212,170,0.7)';ctx.fill();
+  }
+
+  // Labels
+  ctx.fillStyle='rgba(255,107,53,0.8)';ctx.font='11px JetBrains Mono';
+  ctx.fillText('● A  (réactif)',10,H-30);
+  ctx.fillStyle='rgba(0,212,170,0.8)';
+  ctx.fillText('● P  (produit)',10,H-15);
+
+  // Concentration bar
+  ctx.fillStyle='rgba(30,34,69,0.8)';ctx.fillRect(W-30,10,18,H-20);
+  ctx.fillStyle='rgba(255,107,53,0.7)';
+  const barH=(H-20)*ratio;
+  ctx.fillRect(W-30,10+(H-20)*(1-ratio),18,barH);
+  ctx.fillStyle='#4a5080';ctx.font='9px JetBrains Mono';ctx.fillText('[A]',W-30,8);
+}
+
+// ═══════════ COMPARE ORDERS ═══════════
+function compareOrders(){
+  if(!kinState.computed){alert(lang==='fr'?'Lancez la simulation d\'abord !':'Run simulation first!');return;}
+  destroyChart('kinChart');
+  const ctx=document.getElementById('kinChart').getContext('2d');
+  const k=kinState.k,c0=kinState.c0,tmax=kinState.tmax;
+  const steps=200,dt=tmax/steps;
+  const times=[],c0s=[],c1s=[],c2s=[];
+  for(let i=0;i<=steps;i++){const t=i*dt;times.push(t.toFixed(1));c0s.push(concAtT(t,k,0,c0));c1s.push(concAtT(t,k,1,c0));c2s.push(concAtT(t,k,2,c0));}
+  charts.kinChart=new Chart(ctx,{type:'line',data:{labels:times,datasets:[
+    {label:'Ordre 0',data:c0s,borderColor:'#38bdf8',backgroundColor:'rgba(56,189,248,0.05)',borderWidth:2,pointRadius:0,tension:0,fill:true},
+    {label:'Ordre 1',data:c1s,borderColor:'#00d4aa',backgroundColor:'rgba(0,212,170,0.05)',borderWidth:2,pointRadius:0,tension:.4,fill:true},
+    {label:'Ordre 2',data:c2s,borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.05)',borderWidth:2,pointRadius:0,tension:.4,fill:true}
+  ]},options:mkOpts('t (s)','[A] (mol/L)')});
+}
+
+// ═══════════ RESET ═══════════
+function resetKin(){
+  kinState={times:[],concs:[],vels:[],k:0.05,order:1,c0:1,tmax:100,running:false,playInterval:null,playIndex:0,computed:false};
+  ['kinChart','vChart','linChart'].forEach(destroyChart);
+  document.getElementById('kin-tbody').innerHTML='';
+  document.getElementById('disp-ca').textContent='1.000';
+  document.getElementById('disp-t').textContent='0';
+  document.getElementById('disp-t12').textContent='—';
+  document.getElementById('disp-conv').textContent='0.0';
+  document.getElementById('progress-bar').style.width='0%';
+  document.getElementById('t12-value').textContent='—';
+  document.getElementById('t12-formula').textContent='—';
+  const canvas=document.getElementById('molCanvas');
+  const ctx=canvas.getContext('2d');ctx.fillStyle='#12152a';ctx.fillRect(0,0,canvas.width,canvas.height);
+  setStatus('red','Réinitialisé');
+}
+
+function updateRxn(){
+  const r=document.getElementById('rxnType').value;
+  const rxns={decomp:'A <span class="arrow">→</span> Produits',bimol:'A + B <span class="arrow">→</span> Produits',reversible:'A <span class="arrow">⇌</span> B',consecutif:'A <span class="arrow">→</span> B <span class="arrow">→</span> C'};
+  document.getElementById('rxn-display').innerHTML=rxns[r];
+  document.getElementById('fg-c0b').style.display=r==='bimol'?'block':'none';
+}
+function updateOrder(){
+  const laws={0:'v = k',1:'v = k·[A]',2:'v = k·[A]²'};
+  document.getElementById('law-display').textContent=laws[document.getElementById('orderSel').value];
+}
+function updateTempDisplay(v){document.getElementById('temp-disp').textContent=`${v} K (${(v-273).toFixed(0)} °C)`;}
+
+// ═══════════ ARRHENIUS ═══════════
+function runArrhenius(){
+  const A=parseFloat(document.getElementById('arrh-A').value)||1e10;
+  const Ea=parseFloat(document.getElementById('arrh-Ea').value)*1000;
+  const T1=parseFloat(document.getElementById('arrh-T1').value);
+  const T2=parseFloat(document.getElementById('arrh-T2').value);
+
+  const kFn=(T)=>A*Math.exp(-Ea/(R_GAS*T));
+  const k298=kFn(298),k350=kFn(350);
+
+  document.getElementById('arrh-k298').textContent=k298.toExponential(3)+' s⁻¹';
+  document.getElementById('arrh-k350').textContent=k350.toExponential(3)+' s⁻¹';
+  document.getElementById('arrh-factor').textContent=(k350/k298).toFixed(1)+'×';
+
+  const temps=[],ks=[],invTs=[],lnKs=[];
+  for(let T=T1;T<=T2;T+=5){
+    const k=kFn(T);
+    temps.push(T);ks.push(k);invTs.push((1000/T).toFixed(4));lnKs.push(Math.log(k).toFixed(4));
+  }
+
+  const slope=(Math.log(kFn(T2))-Math.log(kFn(T1)))/(1/T2-1/T1);
+  document.getElementById('arrh-slope').textContent=slope.toFixed(0)+' K';
+  document.getElementById('arrh-ea-calc').textContent=((-slope*R_GAS)/1000).toFixed(1)+' kJ/mol';
+
+  // k=f(T)
+  destroyChart('arrhChart');
+  const ctx1=document.getElementById('arrhChart').getContext('2d');
+  charts.arrhChart=new Chart(ctx1,{type:'line',data:{labels:temps,datasets:[{label:'k = f(T)',data:ks,borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,0.07)',borderWidth:2,pointRadius:0,tension:.4,fill:true}]},options:mkOpts('T (K)','k (s⁻¹)')});
+
+  // Linearization
+  destroyChart('arrhLinChart');
+  const ctx2=document.getElementById('arrhLinChart').getContext('2d');
+  charts.arrhLinChart=new Chart(ctx2,{type:'line',data:{labels:invTs,datasets:[{label:'ln(k) = f(1000/T)',data:lnKs,borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.07)',borderWidth:2,pointRadius:0,tension:0,fill:true}]},options:mkOpts('1000/T (K⁻¹)','ln(k)')});
+
+  drawEnergySVG(Ea/1000);
+}
+
+function updateEaSlider(v){
+  document.getElementById('ea-disp').textContent=v+' kJ/mol';
+  document.getElementById('arrh-Ea').value=v;
+  drawEnergySVG(parseFloat(v));
+}
+
+function drawEnergySVG(Ea){
+  Ea=Ea||parseFloat(document.getElementById('arrh-Ea').value)||50;
+  const svg=document.getElementById('energySVG');
+  const W=500,H=200;
+  const scaleY=H/(Ea*1.8+30);
+  const Eproducts=Ea*0.3;
+
+  const pathD=`M 40 ${H-20} Q 130 ${H-20} 180 ${H-20-Ea*scaleY} Q 250 ${H-20-Ea*scaleY-15} 320 ${H-20-Eproducts*scaleY} L 460 ${H-20-Eproducts*scaleY}`;
+
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="eGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#ff6b35"/>
+        <stop offset="50%" style="stop-color:#fbbf24"/>
+        <stop offset="100%" style="stop-color:#00d4aa"/>
+      </linearGradient>
+    </defs>
+    <!-- Background -->
+    <rect width="${W}" height="${H}" fill="#12152a" rx="6"/>
+    <!-- Axes -->
+    <line x1="30" y1="10" x2="30" y2="${H-10}" stroke="#1e2245" stroke-width="1"/>
+    <line x1="30" y1="${H-20}" x2="${W-20}" y2="${H-20}" stroke="#1e2245" stroke-width="1"/>
+    <!-- Labels -->
+    <text x="10" y="50" fill="#4a5080" font-family="JetBrains Mono" font-size="9" transform="rotate(-90,10,50)">Énergie</text>
+    <text x="${W/2}" y="${H-4}" fill="#4a5080" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Coordonnée de réaction</text>
+    <!-- Curve -->
+    <path d="${pathD}" stroke="url(#eGrad)" stroke-width="3" fill="none"/>
+    <!-- Reactants -->
+    <line x1="40" y1="${H-20}" x2="140" y2="${H-20}" stroke="#ff6b35" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="90" y="${H-6}" fill="#ff6b35" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Réactifs</text>
+    <!-- Products -->
+    <line x1="360" y1="${H-20-Eproducts*scaleY}" x2="460" y2="${H-20-Eproducts*scaleY}" stroke="#00d4aa" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="410" y="${H-20-Eproducts*scaleY-6}" fill="#00d4aa" font-family="JetBrains Mono" font-size="9" text-anchor="middle">Produits</text>
+    <!-- Transition state -->
+    <circle cx="180" cy="${H-20-Ea*scaleY}" r="5" fill="#fbbf24"/>
+    <text x="190" y="${H-22-Ea*scaleY}" fill="#fbbf24" font-family="JetBrains Mono" font-size="9">État de transition ‡</text>
+    <!-- Ea arrow -->
+    <line x1="90" y1="${H-20}" x2="90" y2="${H-20-Ea*scaleY}" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr)"/>
+    <text x="94" y="${H-20-Ea*scaleY/2}" fill="#fbbf24" font-family="JetBrains Mono" font-size="10">Ea=${Ea.toFixed(0)} kJ</text>
+    <!-- ΔH arrow -->
+    <line x1="420" y1="${H-20}" x2="420" y2="${H-20-Eproducts*scaleY}" stroke="#38bdf8" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="424" y="${H-20-Eproducts*scaleY/2}" fill="#38bdf8" font-family="JetBrains Mono" font-size="9">ΔH</text>
+  `;
+}
+
+// ═══════════ SUIVI EXPÉRIMENTAL ═══════════
+function showSuivi(type){
+  ['spectro','conduc','pressure'].forEach(t=>{
+    document.getElementById('suivi-'+t).style.display=t===type?'flex':'none';
+    const btn=document.getElementById('s-'+t);
+    if(btn){btn.style.background=t===type?'rgba(167,139,250,.2)':'var(--surface2)';btn.style.borderColor=t===type?'var(--p3)':'var(--border)';btn.style.color=t===type?'var(--p3)':'var(--muted)';}
+  });
+}
+
+function runSuiviSpectro(){
+  const k=parseFloat(document.getElementById('sv-k').value);
+  const c0=parseFloat(document.getElementById('sv-c0').value);
+  const eps=parseFloat(document.getElementById('sv-eps').value);
+  const A0=eps*1*c0;
+  const times=[],abs=[],lnAbs=[];
+  for(let t=0;t<=300;t+=5){
+    const c=c0*Math.exp(-k*t);
+    const A=eps*1*c;
+    times.push(t);abs.push(A.toFixed(4));lnAbs.push(Math.log(A).toFixed(4));
+  }
+  document.getElementById('sv-abs').textContent=A0.toFixed(3);
+
+  destroyChart('suiviSpectroChart');
+  const ctx=document.getElementById('suiviSpectroChart').getContext('2d');
+  charts.suiviSpectroChart=new Chart(ctx,{type:'line',data:{labels:times,datasets:[
+    {label:'A(t)',data:abs,borderColor:'#a78bfa',backgroundColor:'rgba(167,139,250,0.07)',borderWidth:2,pointRadius:0,tension:.4,yAxisID:'y',fill:true},
+    {label:'ln A(t)',data:lnAbs,borderColor:'#fbbf24',backgroundColor:'rgba(251,191,36,0.05)',borderWidth:2,pointRadius:0,tension:0,yAxisID:'y1'}
+  ]},options:{responsive:true,plugins:{legend:{labels:{color:'#4a5080',font:{family:'JetBrains Mono',size:10}}}},scales:{x:{ticks:{color:'#4a5080'},grid:{color:'rgba(30,34,69,.6)'},title:{display:true,text:'t (s)',color:'#4a5080'}},y:{ticks:{color:'#a78bfa'},grid:{color:'rgba(30,34,69,.6)'},title:{display:true,text:'A(t)',color:'#a78bfa'},position:'left'},y1:{ticks:{color:'#fbbf24'},grid:{drawOnChartArea:false},title:{display:true,text:'ln A',color:'#fbbf24'},position:'right'}}}});
+}
+
+function runSuiviConduc(){
+  const k=parseFloat(document.getElementById('cv-k').value);
+  const c0=parseFloat(document.getElementById('cv-c0').value);
+  const times=[],sigmas=[];
+  const type=document.getElementById('cv-rxn').value;
+  for(let t=0;t<=600;t+=10){
+    const x=c0/(1+k*c0*t);
+    let sig;
+    if(type==='saponification'){
+      sig=Math.max(0.5,(c0-x)*7.2+x*0.8);
+    } else {
+      sig=2+t/600*1.5;
+    }
+    times.push(t);sigmas.push(sig.toFixed(4));
+  }
+  document.getElementById('cv-sig').textContent=sigmas[0];
+  destroyChart('suiviCondChart');
+  const ctx=document.getElementById('suiviCondChart').getContext('2d');
+  charts.suiviCondChart=new Chart(ctx,{type:'line',data:{labels:times,datasets:[{label:'σ(t) mS/cm',data:sigmas,borderColor:'#00d4aa',backgroundColor:'rgba(0,212,170,0.07)',borderWidth:2,pointRadius:0,tension:.3,fill:true}]},options:mkOpts('t (s)','σ (mS/cm)')});
+}
+
+function runSuiviPression(){
+  const k=parseFloat(document.getElementById('pv-k').value);
+  const P0=parseFloat(document.getElementById('pv-p0').value);
+  const times=[],pressions=[];
+  // N2O5 → 2NO2 + 0.5 O2 : 1 mol → 2.5 mol
+  for(let t=0;t<=300;t+=5){
+    const pA=P0*Math.exp(-k*t);
+    const delta=P0-pA;
+    const Ptot=pA+2*delta+0.5*delta;
+    times.push(t);pressions.push(Ptot.toFixed(4));
+  }
+  document.getElementById('pv-p').textContent=pressions[0];
+  destroyChart('suiviPresChart');
+  const ctx=document.getElementById('suiviPresChart').getContext('2d');
+  charts.suiviPresChart=new Chart(ctx,{type:'line',data:{labels:times,datasets:[{label:'P_tot(t) (atm)',data:pressions,borderColor:'#ff6b35',backgroundColor:'rgba(255,107,53,0.07)',borderWidth:2,pointRadius:0,tension:.4,fill:true}]},options:mkOpts('t (s)','P (atm)')});
+}
+
+// ═══════════ MÉCANISMES ═══════════
+const mechs={
+  sn1:{
+    title:'Substitution Nucléophile SN1',
+    color:'#ff6b35',
+    steps:[
+      {n:1,title:'Ionisation (étape lente — ECD)',eq:'R−X → R⁺ + X⁻',text:'Formation du carbocation. C\'est l\'étape lente qui détermine la loi de vitesse. v = k·[RX]',note:'Ordre 1 global — v indépendant de [Nu⁻]'},
+      {n:2,title:'Attaque du nucléophile (étape rapide)',eq:'R⁺ + Nu⁻ → R−Nu',text:'Le nucléophile attaque le carbocation plan des deux côtés (mélange racémique). Très rapide car R⁺ est très réactif.',note:'Pas d\'influence sur la cinétique globale'},
+    ],
+    law:'v = k₁·[R−X]',
+    formula:'Ordre 1 | v = k[RX]'
+  },
+  sn2:{
+    title:'Substitution Nucléophile SN2',
+    color:'#00d4aa',
+    steps:[
+      {n:1,title:'Réaction en une seule étape concertée',eq:'Nu⁻ + R−X → [Nu···R···X]‡ → Nu−R + X⁻',text:'Attaque nucléophile par derrière simultanément à la rupture de R−X. Passage par un état de transition à 5 groupements.',note:'Inversion de Walden (configuration inversée)'},
+    ],
+    law:'v = k₂·[Nu⁻]·[R−X]',
+    formula:'Ordre 2 global | v = k[Nu⁻][RX]'
+  },
+  radical:{
+    title:'Réaction en Chaîne Radicalaire (Halogénation)',
+    color:'#a78bfa',
+    steps:[
+      {n:1,title:'Initiation (lente)',eq:'Cl₂ + hν → 2 Cl•',text:'La lumière fournit l\'énergie pour rompre homolytiquement le lien Cl−Cl. Formation des radicaux initiateurs.',note:'k_init très faible'},
+      {n:2,title:'Propagation 1',eq:'Cl• + CH₄ → HCl + CH₃•',text:'Le radical chlore arrache un hydrogène. Formation du radical méthyle.',note:'Étape rapide'},
+      {n:3,title:'Propagation 2',eq:'CH₃• + Cl₂ → CH₃Cl + Cl•',text:'Régénération du radical Cl•. La chaîne se perpétue (10³–10⁶ cycles).',note:'Très rapide'},
+      {n:4,title:'Terminaison',eq:'2 Cl• → Cl₂ | Cl• + CH₃• → CH₃Cl',text:'Recombinaison des radicaux. Met fin à la chaîne.',note:'Longueur de chaîne = v_prop / v_term'},
+    ],
+    law:'v ∝ [RH]·[Cl₂]^(1/2)',
+    formula:'Ordre 3/2 apparent — AEQS sur Cl•'
+  },
+  michaelis:{
+    title:'Cinétique Enzymatique — Michaelis-Menten',
+    color:'#fbbf24',
+    steps:[
+      {n:1,title:'Formation du complexe enzyme-substrat',eq:'E + S ⇌ ES  (k₁, k₋₁)',text:'L\'enzyme (E) se lie au substrat (S) de manière réversible. Formation du complexe ES. AEQS : d[ES]/dt ≈ 0.',note:'Km = (k₋₁+k₂)/k₁ (constante de Michaelis)'},
+      {n:2,title:'Transformation catalytique',eq:'ES → E + P  (k₂)',text:'Le complexe ES se transforme en produit P avec régénération de l\'enzyme. C\'est l\'étape catalytique.',note:'vmax = k₂·[E]tot'},
+    ],
+    law:'v = vmax·[S]/(Km + [S])',
+    formula:'Equation de Michaelis-Menten'
+  },
+  consecutif:{
+    title:'Réactions Consécutives A → B → C',
+    color:'#38bdf8',
+    steps:[
+      {n:1,title:'Disparition de A (ordre 1)',eq:'d[A]/dt = −k₁·[A]   →   [A] = [A]₀·e^(−k₁t)',text:'Le réactif A disparaît exponentiellement avec la constante de vitesse k₁.',note:'[A] décroît toujours'},
+      {n:2,title:'Évolution de l\'intermédiaire B',eq:'d[B]/dt = k₁[A] − k₂[B]',text:'B est formé par A (terme +k₁[A]) et consommé vers C (terme −k₂[B]). Il passe par un maximum.',note:`t_max = ln(k₂/k₁)/(k₂−k₁)`},
+      {n:3,title:'Formation de C (produit final)',eq:'[C] = [A]₀ − [A] − [B]',text:'C s\'accumule progressivement. À t→∞, [C] = [A]₀ (conversion totale).',note:'AEQS si k₂ ≫ k₁ → v ≈ k₁[A]'},
+    ],
+    law:'[B]max atteint à t_max = ln(k₂/k₁)/(k₂−k₁)',
+    formula:'Réaction consécutive — Intermédiaire B'
+  }
+};
+
+function showMech(type){
+  document.querySelectorAll('.mech-btn').forEach(b=>{b.style.background='var(--surface2)';b.style.borderColor='var(--border)';b.style.color='var(--muted)';});
+  event.target.style.background=`rgba(255,107,53,.15)`;event.target.style.borderColor='var(--p1)';event.target.style.color='var(--p1)';
+
+  const m=mechs[type];
+  let html=`<div style="margin-bottom:16px;">
+    <div style="font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:${m.color};margin-bottom:6px;">${m.title}</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;font-family:'JetBrains Mono',monospace;font-size:.82rem;color:var(--p2);display:flex;gap:20px;flex-wrap:wrap;">
+      <span>LOI DE VITESSE : <span style="color:${m.color}">${m.law}</span></span>
+      <span>→ ${m.formula}</span>
+    </div>
+  </div>`;
+  m.steps.forEach(s=>{
+    html+=`<div class="mech-step">
+      <div class="mech-num" style="background:${m.color}">${s.n}</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:600;color:${m.color};margin-bottom:4px;">${s.title}</div>
+        <div class="eq">${s.eq}</div>
+        <div style="font-size:.81rem;color:#8a9cc0;margin-top:6px;line-height:1.6;">${s.text}</div>
+        <div style="margin-top:6px;background:rgba(255,107,53,.08);border-radius:4px;padding:4px 8px;font-size:.74rem;font-family:'JetBrains Mono',monospace;color:${m.color};">⚡ ${s.note}</div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('mech-content').innerHTML=html;
+}
+
+// ═══════════ EXPORT ═══════════
+function exportKinCSV(){
+  let csv='t (s),[A] (mol/L),v (mol/L/s)\n';
+  kinState.times.forEach((t,i)=>{csv+=`${t.toFixed(2)},${kinState.concs[i].toFixed(5)},${kinState.vels[i].toFixed(6)}\n`;});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+  a.download='cinetique_TCHOKPON.csv';a.click();
+}
+
+// ═══════════ REPORT ═══════════
+function generateReport(){
+  const box=document.getElementById('rpt-content');
+  if(!kinState.computed){box.innerHTML='<div style="text-align:center;color:var(--muted);padding:40px;">⚡ Effectuez une simulation cinétique d\'abord.</div>';return;}
+  const orderNames={0:'Zéro (0)',1:'Premier (1)',2:'Second (2)'};
+  const t12=halfLife(kinState.k,kinState.order,kinState.c0);
+  const t=document.getElementById('tempVal').value;
+  const laws={0:'[A] = [A]₀ − k·t',1:'[A] = [A]₀·exp(−k·t)',2:'1/[A] = 1/[A]₀ + k·t'};
+  const lins={0:'[A] = f(t) → linéaire, pente = −k',1:'ln[A] = f(t) → linéaire, pente = −k',2:'1/[A] = f(t) → linéaire, pente = +k'};
+  const date=new Date().toLocaleDateString('fr-FR');
+  box.innerHTML=`
+  <div class="rpt-sec"><h4>━━━ RAPPORT DE TP — CINÉTIQUE CHIMIQUE ━━━</h4>
+  <p>Auteur : <span class="hl">Edmond Atinzoun TCHOKPON</span></p>
+  <p>Licence Physique-Chimie | Date : <span class="hl">${date}</span></p></div>
+  <div class="rpt-sec"><h4>1. RÉACTION SIMULÉE</h4>
+  <p>Type : ${document.getElementById('rxnType').options[document.getElementById('rxnType').selectedIndex].text}</p>
+  <p>Ordre de réaction : <span class="hl">${orderNames[kinState.order]}</span></p>
+  <p>Loi de vitesse : <span class="hl2">${laws[kinState.order]}</span></p></div>
+  <div class="rpt-sec"><h4>2. PARAMÈTRES EXPÉRIMENTAUX</h4>
+  <p>Constante de vitesse k = <span class="hl">${kinState.k} s⁻¹ (ou L·mol⁻¹·s⁻¹)</span></p>
+  <p>Concentration initiale [A]₀ = <span class="hl">${kinState.c0} mol/L</span></p>
+  <p>Température = <span class="hl">${t} K (${(t-273).toFixed(0)} °C)</span></p>
+  <p>Durée de simulation = <span class="hl">${kinState.tmax} s</span> | Points calculés : <span class="hl">${kinState.times.length}</span></p></div>
+  <div class="rpt-sec"><h4>3. RÉSULTATS</h4>
+  <p>Demi-vie t½ = <span class="hl2">${t12.toFixed(3)} s</span></p>
+  <p>Concentration finale [A](${kinState.tmax}s) = <span class="hl">${kinState.concs[kinState.concs.length-1].toFixed(5)} mol/L</span></p>
+  <p>Taux de conversion final = <span class="hl2">${((1-kinState.concs[kinState.concs.length-1]/kinState.c0)*100).toFixed(1)} %</span></p></div>
+  <div class="rpt-sec"><h4>4. MÉTHODE DE DÉTERMINATION DE L'ORDRE</h4>
+  <p>Linéarisation : <span class="hl">${lins[kinState.order]}</span></p>
+  <p>La droite obtenue confirme l'ordre ${kinState.order} avec une pente = ${kinState.order===2?'+':'-'}k = ${kinState.order===2?'+':'-'}${kinState.k}</p></div>
+  <div class="rpt-sec"><h4>5. CONCLUSION</h4>
+  <p>La réaction est d'ordre <span class="hl">${kinState.order}</span>. La constante de vitesse k = ${kinState.k} s⁻¹ à ${t} K.
+  La demi-vie t½ = ${t12.toFixed(2)} s ${kinState.order===1?'est indépendante de [A]₀ (propriété de l\'ordre 1)':''}.
+  La linéarisation des données expérimentales confirme l'ordre par la droite obtenue.</p></div>
+  <div style="margin-top:16px;text-align:center;color:var(--muted);font-size:.68rem;">── SimuKin v1.0 | Edmond Atinzoun TCHOKPON | Licence Physique-Chimie ──</div>`;
+}
+
+// ═══════════ UTILS ═══════════
+function setStatus(type,msg){
+  const dot=document.getElementById('sdot');
+  const colors={green:'',orange:'orange',red:'red'};
+  dot.className='sdot '+(colors[type]||'');
+  document.getElementById('stext').textContent=msg;
+}
+
+// Clock
+setInterval(()=>{document.getElementById('sclock').textContent=new Date().toLocaleTimeString('fr-FR');},1000);
+
+// Init
+updateRxn();
+drawMolecules(1);
+showMech('sn1');
+drawEnergySVG(50);
+</script>
+<<script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+/body>
+</html>

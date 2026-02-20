@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimuOrg v2.0 — Chimie Organique | Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;1,9..144,400&family=Fira+Code:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f3ee;--ink:#1c1410;--panel:#ffffff;--panel2:#f0ebe2;
+  --p1:#2d6a4f;--p2:#b5451b;--p3:#1d3557;--p4:#9b2226;--p5:#606c38;
+  --gold:#d4a017;--muted:#7a6f64;--border:#ddd5c8;--light:#faf7f2;
+  --shadow:rgba(28,20,16,0.1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+header{position:relative;z-index:10;background:linear-gradient(135deg,var(--p1) 0%,#1e4d38 100%);border-bottom:3px solid var(--gold);padding:12px 22px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 24px rgba(45,106,79,.35);}
+.logo{display:flex;align-items:center;gap:13px;}
+.logo-hex{width:46px;height:46px;background:var(--gold);clip-path:polygon(50% 0%,93.3% 25%,93.3% 75%,50% 100%,6.7% 75%,6.7% 25%);display:flex;align-items:center;justify-content:center;font-size:19px;animation:hexPulse 4s ease-in-out infinite;}
+@keyframes hexPulse{0%,100%{box-shadow:0 0 20px rgba(212,160,23,.5)}50%{box-shadow:0 0 40px rgba(212,160,23,.9)}}
+.logo-text h1{font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:white;letter-spacing:3px;}
+.logo-text p{font-size:.58rem;color:rgba(255,255,255,.6);letter-spacing:2px;font-family:'Fira Code',monospace;}
+.header-right{display:flex;align-items:center;gap:9px;}
+.author-tag{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:6px 13px;text-align:right;}
+.author-tag .n{font-family:'Fraunces',serif;font-size:.83rem;font-weight:700;color:var(--gold);}
+.author-tag .i{font-size:.56rem;color:rgba(255,255,255,.55);font-family:'Fira Code',monospace;letter-spacing:1px;}
+.hbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.3);color:white;border-radius:6px;padding:6px 13px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.76rem;letter-spacing:.8px;transition:all .2s;}
+.hbtn:hover{background:rgba(255,255,255,.25);}
+.tabs{position:relative;z-index:5;background:var(--panel);border-bottom:2px solid var(--border);padding:7px 18px;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:6px 15px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.76rem;letter-spacing:.4px;transition:all .22s;white-space:nowrap;}
+.tab.active{background:var(--p1);border-color:var(--p1);color:white;box-shadow:0 3px 12px rgba(45,106,79,.28);}
+.tab:hover:not(.active){border-color:var(--p1);color:var(--p1);}
+.app{display:none;padding:16px 18px;gap:14px;flex-wrap:wrap;position:relative;z-index:1;min-height:calc(100vh - 145px);}
+.app.active{display:flex;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:15px;position:relative;box-shadow:0 2px 14px var(--shadow);}
+.panel::before{content:'';position:absolute;top:0;left:16px;right:16px;height:2px;background:linear-gradient(90deg,transparent,var(--p1),transparent);opacity:.3;}
+.ptitle{font-family:'Fraunces',serif;font-size:.82rem;font-weight:700;color:var(--p1);letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:7px;}
+.fg{margin-bottom:10px;}
+.fg label{display:block;font-size:.63rem;color:var(--muted);letter-spacing:1.2px;margin-bottom:3px;font-family:'Fira Code',monospace;text-transform:uppercase;}
+.fg select,.fg input{width:100%;background:var(--panel2);border:1px solid var(--border);color:var(--ink);border-radius:6px;padding:7px 9px;font-family:'Manrope',sans-serif;font-size:.81rem;outline:none;transition:border-color .2s;}
+.fg select:focus,.fg input:focus{border-color:var(--p1);}
+.btn{width:100%;padding:8px;border-radius:7px;border:none;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.7px;transition:all .22s;margin-top:4px;}
+.btn-p{background:var(--p1);color:white;box-shadow:0 3px 11px rgba(45,106,79,.28);}
+.btn-p:hover{background:#245a42;transform:translateY(-1px);}
+.btn-o{background:var(--p2);color:white;}
+.btn-o:hover{background:#9a3a16;}
+.btn-d{background:transparent;color:var(--p4);border:1px solid var(--p4);}
+.btn-d:hover{background:var(--p4);color:white;}
+.btn-b{background:var(--p3);color:white;}
+.btn-b:hover{background:#162840;}
+.mech-step-box{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:8px;display:none;animation:fadeIn .35s ease;}
+.mech-step-box.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.step-num{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--p1);color:white;font-family:'Fira Code',monospace;font-size:.72rem;margin-right:8px;flex-shrink:0;}
+.step-title{font-weight:700;font-size:.85rem;color:var(--p1);}
+.step-eq{background:#1c1410;color:#a8e6cf;font-family:'Fira Code',monospace;font-size:.8rem;border-radius:6px;padding:8px 11px;margin:6px 0;text-align:center;}
+.step-desc{font-size:.78rem;color:var(--muted);line-height:1.65;margin-top:5px;}
+.step-note{margin-top:6px;background:rgba(45,106,79,.1);border-radius:5px;padding:4px 8px;font-size:.7rem;color:var(--p1);font-family:'Fira Code',monospace;}
+.mech-nav{display:flex;gap:7px;align-items:center;justify-content:center;margin-top:9px;}
+.mech-dot{width:7px;height:7px;border-radius:50%;background:var(--border);transition:all .25s;cursor:pointer;}
+.mech-dot.active{background:var(--p1);width:17px;border-radius:4px;}
+.fg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(125px,1fr));gap:8px;}
+.fg-card{background:var(--panel2);border:1.5px solid var(--border);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:all .2s;}
+.fg-card:hover,.fg-card.sel{background:var(--p1);border-color:var(--p1);color:white;}
+.fg-card:hover .fgf,.fg-card.sel .fgf{color:rgba(255,255,255,.75);}
+.fgn{font-weight:700;font-size:.78rem;margin-bottom:3px;}
+.fgf{font-family:'Fira Code',monospace;font-size:.7rem;color:var(--muted);}
+.quiz-card{background:var(--panel2);border:2px solid var(--border);border-radius:11px;padding:16px;margin-bottom:11px;}
+.quiz-q{font-weight:700;font-size:.9rem;color:var(--ink);margin-bottom:11px;line-height:1.55;}
+.quiz-opts{display:flex;flex-direction:column;gap:6px;}
+.quiz-opt{background:var(--panel);border:1.5px solid var(--border);border-radius:7px;padding:8px 12px;cursor:pointer;font-size:.8rem;transition:all .18s;text-align:left;font-family:'Manrope',sans-serif;}
+.quiz-opt:hover{border-color:var(--p1);background:rgba(45,106,79,.06);}
+.quiz-opt.correct{background:#d4edda;border-color:#2d6a4f;color:#1a4a33;}
+.quiz-opt.wrong{background:#f8d7da;border-color:#9b2226;color:#6b0f13;}
+.quiz-feedback{margin-top:9px;border-radius:7px;padding:9px 13px;font-size:.79rem;line-height:1.6;display:none;}
+.quiz-feedback.show{display:block;}
+.qf-correct{background:#d4edda;color:#1a4a33;border-left:4px solid #2d6a4f;}
+.qf-wrong{background:#f8d7da;color:#6b0f13;border-left:4px solid #9b2226;}
+.thy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;}
+.thy-card{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.thy-card h3{font-family:'Fraunces',serif;font-weight:700;color:var(--p1);margin-bottom:8px;font-size:.93rem;}
+.thy-card p,.thy-card li{font-size:.78rem;color:var(--muted);line-height:1.65;}
+.thy-card ul{padding-left:14px;}
+.fbox{background:#1c1410;border-radius:6px;padding:8px;margin:6px 0;font-family:'Fira Code',monospace;color:#a8e6cf;font-size:.78rem;text-align:center;}
+.lvl{display:inline-block;padding:2px 7px;border-radius:4px;font-size:.58rem;font-weight:700;letter-spacing:1px;margin-bottom:6px;font-family:'Fira Code',monospace;}
+.lv-g{background:rgba(45,106,79,.15);color:var(--p1);border:1px solid var(--p1);}
+.lv-o{background:rgba(181,69,27,.15);color:var(--p2);border:1px solid var(--p2);}
+.lv-b{background:rgba(29,53,87,.15);color:var(--p3);border:1px solid var(--p3);}
+.nomen-builder{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;}
+.nomen-chain{display:flex;gap:5px;flex-wrap:wrap;margin:9px 0;align-items:center;}
+.nomen-c{width:40px;height:40px;background:var(--p1);color:white;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Fira Code',monospace;font-size:.75rem;font-weight:600;cursor:pointer;transition:transform .2s;}
+.nomen-c:hover{transform:scale(1.1);}
+.nomen-result{background:#1c1410;color:#a8e6cf;font-family:'Fira Code',monospace;border-radius:7px;padding:11px;font-size:1rem;text-align:center;margin-top:9px;}
+.isomer-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;}
+.isomer-card{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px;text-align:center;cursor:pointer;transition:all .2s;}
+.isomer-card:hover{border-color:var(--p1);background:rgba(45,106,79,.06);}
+.calc-result{background:#1c1410;color:#a8e6cf;font-family:'Fira Code',monospace;border-radius:8px;padding:13px;font-size:.9rem;line-height:1.75;min-height:65px;}
+.energy-canvas{border-radius:8px;background:#1c1410;border:1px solid var(--border);}
+.config-badge{display:inline-block;padding:2px 9px;border-radius:20px;font-family:'Fira Code',monospace;font-size:.71rem;font-weight:500;margin:2px;}
+.cfg-R{background:#dbeafe;color:#1d3557;border:1px solid #1d3557;}
+.cfg-S{background:#fce7f3;color:#9b2226;border:1px solid #9b2226;}
+.cfg-Z{background:#fef3c7;color:#92400e;border:1px solid #d97706;}
+.cfg-E{background:#d1fae5;color:#065f46;border:1px solid #059669;}
+.statusbar{position:relative;z-index:5;background:var(--panel);border-top:2px solid var(--border);padding:6px 20px;display:flex;align-items:center;gap:16px;font-family:'Fira Code',monospace;font-size:.63rem;color:var(--muted);flex-wrap:wrap;}
+.sindic{display:flex;align-items:center;gap:5px;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--p1);box-shadow:0 0 5px var(--p1);animation:blink 2s infinite;}
+.sdot.orange{background:var(--p2);box-shadow:0 0 5px var(--p2);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.quiz-score{font-family:'Fraunces',serif;font-size:1.35rem;font-weight:700;color:var(--p1);text-align:center;margin:7px 0;}
+body.dark{--bg:#0f1a14;--ink:#e8ded4;--panel:#1a2a1f;--panel2:#162217;--border:#2a3d2c;--muted:#8a9e8c;--shadow:rgba(0,0,0,.4);}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+canvas{display:block;}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">
+    <div class="logo-hex">🧬</div>
+    <div class="logo-text"><h1>SIMUORG</h1><p>SIMULATEUR DE CHIMIE ORGANIQUE — v2.0 COMPLET</p></div>
+  </div>
+  <div class="header-right">
+    <button class="hbtn" onclick="toggleTheme()">🌙</button>
+    <button class="hbtn" onclick="toggleLang()" id="langBtn">EN</button>
+    <div class="author-tag"><div class="n">Edmond Atinzoun TCHOKPON</div><div class="i">LICENCE PHYSIQUE-CHIMIE | SIMUORG 2025</div></div>
+  </div>
+</header>
+<div class="tabs">
+  <button class="tab active" onclick="showTab('mecanismes')" id="tab-mecanismes">⚗️ MÉCANISMES</button>
+  <button class="tab" onclick="showTab('stereo')" id="tab-stereo">🔄 STÉRÉOCHIMIE</button>
+  <button class="tab" onclick="showTab('groupes')" id="tab-groupes">🧩 GROUPES FONCT.</button>
+  <button class="tab" onclick="showTab('synthese')" id="tab-synthese">🔗 SYNTHÈSE</button>
+  <button class="tab" onclick="showTab('mol3d')" id="tab-mol3d">🔮 MOLÉCULES 3D</button>
+  <button class="tab" onclick="showTab('energie')" id="tab-energie">📈 ÉNERGIE</button>
+  <button class="tab" onclick="showTab('nomen')" id="tab-nomen">🏷️ NOMENCLATURE</button>
+  <button class="tab" onclick="showTab('isomeres')" id="tab-isomeres">🪞 ISOMÈRES</button>
+  <button class="tab" onclick="showTab('calcul')" id="tab-calcul">🧮 CALCULS</button>
+  <button class="tab" onclick="showTab('quiz')" id="tab-quiz">🎯 QUIZ</button>
+  <button class="tab" onclick="showTab('theorie')" id="tab-theorie">📚 THÉORIE</button>
+  <button class="tab" onclick="showTab('rapport')" id="tab-rapport">📋 RAPPORT</button>
+</div>
+
+<!-- MÉCANISMES -->
+<div class="app active" id="app-mecanismes">
+  <div class="panel" style="flex:0 0 260px;">
+    <div class="ptitle">⚙️ SÉLECTION</div>
+    <div class="fg"><label>TYPE DE RÉACTION</label>
+      <select id="mechSel" onchange="loadMechanism()">
+        <optgroup label="Substitutions">
+          <option value="sn1">SN1 — Substitution Nucléophile Unimoléculaire</option>
+          <option value="sn2">SN2 — Substitution Nucléophile Bimoléculaire</option>
+        </optgroup>
+        <optgroup label="Additions">
+          <option value="ae">AE — Addition Électrophile (alcènes)</option>
+          <option value="an">AN — Addition Nucléophile (carbonyles)</option>
+          <option value="ar">AR — Addition Radicalaire (anti-Markovnikov)</option>
+        </optgroup>
+        <optgroup label="Éliminations">
+          <option value="e1">E1 — Élimination Unimoléculaire</option>
+          <option value="e2">E2 — Élimination Bimoléculaire</option>
+        </optgroup>
+        <optgroup label="Aromatiques">
+          <option value="sear">SEAr — Substitution Électrophile Aromatique</option>
+          <option value="acyl">Acylation de Friedel-Crafts</option>
+          <option value="nitrat">Nitration du Benzène</option>
+        </optgroup>
+        <optgroup label="Fonctions oxygénées">
+          <option value="estherif">Estérification / Hydrolyse (Fischer)</option>
+          <option value="sapo">Saponification (Hydrolyse alcaline)</option>
+          <option value="oxred">Oxydation des Alcools</option>
+        </optgroup>
+        <optgroup label="Amines & organométalliques">
+          <option value="diazot">Diazotation des Anilines</option>
+          <option value="grignard">Réactif de Grignard</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="fg"><label>SUBSTRAT</label>
+      <select id="substrateSel">
+        <option value="tertiary">Halogénure tertiaire R₃C-X</option>
+        <option value="secondary">Halogénure secondaire R₂CH-X</option>
+        <option value="primary">Halogénure primaire RCH₂-X</option>
+        <option value="allylic">Halogénure allylique/benzylique</option>
+      </select>
+    </div>
+    <div class="fg"><label>NUCLÉOPHILE / RÉACTIF</label>
+      <select id="nucleophileSel">
+        <option value="OH">OH⁻ (soude)</option>
+        <option value="Br">Br⁻ (bromure)</option>
+        <option value="CN">CN⁻ (cyanure)</option>
+        <option value="NH3">NH₃ (ammoniac)</option>
+        <option value="H2O">H₂O (eau)</option>
+        <option value="RMgX">R-MgX (Grignard)</option>
+        <option value="LiAlH4">LiAlH₄</option>
+        <option value="NaBH4">NaBH₄</option>
+      </select>
+    </div>
+    <div class="fg"><label>SOLVANT</label>
+      <select id="solventSel">
+        <option value="polar_protic">Polaire protique (EtOH, H₂O)</option>
+        <option value="polar_aprotic">Polaire aprotique (DMSO, DMF)</option>
+        <option value="nonpolar">Apolaire (CH₂Cl₂, éther)</option>
+      </select>
+    </div>
+    <button class="btn btn-p" onclick="loadMechanism()">▶ CHARGER MÉCANISME</button>
+    <button class="btn btn-o" onclick="nextStep()" style="margin-top:5px;">→ ÉTAPE SUIVANTE</button>
+    <button class="btn btn-d" onclick="resetMech()" style="margin-top:5px;">↺ RECOMMENCER</button>
+    <button class="btn btn-b" onclick="autoPlay()" id="btn-auto" style="margin-top:5px;">⏵ AUTO-PLAY</button>
+    <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:10px;">
+      <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;">CONDITIONS OPTIMALES</div>
+      <div id="conditions-box" style="font-size:.74rem;color:var(--ink);line-height:1.7;">—</div>
+    </div>
+    <div style="margin-top:8px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:10px;">
+      <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">PRODUIT(S) ATTENDU(S)</div>
+      <div id="product-box" style="font-family:'Fira Code',monospace;font-size:.82rem;color:var(--p1);">—</div>
+    </div>
+    <div style="margin-top:8px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:10px;">
+      <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">COMPÉTITION SN/E</div>
+      <div id="competition-box" style="font-size:.73rem;color:var(--ink);line-height:1.6;">—</div>
+    </div>
+  </div>
+
+  <div class="panel" style="flex:1;min-width:300px;">
+    <div class="ptitle">🔬 SUIVI MÉCANISTIQUE</div>
+    <div id="rxn-header" style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:11px;text-align:center;">
+      <div id="rxn-title" style="font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--p1);margin-bottom:3px;">Sélectionnez un mécanisme</div>
+      <div id="rxn-global" style="font-family:'Fira Code',monospace;font-size:.78rem;color:var(--muted);">Choisissez dans le panneau gauche et cliquez ▶</div>
+    </div>
+    <div id="balance-container" style="display:none;margin-bottom:11px;">
+      <div id="balance-eq" style="background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:10px;text-align:center;font-family:'Fira Code',monospace;font-size:.8rem;"></div>
+    </div>
+    <div id="steps-container">
+      <div id="step-placeholder" style="text-align:center;padding:35px;color:var(--muted);font-size:.83rem;">⚗️ Chargez un mécanisme pour voir les étapes</div>
+    </div>
+    <div class="mech-nav" id="mech-nav" style="display:none;">
+      <button onclick="prevStep()" style="background:var(--panel2);border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:.74rem;font-weight:600;">◀ Préc.</button>
+      <div id="mech-dots" style="display:flex;gap:5px;"></div>
+      <button onclick="nextStep()" style="background:var(--p1);border:none;border-radius:6px;padding:5px 12px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:.74rem;font-weight:600;color:white;">Suiv. ▶</button>
+    </div>
+    <div style="text-align:center;margin-top:8px;font-family:'Fira Code',monospace;font-size:.65rem;color:var(--muted);" id="step-counter"></div>
+  </div>
+
+  <div class="panel" style="flex:0 0 270px;">
+    <div class="ptitle">🎨 ANIMATION MOLÉCULAIRE</div>
+    <canvas id="mechCanvas" width="240" height="255" style="border-radius:8px;background:#1c1410;border:1.5px solid var(--border);width:100%;"></canvas>
+    <div style="margin-top:10px;">
+      <div class="ptitle" style="margin-bottom:7px;font-size:.76rem;">📈 PROFIL ÉNERGÉTIQUE</div>
+      <canvas id="energyMini" width="240" height="90" class="energy-canvas" style="width:100%;"></canvas>
+    </div>
+    <div id="mech-stereochem" style="margin-top:8px;background:rgba(45,106,79,.1);border-radius:7px;padding:8px;font-size:.72rem;color:var(--p1);display:none;font-family:'Fira Code',monospace;"></div>
+    <div style="margin-top:8px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:9px;">
+      <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">LÉGENDE</div>
+      <div style="display:flex;flex-direction:column;gap:3px;font-size:.68rem;">
+        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#a8e6cf;"></div> Carbone C</div>
+        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#ff6b6b;"></div> Oxygène O</div>
+        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#74b9ff;"></div> Azote N / Nucléophile</div>
+        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#ffeaa7;"></div> Hydrogène H</div>
+        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#fd79a8;"></div> ‡ État de transition</div>
+        <div style="display:flex;align-items:center;gap:5px;"><div style="width:10px;height:10px;border-radius:50%;background:#fdcb6e;"></div> Halogène X</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STÉRÉOCHIMIE -->
+<div class="app" id="app-stereo">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🔄 STÉRÉOCHIMIE — CHIRALITÉ & CONFIGURATIONS</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 245px;">
+        <div class="fg"><label>CONCEPT</label>
+          <select id="stereoConcept" onchange="showStereoConcept()">
+            <option value="chiral">Centre chiral & chiralité</option>
+            <option value="rs">Configurations R et S (CIP)</option>
+            <option value="ez">Isomères E/Z (géométriques)</option>
+            <option value="diastereomers">Diastéréoisomères & énantiomères</option>
+            <option value="fischer">Projection de Fischer</option>
+            <option value="newman">Projection de Newman</option>
+            <option value="meso">Composé méso</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="showStereoConcept()">▶ AFFICHER</button>
+        <div style="margin-top:12px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">OUTIL CIP — CALCULER R/S</div>
+          <div style="font-size:.74rem;color:var(--muted);margin-bottom:8px;">Entrez les 4 numéros atomiques :</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:7px;">
+            <div><div style="font-size:.6rem;color:var(--muted);">a (priorité 1)</div><input type="number" id="cip-a" value="17" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--ink);font-family:'Fira Code',monospace;font-size:.78rem;"></div>
+            <div><div style="font-size:.6rem;color:var(--muted);">b (priorité 2)</div><input type="number" id="cip-b" value="8" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--ink);font-family:'Fira Code',monospace;font-size:.78rem;"></div>
+            <div><div style="font-size:.6rem;color:var(--muted);">c (priorité 3)</div><input type="number" id="cip-c" value="6" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--ink);font-family:'Fira Code',monospace;font-size:.78rem;"></div>
+            <div><div style="font-size:.6rem;color:var(--muted);">d (priorité 4)</div><input type="number" id="cip-d" value="1" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:5px;color:var(--ink);font-family:'Fira Code',monospace;font-size:.78rem;"></div>
+          </div>
+          <select id="cip-sens" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:4px;padding:6px;color:var(--ink);font-family:'Manrope',sans-serif;font-size:.78rem;margin-bottom:6px;">
+            <option value="cw">Sens horaire ↻</option>
+            <option value="ccw">Sens antihoraire ↺</option>
+          </select>
+          <button onclick="computeCIP()" style="width:100%;background:var(--p1);color:white;border:none;border-radius:6px;padding:6px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:.76rem;">CALCULER R/S</button>
+          <div id="cip-result" style="margin-top:7px;font-family:'Fira Code',monospace;font-size:.82rem;text-align:center;min-height:28px;"></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;" id="stereo-content"></div>
+      <div style="flex:0 0 260px;">
+        <canvas id="stereoCanvas" width="250" height="265" style="width:100%;border-radius:8px;background:#1c1410;border:1.5px solid var(--border);"></canvas>
+        <div style="margin-top:7px;text-align:center;font-family:'Fira Code',monospace;font-size:.68rem;color:var(--muted);" id="stereo-canvas-label">Sélectionnez un concept</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GROUPES FONCTIONNELS -->
+<div class="app" id="app-groupes">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🧩 GROUPES FONCTIONNELS & RÉACTIVITÉ</div>
+    <p style="font-size:.8rem;color:var(--muted);margin-bottom:13px;">Cliquez sur un groupe fonctionnel pour voir ses propriétés et réactivité.</p>
+    <div class="fg-grid" id="fg-grid"></div>
+    <div id="fg-detail" style="margin-top:15px;display:none;">
+      <div style="display:flex;flex-wrap:wrap;gap:13px;">
+        <div style="flex:1;min-width:230px;">
+          <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-family:'Fraunces',serif;font-size:1.1rem;font-weight:700;color:var(--p1);margin-bottom:5px;" id="fg-name-detail">—</div>
+            <div style="font-family:'Fira Code',monospace;font-size:.9rem;color:var(--p2);margin-bottom:9px;" id="fg-formula-detail">—</div>
+            <div style="font-size:.78rem;color:var(--muted);line-height:1.7;margin-bottom:9px;" id="fg-desc-detail">—</div>
+            <div style="font-size:.72rem;font-family:'Fira Code',monospace;">
+              <div style="color:var(--p3);margin-bottom:3px;">RÉACTIVITÉ :</div>
+              <div id="fg-react-detail" style="color:var(--muted);line-height:1.7;">—</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:230px;">
+          <div style="background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:14px;">
+            <div style="font-size:.65rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:8px;">EXEMPLES</div>
+            <div id="fg-examples-detail" style="font-size:.78rem;color:var(--ink);line-height:1.8;">—</div>
+            <div style="margin-top:9px;background:#1c1410;border-radius:6px;padding:8px;">
+              <div style="font-size:.6rem;color:rgba(255,255,255,.45);font-family:'Fira Code',monospace;margin-bottom:4px;">PROPRIÉTÉS PHYSIQUES</div>
+              <div id="fg-phys-detail" style="font-family:'Fira Code',monospace;font-size:.72rem;color:#a8e6cf;line-height:1.7;">—</div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:0 0 215px;">
+          <canvas id="fgCanvas" width="198" height="195" style="border-radius:8px;background:#1c1410;border:1px solid var(--border);width:100%;"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SYNTHÈSE -->
+<div class="app" id="app-synthese">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🔗 SYNTHÈSE ORGANIQUE — VOIES RÉACTIONNELLES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;">
+      <button onclick="showSynthesis('alcool',this)" class="syn-btn" style="background:var(--p1);color:white;border:none;border-radius:7px;padding:7px 13px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.78rem;">🍷 Alcools</button>
+      <button onclick="showSynthesis('aldehyde',this)" class="syn-btn" style="background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 13px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.78rem;">🔶 Aldéhydes/Cétones</button>
+      <button onclick="showSynthesis('acide',this)" class="syn-btn" style="background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 13px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.78rem;">🔴 Acides carboxyliques</button>
+      <button onclick="showSynthesis('amine',this)" class="syn-btn" style="background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 13px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.78rem;">🔵 Amines</button>
+      <button onclick="showSynthesis('ester',this)" class="syn-btn" style="background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 13px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.78rem;">🟢 Esters</button>
+      <button onclick="showSynthesis('arene',this)" class="syn-btn" style="background:var(--panel2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 13px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:600;font-size:.78rem;">⚫ Arènes</button>
+    </div>
+    <div id="synth-content"><div style="text-align:center;padding:35px;color:var(--muted);">🔗 Choisissez une famille chimique</div></div>
+  </div>
+</div>
+
+<!-- MOL 3D -->
+<div class="app" id="app-mol3d">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🔮 VISUALISATION 3D DES MOLÉCULES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:17px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>MOLÉCULE</label>
+          <select id="mol3dSel" onchange="draw3DMol()">
+            <optgroup label="Alcanes"><option value="methane">Méthane CH₄</option><option value="ethane">Éthane C₂H₆</option><option value="propane">Propane C₃H₈</option><option value="butane">Butane C₄H₁₀</option></optgroup>
+            <optgroup label="Alcènes & alcynes"><option value="ethylene">Éthylène C₂H₄</option><option value="acetylene">Acétylène C₂H₂</option></optgroup>
+            <optgroup label="Fonctions oxygénées"><option value="ethanol">Éthanol C₂H₅OH</option><option value="acetone">Acétone (CH₃)₂CO</option><option value="acac">Acide acétique CH₃COOH</option><option value="ethylacetate">Acétate d'éthyle</option></optgroup>
+            <optgroup label="Aromatiques"><option value="benzene">Benzène C₆H₆</option><option value="toluene">Toluène C₇H₈</option><option value="phenol">Phénol C₆H₅OH</option></optgroup>
+            <optgroup label="Amines"><option value="methylamine">Méthylamine CH₃NH₂</option><option value="aniline">Aniline C₆H₅NH₂</option></optgroup>
+            <optgroup label="Biologie"><option value="glucose">D-Glucose (forme ouverte)</option><option value="alanine">L-Alanine (acide aminé)</option></optgroup>
+          </select>
+        </div>
+        <div class="fg"><label>MODE D'AFFICHAGE</label>
+          <select id="mol3dMode" onchange="draw3DMol()">
+            <option value="balls">Sphères & bâtons</option>
+            <option value="sticks">Bâtons</option>
+            <option value="vdw">Van der Waals</option>
+            <option value="wireframe">Fil de fer</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="draw3DMol()">🔄 ACTUALISER</button>
+        <button class="btn btn-o" onclick="rotateMol()" style="margin-top:5px;" id="btn-rotate">⟳ ROTATION AUTO</button>
+        <div style="display:flex;gap:5px;margin-top:5px;flex-wrap:wrap;">
+          <button onclick="rotateX(15)" style="flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:5px;cursor:pointer;font-size:.7rem;font-weight:600;">↑X</button>
+          <button onclick="rotateX(-15)" style="flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:5px;cursor:pointer;font-size:.7rem;font-weight:600;">↓X</button>
+          <button onclick="rotateY(15)" style="flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:5px;cursor:pointer;font-size:.7rem;font-weight:600;">←Y</button>
+          <button onclick="rotateY(-15)" style="flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:5px;cursor:pointer;font-size:.7rem;font-weight:600;">→Y</button>
+          <button onclick="resetRotation()" style="flex:1;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:5px;cursor:pointer;font-size:.7rem;font-weight:600;">⊙</button>
+        </div>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;color:var(--p1);" id="mol3d-name">—</div>
+          <div style="font-family:'Fira Code',monospace;font-size:.78rem;color:var(--p2);margin:4px 0;" id="mol3d-formula">—</div>
+          <div style="font-size:.74rem;color:var(--muted);line-height:1.6;margin-top:5px;" id="mol3d-desc">—</div>
+          <div style="margin-top:7px;display:flex;gap:6px;flex-wrap:wrap;">
+            <span style="background:rgba(45,106,79,.1);color:var(--p1);padding:2px 7px;border-radius:4px;font-size:.65rem;font-family:'Fira Code',monospace;" id="mol3d-geom">—</span>
+            <span style="background:rgba(181,69,27,.1);color:var(--p2);padding:2px 7px;border-radius:4px;font-size:.65rem;font-family:'Fira Code',monospace;" id="mol3d-hybrid">—</span>
+          </div>
+          <div id="mol3d-extra" style="margin-top:6px;font-size:.7rem;color:var(--muted);font-family:'Fira Code',monospace;line-height:1.7;"></div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:290px;">
+        <canvas id="mol3dCanvas" width="490" height="375" style="width:100%;border-radius:11px;background:radial-gradient(ellipse at center,#1a2e1a 0%,#0a0f0a 100%);border:1.5px solid var(--border);"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ÉNERGIE -->
+<div class="app" id="app-energie">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📈 PROFIL ÉNERGÉTIQUE & CINÉTIQUE</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>RÉACTION</label>
+          <select id="energySel" onchange="drawEnergyDiagram()">
+            <option value="sn1">SN1 (2 étapes, carbocation)</option>
+            <option value="sn2">SN2 (concertée, 1 ‡)</option>
+            <option value="e1">E1 (2 étapes)</option>
+            <option value="e2">E2 (concertée)</option>
+            <option value="ae">Addition Électrophile AE</option>
+            <option value="an">Addition Nucléophile AN</option>
+            <option value="estherif">Estérification (réversible)</option>
+          </select>
+        </div>
+        <div class="fg"><label>SUBSTRAT</label>
+          <select id="substrateType" onchange="drawEnergyDiagram()">
+            <option value="tertiary">Tertiaire (Ea basse)</option>
+            <option value="secondary">Secondaire (Ea moyenne)</option>
+            <option value="primary">Primaire (Ea haute)</option>
+          </select>
+        </div>
+        <div class="fg"><label>TEMPÉRATURE : <span id="temp-display">25°C</span></label>
+          <input type="range" id="tempRange" min="0" max="200" value="25" oninput="updateTemp()" style="width:100%;accent-color:var(--p1);">
+        </div>
+        <button class="btn btn-p" onclick="drawEnergyDiagram()">🔄 METTRE À JOUR</button>
+        <div style="margin-top:10px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;">DONNÉES CINÉTIQUES</div>
+          <div id="kinetics-box" style="font-family:'Fira Code',monospace;font-size:.74rem;color:var(--ink);line-height:1.8;">—</div>
+        </div>
+        <div style="margin-top:8px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">LOI D'ARRHÉNIUS</div>
+          <div class="fbox" style="margin:0;">k = A · e^(-Ea/RT)</div>
+          <div style="font-size:.7rem;color:var(--muted);margin-top:5px;line-height:1.6;">R = 8.314 J/(mol·K) | T en Kelvin</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:290px;">
+        <canvas id="energyCanvas" width="555" height="375" class="energy-canvas" style="width:100%;border-radius:10px;"></canvas>
+        <div style="margin-top:9px;display:flex;gap:9px;flex-wrap:wrap;">
+          <div style="flex:1;min-width:135px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:9px;">
+            <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">ΔH° (kJ/mol)</div>
+            <div id="enthalpy" style="font-family:'Fira Code',monospace;font-size:.9rem;color:var(--p1);">—</div>
+          </div>
+          <div style="flex:1;min-width:135px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:9px;">
+            <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">Ea (kJ/mol)</div>
+            <div id="ea-display" style="font-family:'Fira Code',monospace;font-size:.9rem;color:var(--p2);">—</div>
+          </div>
+          <div style="flex:1;min-width:135px;background:var(--panel2);border:1px solid var(--border);border-radius:7px;padding:9px;">
+            <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">INTERMÉDIAIRES</div>
+            <div id="inter-display" style="font-family:'Fira Code',monospace;font-size:.8rem;color:var(--p3);">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NOMENCLATURE -->
+<div class="app" id="app-nomen">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🏷️ NOMENCLATURE IUPAC — CONSTRUCTEUR INTERACTIF</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 260px;">
+        <div class="fg"><label>TYPE DE COMPOSÉ</label>
+          <select id="nomenType" onchange="updateNomen()">
+            <option value="alcane">Alcane</option><option value="alcool">Alcool (-OH)</option>
+            <option value="aldehyde">Aldéhyde (-CHO)</option><option value="cetone">Cétone (>C=O)</option>
+            <option value="acide">Acide carboxylique (-COOH)</option><option value="amine">Amine (-NH₂)</option>
+            <option value="ester">Ester (-COO-)</option><option value="alcene">Alcène (C=C)</option>
+          </select>
+        </div>
+        <div class="fg"><label>LONGUEUR CHAÎNE : <span id="chain-display">3 C</span></label>
+          <input type="range" id="chainLength" min="1" max="10" value="3" oninput="updateNomen()" style="width:100%;accent-color:var(--p1);">
+        </div>
+        <div class="fg"><label>POSITION GROUPE FONCT.</label>
+          <input type="number" id="funcPos" min="1" max="10" value="1" oninput="updateNomen()" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:6px;color:var(--ink);font-family:'Fira Code',monospace;">
+        </div>
+        <div class="fg"><label>RAMIFICATION</label>
+          <select id="nomenBranch" onchange="updateNomen()">
+            <option value="">Aucune</option><option value="methyl">Méthyle (-CH₃)</option>
+            <option value="ethyl">Éthyle (-C₂H₅)</option><option value="dimethyl">Di-méthyle</option>
+          </select>
+        </div>
+        <div class="fg"><label>POSITION RAMIFICATION</label>
+          <input type="number" id="branchPos" min="1" max="10" value="2" oninput="updateNomen()" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:6px;color:var(--ink);font-family:'Fira Code',monospace;">
+        </div>
+        <button class="btn btn-p" onclick="updateNomen()">🏷️ NOMMER</button>
+        <div style="margin-top:10px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">RÈGLES CLÉS</div>
+          <div style="font-size:.72rem;color:var(--ink);line-height:1.7;"><b style="color:var(--p1);">1.</b> Chaîne principale la plus longue<br><b style="color:var(--p1);">2.</b> -ol > -al > -one > -ène > -ane<br><b style="color:var(--p1);">3.</b> Groupe fonct. = n° le plus bas<br><b style="color:var(--p1);">4.</b> 1=méth, 2=éth, 3=prop, 4=but, 5=pent, 6=hex</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:280px;">
+        <div class="nomen-builder">
+          <div style="font-size:.63rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:7px;">CHAÎNE CARBONÉE :</div>
+          <div class="nomen-chain" id="nomen-chain"></div>
+          <div class="nomen-result" id="nomen-result" style="font-size:1.05rem;font-family:'Fraunces',serif;">—</div>
+          <div style="margin-top:9px;font-size:.76rem;color:var(--muted);line-height:1.7;" id="nomen-explanation">—</div>
+        </div>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:13px;">
+          <div class="ptitle" style="margin-bottom:8px;font-size:.76rem;">🎲 EXERCICE DE NOMENCLATURE</div>
+          <div id="nomen-quiz">
+            <button onclick="genNomenQuiz()" class="btn btn-o" style="width:auto;padding:7px 16px;font-size:.78rem;">🎲 GÉNÉRER UN EXERCICE</button>
+          </div>
+        </div>
+      </div>
+      <div style="flex:0 0 235px;">
+        <canvas id="nomenCanvas" width="220" height="215" style="width:100%;border-radius:8px;background:#1c1410;border:1.5px solid var(--border);"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ISOMÈRES -->
+<div class="app" id="app-isomeres">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🪞 EXPLORATEUR D'ISOMÈRES</div>
+    <div style="display:flex;flex-wrap:wrap;gap:14px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>FORMULE BRUTE</label>
+          <select id="isomerFormula" onchange="showIsomers()">
+            <option value="C4H10">C₄H₁₀ (butane)</option>
+            <option value="C5H12">C₅H₁₂ (pentane)</option>
+            <option value="C4H8">C₄H₈ (butènes)</option>
+            <option value="C3H8O">C₃H₈O (propanol)</option>
+            <option value="C4H8O">C₄H₈O (butanal/butanone)</option>
+            <option value="C4H9Br">C₄H₉Br (bromobutanes)</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="showIsomers()">▶ AFFICHER</button>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;">TYPES D'ISOMÉRIE</div>
+          <div style="font-size:.74rem;color:var(--ink);line-height:1.8;">
+            <b style="color:var(--p1);">Constitution :</b> squelette différent<br>
+            <b style="color:var(--p2);">Position :</b> groupe fonct. différent<br>
+            <b style="color:var(--p3);">Fonction :</b> groupe fonct. différent<br>
+            <b style="color:var(--p5);">Stéréo :</b> arrangement spatial différent
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:290px;" id="isomers-content">
+        <div style="text-align:center;padding:35px;color:var(--muted);">🪞 Choisissez une formule pour voir les isomères</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULS -->
+<div class="app" id="app-calcul">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🧮 CALCULATEUR DE CHIMIE ORGANIQUE</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 260px;">
+        <div class="fg"><label>TYPE DE CALCUL</label>
+          <select id="calcType" onchange="updateCalcUI()">
+            <option value="mol">Masse molaire (formule brute)</option>
+            <option value="yield">Rendement de réaction (%)</option>
+            <option value="dilution">Dilution (C₁V₁ = C₂V₂)</option>
+            <option value="ph">pH acide carboxylique</option>
+            <option value="degree">Degré d'insaturation (DBE)</option>
+            <option value="rf">Rapport frontal (CCM / Rf)</option>
+          </select>
+        </div>
+        <div id="calc-inputs"></div>
+        <button class="btn btn-p" onclick="calculate()">= CALCULER</button>
+        <button class="btn btn-d" onclick="clearCalc()" style="margin-top:5px;">✕ EFFACER</button>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">MASSES MOLAIRES</div>
+          <div style="font-family:'Fira Code',monospace;font-size:.7rem;color:var(--ink);columns:2;gap:12px;line-height:1.8;">H:1.008 | C:12.011 | N:14.007 | O:15.999 | F:18.998 | Cl:35.453 | Br:79.904 | I:126.9 | S:32.06 | P:30.97</div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:270px;">
+        <div class="calc-result" id="calc-result">Sélectionnez un type de calcul...</div>
+        <div style="margin-top:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:6px;">FORMULE UTILISÉE</div>
+          <div id="calc-formula" style="font-family:'Fira Code',monospace;font-size:.76rem;color:var(--ink);line-height:1.8;">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="app" id="app-quiz">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🎯 QUIZ INTERACTIF — CHIMIE ORGANIQUE</div>
+    <div style="display:flex;flex-wrap:wrap;gap:15px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>CATÉGORIE</label>
+          <select id="quizCat">
+            <option value="mechanisms">Mécanismes réactionnels</option>
+            <option value="functional">Groupes fonctionnels</option>
+            <option value="stereo">Stéréochimie</option>
+            <option value="nomenclature">Nomenclature IUPAC</option>
+            <option value="synthesis">Synthèse organique</option>
+            <option value="mixed">Quiz général (tous thèmes)</option>
+          </select>
+        </div>
+        <div class="fg"><label>NOMBRE DE QUESTIONS</label>
+          <select id="quizCount">
+            <option value="5">5 questions</option>
+            <option value="8" selected>8 questions</option>
+            <option value="12">12 questions</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="startQuiz()">▶ NOUVEAU QUIZ</button>
+        <div style="margin-top:13px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center;">
+          <div style="font-size:.56rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">SCORE</div>
+          <div class="quiz-score" id="quiz-score">0 / 0</div>
+          <div style="font-size:.68rem;color:var(--muted);" id="quiz-pct">—</div>
+          <div style="margin-top:7px;height:8px;background:var(--border);border-radius:4px;overflow:hidden;">
+            <div id="score-bar" style="height:100%;width:0%;background:var(--p1);border-radius:4px;transition:width .4s;"></div>
+          </div>
+        </div>
+        <div style="margin-top:8px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:9px;">
+          <div style="font-size:.58rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:4px;">PROGRESSION</div>
+          <div id="quiz-progress-text" style="font-size:.74rem;color:var(--ink);">Question 0 / 0</div>
+          <div style="margin-top:4px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div id="quiz-prog-bar" style="height:100%;width:0%;background:var(--p2);border-radius:3px;transition:width .3s;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:300px;" id="quiz-area">
+        <div style="text-align:center;padding:38px;color:var(--muted);">🎯 Démarrez un quiz pour tester vos connaissances</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- THÉORIE -->
+<div class="app" id="app-theorie">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📚 COURS — CHIMIE ORGANIQUE</div>
+    <div class="thy-grid" id="theory-grid"></div>
+  </div>
+</div>
+
+<!-- RAPPORT -->
+<div class="app" id="app-rapport">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📋 RAPPORT DE SÉANCE</div>
+    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:17px;font-family:'Fira Code',monospace;font-size:.72rem;color:var(--ink);line-height:1.9;" id="rpt-content">
+      <div style="text-align:center;color:var(--muted);padding:35px;">🧬 Explorez les modules pour générer votre rapport.</div>
+    </div>
+    <div style="display:flex;gap:7px;margin-top:10px;">
+      <button class="btn btn-p" style="flex:1" onclick="generateReport()">📋 GÉNÉRER RAPPORT</button>
+      <button class="btn" style="flex:1;background:rgba(45,106,79,.1);border:1px solid var(--p1);color:var(--p1);border-radius:7px;cursor:pointer;font-family:'Manrope',sans-serif;font-weight:700;font-size:.82rem;letter-spacing:.7px;" onclick="window.print()">🖨️ IMPRIMER</button>
+    </div>
+  </div>
+</div>
+
+<div class="statusbar">
+  <div class="sindic"><div class="sdot" id="sdot"></div><span id="stext">Prêt — Choisissez un mécanisme</span></div>
+  <span>|</span><span>SimuOrg v2.0 — Edmond Atinzoun TCHOKPON</span>
+  <span>|</span><span id="session-stats">Mécanismes : 0 | Quiz : 0/0</span>
+  <span style="margin-left:auto" id="sclock"></span>
+</div>
+<script>
+// ═══════ GLOBAL STATE ═══════
+let lang='fr',darkMode=false;
+let sessionStats={mechLoaded:0,questAnswered:0,quizCorrect:0,quizTotal:0};
+function toggleLang(){lang=lang==='fr'?'en':'fr';document.getElementById('langBtn').textContent=lang==='fr'?'EN':'FR';}
+function toggleTheme(){darkMode=!darkMode;document.body.classList.toggle('dark',darkMode);document.querySelector('.hbtn').textContent=darkMode?'☀️':'🌙';}
+
+// ═══════ TABS ═══════
+function showTab(n){
+  document.querySelectorAll('.app').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('app-'+n).classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active');
+  if(n==='groupes')initFGGrid();
+  if(n==='mol3d')draw3DMol();
+  if(n==='quiz')startQuiz();
+  if(n==='stereo')showStereoConcept();
+  if(n==='energie')drawEnergyDiagram();
+  if(n==='nomen')updateNomen();
+  if(n==='isomeres')showIsomers();
+  if(n==='calcul')updateCalcUI();
+  if(n==='theorie')initTheory();
+}
+function updateSessionStats(){document.getElementById('session-stats').textContent=`Mécanismes : ${sessionStats.mechLoaded} | Quiz : ${sessionStats.quizCorrect}/${sessionStats.quizTotal}`;}
+
+// ═══════ MECHANISMS ═══════
+const MECHS={
+  sn1:{title:'SN1 — Substitution Nucléophile Unimoléculaire',global:'R₃C-X + Nu⁻ → R₃C-Nu + X⁻ (via carbocation)',balance:'R₃C-X → [R₃C⁺] + X⁻ → R₃C-Nu',conditions:'• Substrat tertiaire (ou benzylique/allylique)\n• Solvant polaire protique (EtOH, H₂O)\n• Nucléophile faible (H₂O, EtOH)\n• T° modérée',product:'R₃C-Nu (mélange racémique si C chiral)',competition:'E1 en compétition — T°↑ → E1',stereo:'⚠️ Racémisation : carbocation plan → attaque 2 côtés → 50/50 R + S',steps:[{title:'Ionisation hétérolytique (ECD)',eq:'R₃C-X → R₃C⁺ + X⁻',desc:'La liaison C-X se rompt hétérolytiquement. X⁻ part. Formation d\'un carbocation plan sp² (120°). Étape lente cinétiquement déterminante.',note:'v = k₁[RX] — Ordre 1 — Solvant polaire protique stabilise X⁻'},{title:'Stabilisation du carbocation (sp²)',eq:'R₃C⁺ → stabilisé par hyperconjugaison (alkyle)',desc:'Carbocation plan sp² stabilisé par hyperconjugaison. Stabilité : 3° > allylique ≈ benzylique > 2° > 1° > méthyle. Réarrangements possibles.',note:'Réarrangement → carbocation plus stable possible'},{title:'Attaque nucléophile des 2 côtés',eq:'R₃C⁺ + Nu⁻ → R₃C-Nu (2 faces)',desc:'Le nucléophile attaque les deux faces du carbocation plan équiprobablement. Si le C était chiral → mélange racémique 50/50.',note:'Rapidité de Nu⁻ ne détermine pas la loi de vitesse'},{title:'Produit + compétition E1',eq:'R₃C-Nu ± alcène (E1 si base présente)',desc:'Produit SN1 formé. Compétition avec E1 si base ou haute température. T°↑ → E1 favorisée sur SN1.',note:'T°↑ → E1 // Nucléophile fort → SN1 // Solvant → influence'}]},
+  sn2:{title:'SN2 — Substitution Nucléophile Bimoléculaire',global:'Nu⁻ + R-X → Nu-R + X⁻ (mécanisme concerté)',balance:'Nu⁻ + R-X → [Nu···C···X]‡ → Nu-R + X⁻',conditions:'• Substrat primaire (méthyle idéal)\n• Solvant polaire aprotique (DMSO, DMF)\n• Nucléophile fort et peu encombré\n• T° modérée',product:'Nu-R avec inversion totale (Walden)',competition:'E2 si base encombrée ou T°↑',stereo:'✅ Stéréospécifique : attaque 180° → inversion 100% R↔S',steps:[{title:'Approche Nu⁻ à 180° de X',eq:'Nu⁻ ····· [C-X] (angle d\'attaque 180°)',desc:'Nu⁻ approche le carbone électrophile exactement à l\'opposé de X. Approche linéaire stricte. Pas d\'intermédiaire. Mécanisme concerté.',note:'Substrats primaires : moins encombrés → réaction plus rapide'},{title:'État de transition ‡ (bipyramidal)',eq:'Nu···C···X (structure trigonale bipyramidale sp²)',desc:'Unique état de transition : C lié simultanément à Nu et X. 3 substituants restants en plan à 90°. Point d\'énergie maximale.',note:'Encombrement → substrat 3° pratiquement inerte en SN2'},{title:'Rupture C-X + formation Nu-C simultanées',eq:'Nu-C + X⁻ (inversion du parapluie)',desc:'Dans le même élan : C-X se rompt, Nu-C se forme. Les 3 substituants basculent (parapluie retourné). Inversion spatiale totale.',note:'v = k₂[Nu⁻][RX] — Ordre 2 global'},{title:'Produit : inversion de Walden',eq:'Produit Nu-C avec config. inversée (R→S ou S→R)',desc:'Inversion totale de configuration. Signature de SN2. Solvant aprotique stabilise Nu⁻ sans le complexer (contrairement aux solvants protiques).',note:'Stéréospécificité 100% — solvant aprotique essentiel'}]},
+  ae:{title:'AE — Addition Électrophile sur Alcènes',global:'R-CH=CH₂ + HX → R-CHX-CH₃ (Markovnikov)',balance:'R-CH=CH₂ + H⁺ → R-CH⁺-CH₃ → R-CHX-CH₃',conditions:'• Alcène (liaison π nucléophile)\n• Électrophile : HX, H₂SO₄, X₂, H₂O/H⁺\n• Solvant variable\n• T° ambiante',product:'Produit Markovnikov (H⁺ sur C le plus H) // Anti-Markovnikov par hydroboration',competition:'X₂ : ion bromonium → anti-addition stéréospécifique',stereo:'Anti-addition pour X₂ → produit trans',steps:[{title:'Polarisation électrophile au contact de π',eq:'H-X → Hδ⁺ ··· Xδ⁻ (double liaison nucléophile)',desc:'La double liaison π est un nucléophile naturel. L\'électrophile H-X est polarisé. La liaison π attire H⁺.',note:'Alcène plus substitué = plus riche en électrons = plus réactif'},{title:'Protonation — Règle de Markovnikov',eq:'R-CH=CH₂ + H⁺ → R-CH⁺-CH₃ (carbocation 2° ou 3°)',desc:'H⁺ s\'additionne sur le C le plus riche en H → carbocation le plus stable (Markovnikov). Étape lente.',note:'Markovnikov : H → C le + pauvre en substituants → carbocation + stable'},{title:'Carbocation intermédiaire',eq:'Carbocation sp² plan — réarrangements possibles',desc:'Carbocation plan stabilisé par hyperconjugaison. Réarrangements possibles vers le C⁺ plus stable.',note:'Pour X₂ : ion bromonium cyclique (pas de C⁺ libre)'},{title:'Capture par X⁻',eq:'C⁺ + X⁻ → produit Markovnikov',desc:'X⁻ capture le carbocation. Pour X₂ via bromonium → anti-addition → produit trans. Pour HX → mélange de faces.',note:'X₂ : bromonium → anti-addition stéréospécifique'}]},
+  an:{title:'AN — Addition Nucléophile sur Dérivés Carbonylés',global:'Nu⁻ + R-CHO → R-CH(Nu)-O⁻ → R-CH(Nu)-OH',balance:'Nu⁻ + C=O → Nu-C-O⁻ → Nu-C-OH (alcool)',conditions:'• Aldéhyde (plus réactif) ou cétone\n• Nucléophile : RMgX, NaBH₄, HCN...\n• Milieu acide ou basique\n• T° variable',product:'Alcool 2° (depuis aldéhyde) ou 3° (depuis cétone)',competition:'Énolisation en milieu basique si H α présent',stereo:'Mélange R+S si nouveau centre chiral',steps:[{title:'Activation du carbonyle (C=O δ+)',eq:'R-C(=O) : C δ+ très électrophile',desc:'La liaison C=O est fortement polarisée (O électronégatif). Le C carbonylique est appauvri (δ+). Les aldéhydes sont plus réactifs que les cétones (stérique + électronique).',note:'Aldéhyde > cétone : moins encombré et plus électrophile'},{title:'Attaque nucléophile (angle de Bürgi-Dunitz 107°)',eq:'Nu⁻ + C=O → Nu-C-O⁻ (alcoxyde tétraédrique)',desc:'Nu⁻ attaque le C carbonylique à l\'angle de Bürgi-Dunitz (107°), perpendiculairement au plan. Formation d\'un alcoxyde tétraédrique anionique.',note:'Angle 107° optimal — pas perpendiculaire mais oblique'},{title:'Protonation de l\'alcoxyde',eq:'Nu-C-O⁻ + H⁺ → Nu-C-OH (alcool)',desc:'L\'alcoxyde est protoné par le solvant ou lors du traitement acide. Formation de l\'alcool final. En milieu basique : traitement final.',note:'pH contrôle la réversibilité'},{title:'Produit alcool + applications',eq:'R-CH(Nu)-OH (alcool) selon le nucléophile',desc:'NaBH₄ → H⁻ → alcool 1° ou 2°. RMgX → carbanion → alcool 2° ou 3°. HCN → cyanohydrine. Amines primaires → imine (condensation).',note:'RMgX = Grignard — extension de chaîne carbonée'}]},
+  ar:{title:'AR — Addition Radicalaire (anti-Markovnikov)',global:'R-CH=CH₂ + HBr → R-CH₂-CH₂Br (anti-Markov.)',balance:'Initiation → Br• + alcène → radical → HBr → produit',conditions:'• Alcène + HBr (pas HCl/HI)\n• Initiateur : ROOR ou hν\n• Solvant apolaire\n• Attention : produit OPPOSÉ à AE',product:'Produit anti-Markovnikov : Br sur C terminal',competition:'Sans initiateur → ionique (Markovnikov) → AE !',stereo:'Mélange peu sélectif',steps:[{title:'Initiation — génération du radical Br•',eq:'ROOR → 2 RO• ; RO• + HBr → Br• + ROH',desc:'L\'initiateur (peroxyde ou lumière UV) génère RO• qui arrache H à HBr, libérant Br•. Étape d\'initiation. Les radicaux sont des espèces à 1 électron non apparié.',note:'Radical = 1 électron non apparié — très réactif'},{title:'Propagation 1 : Br• attaque l\'alcène',eq:'Br• + R-CH=CH₂ → R-CHBr-CH₂• (radical secondaire)',desc:'Br• s\'additionne sur le C le plus substitué (forme le radical carboné le plus stable). Radical secondaire > radical primaire en stabilité.',note:'Radical 3° > 2° > 1° (comme carbocations)'},{title:'Propagation 2 : abstraction de H sur HBr',eq:'R-CHBr-CH₂• + HBr → R-CHBr-CH₃ + Br•',desc:'Le radical carboné arrache H de HBr → produit anti-Markovnikov + régénère Br• (continuité de la chaîne). Produit Br sur C terminal.',note:'Chaîne radicalaire auto-entretenue'},{title:'Terminaison',eq:'2 R• → R-R (fin de chaîne)',desc:'Combinaison de 2 radicaux met fin à la réaction. Le produit final est l\'halogénure anti-Markovnikov (Br sur C terminal). Différent de AE (Markovnikov).',note:'Anti-Markovnikov = signature de la réaction radicalaire'}]},
+  e1:{title:'E1 — Élimination Unimoléculaire',global:'R₃CH-CR₂-X → R₂C=CR₂ + HX',balance:'R₃CH-CR₂-X → [R₃CH-CR₂⁺] + X⁻ → alcène + H⁺',conditions:'• Substrat tertiaire (ou secondaire)\n• Base faible (EtOH, H₂O) ou neutre\n• Solvant polaire protique\n• T° haute (↑ E1 vs SN1)',product:'Alcène Zaïtsev (+ substitué) majoritaire',competition:'E1 toujours en compétition avec SN1 (même substrat)',stereo:'Mélange E/Z — Zaïtsev majoritaire',steps:[{title:'Ionisation C-X (même que SN1)',eq:'R₃CH-CR₂-X → R₃CH-CR₂⁺ + X⁻',desc:'Identique à SN1 : rupture hétérolytique C-X, formation du carbocation. Même substrats, mêmes conditions. Étape cinétiquement déterminante.',note:'v = k₁[substrat] — Ordre 1 — même compétition SN1'},{title:'Départ du proton Hβ par une base',eq:'Base + H-Cβ-C⁺ → alcène + BH⁺',desc:'Une base (même faible comme EtOH) arrache H sur Cβ (adjacent au C⁺). Formation de la liaison π. Multiples β-H possibles → mélange d\'alcènes.',note:'Zaïtsev : H sur Cβ le plus substitué → alcène + stable'},{title:'Alcène majoritaire — Règle de Zaïtsev',eq:'Alcène + substitué (Zaïtsev) majoritaire',desc:'L\'alcène le plus substitué (plus stable) est favori : thermodynamique. Base encombrée (t-BuOK) → Hofmann (alcène moins substitué). T°↑ → E1 dominant sur SN1.',note:'Zaïtsev : base faible // Hofmann : base volumineuse (t-BuOK)'}]},
+  e2:{title:'E2 — Élimination Bimoléculaire',global:'Base + H-C-C-X → alcène + BH + X⁻ (concerté)',balance:'Base···H-Cα-Cβ-X → [‡ concerté] → alcène + BH + X⁻',conditions:'• Base forte et encombrée (t-BuOK, NaOH conc.)\n• Substrat 1°, 2° ou 3°\n• Géométrie anti-périplanaire requise !\n• T° haute',product:'Alcène Zaïtsev ou Hofmann (selon base)',competition:'E2 vs SN2 : base encombrée → E2',stereo:'✅ Stéréospécifique : H et X anti-périplanaires obligatoires',steps:[{title:'Conformation anti-périplanaire (Newman)',eq:'H-Cα-Cβ-X : dièdre H-C-C-X = 180°',desc:'Exigence géométrique stricte : H sur Cα et X sur Cβ doivent être anti-périplanaires (dièdre 180°). Visualiser en projection de Newman. La conformation dicte le produit E/Z.',note:'Projection de Newman — dièdre 180° obligatoire'},{title:'Attaque concertée à 4 centres',eq:'Base···H-Cα=Cβ···X → ‡ (4 centres en ligne)',desc:'Processus concerté : base attaque H, π C=C se forme entre Cα-Cβ, X⁻ part. Simultané. Pas d\'intermédiaire. Mécanisme le plus direct.',note:'v = k₂[substrat][base] — Ordre 2 global'},{title:'Alcène stéréospécifique (E ou Z)',eq:'Alcène E ou Z selon la conformation anti du substrat',desc:'La géométrie E ou Z de l\'alcène est dictée par la conformation anti. Base encombrée (t-BuOK) → Hofmann (alcène moins substitué). Base petite → Zaïtsev.',note:'t-BuOK → Hofmann // NaOH → Zaïtsev // Anti-périplanaire'}]},
+  sear:{title:'SEAr — Substitution Électrophile Aromatique',global:'ArH + E⁺ → Ar-E + H⁺ (aromaticité préservée)',balance:'ArH + E⁺ → [σ-complexe]⁺ → Ar-E + H⁺',conditions:'• Arène (benzène ou dérivé)\n• Électrophile fort (NO₂⁺, Br⁺, SO₃)\n• Catalyseur Lewis (AlCl₃, FeBr₃)\n• Solvant apolaire',product:'Arène mono-substitué (orientation ortho/para ou méta)',competition:'Donneurs → ortho/para // Attracteurs → méta',stereo:'Pas de stéréochimie',steps:[{title:'Génération de l\'électrophile E⁺',eq:'HNO₃ + H₂SO₄ → NO₂⁺ + H₂O (nitration)',desc:'Selon la réaction : NO₂⁺ pour nitration, X⁺ pour halogénation (avec Lewis), SO₃ pour sulfonation, RCO⁺ pour acylation de F-C. Électrophile très réactif.',note:'Halogénation : Br₂ + FeBr₃ → Br⁺FeBr₄⁻'},{title:'Attaque sur le cycle → σ-complexe (Wheland)',eq:'ArH + E⁺ → [Ar(E)H]⁺ (σ-complexe)',desc:'E⁺ attaque le cycle, rompant temporairement l\'aromaticité. Formation du σ-complexe chargé positif (carbocation de Wheland). Étape lente.',note:'Substituants donneurs (OH, OR, NR₂) activent et orientent ortho/para'},{title:'Rétablissement de l\'aromaticité',eq:'[Ar(E)H]⁺ → Ar-E + H⁺',desc:'La base arrache H⁺ pour rétablir l\'aromaticité. Force motrice : stabilisation aromatique retrouvée. Produit = arène substitué. Contraire de AE sur alcènes (qui retient l\'addition).',note:'Attracteurs (NO₂, CN, COOH) désactivent et orientent méta'}]},
+  acyl:{title:'Acylation de Friedel-Crafts',global:'ArH + RCOCl + AlCl₃ → Ar-CO-R + HCl',balance:'RCOCl + AlCl₃ → RCO⁺ + AlCl₄⁻ → SEAr → Ar-CO-R',conditions:'• Arène (sans groupes désactivants forts)\n• Chlorure d\'acyle + AlCl₃\n• Solvant apolaire (CH₂Cl₂)\n• T° ambiante à reflux',product:'Cétone aromatique (pas de réarrangement!)',competition:'≠ Alkylation FC qui donne réarrangements',stereo:'Pas de stéréochimie',steps:[{title:'Activation par AlCl₃ → ion acylium',eq:'RCOCl + AlCl₃ → [RCO]⁺ + [AlCl₄]⁻',desc:'AlCl₃ (acide de Lewis fort) arrache Cl⁻ du chlorure d\'acyle. Formation de l\'ion acylium RCO⁺ stabilisé par résonance R-C≡O⁺ ↔ R⁺C=O. Très électrophile. PAS de réarrangement.',note:'Ion acylium = stable par résonance → ≠ alkylation FC (réarrangement possible)'},{title:'SEAr : attaque de l\'ion acylium',eq:'ArH + RCO⁺ → [σ-complexe]⁺',desc:'L\'ion acylium attaque le cycle aromatique. Formation du σ-complexe. L\'aromaticité est temporairement perdue. Étape lente.',note:'Cycle activé (OH, alkyle) → plus rapide / cycle désactivé (NO₂) → lent'},{title:'Restauration de l\'aromaticité → cétone',eq:'σ-complexe + AlCl₄⁻ → Ar-CO-R + HCl + AlCl₃',desc:'La base AlCl₄⁻ arrache H⁺. Aromaticité rétablie. La cétone produite complexe AlCl₃ → 1 équivalent consommé. Produit = cétone aromatique (stable, pas monosubstitué + Ar-CO désactivant).',note:'1 équiv. AlCl₃ minimal requis (complexé par la cétone produite)'}]},
+  nitrat:{title:'Nitration du Benzène',global:'C₆H₆ + HNO₃ → C₆H₅NO₂ + H₂O (H₂SO₄ conc.)',balance:'HNO₃ + H₂SO₄ → NO₂⁺ + HSO₄⁻ + H₂O → C₆H₅NO₂',conditions:'• Benzène + HNO₃ fumant\n• H₂SO₄ concentré (catalyseur/protonant)\n• T° < 60°C (éviter di/trinitration)\n• T° 0°C pour nitration douce',product:'Nitrobenzène (jaune pâle, odeur d\'amandes amères)',competition:'T°↑ → dinitration, trinitration (TNT !)',stereo:'Pas de stéréochimie',steps:[{title:'Génération de l\'ion nitronium NO₂⁺',eq:'HNO₃ + 2H₂SO₄ → NO₂⁺ + H₃O⁺ + 2HSO₄⁻',desc:'H₂SO₄ concentré protone l\'acide nitrique. Formation de l\'ion nitronium NO₂⁺ (électrophile puissant, linéaire). C\'est l\'agent nitrant réel de la réaction.',note:'T° < 60°C impérative pour éviter la polynitration'},{title:'Attaque du NO₂⁺ sur le benzène',eq:'C₆H₆ + NO₂⁺ → [C₆H₆NO₂]⁺ (σ-complexe)',desc:'NO₂⁺ attaque le cycle benzénique. Formation du σ-complexe (arénonium). L\'aromaticité est temporairement perdue. Étape lente et déterminante.',note:'Substituts donneurs → nitration plus rapide en ortho/para'},{title:'Perte de H⁺ → nitrobenzène',eq:'[C₆H₆NO₂]⁺ → C₆H₅NO₂ + H⁺',desc:'HSO₄⁻ arrache H⁺. Aromaticité rétablie. Nitrobenzène formé. Le groupe NO₂ est désactivant méta (pour les nitrations suivantes). Réduction → aniline.',note:'NO₂ est fortement désactivant méta → mono-nitration favorisée'}]},
+  estherif:{title:'Estérification de Fischer / Hydrolyse',global:'RCOOH + R\'OH ⇌ RCOOR\' + H₂O (équilibre)',balance:'RCOOH + R\'OH ⇌ RCOOR\' + H₂O (Keq ≈ 1-10)',conditions:'• Acide carboxylique + alcool 1°\n• Catalyseur H⁺ (H₂SO₄ conc.)\n• Reflux prolongé\n• Éliminer H₂O → déplace l\'équilibre',product:'Ester RCOOR\' + eau (réversible — taux max ≈ 67%)',competition:'Hydrolyse (inverse) / Saponification (OH⁻, irréversible)',stereo:'Pas de stéréochimie',steps:[{title:'Protonation du C=O par H⁺',eq:'RCOOH + H⁺ → RC(=OH)₂⁺ (cation activé)',desc:'H⁺ protone le carbonyle de l\'acide carboxylique. Activation du C carbonylique vers l\'attaque nucléophile de l\'alcool.',note:'Catalyse acide — mécanisme réversible à chaque étape'},{title:'Attaque nucléophile de R\'OH',eq:'R\'OH + RC(=OH)₂⁺ → intermédiaire tétraédrique',desc:'L\'alcool (nucléophile) attaque le C carbonylique activé. Intermédiaire tétraédrique avec deux OH et un OR\'.',note:'Deux groupes OH pouvant partir (l\'un deviendra H₂O)'},{title:'Élimination de H₂O',eq:'Intermédiaire → RCOOR\' + H₂O + H⁺',desc:'Une des fonctions OH est protonée et part comme H₂O. H⁺ est régénéré. L\'ester se forme.',note:'Éliminer H₂O (tamis moléculaire, Soxhlet) déplace l\'équilibre'},{title:'Équilibre estérification/hydrolyse',eq:'RCOOR\' + H₂O ⇌ RCOOH + R\'OH (Keq≈1-10)',desc:'Réaction réversible. Pour favoriser l\'ester : excès alcool, éliminer H₂O, extraire l\'ester. Hydrolyse = sens inverse avec excès d\'eau.',note:'Keq ≈ 1 à 10 selon R et R\' // taux max sans manipulation ≈ 67%'}]},
+  sapo:{title:'Saponification (Hydrolyse Alcaline)',global:'RCOOR\' + OH⁻ → RCOO⁻ + R\'OH (irréversible)',balance:'RCOOR\' + NaOH → RCOONa + R\'OH',conditions:'• Ester + base forte (NaOH, KOH concentré)\n• H₂O ou mélange H₂O/EtOH\n• Reflux\n• Irréversible (carboxylate stable)',product:'Carboxylate RCOO⁻ + alcool R\'OH (savon = C₁₂-C₁₈)',competition:'≠ Hydrolyse acide (réversible) // Saponification complète',stereo:'Rétention de configuration (AN-2)',steps:[{title:'Attaque nucléophile de OH⁻ sur C=O',eq:'OH⁻ + RCOOR\' → RC(OH)(OR\')(O⁻) tétraédrique',desc:'OH⁻ (fort nucléophile) attaque le C carbonylique de l\'ester. Formation d\'un intermédiaire anionique tétraédrique.',note:'OH⁻ >> H₂O en réactivité comme nucléophile'},{title:'Départ de OR\'⁻ (alcoolate)',eq:'Intermédiaire → RCOOH + R\'O⁻',desc:'L\'alcoolate OR\'⁻ part. L\'acide carboxylique est formé transitoirement.',note:'Irréversibilité due à la neutralisation suivante'},{title:'Neutralisation irréversible → carboxylate',eq:'RCOOH + OH⁻ → RCOO⁻ + H₂O (irréversible!)',desc:'L\'acide est immédiatement neutralisé par OH⁻ → carboxylate RCOO⁻. C\'est ce qui rend la saponification irréversible. Différence fondamentale avec l\'hydrolyse acide.',note:'Savon = sel Na/K d\'acide gras (stéarate, palmitate...)'}]},
+  oxred:{title:'Oxydation des Alcools',global:'1° → aldéhyde (doux) ou acide (fort) // 2° → cétone',balance:'R-CH₂OH + [O] → R-CHO → R-COOH',conditions:'• PCC/Swern (doux) : alcool 1° → aldéhyde\n• KMnO₄/H₂SO₄ (fort) : alcool 1° → acide\n• Alcool 2° → cétone (tous oxydants)\n• Alcool 3° : résistant!',product:'1° doux → aldéhyde // 1° fort → acide // 2° → cétone',competition:'Alcool 3° (R₃C-OH) ne s\'oxyde pas (pas de H sur C-OH)',stereo:'Perte du centre chiral si 2° → cétone',steps:[{title:'Complexation de l\'alcool avec l\'oxydant',eq:'R-CH₂OH + Cr(VI) → ester chromique intermédiaire',desc:'L\'alcool réagit avec l\'oxydant chromé (PCC, K₂Cr₂O₇). Formation d\'un ester chromique intermédiaire sur le C-OH. La liaison C-H du C-OH est activée.',note:'PCC = chlorochromate de pyridinium — oxydant doux'},{title:'Rupture C-H via mécanisme E2-like',eq:'C-H → C=O (β-élimination interne)',desc:'Une base (interne au complexe) arrache H sur le carbone portant l\'oxygène. Mécanisme E2-like. La liaison C-H se rompt simultanément à la formation de C=O.',note:'Alcool 3° (R₃C-OH) : pas de H sur C → non oxydable!'},{title:'Produit selon l\'oxydant',eq:'Doux(PCC) → R-CHO // Fort(KMnO₄) → R-COOH',desc:'PCC : s\'arrête à l\'aldéhyde car en solvant anhydre, l\'aldéhyde ne peut pas s\'hydrater en gem-diol. KMnO₄ en milieu aqueux oxyde l\'aldéhyde en acide via le gem-diol.',note:'Alcool 2° → cétone avec TOUS les oxydants (même PCC)'}]},
+  diazot:{title:'Diazotation des Anilines',global:'ArNH₂ + NaNO₂ + HCl → [ArN≡N]⁺Cl⁻ + NaCl + H₂O',balance:'ArNH₂ + NO⁺ → ArN₂⁺ (à 0-5°C)',conditions:'• Amine aromatique primaire (aniline)\n• NaNO₂ + HCl (ou H₂SO₄)\n• T° ≤ 5°C impérative\n• Traitement immédiat du diazonium',product:'Sel de diazonium [Ar-N≡N]⁺ (intermédiaire polyvalent)',competition:'T° > 5°C → décomposition explosive du diazonium',stereo:'Pas de stéréochimie',steps:[{title:'Formation de NO⁺ (ion nitrosonium)',eq:'NaNO₂ + HCl → HNO₂ ; HNO₂ → NO⁺ + H₂O',desc:'En milieu acide, HNO₂ (instable, préparé in situ) se forme et génère l\'ion nitrosonium NO⁺ très électrophile. À 0-5°C pour éviter la décomposition.',note:'HNO₂ instable : préparé in situ — jamais stocké'},{title:'Attaque de NO⁺ sur l\'aniline',eq:'ArNH₂ + NO⁺ → Ar-NH-N=O (nitrosamine)',desc:'NO⁺ attaque le doublet de N de l\'aniline. Formation d\'une nitrosamine intermédiaire Ar-NH-N=O.',note:'Amine aliphatique : réaction similaire mais diazonium instable'},{title:'Tautomérisation → sel de diazonium',eq:'Ar-NH-N=O → [Ar-N≡N]⁺ X⁻ (stable à 0-5°C)',desc:'La nitrosamine se tautomérise et se protone → sel de diazonium stabilisé par résonance avec le cycle. Stable uniquement à 0-5°C.',note:'T° ≤ 5°C impérative — décomposition au-delà'},{title:'Utilisation du diazonium (réactions)',eq:'[ArN₂]⁺ → Ar-X (Sandmeyer), Ar-OH, Ar-H, Ar-N=N-Ar\'',desc:'Le diazonium est extrêmement polyvalent : Sandmeyer (CuBr → Ar-Br, CuCN → Ar-CN), Phénol (H₂O, Δ → Ar-OH), Réduction (H₃PO₂ → Ar-H), Couplage azoïque.',note:'Sandmeyer : Cu₂X₂ → remplacement N₂ par halogène ou CN'}]},
+  grignard:{title:'Réactif de Grignard (Organo-magnésien)',global:'R-X + Mg → R-MgX (éther) // R-MgX + C=O → alcool',balance:'R-X + Mg → R-MgX → R-C(OMgX)- → H₃O⁺ → alcool',conditions:'• Halogénure + Mg métal\n• Éther ANHYDRE (Et₂O, THF)\n• Atmosphère inerte (N₂ ou Ar)\n• Ajout lent et contrôlé',product:'Alcool 1° (HCHO), 2° (RCHO), 3° (RCOR\') ou acide (CO₂)',competition:'L\'eau détruit instantanément le Grignard!',stereo:'Mélange R+S si nouveau centre chiral',steps:[{title:'Formation R-MgX — insertion de Mg',eq:'R-X + Mg → R-MgX (conditions anhydres)',desc:'Le Mg métal s\'insère dans la liaison C-X. Formation de R-MgX en milieu éthéré anhydre. R est un carbanion fort. Toute trace d\'eau ou d\'alcool détruit le réactif.',note:'Anhydre impératif — H₂O, EtOH, acides détruisent immédiatement'},{title:'Propriétés de R-MgX',eq:'R-MgX ≡ R⁻ (carbanion fort) + MgX⁺',desc:'R-MgX est un nucléophile et base très fort. Réagit avec : eau (→ R-H), CO₂ (→ acide), alcool (→ R-H), nitrile (→ cétone), ester (→ alcool 3°), aldéhyde/cétone (→ alcool).',note:'Applications : HCHO → alcool 1° // RCHO → 2° // RCOR\' → 3° // CO₂ → acide'},{title:'Addition sur le C=O électrophile',eq:'R-MgX + RCHO → R-CH(OMgX)-R\' → H₃O⁺ → alcool',desc:'R-MgX (carbanion équivalent) attaque le C=O électrophile. Formation d\'un alcoolate de magnésium. Traitement par acide dilué (H₃O⁺) libère l\'alcool.',note:'Extension de chaîne : + n carbones provenant de R-X'},{title:'Applications et traitement acide',eq:'Alcoolate MgX + H₃O⁺ → alcool + Mg(OH)X',desc:'Traitement acide dilué libère l\'alcool. Autres : CO₂ → acide (+1C), Ester → alcool 3° (2 chaînes R ajoutées), Nitrile → cétone. Indispensable en synthèse pour créer des liaisons C-C.',note:'Grignard = outil puissant pour créer des liaisons C-C'}]}
+};
+
+let mechState={current:null,step:0,total:0,autoInterval:null};
+
+function loadMechanism(){
+  const sel=document.getElementById('mechSel').value;
+  const mech=MECHS[sel];if(!mech)return;
+  mechState={current:sel,step:0,total:mech.steps.length,autoInterval:null};
+  sessionStats.mechLoaded++;updateSessionStats();
+  document.getElementById('rxn-title').textContent=mech.title;
+  document.getElementById('rxn-global').textContent=mech.global;
+  document.getElementById('conditions-box').innerHTML=mech.conditions.replace(/\n/g,'<br>');
+  document.getElementById('product-box').textContent=mech.product;
+  document.getElementById('competition-box').innerHTML=(mech.competition||'—').replace(/\n/g,'<br>');
+  if(mech.stereo){document.getElementById('mech-stereochem').textContent=mech.stereo;document.getElementById('mech-stereochem').style.display='block';}
+  else{document.getElementById('mech-stereochem').style.display='none';}
+  if(mech.balance){document.getElementById('balance-container').style.display='block';document.getElementById('balance-eq').textContent=mech.balance;}
+  else{document.getElementById('balance-container').style.display='none';}
+  const container=document.getElementById('steps-container');
+  container.innerHTML='';
+  mech.steps.forEach((s,i)=>{
+    const div=document.createElement('div');
+    div.className='mech-step-box'+(i===0?' active':'');div.id='step-'+i;
+    div.innerHTML=`<div style="display:flex;align-items:center;margin-bottom:6px;"><span class="step-num">${i+1}</span><span class="step-title">${s.title}</span></div><div class="step-eq">${s.eq}</div><div class="step-desc">${s.desc}</div><div class="step-note">⚡ ${s.note}</div>`;
+    container.appendChild(div);
+  });
+  const dotsEl=document.getElementById('mech-dots');dotsEl.innerHTML='';
+  mech.steps.forEach((_,i)=>{const d=document.createElement('div');d.className='mech-dot'+(i===0?' active':'');d.onclick=()=>goToStep(i);dotsEl.appendChild(d);});
+  document.getElementById('mech-nav').style.display='flex';
+  updateStepCounter();drawMechMol(sel,0);drawEnergyMini(sel);
+  setStatus('green','Mécanisme : '+mech.title.split('—')[0].trim());
+}
+
+function goToStep(n){
+  if(!mechState.current)return;
+  const mech=MECHS[mechState.current];
+  mechState.step=Math.max(0,Math.min(n,mech.steps.length-1));
+  document.querySelectorAll('.mech-step-box').forEach((b,i)=>b.classList.toggle('active',i===mechState.step));
+  document.querySelectorAll('.mech-dot').forEach((d,i)=>d.classList.toggle('active',i===mechState.step));
+  updateStepCounter();drawMechMol(mechState.current,mechState.step);
+}
+function nextStep(){goToStep(mechState.step+1);}
+function prevStep(){goToStep(mechState.step-1);}
+function resetMech(){
+  if(mechState.autoInterval)clearInterval(mechState.autoInterval);
+  mechState={current:null,step:0,total:0,autoInterval:null};
+  document.getElementById('steps-container').innerHTML='<div id="step-placeholder" style="text-align:center;padding:35px;color:var(--muted);font-size:.82rem;">⚗️ Chargez un mécanisme</div>';
+  document.getElementById('mech-nav').style.display='none';
+  document.getElementById('rxn-title').textContent='Sélectionnez un mécanisme';
+  document.getElementById('mech-stereochem').style.display='none';
+  document.getElementById('balance-container').style.display='none';
+  document.getElementById('btn-auto').textContent='⏵ AUTO-PLAY';
+}
+function autoPlay(){
+  if(!mechState.current)return;
+  if(mechState.autoInterval){clearInterval(mechState.autoInterval);mechState.autoInterval=null;document.getElementById('btn-auto').textContent='⏵ AUTO-PLAY';return;}
+  document.getElementById('btn-auto').textContent='⏹ STOP';
+  mechState.autoInterval=setInterval(()=>{
+    if(mechState.step>=mechState.total-1){clearInterval(mechState.autoInterval);mechState.autoInterval=null;document.getElementById('btn-auto').textContent='⏵ AUTO-PLAY';}
+    else{nextStep();}
+  },2500);
+}
+function updateStepCounter(){if(mechState.current)document.getElementById('step-counter').textContent=`Étape ${mechState.step+1} / ${mechState.total}`;}
+
+// ═══════ CANVAS DRAWING ═══════
+function drawMechMol(mech,step){
+  const c=document.getElementById('mechCanvas');if(!c)return;
+  const ctx=c.getContext('2d');const w=c.width,h=c.height;
+  ctx.fillStyle='#1c1410';ctx.fillRect(0,0,w,h);
+  const colors={C:'#a8e6cf',O:'#ff6b6b',N:'#74b9ff',H:'#ffeaa7',X:'#fdcb6e',Nu:'#74b9ff',T:'#fd79a8'};
+  function atom(x,y,el,r=14,extra=''){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);const g=ctx.createRadialGradient(x-2,y-2,1,x,y,r);g.addColorStop(0,'rgba(255,255,255,0.2)');g.addColorStop(1,'rgba(0,0,0,0.1)');ctx.fillStyle=colors[el]||'#ccc';ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='#1c1410';ctx.font=`bold 9px Fira Code`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(el,x,y);if(extra){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='7px Fira Code';ctx.fillText(extra,x,y+18);}}
+  function bond(x1,y1,x2,y2,t='single'){ctx.strokeStyle='rgba(200,200,200,0.55)';ctx.lineWidth=t==='double'?4:2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();if(t==='double'){ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1;ctx.beginPath();const dx=y2-y1,dy=x1-x2,l=Math.sqrt(dx*dx+dy*dy)||1;ctx.moveTo(x1+4*dx/l,y1+4*dy/l);ctx.lineTo(x2+4*dx/l,y2+4*dy/l);ctx.stroke();}}
+  function arrow(x1,y1,x2,y2,col='#fdcb6e'){ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);const a=Math.atan2(y2-y1,x2-x1);ctx.lineTo(x2-8*Math.cos(a-0.4),y2-8*Math.sin(a-0.4));ctx.moveTo(x2,y2);ctx.lineTo(x2-8*Math.cos(a+0.4),y2-8*Math.sin(a+0.4));ctx.stroke();}
+  function label(x,y,t,col='rgba(255,255,255,0.5)',sz='8px'){ctx.fillStyle=col;ctx.font=`${sz} Fira Code`;ctx.textAlign='center';ctx.fillText(t,x,y);}
+
+  const mtype=mech||'sn1';
+  if(mtype==='sn1'){
+    if(step===0){bond(55,80,120,80);atom(55,80,'C');atom(120,80,'C');atom(175,80,'X','#fdcb6e');bond(120,80,175,80);atom(120,130,'H');bond(120,80,120,130);atom(75,130,'H');bond(55,80,75,130);label(125,60,'R₃C—X → C⁺ + X⁻','#fd79a8');}
+    else if(step===1){atom(120,100,'C','#fd79a8',18);label(120,125,'carbocation sp²','#fd79a8','9px');label(120,62,'plan → 120°','rgba(255,255,255,.45)');}
+    else if(step===2){atom(60,100,'Nu','#74b9ff',18);atom(180,100,'Nu','#74b9ff',18);atom(120,100,'C',16);arrow(75,100,105,100,'#74b9ff');arrow(165,100,135,100,'#74b9ff');label(120,145,'2 faces → racémisation','rgba(212,160,23,.9)');}
+    else{atom(120,100,'C',16);atom(60,90,'Nu','#74b9ff');atom(185,90,'X','#fdcb6e');bond(120,100,60,90);label(120,145,'R₃C-Nu (R/S)','#a8e6cf');}
+  } else if(mtype==='sn2'){
+    if(step===0){atom(50,105,'Nu','#74b9ff',16);atom(145,105,'C',16);atom(220,105,'X','#fdcb6e',16);bond(80,105,125,105);bond(165,105,205,105);arrow(65,95,135,105,'#74b9ff');label(135,60,'180° linéaire','rgba(255,255,255,.5)');}
+    else if(step===1){atom(50,105,'Nu','#74b9ff',16);atom(145,105,'C','#fd79a8',16);atom(220,105,'X','#fdcb6e',16);bond(80,105,129,105);bond(161,105,205,105);[100,180].forEach(y=>{atom(145,y,'R',12);bond(145,121,145,100+y/180*-24+24);});label(135,50,'‡ bipyramidal','#fd79a8');}
+    else if(step===2){atom(145,105,'C',16);atom(50,105,'Nu','#74b9ff',16);atom(220,105,'X','#fdcb6e',16);bond(75,105,130,105);bond(160,105,210,105);arrow(200,90,160,105,'rgba(255,100,100,.8)');label(135,60,'parapluie retourné','rgba(255,255,255,.5)');}
+    else{atom(145,105,'C',16);atom(50,105,'Nu','#74b9ff',16);bond(75,105,130,105);label(135,60,'inversion Walden 100%','#a8e6cf');}
+  } else if(mtype==='ae'){
+    if(step===0){bond(60,105,140,105,'double');atom(60,105,'C',14);atom(140,105,'C',14);atom(185,75,'H','#ffeaa7',12);label(100,140,'π nucléophile','#a8e6cf');arrow(155,90,175,80,'#ffeaa7');}
+    else if(step===1){atom(60,105,'C',14);atom(140,105,'C','#fd79a8',16);bond(60,105,140,105);atom(185,75,'H','#ffeaa7',12);bond(140,105,185,75);label(100,140,'Markovnikov → C⁺ stable','#fd79a8');}
+    else if(step===2){atom(60,105,'C',14);atom(140,105,'C','#fd79a8',16);bond(60,105,140,105);atom(185,75,'H','#ffeaa7',12);bond(140,105,185,75);label(100,140,'réarrangements possibles','rgba(255,255,255,.5)');}
+    else{atom(60,105,'C',14);atom(140,105,'C',14);bond(60,105,140,105);atom(185,75,'H','#ffeaa7',12);atom(55,60,'X','#fdcb6e',12);bond(140,105,185,75);bond(60,105,55,60);label(100,140,'Produit Markovnikov','#a8e6cf');}
+  } else {
+    // generic display
+    atom(80,90,'C',16);atom(160,90,'C',16);bond(96,90,145,90);atom(120,150,'O','#ff6b6b',14);bond(120,106,120,138);atom(50,130,'H','#ffeaa7',12);bond(65,120,80,90);
+    label(120,195,'Chargez un mécanisme','rgba(255,255,255,.35)');
+  }
+  // title overlay
+  ctx.fillStyle='rgba(255,255,255,0.06)';ctx.fillRect(2,h-18,w-4,16);
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='7px Fira Code';ctx.textAlign='center';ctx.fillText('ANIMATION MOLÉCULAIRE — SIMUORG',w/2,h-7);
+}
+
+function drawEnergyMini(mech){
+  const c=document.getElementById('energyMini');if(!c)return;
+  const ctx=c.getContext('2d');const w=c.width,h=c.height;
+  ctx.fillStyle='#1c1410';ctx.fillRect(0,0,w,h);
+  const profiles={sn1:[[10,60],[60,25],[90,35],[150,15],[200,50]],sn2:[[10,60],[100,20],[200,45]],e1:[[10,60],[60,25],[90,35],[150,12],[200,55]],e2:[[10,60],[100,18],[200,48]],ae:[[10,55],[80,22],[120,32],[200,50]],an:[[10,55],[90,20],[200,40]],estherif:[[10,50],[80,25],[120,30],[160,25],[200,48]]};
+  const pts=profiles[mech]||[[10,60],[100,20],[200,50]];
+  ctx.strokeStyle=darkMode?'#a8e6cf':'#2d6a4f';ctx.lineWidth=2;ctx.beginPath();
+  pts.forEach((p,i)=>{const x=p[0]/210*w,y=p[1]/70*h;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();
+  // dots at peaks
+  pts.forEach(p=>{ctx.fillStyle='#fd79a8';ctx.beginPath();ctx.arc(p[0]/210*w,p[1]/70*h,2.5,0,Math.PI*2);ctx.fill();});
+}
+
+// ═══════ STEREO ═══════
+const stereoConcepts={
+  chiral:{title:'Centre Chiral & Chiralité',desc:'Un carbone est chiral (asymétrique) s\'il porte 4 substituants différents. La molécule est chirale si elle n\'est pas superposable à son image miroir.',content:`<span class="lvl lv-g">LYCÉE / PRÉPA</span><h3 style="font-family:Fraunces serif;color:var(--p1);margin:7px 0 5px;">Définitions</h3><p style="font-size:.79rem;line-height:1.7;color:var(--muted);">• Centre stéréogène (chiral) : C portant 4 groupes différents<br>• Énantiomères : images miroirs non superposables<br>• Molécule achirale : plan ou centre de symétrie<br>• Pouvoir rotatoire [α] : propriété optique des molécules chirales<br>• Mélange racémique (+/-) : 50/50 énantiomères (activité optique nulle)</p><div class="fbox">Condition : C sp³ avec 4 substituants DISTINCTS</div><p style="font-size:.75rem;color:var(--muted);margin-top:7px;">Exemples : C2 de l'alanine, C4 du 2-bromobutane, C1 du glycéraldéhyde</p>`,draw:'chiral'},
+  rs:{title:'Configurations R et S — Règles CIP',desc:'La nomenclature R/S (Cahn-Ingold-Prelog) décrit la configuration absolue d\'un centre chiral. Les substituants sont classés par numéro atomique.',content:`<span class="lvl lv-o">PRÉPA / LICENCE</span><h3 style="font-family:Fraunces serif;color:var(--p1);margin:7px 0 5px;">Règles CIP</h3><p style="font-size:.79rem;line-height:1.7;color:var(--muted);">1. Classer les 4 substituants par numéro atomique (Z) décroissant<br>2. En cas d'égalité → regarder l'atome suivant (règle de la sphère)<br>3. Placer le groupe 4 (priorité la plus basse) derrière soi<br>4. 1→2→3 : sens horaire ↻ = <b style="color:var(--p4)">R</b> ; antihoraire ↺ = <b style="color:var(--p3)">S</b></p><div class="fbox">R (Rectus) = ↻ | S (Sinister) = ↺</div><p style="font-size:.75rem;color:var(--muted);margin-top:6px;">Ordre fréquent : Br > Cl > O > N > C > H</p>`,draw:'rs'},
+  ez:{title:'Isomères E/Z (Géométriques)',desc:'Les alcènes ne peuvent pas tourner autour de la liaison π → isomères géométriques E et Z.',content:`<span class="lvl lv-g">LYCÉE</span><h3 style="font-family:Fraunces serif;color:var(--p1);margin:7px 0 5px;">Règle E/Z</h3><p style="font-size:.79rem;line-height:1.7;color:var(--muted);">• Z (zusammen = ensemble) : groupes prioritaires du MÊME côté<br>• E (entgegen = opposés) : groupes prioritaires de part et d'autre<br>• Priorité sur chaque C selon CIP (numéro atomique)<br>• Ne s'applique que si chaque C=C porte 2 groupes DISTINCTS</p><div class="fbox">Z = cis (prioritaires ensemble) | E = trans (prioritaires séparés)</div>`,draw:'ez'},
+  diastereomers:{title:'Diastéréoisomères & Énantiomères',desc:'Deux stéréoisomères peuvent être énantiomères (images miroirs) ou diastéréoisomères (pas images miroirs).',content:`<span class="lvl lv-o">PRÉPA</span><h3 style="font-family:Fraunces serif;color:var(--p1);margin:7px 0 5px;">Classification</h3><p style="font-size:.79rem;line-height:1.7;color:var(--muted);">• <b>Énantiomères</b> : images miroirs non superposables — propriétés identiques sauf plan polarisation<br>• <b>Diastéréoisomères</b> : stéréoisomères non énantiomères — propriétés physico-chimiques différentes<br>• <b>n</b> centres chiraux → max <b>2ⁿ</b> stéréoisomères<br>• <b>Épimères</b> : diastéréoisomères ne différant que par 1 centre sur plusieurs<br>• <b>Anomères</b> : épimères en C anomérique des sucres</p><div class="fbox">Énantiomères ≠ diastéréoisomères : test = superposabilité sur image miroir</div>`,draw:'diastereo'},
+  fischer:{title:'Projection de Fischer',desc:'Représentation plane des molécules chirales (sucres, acides aminés). Les liaisons horizontales sont en avant du plan, verticales en arrière.',content:`<span class="lvl lv-g">LYCÉE / PRÉPA</span><h3 style="font-family:Fraunces serif;color:var(--p1);margin:7px 0 5px;">Convention de Fischer</h3><p style="font-size:.79rem;line-height:1.7;color:var(--muted);">• Chaîne principale VERTICALE, groupe le plus oxydé en HAUT<br>• Liaisons horizontales : DEVANT le plan (vers l'observateur) ←C→<br>• Liaisons verticales : DERRIÈRE le plan ↑C↓<br>• Permutation de 2 substituants → énantiomère ! Permutation de 3 → même config.<br>• D-glycéraldéhyde : OH à droite | L-glycéraldéhyde : OH à gauche</p><div class="fbox">Horizontal = devant | Vertical = derrière</div>`,draw:'fischer'},
+  newman:{title:'Projection de Newman',desc:'Vue le long d\'une liaison C-C. Cercle = C arrière, étoile/point = C avant. Analyse des conformations.',content:`<span class="lvl lv-o">PRÉPA</span><h3 style="font-family:Fraunces serif;color:var(--p1);margin:7px 0 5px;">Lecture Newman</h3><p style="font-size:.79rem;line-height:1.7;color:var(--muted);">• C avant : point central (3 liaisons)<br>• C arrière : grand cercle (3 liaisons sur le bord)<br>• Conformation décalée (anti) : dièdre = 180° — la plus stable<br>• Conformation éclipsée (syn) : dièdre = 0° — la moins stable<br>• Gauche : dièdre = 60° | Anti : 180° | Syn-périplanaire : 0°<br>• E2 : H et X doivent être anti-périplanaires (dièdre 180°)</p><div class="fbox">Dièdre = angle entre 2 substituants vus depuis liaison C-C</div>`,draw:'newman'},
+  meso:{title:'Composé Méso',desc:'Molécule avec des centres chiraux mais qui possède un plan de symétrie interne → achiral.',content:`<span class="lvl lv-b">LICENCE</span><h3 style="font-family:Fraunces serif;color:var(--p1);margin:7px 0 5px;">Définition & exemples</h3><p style="font-size:.79rem;line-height:1.7;color:var(--muted);">• Méso = molécule avec au moins 2 centres chiraux + plan de symétrie<br>• Centres chiraux de configurations OPPOSÉES (R et S) qui se compensent<br>• Non superposable à son image miroir ? NON → achiral (méso) !<br>• Exemple classique : acide méso-tartrique (2R,3S)<br>• 3 stéréoisomères du tartrate : (2R,3R), (2S,3S) énantiomères + méso achiral<br>• Nombre total stéréoisomères = 2ⁿ - (nb méso)</p><div class="fbox">Méso : centres chiraux + plan symétrie interne → achiral global</div>`,draw:'meso'}
+};
+
+function showStereoConcept(){
+  const k=document.getElementById('stereoConcept').value;
+  const c=stereoConcepts[k];
+  if(!c)return;
+  document.getElementById('stereo-content').innerHTML=`<div class="thy-card"><h3 style="font-family:'Fraunces',serif;font-size:1.05rem;">${c.title}</h3><p style="font-size:.79rem;color:var(--p2);margin-bottom:9px;font-style:italic;">${c.desc}</p>${c.content}</div>`;
+  document.getElementById('stereo-canvas-label').textContent=c.title;
+  drawStereoCanvas(c.draw);
+}
+
+function drawStereoCanvas(t){
+  const c=document.getElementById('stereoCanvas');if(!c)return;
+  const ctx=c.getContext('2d');const w=c.width,h=c.height;
+  ctx.fillStyle='#1c1410';ctx.fillRect(0,0,w,h);
+  function atom(x,y,el,col,r=13){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col||'#a8e6cf';ctx.fill();ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='#1c1410';ctx.font='bold 8px Fira Code';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(el,x,y);}
+  function bond(x1,y1,x2,y2){ctx.strokeStyle='rgba(200,200,200,0.45)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();}
+  function lbl(x,y,t,col='rgba(255,255,255,0.55)',sz='7px'){ctx.fillStyle=col;ctx.font=`${sz} Fira Code`;ctx.textAlign='center';ctx.fillText(t,x,y);}
+
+  if(t==='chiral'){
+    atom(125,125,'C*','#a8e6cf',16);
+    [{x:125,y:65,el:'H',c:'#ffeaa7'},{x:65,y:125,el:'Cl',c:'#fdcb6e'},{x:185,y:125,el:'OH',c:'#ff6b6b'},{x:125,y:185,el:'CH₃',c:'#a8e6cf'}].forEach(a=>{bond(125,125,a.x,a.y);atom(a.x,a.y,a.el,a.c,14);});
+    lbl(125,225,'* = centre chiral','#fd79a8','9px');
+    lbl(125,240,'4 substituants différents','rgba(255,255,255,.4)');
+  } else if(t==='rs'){
+    // R/S diagram
+    atom(125,110,'C*','#a8e6cf',15);
+    const cfg=[{x:125,y:55,el:'Cl',c:'#fdcb6e',p:'1'},{x:65,y:130,el:'OH',c:'#ff6b6b',p:'2'},{x:185,y:130,el:'NH₂',c:'#74b9ff',p:'3'},{x:125,y:175,el:'H',c:'#ffeaa7',p:'4'}];
+    cfg.forEach(a=>{bond(125,110,a.x,a.y);atom(a.x,a.y,a.el,a.c,12);lbl(a.x+(a.x<125?-14:(a.x>125?14:0)),a.y+(a.y<110?-15:15),a.p,'#fd79a8','8px');});
+    // draw curved arrow
+    ctx.strokeStyle='#fdcb6e';ctx.lineWidth=2;ctx.beginPath();ctx.arc(125,115,40,Math.PI*1.05,Math.PI*0.0,false);ctx.stroke();
+    lbl(125,220,'↻ (1→2→3) sens horaire','#fdcb6e','8px');
+    lbl(125,235,'= Configuration R','#fd79a8','9px');
+  } else if(t==='ez'){
+    // E/Z on alkene
+    bond(75,100,125,115,'');bond(125,115,175,100,'');
+    ctx.strokeStyle='rgba(255,180,0,.6)';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(75,108);ctx.lineTo(175,108);ctx.stroke();
+    atom(75,100,'CH₃','#a8e6cf',14);atom(175,100,'CH₃','#a8e6cf',14);atom(75,145,'H','#ffeaa7',12);atom(175,145,'Cl','#fdcb6e',12);
+    bond(75,100,75,145);bond(175,100,175,145);
+    lbl(125,80,'C=C','rgba(255,255,255,.5)');lbl(125,185,'Priorités : Cl > H','rgba(255,255,255,.45)');lbl(125,200,'CH₃ + Cl même côté = Z','#a8e6cf','8px');
+    lbl(125,215,'(zusammen)','rgba(255,255,255,.3)');
+  } else if(t==='diastereo'){
+    // 2 molecules
+    atom(80,80,'C','#a8e6cf',13);atom(170,80,'C','#a8e6cf',13);
+    [{x:60,y:55,el:'R',c:'#74b9ff'},{x:100,y:55,el:'S',c:'#fd79a8'}].forEach(a=>{bond(80,80,a.x,a.y);lbl(a.x,a.y,'',a.c);atom(a.x,a.y,a.el,a.c,11);});
+    [{x:150,y:55,el:'S',c:'#fd79a8'},{x:190,y:55,el:'R',c:'#74b9ff'}].forEach(a=>{bond(170,80,a.x,a.y);atom(a.x,a.y,a.el,a.c,11);});
+    lbl(125,170,'Gauche : énantiomères','#a8e6cf','8px');lbl(125,185,'Droite : diastéréoisomères','rgba(255,255,255,.55)','8px');
+    lbl(125,150,'|','rgba(255,255,255,.3)');
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.setLineDash([4,4]);ctx.beginPath();ctx.moveTo(125,55);ctx.lineTo(125,145);ctx.stroke();ctx.setLineDash([]);
+    lbl(125,225,'2 centres → max 4 stéréoisomères','rgba(255,255,255,.4)','7px');
+  } else if(t==='fischer'){
+    const mx=125,my=125;
+    ctx.strokeStyle='rgba(200,200,200,0.4)';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(mx,my-70);ctx.lineTo(mx,my+70);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(mx-55,my);ctx.lineTo(mx+55,my);ctx.stroke();
+    atom(mx,my,'C*','#a8e6cf',13);
+    atom(mx,my-70,'CHO','#ff6b6b',15);atom(mx,my+70,'CH₂OH','#a8e6cf',15);
+    atom(mx-55,my,'H','#ffeaa7',12);atom(mx+55,my,'OH','#ff6b6b',13);
+    lbl(mx,my+110,'Glycéraldéhyde (D-)','rgba(255,255,255,.55)','8px');
+    lbl(mx,my+125,'OH à droite → D','#a8e6cf','8px');
+  } else if(t==='newman'){
+    ctx.strokeStyle='rgba(200,200,200,0.35)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(125,125,45,0,Math.PI*2);ctx.stroke();
+    atom(125,125,'C','#a8e6cf',6);
+    // front C bonds
+    [[125,72,'CH₃'],[80,152,'H'],[170,152,'H']].forEach(([x,y,el])=>{bond(125,125,x,y);atom(x,y,el,'#ffeaa7',11);});
+    // back C bonds (on circle)
+    [[125,175,'CH₃'],[78,98,'H'],[172,98,'H']].forEach(([x,y,el])=>{const dx=x-125,dy=y-125,l=Math.sqrt(dx*dx+dy*dy);const sx=125+dx*44/l,sy=125+dy*44/l;bond(sx,sy,x,y);atom(x,y,el,'#a8e6cf',11);});
+    lbl(125,228,'Conformation décalée — anti','rgba(255,255,255,.5)','8px');
+  } else if(t==='meso'){
+    atom(95,105,'C','#a8e6cf',14);atom(155,105,'C','#a8e6cf',14);bond(95,105,155,105);
+    atom(95,65,'OH','#ff6b6b',13);atom(155,65,'OH','#ff6b6b',13);bond(95,105,95,65);bond(155,105,155,65);
+    atom(65,125,'H','#ffeaa7',11);atom(185,125,'H','#ffeaa7',11);bond(95,105,65,125);bond(155,105,185,125);
+    atom(95,150,'COOH','#ff6b6b',13);atom(155,150,'COOH','#ff6b6b',13);bond(95,105,95,150);bond(155,105,155,150);
+    ctx.strokeStyle='rgba(212,160,23,0.55)';ctx.setLineDash([4,4]);ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(125,50);ctx.lineTo(125,185);ctx.stroke();ctx.setLineDash([]);
+    lbl(125,205,'Plan de symétrie interne','#fdcb6e','8px');
+    lbl(125,218,'Méso = achiral global (R,S)','#a8e6cf','8px');
+  }
+  lbl(w/2,h-7,'SIMUORG — STÉRÉOCHIMIE','rgba(255,255,255,0.1)','6px');
+}
+
+function computeCIP(){
+  const a=+document.getElementById('cip-a').value,b=+document.getElementById('cip-b').value,c=+document.getElementById('cip-c').value,d=+document.getElementById('cip-d').value;
+  const sens=document.getElementById('cip-sens').value;
+  // sort 1-2-3 by given order (user already set priorities)
+  let config=sens==='cw'?'R':'S';
+  // if d (priority 4) is in front, invert
+  const result=`<span class="config-badge ${config==='R'?'cfg-R':'cfg-S'}">${config}</span> — ${config==='R'?'Rectus (↻ sens horaire)':'Sinister (↺ sens anti-horaire)'}`;
+  document.getElementById('cip-result').innerHTML=result;
+}
+
+// ═══════ FUNCTIONAL GROUPS ═══════
+const FG_DATA=[
+  {name:'Alcool',formula:'-OH',formula2:'R-OH',desc:'Groupe hydroxyle. Polaire et protonable. Liaisons H → Eb élevé.',react:'SN1/SN2 (→ éther), élimination (→ alcène), oxydation (→ aldéhyde/cétone/acide), estérification',examples:'Éthanol (alcool éthylique), glycérol (3 OH), cholestérol',phys:'Eb ↑↑ (liaisons H) | Soluble dans H₂O (petits) | pKa ≈ 16-18'},
+  {name:'Aldéhyde',formula:'-CHO',formula2:'R-CHO',desc:'Carbonyle terminal. Très réactif. Réducteur. Teste de Tollens (miroir Ag) positif.',react:'AN (NaBH₄→alcool 1°, HCN→cyanohydrine, RNH₂→imine), oxydation (→acide), réduction (→alcool)',examples:'Formaldéhyde (conservateur), acétaldéhyde, benzaldéhyde (amandes)',phys:'Eb < alcool | Peu soluble (R long) | Réducteur fort'},
+  {name:'Cétone',formula:'>C=O',formula2:'R-CO-R\'',desc:'Carbonyle interne. Moins réactif que l\'aldéhyde. Pas réducteur. Stable à l\'oxydation.',react:'AN (NaBH₄→alcool 2°, RMgX→alcool 3°), condensation aldolique, réaction de Grignard',examples:'Acétone, méthyl-éthyl-cétone (MEK), butanone',phys:'Eb moyen | Miscible H₂O si petite | Non réducteur'},
+  {name:'Acide carboxylique',formula:'-COOH',formula2:'R-COOH',desc:'Acide faible (pKa 4-5). Liaison H forte. Forme des dimères. Très polaire.',react:'Estérification (→ester), amide (→ amide), réduction (LiAlH₄→alcool 1°), décarboxylation (β-céto)',examples:'Acide acétique (vinaigre), acide citrique, acide palmitique (C16)',phys:'pKa ≈ 4-5 | Eb très élevé (dimères H) | Soluble en milieu basique'},
+  {name:'Ester',formula:'-COO-',formula2:'R-COO-R\'',desc:'Produit d\'estérification. Odeur fruitée. Hydrolysable par eau (acide) ou base (saponification).',react:'Hydrolyse acide (réversible), saponification (OH⁻, irréversible), réduction (LiAlH₄→2 alcools)',examples:'Acétate d\'éthyle (solvant), asprine (acétate acétylsalicylate), graisses',phys:'Eb < alcool | Odeur fruitée | Non miscible eau'},
+  {name:'Amine',formula:'-NH₂',formula2:'R-NH₂',desc:'Base azotée (pKa conj. 10-11). Nucléophile. Forme des liaisons H. Odeur piquante (amine basse)',react:'Alkylation (→ amine 2°/3°), acylation (→ amide), diazotation (ArNH₂ + NaNO₂/HCl)',examples:'Méthylamine, aniline (aromatique), glycine (acide aminé)',phys:'pKa(NH₃⁺) ≈ 10-11 | Base : capte H⁺ | Liaisons H (2° et 3° : moins)'},
+  {name:'Amide',formula:'-CONH₂',formula2:'R-CO-NH₂',desc:'Liaison amide très stable (résonance). Point de fusion élevé. Liaison peptidique des protéines.',react:'Hydrolyse acide ou basique (→ acide + amine), réduction (LiAlH₄→amine), Hofmann (→amine -1C)',examples:'Paracétamol, urée, Nylon 6,6 (polyamide), protéines',phys:'Eb très élevé | Soluble H₂O | Résonance → planéité'},
+  {name:'Halogénure alkyle',formula:'R-X',formula2:'R-Cl / R-Br / R-I',desc:'Substrat des réactions SN et E. C-X polarisé (Cδ+ Xδ−). La base des mécanismes organiques.',react:'SN1 (tertiaire), SN2 (primaire), E1, E2, Grignard (R-X+Mg), élimination',examples:'Bromométhane, chloroforme (CHCl₃), DDT, fréons (CFC)',phys:'Eb ↑ avec masse | Non miscible eau | Polarité C-X'},
+  {name:'Alcène',formula:'C=C',formula2:'R-CH=CH-R\'',desc:'Double liaison π. Nucléophile. Nombreuses réactions d\'addition. Hydrogénation possible.',react:'AE (HX, H₂SO₄), addition X₂ (→ dib.), ozonolyse (→ carbonyles), hydroboration (anti-Markov.)',examples:'Éthylène (polyéthylène), propène (polypropylène), butadiène (caoutchouc)',phys:'Non polaire | Non miscible H₂O | Eb bas'},
+  {name:'Alcyne',formula:'C≡C',formula2:'R-C≡C-R\'',desc:'Triple liaison. Acide (pKa ≈ 25 pour alcyne terminal). Réactions d\'addition et substitution.',react:'Addition 2× HX (→ cétone ou géminal), hydratation (→ cétone, Markovnikov), réduction (→ alcène)',examples:'Acétylène (soudage), propyne, éthynylestradiol (contraceptif)',phys:'Non polaire | Acide C-H terminal (pKa≈25) | Linéaire'},
+  {name:'Aromatique',formula:'Ar-H',formula2:'C₆H₅-R (arène)',desc:'Cycle benzénique aromatique. Règle de Hückel : 4n+2 électrons π. Très stable. SEAr.',react:'SEAr (nitration, halogénation, Friedel-Crafts), oxydation chaîne latérale (→ acide), réduction (Birch)',examples:'Benzène, toluène, styrène (polystyrène), aspirine',phys:'Non polaire | Odeur aromatique | Cancérigène (benzène)'},
+  {name:'Nitrile',formula:'-CN',formula2:'R-C≡N',desc:'Groupe cyano. Très polaire. Précurseur d\'amines et acides. Voie de synthèse de Kolbe.',react:'Hydrolyse (→ amide → acide), réduction (LiAlH₄ → amine), AN avec RMgX, Kolbe',examples:'Acrylonitrile (PAN fibre), acétonitrile (solvant), kérosène d\'amandes',phys:'Polaire | Point d\'ébullition élevé | Toxique'},
+  {name:'Phénol',formula:'-OH aromatique',formula2:'C₆H₅-OH',desc:'OH sur cycle aromatique. Plus acide qu\'un alcool (pKa ≈ 10). Activant ortho/para en SEAr.',react:'SEAr ortho/para (activant fort), estérification, éther de phénol (Williamson), Kolbe-Schmitt',examples:'Phénol (antiseptique Lister), paracétamol (OH phénol), BPA',phys:'pKa ≈ 10 | Soluble eau (base) | Activant majeur en SEAr'},
+  {name:'Acide sulfonique',formula:'-SO₃H',formula2:'R-SO₃H',desc:'Acide fort (pKa < 1). Très polaire et hydrosoluble. Utilisé comme tensioactif et échangeur.',react:'Sulfonation (SEAr réversible), sel de sulfonium, résines échangeuses d\'ions',examples:'Acide p-toluènesulfonique (TsOH), SDS (détergent), sulfanilamide',phys:'pKa < 1 (acide fort) | Très hydrosoluble | Hygrioscopique'}
+];
+
+function initFGGrid(){
+  const g=document.getElementById('fg-grid');if(!g||g.children.length>0)return;
+  FG_DATA.forEach((fg,i)=>{
+    const d=document.createElement('div');d.className='fg-card';
+    d.innerHTML=`<div class="fgn">${fg.name}</div><div class="fgf">${fg.formula}</div>`;
+    d.onclick=()=>showFGDetail(i,d);g.appendChild(d);
+  });
+}
+
+function showFGDetail(i,el){
+  document.querySelectorAll('.fg-card').forEach(c=>c.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+  const fg=FG_DATA[i];
+  document.getElementById('fg-detail').style.display='block';
+  document.getElementById('fg-name-detail').textContent=fg.name;
+  document.getElementById('fg-formula-detail').textContent=fg.formula2;
+  document.getElementById('fg-desc-detail').textContent=fg.desc;
+  document.getElementById('fg-react-detail').innerHTML=fg.react.replace(/\(/g,'<i>(').replace(/\)/g,')</i>');
+  document.getElementById('fg-examples-detail').innerHTML=fg.examples.split(', ').map(e=>`• ${e}`).join('<br>');
+  document.getElementById('fg-phys-detail').innerHTML=fg.phys.replace(/\|/g,'<br>');
+  drawFGCanvas(fg);
+}
+
+function drawFGCanvas(fg){
+  const c=document.getElementById('fgCanvas');if(!c)return;
+  const ctx=c.getContext('2d');const w=c.width,h=c.height;
+  ctx.fillStyle='#1c1410';ctx.fillRect(0,0,w,h);
+  function atom(x,y,el,col,r=12){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=col||'#a8e6cf';ctx.fill();ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;ctx.stroke();ctx.fillStyle='#1c1410';ctx.font='bold 8px Fira Code';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(el,x,y);}
+  function bond(x1,y1,x2,y2,dbl=false){ctx.strokeStyle='rgba(200,200,200,0.45)';ctx.lineWidth=dbl?3:2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();if(dbl){ctx.strokeStyle='rgba(255,255,255,0.2)';ctx.lineWidth=1;ctx.beginPath();const dx=y2-y1,dy=x1-x2,l=Math.sqrt(dx*dx+dy*dy)||1;ctx.moveTo(x1+3*dx/l,y1+3*dy/l);ctx.lineTo(x2+3*dx/l,y2+3*dy/l);ctx.stroke();}}
+  function lbl(x,y,t){ctx.fillStyle='rgba(255,255,255,0.45)';ctx.font='8px Fira Code';ctx.textAlign='center';ctx.fillText(t,x,y);}
+  const n=fg.name;
+  if(n==='Alcool'){atom(99,99,'C','#a8e6cf');atom(155,75,'O','#ff6b6b',11);atom(190,58,'H','#ffeaa7',10);bond(99,99,155,75);bond(155,75,190,58);lbl(99,140,'R-C-OH');}
+  else if(n==='Aldéhyde'){atom(80,99,'R','#74b9ff',13);atom(140,99,'C','#a8e6cf');atom(185,75,'O','#ff6b6b',13,false);atom(185,125,'H','#ffeaa7',10);bond(80,99,140,99);bond(140,99,185,75,true);bond(140,99,185,125);lbl(140,155,'R-CHO');}
+  else if(n==='Cétone'){atom(70,99,'R','#74b9ff',13);atom(130,99,'C','#a8e6cf');atom(190,99,'R\'','#74b9ff',13);atom(130,55,'O','#ff6b6b',13);bond(70,99,130,99);bond(130,99,190,99);bond(130,99,130,55,true);lbl(130,150,'R-CO-R\'');}
+  else if(n==='Acide carboxylique'){atom(70,100,'R','#74b9ff',13);atom(130,100,'C','#a8e6cf');atom(175,70,'O','#ff6b6b',13);atom(175,130,'O','#ff6b6b',13);atom(195,140,'H','#ffeaa7',9);bond(70,100,130,100);bond(130,100,175,70,true);bond(130,100,175,130);bond(175,130,195,140);lbl(130,160,'-COOH');}
+  else if(n==='Amine'){atom(99,100,'C','#a8e6cf');atom(158,78,'N','#74b9ff',13);atom(180,55,'H','#ffeaa7',9);atom(182,90,'H','#ffeaa7',9);bond(99,100,158,78);bond(158,78,180,55);bond(158,78,182,90);lbl(99,140,'R-NH₂');}
+  else if(n==='Alcène'){atom(80,100,'C','#a8e6cf');atom(158,100,'C','#a8e6cf');bond(80,100,158,100,true);atom(55,70,'H','#ffeaa7',9);atom(55,130,'H','#ffeaa7',9);atom(183,70,'H','#ffeaa7',9);atom(183,130,'R','#74b9ff',11);bond(80,100,55,70);bond(80,100,55,130);bond(158,100,183,70);bond(158,100,183,130);lbl(120,150,'C=C');}
+  else if(n==='Aromatique'){const cx=99,cy=99,r=42;for(let i=0;i<6;i++){const a1=i*Math.PI/3-Math.PI/6,a2=(i+1)*Math.PI/3-Math.PI/6;ctx.strokeStyle='rgba(200,200,200,0.4)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+r*Math.cos(a1),cy+r*Math.sin(a1));ctx.lineTo(cx+r*Math.cos(a2),cy+r*Math.sin(a2));ctx.stroke();}ctx.strokeStyle='rgba(212,160,23,0.55)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx,cy,25,0,Math.PI*2);ctx.stroke();lbl(cx,155,'C₆H₅-R (benzène)');}
+  else {atom(80,100,'R','#74b9ff',14);atom(148,100,'G',fg.name==='Halogénure alkyle'?'#fdcb6e':'#ff6b6b',14);bond(80,100,148,100);lbl(115,140,fg.formula2);}
+}
+
+// ═══════ SYNTHESIS ═══════
+const SYNTH={
+  alcool:{name:'Alcools',color:'var(--p1)',routes:[
+    {name:'Hydratation alcènes',eq:'R-CH=CH₂ + H₂O → R-CHOH-CH₃',cond:'H₂SO₄, H₂O, T° | Markovnikov'},
+    {name:'Hydroboration-oxydation',eq:'R-CH=CH₂ + BH₃/THF → R-CH₂-CH₂OH',cond:'1. BH₃/THF  2. H₂O₂/NaOH | Anti-Markovnikov'},
+    {name:'Réduction aldéhyde/cétone',eq:'R-CHO + NaBH₄ → R-CH₂OH',cond:'NaBH₄ ou LiAlH₄, EtOH'},
+    {name:'Réaction de Grignard',eq:'R-MgX + RCHO → R-CH(OH)-R\'',cond:'Et₂O anhydre, N₂, puis H₃O⁺'},
+    {name:'Epoxyde + nucléophile',eq:'Époxyde + H₂O → diol vicinal',cond:'Acide dilué → ouverture Markovnikov'},
+    {name:'Réduction acide carboxylique',eq:'RCOOH + LiAlH₄ → RCH₂OH',cond:'LiAlH₄, éther anhydre, N₂'}
+  ]},
+  aldehyde:{name:'Aldéhydes & Cétones',color:'var(--p2)',routes:[
+    {name:'Oxydation alcool 1° (doux)',eq:'R-CH₂OH + PCC → R-CHO',cond:'PCC (chlorochromate pyridinium) | Solvant anhydre'},
+    {name:'Oxydation alcool 2°',eq:'R-CHOH-R\' + [O] → R-CO-R\'',cond:'PCC, K₂Cr₂O₇ ou MnO₂'},
+    {name:'Ozonolise',eq:'R-CH=CH-R\' + O₃ → R-CHO + R\'-CHO',cond:'O₃ puis Me₂S (réductif) → aldéhydes'},
+    {name:'Acylation Friedel-Crafts',eq:'ArH + RCOCl + AlCl₃ → Ar-CO-R',cond:'AlCl₃, CH₂Cl₂, 0°C → Tr'},
+    {name:'Hydratation alcynes',eq:'R-C≡CH + H₂O → R-CO-CH₃',cond:'H₂SO₄, HgSO₄ | Markovnikov → méthylcétone'},
+    {name:'Condensation aldolique',eq:'2 RCHO → R-CH(OH)-CH(R)-CHO',cond:'NaOH dilué, T° ambiante → β-hydroxy-aldéhyde'}
+  ]},
+  acide:{name:'Acides Carboxyliques',color:'var(--p3)',routes:[
+    {name:'Oxydation alcool 1° (fort)',eq:'R-CH₂OH + KMnO₄ → R-COOH',cond:'KMnO₄/H₂SO₄, eau, reflux'},
+    {name:'Oxydation aldéhyde',eq:'R-CHO + [O] → R-COOH',cond:'KMnO₄ ou AgNO₃/NH₃ (Tollens)'},
+    {name:'Grignard + CO₂',eq:'R-MgX + CO₂ → R-COO⁻MgX⁺ → R-COOH',cond:'CO₂ gaz, éther; puis H₃O⁺ → +1 carbone'},
+    {name:'Hydrolyse ester (acide)',eq:'RCOOR\' + H₂O ⇌ RCOOH + R\'OH',cond:'H₂SO₄ cat., H₂O, reflux | réversible'},
+    {name:'Saponification ester',eq:'RCOOR\' + NaOH → RCOONa + R\'OH',cond:'NaOH aq., reflux | irréversible'},
+    {name:'Hydrolyse nitrile',eq:'R-CN + H₂O → R-COOH',cond:'HCl aq., reflux | via amide intermédiaire'}
+  ]},
+  amine:{name:'Amines',color:'var(--p4)',routes:[
+    {name:'Réduction nitrile',eq:'R-CN + LiAlH₄ → R-CH₂-NH₂',cond:'LiAlH₄, THF anhydre, N₂; puis H₂O'},
+    {name:'Réduction nitroarène',eq:'Ar-NO₂ + [H] → Ar-NH₂',cond:'Fe/HCl ou Sn/HCl, chaleur'},
+    {name:'Alkylation ammoniac',eq:'NH₃ + RX → RNH₂ + R₂NH + R₃N',cond:'NH₃ excès, autoclave | mélange'},
+    {name:'Réduction amide',eq:'RCONH₂ + LiAlH₄ → RCH₂NH₂',cond:'LiAlH₄, éther; puis H₂O'},
+    {name:'Diazotation → halogène (Sandmeyer)',eq:'ArN₂⁺ + CuBr → Ar-Br + N₂',cond:'ArNH₂ + NaNO₂/HCl (0-5°C) puis Cu₂X₂'},
+    {name:'Réarrangement de Hofmann',eq:'RCONH₂ + Br₂ + NaOH → RNH₂',cond:'Br₂/NaOH, eau | perd 1 C (décarboxylation)'}
+  ]},
+  ester:{name:'Esters',color:'var(--p5)',routes:[
+    {name:'Estérification de Fischer',eq:'RCOOH + R\'OH ⇌ RCOOR\' + H₂O',cond:'H₂SO₄, reflux | équilibre (éliminer H₂O)'},
+    {name:'Acylation alcool par chlorure',eq:'RCOCl + R\'OH → RCOOR\' + HCl',cond:'Pyridine ou Et₃N (base), 0°C | rapide'},
+    {name:'Acylation alcool par anhydride',eq:'(RCO)₂O + R\'OH → RCOOR\' + RCOOH',cond:'Base, T° ambiante | aspirine (Ac₂O)'},
+    {name:'Réaction de Williamson (ester)',eq:'RCOONa + R\'X → RCOOR\'',cond:'Solvant polaire aprotique'},
+    {name:'Trans-estérification',eq:'RCOOR\' + R\'\'OH ⇌ RCOOR\'\' + R\'OH',cond:'H⁺ ou base, T° | biodiesel'},
+    {name:'Alkylation lactone',eq:'Lactone + RMgX → hydroxy-ester',cond:'RMgX (2 éq.), éther anhydre'}
+  ]},
+  arene:{name:'Arènes — Dérivés Benzéniques',color:'var(--ink)',routes:[
+    {name:'Nitration',eq:'ArH + HNO₃ → Ar-NO₂',cond:'HNO₃/H₂SO₄, T°<60°C'},
+    {name:'Halogénation catalysée',eq:'ArH + Cl₂ + AlCl₃ → Ar-Cl',cond:'AlCl₃ ou FeBr₃, anhydre'},
+    {name:'Sulfonation',eq:'ArH + SO₃ → Ar-SO₃H',cond:'H₂SO₄ fumant (oléum), T°↑ | réversible'},
+    {name:'Alkylation Friedel-Crafts',eq:'ArH + RCl + AlCl₃ → Ar-R',cond:'AlCl₃, solvant apolaire | réarrangements!'},
+    {name:'Acylation Friedel-Crafts',eq:'ArH + RCOCl + AlCl₃ → Ar-COR',cond:'AlCl₃, 1 éq. | pas de réarrangement'},
+    {name:'Réduction Birch',eq:'ArH + Na/NH₃(l) → 1,4-cyclohexadiène',cond:'Na (métal) + NH₃ liquide + t-BuOH, -33°C'},
+    {name:'Oxydation chaîne latérale',eq:'Ar-CH₃ + KMnO₄ → Ar-COOH',cond:'KMnO₄/H₂SO₄, chaleur | ≥1 H sur C benzylique'},
+    {name:'Couplage diazonium',eq:'ArN₂⁺ + Ar\'H → Ar-N=N-Ar\'',cond:'pH 8-10, 0-5°C | colorants azoïques'}
+  ]}
+};
+
+function showSynthesis(key,el){
+  document.querySelectorAll('.syn-btn').forEach(b=>{b.style.background='var(--panel2)';b.style.border='1px solid var(--border)';b.style.color='var(--muted)';});
+  if(el){el.style.background=SYNTH[key].color;el.style.border='none';el.style.color='white';}
+  const s=SYNTH[key];
+  document.getElementById('synth-content').innerHTML=`<h3 style="font-family:'Fraunces',serif;font-size:1.05rem;color:${s.color};margin-bottom:11px;">Voies de synthèse — ${s.name}</h3><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:9px;">${s.routes.map((r,i)=>`<div style="background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:12px;"><div style="font-weight:700;font-size:.82rem;color:${s.color};margin-bottom:6px;">${i+1}. ${r.name}</div><div style="background:#1c1410;border-radius:5px;padding:7px;font-family:'Fira Code',monospace;font-size:.75rem;color:#a8e6cf;margin-bottom:6px;">${r.eq}</div><div style="font-size:.7rem;color:var(--muted);font-family:'Fira Code',monospace;line-height:1.65;">${r.cond}</div></div>`).join('')}</div>`;
+}
+
+// ═══════ MOLECULE 3D ═══════
+const MOL3D={
+  methane:{name:'Méthane',formula:'CH₄',desc:'Gaz naturel. Géométrie tétraédrique parfaite. Sp³. Combustible. Source d\'énergie.',geom:'Tétraédrique',hybrid:'sp³',extra:'M=16.04 g/mol | Eb=-161.5°C | Énergies C-H : 412 kJ/mol',atoms:[{el:'C',x:0,y:0,z:0,r:16,c:'#a8e6cf'},{el:'H',x:60,y:45,z:30,r:9,c:'#ffeaa7'},{el:'H',x:-60,y:45,z:-30,r:9,c:'#ffeaa7'},{el:'H',x:0,y:-65,z:45,r:9,c:'#ffeaa7'},{el:'H',x:0,y:-65,z:-45,r:9,c:'#ffeaa7'}],bonds:[[0,1],[0,2],[0,3],[0,4]]},
+  ethane:{name:'Éthane',formula:'C₂H₆',desc:'Alcane C2. Rotation libre autour de C-C. Conformation décalée (anti) stable.',geom:'Tétraédrique (×2)',hybrid:'sp³',extra:'M=30.07 g/mol | Eb=-88.6°C | Barrière rot. 12 kJ/mol',atoms:[{el:'C',x:-35,y:0,z:0,r:15,c:'#a8e6cf'},{el:'C',x:35,y:0,z:0,r:15,c:'#a8e6cf'},{el:'H',x:-75,y:35,z:20,r:9,c:'#ffeaa7'},{el:'H',x:-75,y:35,z:-20,r:9,c:'#ffeaa7'},{el:'H',x:-75,y:-45,z:0,r:9,c:'#ffeaa7'},{el:'H',x:75,y:35,z:20,r:9,c:'#ffeaa7'},{el:'H',x:75,y:35,z:-20,r:9,c:'#ffeaa7'},{el:'H',x:75,y:-45,z:0,r:9,c:'#ffeaa7'}],bonds:[[0,1],[0,2],[0,3],[0,4],[1,5],[1,6],[1,7]]},
+  ethanol:{name:'Éthanol',formula:'C₂H₅OH',desc:'Alcool éthylique. Liaisons H avec eau → miscible. Produit de fermentation.',geom:'Tétraédrique + coudée',hybrid:'sp³',extra:'M=46.07 g/mol | Eb=78.4°C | pKa=15.9 | Δf=-277 kJ/mol',atoms:[{el:'C',x:-40,y:5,z:0,r:15,c:'#a8e6cf'},{el:'C',x:25,y:5,z:0,r:15,c:'#a8e6cf'},{el:'O',x:80,y:-30,z:0,r:13,c:'#ff6b6b'},{el:'H',x:-70,y:-35,z:0,r:9,c:'#ffeaa7'},{el:'H',x:-60,y:40,z:25,r:9,c:'#ffeaa7'},{el:'H',x:-60,y:40,z:-25,r:9,c:'#ffeaa7'},{el:'H',x:35,y:50,z:25,r:9,c:'#ffeaa7'},{el:'H',x:35,y:50,z:-25,r:9,c:'#ffeaa7'},{el:'H',x:110,y:-10,z:0,r:9,c:'#ffeaa7'}],bonds:[[0,1],[1,2],[0,3],[0,4],[0,5],[1,6],[1,7],[2,8]]},
+  benzene:{name:'Benzène',formula:'C₆H₆',desc:'Archétype aromatique. 6 électrons π délocalisés. Règle de Hückel 4n+2 (n=1). Cancérigène!',geom:'Planaire (hexagonale)',hybrid:'sp² (délocalisation)',extra:'M=78.11 g/mol | Eb=80.1°C | Stabilisation aromatiqu : 151 kJ/mol',atoms:[{el:'C',x:55,y:0,z:0,r:13,c:'#a8e6cf'},{el:'C',x:27,y:-47,z:0,r:13,c:'#a8e6cf'},{el:'C',x:-27,y:-47,z:0,r:13,c:'#a8e6cf'},{el:'C',x:-55,y:0,z:0,r:13,c:'#a8e6cf'},{el:'C',x:-27,y:47,z:0,r:13,c:'#a8e6cf'},{el:'C',x:27,y:47,z:0,r:13,c:'#a8e6cf'},{el:'H',x:90,y:0,z:0,r:8,c:'#ffeaa7'},{el:'H',x:45,y:-77,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-45,y:-77,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-90,y:0,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-45,y:77,z:0,r:8,c:'#ffeaa7'},{el:'H',x:45,y:77,z:0,r:8,c:'#ffeaa7'}],bonds:[[0,1,1],[1,2,2],[2,3,1],[3,4,2],[4,5,1],[5,0,2],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11]]},
+  acetone:{name:'Acétone',formula:'(CH₃)₂CO',desc:'Cétone simple. Solvant universel. Miscible à l\'eau. Carbonyle réactif.',geom:'Coudée (C=O plan)',hybrid:'sp² (C=O)',extra:'M=58.08 g/mol | Eb=56.1°C | Miscible H₂O | Inflammable',atoms:[{el:'C',x:0,y:0,z:0,r:14,c:'#a8e6cf'},{el:'O',x:0,y:-55,z:0,r:13,c:'#ff6b6b'},{el:'C',x:-60,y:30,z:0,r:13,c:'#a8e6cf'},{el:'C',x:60,y:30,z:0,r:13,c:'#a8e6cf'},{el:'H',x:-88,y:5,z:22,r:8,c:'#ffeaa7'},{el:'H',x:-88,y:5,z:-22,r:8,c:'#ffeaa7'},{el:'H',x:-55,y:65,z:0,r:8,c:'#ffeaa7'},{el:'H',x:88,y:5,z:22,r:8,c:'#ffeaa7'},{el:'H',x:88,y:5,z:-22,r:8,c:'#ffeaa7'},{el:'H',x:55,y:65,z:0,r:8,c:'#ffeaa7'}],bonds:[[0,1,'double'],[0,2],[0,3],[2,4],[2,5],[2,6],[3,7],[3,8],[3,9]]},
+  methylamine:{name:'Méthylamine',formula:'CH₃NH₂',desc:'Amine primaire aliphatique. Base. Précurseur de médicaments.',geom:'Tétraédrique (N pyramidal)',hybrid:'sp³ (C et N)',extra:'M=31.06 g/mol | Eb=-6.3°C | pKa(NH₃⁺)=10.65 | Base',atoms:[{el:'C',x:-30,y:0,z:0,r:14,c:'#a8e6cf'},{el:'N',x:45,y:0,z:0,r:13,c:'#74b9ff'},{el:'H',x:-65,y:-35,z:0,r:9,c:'#ffeaa7'},{el:'H',x:-55,y:32,z:25,r:9,c:'#ffeaa7'},{el:'H',x:-55,y:32,z:-25,r:9,c:'#ffeaa7'},{el:'H',x:75,y:35,z:20,r:9,c:'#ffeaa7'},{el:'H',x:75,y:35,z:-20,r:9,c:'#ffeaa7'}],bonds:[[0,1],[0,2],[0,3],[0,4],[1,5],[1,6]]},
+  acac:{name:'Acide Acétique',formula:'CH₃COOH',desc:'Vinaigre (5%). Acide faible pKa=4.76. Forme des dimères par liaisons H.',geom:'Plane (COOH)',hybrid:'sp² (C=O), sp³ (CH₃)',extra:'M=60.05 g/mol | Eb=118°C | pKa=4.76 | Soluble H₂O',atoms:[{el:'C',x:-35,y:10,z:0,r:13,c:'#a8e6cf'},{el:'C',x:30,y:10,z:0,r:13,c:'#a8e6cf'},{el:'O',x:68,y:-35,z:0,r:12,c:'#ff6b6b'},{el:'O',x:68,y:55,z:0,r:12,c:'#ff6b6b'},{el:'H',x:90,y:65,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-65,y:-20,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-60,y:45,z:22,r:8,c:'#ffeaa7'},{el:'H',x:-60,y:45,z:-22,r:8,c:'#ffeaa7'}],bonds:[[0,1],[1,2,'double'],[1,3],[3,4],[0,5],[0,6],[0,7]]},
+  propane:{name:'Propane',formula:'C₃H₈',desc:'Gaz combustible (GPL). Alcane C3. 2 conformations: anti et gauche.',geom:'Tétraédrique (×3)',hybrid:'sp³',extra:'M=44.10 g/mol | Eb=-42.1°C | ΔcH°=-2220 kJ/mol',atoms:[{el:'C',x:-60,y:5,z:0,r:13,c:'#a8e6cf'},{el:'C',x:0,y:5,z:0,r:13,c:'#a8e6cf'},{el:'C',x:60,y:5,z:0,r:13,c:'#a8e6cf'},{el:'H',x:-90,y:-30,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-85,y:38,z:22,r:8,c:'#ffeaa7'},{el:'H',x:-85,y:38,z:-22,r:8,c:'#ffeaa7'},{el:'H',x:0,y:48,z:28,r:8,c:'#ffeaa7'},{el:'H',x:0,y:48,z:-28,r:8,c:'#ffeaa7'},{el:'H',x:90,y:-30,z:0,r:8,c:'#ffeaa7'},{el:'H',x:85,y:38,z:22,r:8,c:'#ffeaa7'},{el:'H',x:85,y:38,z:-22,r:8,c:'#ffeaa7'}],bonds:[[0,1],[1,2],[0,3],[0,4],[0,5],[1,6],[1,7],[2,8],[2,9],[2,10]]},
+  toluene:{name:'Toluène',formula:'C₇H₈',desc:'Benzène méthylé. Solvant courant. Oxydable en acide benzoïque (KMnO₄).',geom:'Planaire + CH₃ tétraédrique',hybrid:'sp² (cycle) + sp³ (CH₃)',extra:'M=92.14 g/mol | Eb=110.6°C | Solvant industriel',atoms:[{el:'C',x:55,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:27,y:-47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-27,y:-47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-55,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-27,y:47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:27,y:47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:90,y:0,z:0,r:12,c:'#a8e6cf'},{el:'H',x:45,y:-75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-45,y:-75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-88,y:0,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-45,y:75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:45,y:75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:120,y:-22,z:0,r:7,c:'#ffeaa7'},{el:'H',x:120,y:22,z:0,r:7,c:'#ffeaa7'},{el:'H',x:95,y:0,z:30,r:7,c:'#ffeaa7'}],bonds:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11],[6,12],[6,13],[6,14]]},
+  aniline:{name:'Aniline',formula:'C₆H₅NH₂',desc:'Amine aromatique. Base plus faible qu\'amine aliphatique. Colorants azoïques par diazotation.',geom:'Planaire (Ar) + pyramidal (N)',hybrid:'sp² (Ar) + sp³ partiellement (N)',extra:'M=93.13 g/mol | Eb=184°C | pKa(NH₃⁺)=4.6 | Toxique',atoms:[{el:'C',x:55,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:27,y:-47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-27,y:-47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-55,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-27,y:47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:27,y:47,z:0,r:12,c:'#a8e6cf'},{el:'N',x:90,y:0,z:0,r:12,c:'#74b9ff'},{el:'H',x:45,y:-75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-45,y:-75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-88,y:0,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-45,y:75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:45,y:75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:120,y:-18,z:0,r:7,c:'#ffeaa7'},{el:'H',x:120,y:18,z:0,r:7,c:'#ffeaa7'}],bonds:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[1,7],[2,8],[3,9],[4,10],[5,11],[6,12],[6,13]]},
+  ethylene:{name:'Éthylène',formula:'C₂H₄',desc:'Alcène le plus simple. Liaison π. Gaz de maturation des fruits. Monomère du polyéthylène.',geom:'Plane (sp²)',hybrid:'sp²',extra:'M=28.05 g/mol | Eb=-104°C | Mûrissement fruits | Angle H-C-H = 116.6°',atoms:[{el:'C',x:-30,y:0,z:0,r:14,c:'#a8e6cf'},{el:'C',x:30,y:0,z:0,r:14,c:'#a8e6cf'},{el:'H',x:-65,y:-35,z:0,r:9,c:'#ffeaa7'},{el:'H',x:-65,y:35,z:0,r:9,c:'#ffeaa7'},{el:'H',x:65,y:-35,z:0,r:9,c:'#ffeaa7'},{el:'H',x:65,y:35,z:0,r:9,c:'#ffeaa7'}],bonds:[[0,1,'double'],[0,2],[0,3],[1,4],[1,5]]},
+  butane:{name:'Butane',formula:'C₄H₁₀',desc:'Gaz GPL. Alcane C4. Conformations anti et gauche importantes.',geom:'Tétraédrique (×4)',hybrid:'sp³',extra:'M=58.12 g/mol | Eb=-0.5°C | Isomère : isobutane',atoms:[{el:'C',x:-80,y:5,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-25,y:5,z:0,r:12,c:'#a8e6cf'},{el:'C',x:30,y:5,z:0,r:12,c:'#a8e6cf'},{el:'C',x:85,y:5,z:0,r:12,c:'#a8e6cf'},{el:'H',x:-108,y:-28,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-105,y:35,z:22,r:8,c:'#ffeaa7'},{el:'H',x:-105,y:35,z:-22,r:8,c:'#ffeaa7'},{el:'H',x:-25,y:47,z:25,r:8,c:'#ffeaa7'},{el:'H',x:-25,y:47,z:-25,r:8,c:'#ffeaa7'},{el:'H',x:30,y:47,z:25,r:8,c:'#ffeaa7'},{el:'H',x:30,y:47,z:-25,r:8,c:'#ffeaa7'},{el:'H',x:113,y:-28,z:0,r:8,c:'#ffeaa7'},{el:'H',x:110,y:35,z:22,r:8,c:'#ffeaa7'},{el:'H',x:110,y:35,z:-22,r:8,c:'#ffeaa7'}],bonds:[[0,1],[1,2],[2,3],[0,4],[0,5],[0,6],[1,7],[1,8],[2,9],[2,10],[3,11],[3,12],[3,13]]},
+  acetylene:{name:'Acétylène',formula:'C₂H₂',desc:'Alcyne. Triple liaison (σ+2π). Linéaire. Gaz de soudage. pKa=25 (acide).',geom:'Linéaire',hybrid:'sp',extra:'M=26.04 g/mol | Eb=-84°C | pKa(C-H)=25 | Soudage oxyacétylénique',atoms:[{el:'C',x:-35,y:0,z:0,r:13,c:'#a8e6cf'},{el:'C',x:35,y:0,z:0,r:13,c:'#a8e6cf'},{el:'H',x:-75,y:0,z:0,r:9,c:'#ffeaa7'},{el:'H',x:75,y:0,z:0,r:9,c:'#ffeaa7'}],bonds:[[0,1,'triple'],[0,2],[1,3]]},
+  glucose:{name:'D-Glucose (ouvert)',formula:'C₆H₁₂O₆',desc:'Sucre principal. Forme ouverte. Chiral. 5 centres asymétriques. Forme Fischer.',geom:'Tétraédrique (×5 C chiraux)',hybrid:'sp³',extra:'M=180.16 g/mol | pF=146°C | Sucre réducteur | [α]D=+52.7°',atoms:[{el:'C',x:0,y:-90,z:0,r:12,c:'#a8e6cf'},{el:'C',x:0,y:-45,z:0,r:12,c:'#a8e6cf'},{el:'C',x:0,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:0,y:45,z:0,r:12,c:'#a8e6cf'},{el:'C',x:0,y:90,z:0,r:12,c:'#a8e6cf'},{el:'C',x:0,y:135,z:0,r:12,c:'#a8e6cf'},{el:'O',x:0,y:-130,z:0,r:11,c:'#ff6b6b'},{el:'O',x:45,y:-45,z:0,r:10,c:'#ff6b6b'},{el:'O',x:-45,y:0,z:0,r:10,c:'#ff6b6b'},{el:'O',x:45,y:45,z:0,r:10,c:'#ff6b6b'},{el:'O',x:-45,y:90,z:0,r:10,c:'#ff6b6b'},{el:'O',x:0,y:170,z:0,r:10,c:'#ff6b6b'}],bonds:[[0,1],[1,2],[2,3],[3,4],[4,5],[0,6,'double'],[1,7],[2,8],[3,9],[4,10],[5,11]]},
+  alanine:{name:'L-Alanine',formula:'C₃H₇NO₂',desc:'Acide aminé non essentiel. Centre chiral en Cα. Configuration L. Composant des protéines.',geom:'Tétraédrique (Cα chiral)',hybrid:'sp³ (Cα), sp² (COOH)',extra:'M=89.09 g/mol | pI=6.0 | pKa(NH₃⁺)=9.87 | pKa(COOH)=2.34',atoms:[{el:'C',x:0,y:0,z:0,r:14,c:'#a8e6cf'},{el:'N',x:-55,y:-35,z:0,r:12,c:'#74b9ff'},{el:'C',x:55,y:-35,z:0,r:12,c:'#a8e6cf'},{el:'O',x:88,y:-65,z:0,r:11,c:'#ff6b6b'},{el:'O',x:55,y:10,z:0,r:11,c:'#ff6b6b'},{el:'C',x:0,y:60,z:0,r:12,c:'#a8e6cf'},{el:'H',x:0,y:-45,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-78,y:-10,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-78,y:-58,z:0,r:8,c:'#ffeaa7'}],bonds:[[0,1],[0,2],[2,3,'double'],[2,4],[0,5],[0,6],[1,7],[1,8]]},
+  ethylacetate:{name:'Acétate d\'Éthyle',formula:'CH₃COOC₂H₅',desc:'Ester. Solvant de peintures/vernis. Produit d\'estérification.',geom:'Plan (C=O) + tétraédriques',hybrid:'sp² (C=O) + sp³',extra:'M=88.11 g/mol | Eb=77.1°C | Solvant courant | Odeur fruitée',atoms:[{el:'C',x:-70,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-10,y:0,z:0,r:12,c:'#a8e6cf'},{el:'O',x:-10,y:-50,z:0,r:11,c:'#ff6b6b'},{el:'O',x:45,y:25,z:0,r:11,c:'#ff6b6b'},{el:'C',x:95,y:25,z:0,r:12,c:'#a8e6cf'},{el:'C',x:140,y:0,z:0,r:12,c:'#a8e6cf'},{el:'H',x:-95,y:-30,z:0,r:8,c:'#ffeaa7'},{el:'H',x:-95,y:28,z:20,r:8,c:'#ffeaa7'},{el:'H',x:-95,y:28,z:-20,r:8,c:'#ffeaa7'},{el:'H',x:100,y:65,z:20,r:8,c:'#ffeaa7'},{el:'H',x:100,y:65,z:-20,r:8,c:'#ffeaa7'},{el:'H',x:165,y:28,z:20,r:8,c:'#ffeaa7'},{el:'H',x:165,y:28,z:-20,r:8,c:'#ffeaa7'},{el:'H',x:165,y:-32,z:0,r:8,c:'#ffeaa7'}],bonds:[[0,1],[1,2,'double'],[1,3],[3,4],[4,5],[0,6],[0,7],[0,8],[4,9],[4,10],[5,11],[5,12],[5,13]]},
+  phenol:{name:'Phénol',formula:'C₆H₅OH',desc:'Hydroxyle sur aromatique. Plus acide qu\'alcool (pKa≈10). Antiseptique (Lister 1865).',geom:'Planaire (Ar) + OH',hybrid:'sp² (Ar) + sp³ (O)',extra:'M=94.11 g/mol | pKa=10.0 | Antiseptique historique | Activant SEAr',atoms:[{el:'C',x:55,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:27,y:-47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-27,y:-47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-55,y:0,z:0,r:12,c:'#a8e6cf'},{el:'C',x:-27,y:47,z:0,r:12,c:'#a8e6cf'},{el:'C',x:27,y:47,z:0,r:12,c:'#a8e6cf'},{el:'O',x:90,y:0,z:0,r:12,c:'#ff6b6b'},{el:'H',x:116,y:18,z:0,r:8,c:'#ffeaa7'},{el:'H',x:45,y:-75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-45,y:-75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-88,y:0,z:0,r:7,c:'#ffeaa7'},{el:'H',x:-45,y:75,z:0,r:7,c:'#ffeaa7'},{el:'H',x:45,y:75,z:0,r:7,c:'#ffeaa7'}],bonds:[[0,1],[1,2],[2,3],[3,4],[4,5],[5,0],[0,6],[6,7],[1,8],[2,9],[3,10],[4,11],[5,12]]}
+};
+
+let mol3dState={rotX:0,rotY:0,autoRot:null,currentMol:'methane'};
+
+function draw3DMol(){
+  const key=document.getElementById('mol3dSel').value;
+  mol3dState.currentMol=key;
+  const mol=MOL3D[key];if(!mol)return;
+  document.getElementById('mol3d-name').textContent=mol.name;
+  document.getElementById('mol3d-formula').textContent=mol.formula;
+  document.getElementById('mol3d-desc').textContent=mol.desc;
+  document.getElementById('mol3d-geom').textContent=mol.geom;
+  document.getElementById('mol3d-hybrid').textContent=mol.hybrid;
+  document.getElementById('mol3d-extra').innerHTML=mol.extra.replace(/\|/g,'<br>');
+  renderMol3D(key);
+}
+
+function renderMol3D(key){
+  const c=document.getElementById('mol3dCanvas');if(!c)return;
+  const ctx=c.getContext('2d');const w=c.width,h=c.height;
+  ctx.fillStyle='#0a0f0a';ctx.fillRect(0,0,w,h);
+  const mol=MOL3D[key];if(!mol)return;
+  const mode=document.getElementById('mol3dMode').value;
+  // project 3D to 2D with rotation
+  function project(x,y,z){
+    const cosX=Math.cos(mol3dState.rotX*Math.PI/180),sinX=Math.sin(mol3dState.rotX*Math.PI/180);
+    const cosY=Math.cos(mol3dState.rotY*Math.PI/180),sinY=Math.sin(mol3dState.rotY*Math.PI/180);
+    const y2=y*cosX-z*sinX,z2=y*sinX+z*cosX;
+    const x2=x*cosY+z2*sinY,z3=-x*sinY+z2*cosY;
+    const scale=220/(220+z3);
+    return{px:w/2+x2*scale,py:h/2+y2*scale,z:z3,s:scale};
+  }
+  // sort atoms by z for painter's algorithm
+  const projected=mol.atoms.map((a,i)=>{const p=project(a.x,a.y,a.z);return{...a,...p,idx:i};});
+  projected.sort((a,b)=>b.z-a.z);
+  // draw bonds first
+  mol.bonds.forEach(b=>{
+    const a1=projected.find(p=>p.idx===b[0]),a2=projected.find(p=>p.idx===b[1]);
+    if(!a1||!a2)return;
+    const bondType=b[2]||'single';
+    if(mode==='wireframe'){
+      ctx.strokeStyle='rgba(168,230,207,0.6)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(a1.px,a1.py);ctx.lineTo(a2.px,a2.py);ctx.stroke();
+    } else {
+      const grad=ctx.createLinearGradient(a1.px,a1.py,a2.px,a2.py);
+      grad.addColorStop(0,a1.c||'#a8e6cf');grad.addColorStop(1,a2.c||'#ffeaa7');
+      ctx.strokeStyle=grad;ctx.lineWidth=mode==='sticks'?4:3;
+      ctx.beginPath();ctx.moveTo(a1.px,a1.py);ctx.lineTo(a2.px,a2.py);ctx.stroke();
+      if(bondType==='double'||bondType==='triple'){
+        ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1.5;
+        const dx=a2.py-a1.py,dy=a1.px-a2.px,l=Math.sqrt(dx*dx+dy*dy)||1;
+        ctx.beginPath();ctx.moveTo(a1.px+4*dx/l,a1.py+4*dy/l);ctx.lineTo(a2.px+4*dx/l,a2.py+4*dy/l);ctx.stroke();
+        if(bondType==='triple'){ctx.beginPath();ctx.moveTo(a1.px-4*dx/l,a1.py-4*dy/l);ctx.lineTo(a2.px-4*dx/l,a2.py-4*dy/l);ctx.stroke();}
+      }
+    }
+  });
+  // draw atoms
+  projected.forEach(a=>{
+    const r=(mode==='vdw'?a.r*1.8:a.r)*(a.s||1);
+    if(mode==='wireframe'){
+      ctx.beginPath();ctx.arc(a.px,a.py,3,0,Math.PI*2);ctx.fillStyle=a.c||'#a8e6cf';ctx.fill();
+    } else {
+      const g=ctx.createRadialGradient(a.px-r*0.25,a.py-r*0.25,r*0.1,a.px,a.py,r);
+      g.addColorStop(0,'rgba(255,255,255,0.4)');g.addColorStop(0.4,a.c||'#a8e6cf');g.addColorStop(1,'rgba(0,0,0,0.5)');
+      ctx.beginPath();ctx.arc(a.px,a.py,r,0,Math.PI*2);ctx.fillStyle=g;ctx.fill();
+      ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=0.5;ctx.stroke();
+      if(r>10){ctx.fillStyle='#0a0f0a';ctx.font=`bold ${Math.min(11,r*0.7)}px Fira Code`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(a.el,a.px,a.py);}
+    }
+  });
+  // label
+  ctx.fillStyle='rgba(255,255,255,0.12)';ctx.fillRect(4,h-20,w-8,16);
+  ctx.fillStyle='rgba(255,255,255,0.35)';ctx.font='7px Fira Code';ctx.textAlign='center';ctx.fillText(`${mol.name} | ${mol.formula} | ${mode.toUpperCase()}`,w/2,h-9);
+}
+
+function rotateX(a){mol3dState.rotX+=a;renderMol3D(mol3dState.currentMol);}
+function rotateY(a){mol3dState.rotY+=a;renderMol3D(mol3dState.currentMol);}
+function resetRotation(){mol3dState.rotX=0;mol3dState.rotY=0;renderMol3D(mol3dState.currentMol);}
+function rotateMol(){
+  if(mol3dState.autoRot){clearInterval(mol3dState.autoRot);mol3dState.autoRot=null;document.getElementById('btn-rotate').textContent='⟳ ROTATION AUTO';return;}
+  document.getElementById('btn-rotate').textContent='⏹ STOP';
+  mol3dState.autoRot=setInterval(()=>{mol3dState.rotY+=1.5;renderMol3D(mol3dState.currentMol);},50);
+}
+
+// ═══════ ENERGY DIAGRAMS ═══════
+const ENERGY_PROFILES={
+  sn1:{label:'SN1',tertiary:{Ea:75,dH:-40,pts:[[0,0],[30,75],[55,35],[80,75],[100,-40]],inter:'Carbocation'},secondary:{Ea:95,dH:-30,pts:[[0,0],[30,95],[55,45],[80,95],[100,-30]],inter:'Carbocation'},primary:{Ea:130,dH:-20,pts:[[0,0],[30,130],[55,55],[80,130],[100,-20]],inter:'Carbocation (instable)'}},
+  sn2:{label:'SN2',tertiary:{Ea:145,dH:-45,pts:[[0,0],[50,145],[100,-45]],inter:'Aucun (concerté)'},secondary:{Ea:110,dH:-42,pts:[[0,0],[50,110],[100,-42]],inter:'Aucun (concerté)'},primary:{Ea:80,dH:-48,pts:[[0,0],[50,80],[100,-48]],inter:'Aucun (concerté)'}},
+  e1:{label:'E1',tertiary:{Ea:70,dH:-50,pts:[[0,0],[30,70],[55,30],[80,70],[100,-50]],inter:'Carbocation'},secondary:{Ea:90,dH:-40,pts:[[0,0],[30,90],[55,35],[80,90],[100,-40]],inter:'Carbocation'},primary:{Ea:125,dH:-30,pts:[[0,0],[30,125],[55,50],[80,125],[100,-30]],inter:'Carbocation (rare)'}},
+  e2:{label:'E2',tertiary:{Ea:65,dH:-55,pts:[[0,0],[50,65],[100,-55]],inter:'Aucun (concerté)'},secondary:{Ea:85,dH:-50,pts:[[0,0],[50,85],[100,-50]],inter:'Aucun (concerté)'},primary:{Ea:100,dH:-45,pts:[[0,0],[50,100],[100,-45]],inter:'Aucun (concerté)'}},
+  ae:{label:'AE',tertiary:{Ea:50,dH:-85,pts:[[0,0],[30,50],[55,20],[80,50],[100,-85]],inter:'Carbocation/bromonium'},secondary:{Ea:65,dH:-80,pts:[[0,0],[30,65],[55,25],[80,65],[100,-80]],inter:'Carbocation'},primary:{Ea:80,dH:-75,pts:[[0,0],[30,80],[55,30],[80,80],[100,-75]],inter:'Carbocation'}},
+  an:{label:'AN',tertiary:{Ea:40,dH:-60,pts:[[0,0],[35,40],[65,15],[100,-60]],inter:'Alcoxyde tétraédrique'},secondary:{Ea:50,dH:-55,pts:[[0,0],[35,50],[65,20],[100,-55]],inter:'Alcoxyde'},primary:{Ea:60,dH:-50,pts:[[0,0],[35,60],[65,25],[100,-50]],inter:'Alcoxyde'}},
+  estherif:{label:'Estérification',tertiary:{Ea:60,dH:-10,pts:[[0,0],[25,60],[50,30],[75,60],[100,-10]],inter:'Tétraédrique'},secondary:{Ea:65,dH:-8,pts:[[0,0],[25,65],[50,32],[75,65],[100,-8]],inter:'Tétraédrique'},primary:{Ea:70,dH:-5,pts:[[0,0],[25,70],[50,35],[75,70],[100,-5]],inter:'Tétraédrique'}}
+};
+
+function updateTemp(){
+  const T=+document.getElementById('tempRange').value;
+  document.getElementById('temp-display').textContent=T+'°C';
+  drawEnergyDiagram();
+}
+
+function drawEnergyDiagram(){
+  const rxn=document.getElementById('energySel').value;
+  const sub=document.getElementById('substrateType').value;
+  const T=+document.getElementById('tempRange').value;
+  const prof=ENERGY_PROFILES[rxn];if(!prof)return;
+  const data=prof[sub]||prof.secondary;
+
+  // compute Arrhenius k ratio
+  const R=8.314,T_K=T+273.15,A=1e13;
+  const k=A*Math.exp(-data.Ea*1000/(R*T_K));
+  const halflife=Math.LN2/k;
+
+  document.getElementById('enthalpy').textContent=(data.dH>0?'+':'')+data.dH+' kJ/mol';
+  document.getElementById('ea-display').textContent=data.Ea+' kJ/mol';
+  document.getElementById('inter-display').textContent=data.inter;
+  document.getElementById('kinetics-box').innerHTML=`T = ${T}°C (${(T+273).toFixed(0)} K)\nEa = ${data.Ea} kJ/mol\nk ∝ e^(-${(data.Ea*1000/(R*T_K)).toFixed(1)})\nk rel = ${k.toExponential(2)}\nΔH° = ${data.dH} kJ/mol`;
+
+  const c=document.getElementById('energyCanvas');if(!c)return;
+  const ctx=c.getContext('2d');const W=c.width,H=c.height;
+  ctx.fillStyle='#0d1810';ctx.fillRect(0,0,W,H);
+
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=10;i++){ctx.beginPath();ctx.moveTo(60+i*(W-80)/10,20);ctx.lineTo(60+i*(W-80)/10,H-40);ctx.stroke();}
+  for(let i=0;i<=8;i++){ctx.beginPath();ctx.moveTo(60,20+i*(H-60)/8);ctx.lineTo(W-20,20+i*(H-60)/8);ctx.stroke();}
+
+  // axes
+  ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(60,20);ctx.lineTo(60,H-40);ctx.lineTo(W-20,H-40);ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font='9px Fira Code';ctx.textAlign='center';
+  ctx.fillText('Coordonnée de réaction →',W/2,H-12);
+  ctx.save();ctx.translate(14,H/2);ctx.rotate(-Math.PI/2);ctx.fillText('Énergie (kJ/mol)',0,0);ctx.restore();
+
+  // energy curve with Bezier
+  const pts=data.pts;
+  const maxE=Math.max(...pts.map(p=>p[1]));
+  const minE=Math.min(...pts.map(p=>p[1]));
+  const eRange=Math.max(Math.abs(maxE)+20,Math.abs(minE)+20,100);
+  const baseline=H-40-(H-60)*(-minE+20)/eRange;
+
+  function ex(xpct){return 60+(W-80)*xpct/100;}
+  function ey(e){return H-40-(H-60)*(e-minE+20)/eRange;}
+
+  // gradient curve
+  const g=ctx.createLinearGradient(60,0,W-20,0);
+  g.addColorStop(0,'#2d6a4f');g.addColorStop(0.5,'#b5451b');g.addColorStop(1,'#1d3557');
+  ctx.strokeStyle=g;ctx.lineWidth=3;ctx.beginPath();
+  pts.forEach((p,i)=>{
+    const x=ex(p[0]),y=ey(p[1]);
+    if(i===0){ctx.moveTo(x,y);}
+    else{
+      const pp=pts[i-1],px=ex(pp[0]),py=ey(pp[1]);
+      const cpx=(px+x)/2,cpy=py;const cpx2=(px+x)/2,cpy2=y;
+      ctx.bezierCurveTo(cpx,cpy,cpx2,cpy2,x,y);
+    }
+  });ctx.stroke();
+
+  // peak markers
+  pts.forEach((p,i)=>{
+    const x=ex(p[0]),y=ey(p[1]);
+    const isTransition=i>0&&i<pts.length-1&&p[1]>pts[i-1][1]&&p[1]>pts[i+1][1];
+    const isInter=i>0&&i<pts.length-1&&p[1]<pts[i-1][1]&&p[1]<pts[i+1][1];
+    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);
+    ctx.fillStyle=isTransition?'#fd79a8':(isInter?'#fdcb6e':'#a8e6cf');ctx.fill();
+    if(isTransition){ctx.fillStyle='#fd79a8';ctx.font='8px Fira Code';ctx.textAlign='center';ctx.fillText('‡ Ea='+data.Ea,x,y-12);}
+    if(i===0){ctx.fillStyle='rgba(255,255,255,0.55)';ctx.font='8px Fira Code';ctx.textAlign='center';ctx.fillText('Réactifs',x+15,y-10);}
+    if(i===pts.length-1){ctx.fillStyle='rgba(255,255,255,0.55)';ctx.font='8px Fira Code';ctx.textAlign='center';ctx.fillText('Produits',x-15,y-10);}
+  });
+
+  // dH annotation
+  const lastP=pts[pts.length-1];
+  ctx.strokeStyle='rgba(212,160,23,0.5)';ctx.setLineDash([4,3]);ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(ex(pts[0][0]),ey(pts[0][1]));ctx.lineTo(ex(lastP[0])+20,ey(pts[0][1]));ctx.stroke();
+  ctx.beginPath();ctx.moveTo(ex(lastP[0]),ey(lastP[1]));ctx.lineTo(ex(lastP[0])+20,ey(lastP[1]));ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle='rgba(212,160,23,0.7)';ctx.lineWidth=1.5;ctx.beginPath();
+  ctx.moveTo(ex(lastP[0])+15,ey(pts[0][1]));ctx.lineTo(ex(lastP[0])+15,ey(lastP[1]));ctx.stroke();
+  ctx.fillStyle='#fdcb6e';ctx.font='8px Fira Code';ctx.textAlign='left';
+  ctx.fillText('ΔH°='+data.dH,ex(lastP[0])+18,ey((pts[0][1]+lastP[1])/2));
+
+  // title
+  ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font='bold 11px Fraunces, serif';ctx.textAlign='center';
+  ctx.fillText(`Profil énergétique ${prof.label} — ${sub==='tertiary'?'tertiaire':sub==='secondary'?'secondaire':'primaire'}`,W/2,35);
+}
+
+// ═══════ NOMENCLATURE ═══════
+const PREFIXES=['méth','éth','prop','but','pent','hex','hept','oct','non','déc'];
+const SUFFIXES={alcane:'ane',alcool:'anol',aldehyde:'anal',cetone:'anone',acide:'anoïque',amine:'anamine',ester:'anoate',alcene:'ène'};
+
+function updateNomen(){
+  const type=document.getElementById('nomenType').value;
+  const n=+document.getElementById('chainLength').value;
+  document.getElementById('chain-display').textContent=n+' C';
+  const pos=Math.min(+document.getElementById('funcPos').value,n);
+  const branch=document.getElementById('nomenBranch').value;
+  const bp=Math.min(+document.getElementById('branchPos').value,n);
+  const suf=SUFFIXES[type]||'ane';
+  const pref=PREFIXES[n-1]||'?';
+  let name='';
+  let expl='';
+  // Build name
+  let branchPart='';
+  if(branch==='methyl')branchPart=bp+'-méthyl-';
+  else if(branch==='ethyl')branchPart=bp+'-éthyl-';
+  else if(branch==='dimethyl')branchPart=bp+','+Math.min(bp+2,n-1)+'-diméthyl-';
+  if(type==='alcane'){name=branchPart+pref+suf;}
+  else if(type==='alcool'){name=branchPart+pref+'an-'+pos+'-ol';}
+  else if(type==='aldehyde'){name=branchPart+pref+suf;}
+  else if(type==='cetone'){name=branchPart+pref+'an-'+pos+'-one';}
+  else if(type==='acide'){name='Acide '+branchPart+pref+suf;}
+  else if(type==='amine'){name=branchPart+pref+'an-'+pos+'-amine';}
+  else if(type==='ester'){name=branchPart+'éthyl '+pref+'anoate';}
+  else if(type==='alcene'){name=branchPart+pref+'ène-'+pos;}
+  // Explanation
+  expl=`Chaîne principale : ${n} carbones → ${pref}-\nType : ${type} → suffix ${suf}\nPosition : ${pos}${branch?` | Ramif. : ${branch} en C${bp}`:''}`;
+  document.getElementById('nomen-result').textContent=name;
+  document.getElementById('nomen-explanation').innerHTML=expl.replace(/\n/g,'<br>');
+  drawNomenChain(n,type,pos,branch,bp);
+  drawNomenCanvas(n,type,pos);
+}
+
+function drawNomenChain(n,type,pos,branch,bp){
+  const container=document.getElementById('nomen-chain');container.innerHTML='';
+  const suffixSymbols={alcane:'',alcool:'OH',aldehyde:'CHO',cetone:'=O',acide:'COOH',amine:'NH₂',ester:'COO',alcene:'='};
+  for(let i=1;i<=n;i++){
+    const d=document.createElement('div');d.className='nomen-c';
+    let label='C'+i;
+    if(i===pos&&type!=='alcane'){d.style.background='var(--p2)';label='C'+i+'('+suffixSymbols[type]+')';}
+    if(branch&&i===bp){d.style.background='var(--p3)';}
+    d.textContent=label;d.title=`Carbone ${i}`;container.appendChild(d);
+    if(i<n){const arrow=document.createElement('div');arrow.style.cssText='color:rgba(255,255,255,.4);font-family:Fira Code;font-size:.7rem;align-self:center;';arrow.textContent='—';container.appendChild(arrow);}
+  }
+}
+
+function drawNomenCanvas(n,type,pos){
+  const c=document.getElementById('nomenCanvas');if(!c)return;
+  const ctx=c.getContext('2d');const w=c.width,h=c.height;
+  ctx.fillStyle='#1c1410';ctx.fillRect(0,0,w,h);
+  const dx=Math.min(165/n,35),sx=25;
+  for(let i=0;i<n;i++){
+    const x=sx+i*dx;const y=h/2;
+    ctx.strokeStyle='rgba(200,200,200,0.4)';ctx.lineWidth=2;
+    if(i<n-1){ctx.beginPath();ctx.moveTo(x+11,y);ctx.lineTo(x+dx-11,y);ctx.stroke();}
+    ctx.beginPath();ctx.arc(x,y,11,0,Math.PI*2);
+    ctx.fillStyle=(i+1)===pos&&type!=='alcane'?'#b5451b':'#2d6a4f';ctx.fill();
+    ctx.fillStyle='white';ctx.font='bold 7px Fira Code';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('C'+(i+1),x,y);
+    // vertical substituents
+    if(i===0&&(type==='aldehyde'||type==='acide')){ctx.fillStyle='#ff6b6b';ctx.font='7px Fira Code';ctx.textAlign='center';ctx.fillText('O',x,y-25);}
+    if((i+1)===pos&&type==='alcool'){ctx.fillStyle='#ff6b6b';ctx.font='7px Fira Code';ctx.textAlign='center';ctx.fillText('OH',x,y-25);}
+    if((i+1)===pos&&type==='amine'){ctx.fillStyle='#74b9ff';ctx.font='7px Fira Code';ctx.textAlign='center';ctx.fillText('NH₂',x,y-25);}
+  }
+  ctx.fillStyle='rgba(255,255,255,.35)';ctx.font='8px Fira Code';ctx.textAlign='center';ctx.fillText('Structure simplifiée',w/2,h-8);
+}
+
+let nomenQuiz={q:null,correct:null,answered:false};
+function genNomenQuiz(){
+  const types=['alcane','alcool','aldehyde','cetone','acide'];
+  const t=types[Math.floor(Math.random()*types.length)];
+  const n=2+Math.floor(Math.random()*6);
+  const pos=1+Math.floor(Math.random()*(n-1));
+  const suf=SUFFIXES[t];const pref=PREFIXES[n-1];
+  let correct;
+  if(t==='alcane')correct=pref+suf;
+  else if(t==='aldehyde')correct=pref+suf;
+  else if(t==='alcool')correct=pref+'an-'+pos+'-ol';
+  else if(t==='cetone')correct=pref+'an-'+pos+'-one';
+  else if(t==='acide')correct='acide '+pref+suf;
+  nomenQuiz={t,n,pos,correct,answered:false};
+  // generate wrong answers
+  const wrongs=[PREFIXES[n]?PREFIXES[n]+suf:PREFIXES[n-2]+suf,pref+'an-'+(pos===1?2:pos-1)+'-ol',pref+SUFFIXES[t==='alcool'?'acide':'alcool']];
+  const opts=[correct,...wrongs.slice(0,2)].sort(()=>Math.random()-0.5);
+  document.getElementById('nomen-quiz').innerHTML=`<p style="font-size:.81rem;font-weight:700;margin-bottom:8px;">Nommez : ${pref.charAt(0).toUpperCase()+pref.slice(1)}ane (C${n}) type ${t}, position ${pos}</p>${opts.map(o=>`<button onclick="checkNomenAnswer('${o}')" style="display:block;width:100%;text-align:left;margin-bottom:5px;background:var(--panel);border:1.5px solid var(--border);border-radius:6px;padding:7px 11px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:.79rem;">${o}</button>`).join('')}<button onclick="genNomenQuiz()" class="btn btn-o" style="width:auto;padding:5px 13px;font-size:.75rem;margin-top:7px;">🎲 Autre</button>`;
+}
+
+function checkNomenAnswer(ans){
+  if(nomenQuiz.answered)return;
+  nomenQuiz.answered=true;
+  const btns=document.querySelectorAll('#nomen-quiz button');
+  btns.forEach(b=>{if(b.textContent===nomenQuiz.correct)b.style.background='#d4edda';if(b.textContent===ans&&ans!==nomenQuiz.correct)b.style.background='#f8d7da';});
+}
+
+// ═══════ ISOMERS ═══════
+const ISOMERS_DATA={
+  C4H10:{name:'C₄H₁₀ — Butane',isomers:[{name:'n-butane',type:'Constitution',smiles:'C-C-C-C',desc:'Chaîne droite. 4 carbones en ligne.',formula:'CH₃-CH₂-CH₂-CH₃',eb:'-0.5°C'},{name:'isobutane (2-méthylpropane)',type:'Constitution',smiles:'CC(C)C',desc:'Ramifié. Chaîne de 3C + 1 méthyle en C2.',formula:'(CH₃)₃CH',eb:'-11.7°C'}]},
+  C5H12:{name:'C₅H₁₂ — Pentane',isomers:[{name:'n-pentane',type:'Constitution',smiles:'CCCCC',desc:'Chaîne droite (5C).',formula:'CH₃(CH₂)₃CH₃',eb:'36.1°C'},{name:'isopentane (2-méthylbutane)',type:'Constitution',smiles:'CCC(C)C',desc:'Ramifié. Méthyle en C2.',formula:'(CH₃)₂CHCH₂CH₃',eb:'27.9°C'},{name:'néopentane (2,2-diméthylpropane)',type:'Constitution',smiles:'CC(C)(C)C',desc:'Très ramifié. Symétrique.',formula:'C(CH₃)₄',eb:'9.5°C'}]},
+  C4H8:{name:'C₄H₈ — Butènes (DB=1)',isomers:[{name:'but-1-ène',type:'Position',smiles:'C=CCC',desc:'Double liaison en C1-C2.',formula:'CH₂=CH-CH₂-CH₃',eb:'-6.3°C'},{name:'(Z)-but-2-ène',type:'Stéréo',smiles:'C/C=C\\C',desc:'Cis-isomère (Z). Méthyles même côté.',formula:'Z-CH₃-CH=CH-CH₃',eb:'3.7°C'},{name:'(E)-but-2-ène',type:'Stéréo',smiles:'C/C=C/C',desc:'Trans-isomère (E). Méthyles opposés.',formula:'E-CH₃-CH=CH-CH₃',eb:'0.9°C'},{name:'isobutylène (2-méthylpropène)',type:'Constitution',smiles:'C=C(C)C',desc:'Alcène terminal, ramifié.',formula:'CH₂=C(CH₃)₂',eb:'-6.9°C'}]},
+  C3H8O:{name:'C₃H₈O — Propanol (DBE=0)',isomers:[{name:'propan-1-ol',type:'Position',smiles:'CCCO',desc:'OH sur C1 terminal. Alcool primaire.',formula:'CH₃-CH₂-CH₂OH',eb:'97.2°C'},{name:'propan-2-ol (isopropanol)',type:'Position',smiles:'CC(O)C',desc:'OH sur C2. Alcool secondaire. Désinfectant.',formula:'(CH₃)₂CHOH',eb:'82.6°C'},{name:'méthoxyéthane (méthyl-éthyl-éther)',type:'Fonction',smiles:'COC C',desc:'Éther (R-O-R\'). Même formule, groupe fonctionnel différent.',formula:'CH₃-O-CH₂CH₃',eb:'7.4°C'}]},
+  C4H8O:{name:'C₄H₈O — DBE=1',isomers:[{name:'butanal',type:'Constitution',smiles:'CCCC=O',desc:'Aldéhyde en C1. Réducteur. Tollens +.',formula:'CH₃CH₂CH₂CHO',eb:'74.8°C'},{name:'butanone (MEK)',type:'Constitution',smiles:'CCC(=O)C',desc:'Cétone. Non réducteur. Solvant industriel.',formula:'CH₃-CO-CH₂CH₃',eb:'79.6°C'},{name:'2-méthylpropanal',type:'Constitution',smiles:'CC(C)C=O',desc:'Aldéhyde ramifié. Isomère de constitution.',formula:'(CH₃)₂CHCHO',eb:'61°C'},{name:'tétrahydrofurane (THF)',type:'Fonction',smiles:'C1CCCO1',desc:'Éther cyclique (lactone). Solvant.',formula:'Cycle O-CH₂-CH₂-CH₂-CH₂',eb:'66°C'}]},
+  C4H9Br:{name:'C₄H₉Br — Bromobutanes',isomers:[{name:'1-bromobutane',type:'Position',smiles:'CCCCBr',desc:'Br en C1. Substrat primaire SN2.',formula:'CH₃CH₂CH₂CH₂Br',eb:'101.6°C'},{name:'2-bromobutane',type:'Position',smiles:'CCC(Br)C',desc:'Br en C2. Centre chiral → énantiomères R et S.',formula:'CH₃CHBrCH₂CH₃',eb:'91.2°C'},{name:'(R)-2-bromobutane',type:'Stéréo',smiles:'[C@@H](Br)(CC)C',desc:'Énantiomère R. Propriétés différentes si chirale.',formula:'(R)-CH₃CHBrC₂H₅',eb:'91°C'},{name:'(S)-2-bromobutane',type:'Stéréo',smiles:'[C@H](Br)(CC)C',desc:'Énantiomère S. Image miroir de R.',formula:'(S)-CH₃CHBrC₂H₅',eb:'91°C'},{name:'1-bromo-2-méthylpropane',type:'Constitution',smiles:'CC(C)CBr',desc:'Br sur C de chaîne ramifiée. Primaire.',formula:'(CH₃)₂CHCH₂Br',eb:'91.5°C'},{name:'2-bromo-2-méthylpropane (t-BuBr)',type:'Constitution',smiles:'CC(C)(C)Br',desc:'Tertiaire. SN1/E1 favorisé.',formula:'(CH₃)₃CBr',eb:'73.3°C'}]}
+};
+
+const ISOMER_COLORS={Constitution:'var(--p1)',Position:'var(--p2)',Fonction:'var(--p3)',Stéréo:'var(--gold)'};
+function showIsomers(){
+  const key=document.getElementById('isomerFormula').value;
+  const data=ISOMERS_DATA[key];if(!data)return;
+  document.getElementById('isomers-content').innerHTML=`<h3 style="font-family:'Fraunces',serif;color:var(--p1);margin-bottom:9px;">${data.name}</h3><div class="isomer-grid">${data.isomers.map((iso,i)=>`<div class="isomer-card" onclick="this.style.borderColor='${ISOMER_COLORS[iso.type]}'"><div style="background:${ISOMER_COLORS[iso.type]};color:white;border-radius:4px;padding:2px 7px;font-size:.6rem;font-family:'Fira Code',monospace;font-weight:700;margin-bottom:6px;display:inline-block;">${iso.type}</div><div style="font-weight:700;font-size:.79rem;margin-bottom:4px;">${iso.name}</div><div style="font-family:'Fira Code',monospace;font-size:.72rem;color:var(--p1);margin-bottom:5px;">${iso.formula}</div><div style="font-size:.71rem;color:var(--muted);line-height:1.6;">${iso.desc}</div><div style="font-size:.68rem;color:var(--p2);margin-top:4px;font-family:'Fira Code',monospace;">Eb = ${iso.eb}</div></div>`).join('')}</div><div style="margin-top:9px;font-size:.75rem;color:var(--muted);">Code couleur : <span style="color:var(--p1)">■ Constitution</span> · <span style="color:var(--p2)">■ Position</span> · <span style="color:var(--p3)">■ Fonction</span> · <span style="color:var(--gold)">■ Stéréo</span></div>`;
+}
+
+// ═══════ CALCULATOR ═══════
+const ATOMIC_MASSES={H:1.008,C:12.011,N:14.007,O:15.999,F:18.998,Cl:35.453,Br:79.904,I:126.9,S:32.06,P:30.97,Na:22.99,K:39.1,Ca:40.08,Mg:24.31,Al:26.98,Si:28.09};
+
+function updateCalcUI(){
+  const t=document.getElementById('calcType').value;
+  const inputs=document.getElementById('calc-inputs');
+  const formulas=document.getElementById('calc-formula');
+  const templates={
+    mol:{inputs:`<div class="fg"><label>FORMULE BRUTE (ex: C2H5OH, C6H12O6)</label><input type="text" id="ci-formula" value="C2H5OH" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div>`,formula:'M = Σ(n×M_atome)\nC=12.011, H=1.008, O=15.999...'},
+    yield:{inputs:`<div class="fg"><label>MASSE THÉORIQUE (g)</label><input type="number" id="ci-theoric" value="10" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div><div class="fg"><label>MASSE EXPÉRIMENTALE (g)</label><input type="number" id="ci-exp" value="7.5" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div>`,formula:'τ = (m_exp / m_théo) × 100 (%)'},
+    dilution:{inputs:`<div class="fg"><label>C₁ (mol/L)</label><input type="number" id="ci-c1" value="1" step="0.01" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div><div class="fg"><label>V₁ (mL)</label><input type="number" id="ci-v1" value="50" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div><div class="fg"><label>C₂ VOULUE (mol/L)</label><input type="number" id="ci-c2" value="0.1" step="0.01" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div>`,formula:'C₁V₁ = C₂V₂ → V₂ = C₁V₁/C₂'},
+    ph:{inputs:`<div class="fg"><label>CONCENTRATION C (mol/L)</label><input type="number" id="ci-ph-c" value="0.1" step="0.001" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div><div class="fg"><label>pKa (ex: 4.76 pour acide acétique)</label><input type="number" id="ci-pka" value="4.76" step="0.01" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div>`,formula:'pH = ½(pKa - log C)  (acide faible)'},
+    degree:{inputs:`<div class="fg"><label>FORMULE BRUTE (ex: C6H6, C4H8O)</label><input type="text" id="ci-dbe" value="C6H6" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div>`,formula:'DBE = (2C + 2 + N - H - X) / 2\nChaque DBE = 1 double liaison ou 1 cycle'},
+    rf:{inputs:`<div class="fg"><label>DISTANCE COMPOSÉ (mm)</label><input type="number" id="ci-dc" value="35" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div><div class="fg"><label>DISTANCE SOLVANT (mm)</label><input type="number" id="ci-ds" value="80" style="width:100%;background:var(--panel2);border:1px solid var(--border);border-radius:5px;padding:7px;color:var(--ink);font-family:'Fira Code',monospace;"></div>`,formula:'Rf = d_composé / d_solvant  (0 ≤ Rf ≤ 1)'}
+  };
+  const tmpl=templates[t];
+  inputs.innerHTML=tmpl?tmpl.inputs:'';
+  formulas.textContent=tmpl?tmpl.formula:'—';
+}
+
+function parseMolecularFormula(f){
+  let M=0;const re=/([A-Z][a-z]?)(\d*)/g;let m;
+  while((m=re.exec(f))!==null){const el=m[1];const n=+m[2]||1;if(ATOMIC_MASSES[el])M+=ATOMIC_MASSES[el]*n;}
+  return M;
+}
+function parseDBE(f){
+  let C=0,H=0,N=0,X=0;const re=/([A-Z][a-z]?)(\d*)/g;let m;
+  while((m=re.exec(f))!==null){const el=m[1];const n=+m[2]||1;if(el==='C')C+=n;else if(el==='H')H+=n;else if(el==='N')N+=n;else if(['F','Cl','Br','I'].includes(el))X+=n;}
+  return(2*C+2+N-H-X)/2;
+}
+
+function calculate(){
+  const t=document.getElementById('calcType').value;
+  const res=document.getElementById('calc-result');
+  let result='';
+  try{
+    if(t==='mol'){
+      const f=document.getElementById('ci-formula').value.trim();
+      const M=parseMolecularFormula(f);
+      result=`Formule : ${f}\nMasse molaire = ${M.toFixed(3)} g/mol\n\nComposition élémentaire :\n${Object.entries(ATOMIC_MASSES).filter(([el])=>f.includes(el)).map(([el])=>{const re=new RegExp(el+'(\\d*)','g');let n=0,mm;while((mm=re.exec(f))!==null)n+=+(mm[1])||1;return `${el} : ${n} atome(s) × ${ATOMIC_MASSES[el]} = ${(n*ATOMIC_MASSES[el]).toFixed(3)} g/mol (${(n*ATOMIC_MASSES[el]/M*100).toFixed(1)}%)`;}).join('\n')}`;
+    } else if(t==='yield'){
+      const mth=+document.getElementById('ci-theoric').value;
+      const mexp=+document.getElementById('ci-exp').value;
+      const yield_=mexp/mth*100;
+      result=`Rendement = ${yield_.toFixed(2)}%\n\nm_exp = ${mexp} g\nm_théo = ${mth} g\n\n${yield_>90?'✅ Excellent rendement':yield_>70?'👍 Bon rendement':yield_>50?'⚠️ Rendement moyen':'❌ Faible rendement'}\n\nPerte = ${(mth-mexp).toFixed(3)} g (${(100-yield_).toFixed(2)}%)`;
+    } else if(t==='dilution'){
+      const c1=+document.getElementById('ci-c1').value;
+      const v1=+document.getElementById('ci-v1').value;
+      const c2=+document.getElementById('ci-c2').value;
+      const v2=c1*v1/c2;
+      result=`C₁V₁ = C₂V₂\n\nV₂ = (${c1} × ${v1}) / ${c2}\nV₂ = ${v2.toFixed(2)} mL\n\nVolume d'eau à ajouter : ${(v2-v1).toFixed(2)} mL\nFacteur de dilution : ${(c1/c2).toFixed(2)}×`;
+    } else if(t==='ph'){
+      const c=+document.getElementById('ci-ph-c').value;
+      const pka=+document.getElementById('ci-pka').value;
+      const pH=(pka-Math.log10(c))/2;
+      const alpha=Math.pow(10,-pH)/c;
+      result=`pH = ½(${pka} - log(${c}))\npH = ${pH.toFixed(2)}\n\npKa = ${pka} | C = ${c} mol/L\n[H⁺] = ${(Math.pow(10,-pH)).toExponential(3)} mol/L\nTaux d'ionisation α = ${(alpha*100).toFixed(2)}%\n${alpha<0.05?'✅ Approximation acide faible valide':'⚠️ Approximation limite — utiliser formule exacte'}`;
+    } else if(t==='degree'){
+      const f=document.getElementById('ci-dbe').value.trim();
+      const dbe=parseDBE(f);
+      result=`Formule : ${f}\nDegré d'insaturation = ${dbe}\n\n${dbe===0?'Alcane saturé (pas de DB/cycle)':dbe===1?'1 double liaison OU 1 cycle':dbe===2?'2 DB, 1 triple liaison OU 2 cycles':dbe===4?'Cycle benzénique possible ! (3DB+1cycle=4)':dbe+' degrés d\'insaturation'}\n\nHückel : aromatique si 4n+2 π-électrons\nBenzène : DBE=4 (3×C=C + 1 cycle)`;
+    } else if(t==='rf'){
+      const dc=+document.getElementById('ci-dc').value;
+      const ds=+document.getElementById('ci-ds').value;
+      const rf=dc/ds;
+      result=`Rf = ${dc} / ${ds} = ${rf.toFixed(3)}\n\n${rf<0.2?'Rf très faible → composé très polaire':rf<0.5?'Rf modéré → polarité intermédiaire':rf<0.8?'Rf élevé → composé peu polaire':'Rf très élevé → composé apolaire'}\n\nEluant à adapter si Rf < 0.2 (plus polaire) ou > 0.8 (moins polaire)`;
+    }
+    res.textContent=result||'—';
+  }catch(e){res.textContent='❌ Erreur : vérifiez les valeurs saisies. '+e.message;}
+}
+
+function clearCalc(){document.getElementById('calc-result').textContent='Sélectionnez un type de calcul...';}
+
+// ═══════ QUIZ ═══════
+const QUIZ_QUESTIONS={
+  mechanisms:[
+    {q:'Quel est l\'ordre cinétique de la réaction SN1 ?',opts:['Ordre 1 (v = k[RX])','Ordre 2 (v = k[RX][Nu])','Ordre 0','Pseudo-ordre 1'],a:0,exp:'SN1 = unimoléculaire. L\'étape lente (ionisation) ne dépend que du substrat. v = k[RX]. Ordre 1.'},
+    {q:'Quel mécanisme donne une inversion totale de configuration de Walden ?',opts:['SN1','SN2','E1','E2'],a:1,exp:'SN2 : attaque 180° de X, état de transition bipyramidal → inversion totale du parapluie. 100% stéréospécifique.'},
+    {q:'La règle de Markovnikov s\'applique à...',opts:['AE sur alcènes','SN2 sur halogénures','E2 élimination','AN sur carbonyles'],a:0,exp:'Markovnikov : dans l\'addition électrophile sur alcène, H⁺ va sur le C le plus riche en H (→ carbocation le plus stable).'},
+    {q:'Quel solvant favorise la réaction SN2 ?',opts:['Polaire aprotique (DMSO, DMF)','Polaire protique (EtOH, H₂O)','Apolaire (hexane)','Aqueux acide'],a:0,exp:'Solvant polaire aprotique : solubilise le substrat mais ne complexe pas Nu⁻ → Nu⁻ libre et réactif. Idéal pour SN2.'},
+    {q:'L\'acylation de Friedel-Crafts utilise quel catalyseur ?',opts:['AlCl₃ (acide de Lewis)','H₂SO₄ concentré','NaOH','KMnO₄'],a:0,exp:'AlCl₃ est l\'acide de Lewis par excellence pour F-C. Il active RCOCl → RCO⁺ (acylium) qui fait la SEAr.'},
+    {q:'Dans E2, quelle géométrie H-C-C-X est requise ?',opts:['Anti-périplanaire (180°)','Syn-périplanaire (0°)','Gauche (60°)','Éclipsée (120°)'],a:0,exp:'E2 exige que H et X soient anti-périplanaires (dièdre 180°). Conformation indispensable. Visible en Newman.'},
+    {q:'La saponification se distingue de l\'hydrolyse acide par...',opts:['Son irréversibilité (RCOO⁻ stable)','Sa vitesse','Sa température','Son catalyseur acide'],a:0,exp:'Saponification (OH⁻) → RCOO⁻ (carboxylate) immédiatement. Étape de neutralisation irréversible. ≠ hydrolyse acide (réversible).'},
+    {q:'Quel réactif transforme un aldéhyde en alcool primaire ?',opts:['NaBH₄','KMnO₄','AlCl₃','NaNO₂'],a:0,exp:'NaBH₄ (borohydrure) fournit H⁻ (nucléophile). Addition nucléophile sur C=O → alcoxyde → alcool 1° (depuis aldéhyde).'},
+    {q:'La règle de Zaïtsev concerne...',opts:['L\'alcène le plus substitué formé en E1/E2','Le produit Markovnikov','La stéréochimie SN2','Les carbocations tertiaires'],a:0,exp:'Zaïtsev : l\'élimination favorise l\'alcène le plus substitué (plus stable thermodynamiquement). Base faible → Zaïtsev.'},
+    {q:'Le réactif de Grignard doit être préparé dans...',opts:['Éther anhydre sous N₂','Eau distillée','Éthanol','DMSO aqueux'],a:0,exp:'Grignard détruit instantanément par H₂O. Éther anhydre (Et₂O ou THF) + atmosphère N₂/Ar indispensables.'}
+  ],
+  functional:[
+    {q:'Quel groupe fonctionnel est présent dans une cétone ?',opts:['C=O interne (>C=O)','C=O terminal (-CHO)','O-H (-OH)','C-O-C'],a:0,exp:'Cétone : C=O carbonyle interne. Aldéhyde : C=O terminal (-CHO). Alcool : O-H. Éther : C-O-C.'},
+    {q:'Quel est le pKa approximatif d\'un acide carboxylique ?',opts:['4-5','9-10','15-18','25'],a:0,exp:'Acide carboxylique : pKa ≈ 4-5 (acide faible). Alcool : 15-18. Phénol : 10. Alcyne terminal : 25.'},
+    {q:'Quel test positif identifie un aldéhyde ?',opts:['Réaction de Tollens (miroir d\'argent)','Test de Lucas','Test au permanganate','Test de Baeyer'],a:0,exp:'Tollens (AgNO₃/NH₃) : aldéhyde → miroir d\'argent (Ag°). Cétones : ne réduisent pas Tollens. Aldehydes réducteurs.'},
+    {q:'Les amines aromatiques (anilines) sont...',opts:['Bases plus faibles que les amines aliphatiques','Bases plus fortes','Acides','Neutres'],a:0,exp:'Aniline (ArNH₂) : doublet N délocalisé dans le cycle → pKa(NH₃⁺)=4.6. Amine aliphatique : pKa ≈ 10-11.'},
+    {q:'La saponification d\'un ester donne...',opts:['Un carboxylate + un alcool','Un acide + un éther','Une cétone + un alcool','Un acide + un alcène'],a:0,exp:'RCOOR\' + OH⁻ → RCOO⁻ + R\'OH. Carboxylate (sel) + alcool. Réaction irréversible.'},
+    {q:'Quel groupe fonctionnel rend une molécule miscible à l\'eau (si petite) ?',opts:['Hydroxyle (-OH)','Alkyle (-R)','Halogène (-X) apolaire','Alkène (C=C)'],a:0,exp:'OH forme des liaisons H avec H₂O → miscibilité. CH₃OH, C₂H₅OH miscibles. Au-delà de C5-C6, partie hydrophobe domine.'},
+    {q:'Le phénol est-il plus ou moins acide qu\'un alcool ?',opts:['Plus acide (pKa≈10 vs 16-18)','Moins acide','Même acidité','Neutre'],a:0,exp:'Phénol : pKa≈10. Alcool : pKa≈16-18. Phénolate ArO⁻ stabilisé par résonance avec cycle → phénol plus acide.'}
+  ],
+  stereo:[
+    {q:'Un centre chiral porte combien de groupes différents ?',opts:['4 substituants tous différents','3 substituants différents','2 paires identiques','Aucune restriction'],a:0,exp:'Centre chiral (stéréogène) : C sp³ avec 4 substituants tous différents. Condition nécessaire et suffisante.'},
+    {q:'La configuration R correspond à...',opts:['Sens horaire 1→2→3 avec groupe 4 derrière','Sens antihoraire','Groupe 4 devant','Double liaison'],a:0,exp:'CIP : classer 1>2>3>4. Mettre 4 derrière. 1→2→3 : ↻ = R (Rectus), ↺ = S (Sinister).'},
+    {q:'Un mélange racémique contient...',opts:['50% R + 50% S (énantiomères)','Un seul énantiomère pur','Diastéréoisomères','Un composé méso'],a:0,exp:'Racémique (±) : mélange 50/50 des 2 énantiomères. Activité optique nulle. Produit typique de SN1 (carbocation plan).'},
+    {q:'Les diastéréoisomères ont...',opts:['Des propriétés physico-chimiques différentes','Exactement les mêmes propriétés','Même point de fusion','Même Rf en CCM'],a:0,exp:'Diastéréoisomères : différences de propriétés physiques (Eb, pF, Rf, solubilité). ≠ énantiomères (propriétés identiques sauf plan polarisation).'},
+    {q:'Dans la projection de Newman, les liaisons horizontales représentent...',opts:['Les liaisons DEVANT le plan (vers observateur)','Les liaisons derrière','La chaîne principale','Le cycle benzénique'],a:0,exp:'Fischer : horizontal = devant le plan (en avant). Vertical = derrière. Mnémo : les bras tendent vers vous.'},
+    {q:'Un composé méso est...',opts:['Achiral malgré des centres chiraux (plan de symétrie)','Toujours chiral','Un énantiomère pur','Un racémique'],a:0,exp:'Méso : centres chiraux (R et S qui se compensent) + plan de symétrie interne → achiral au total. Ex: acide méso-tartrique.'},
+    {q:'E/Z fait référence à...',opts:['La stéréochimie des alcènes (isomères géométriques)','La stéréochimie des alcanes','La configuration R/S','Les projections Newman'],a:0,exp:'E/Z : alcènes (liaison π fixe). Z (zusammen) = prioritaires même côté. E (entgegen) = prioritaires côtés opposés.'}
+  ],
+  nomenclature:[
+    {q:'Quel est le nom IUPAC de CH₃-CH₂-OH ?',opts:['Éthanol','Méthanol','Propan-1-ol','Éthylène glycol'],a:0,exp:'CH₃-CH₂-OH : 2 carbones (éth-) + alcool (-anol) = éthanol. Pas besoin de numéro de position (seul C1 possible).'},
+    {q:'Comment nomme-t-on CH₃-CO-CH₂-CH₃ ?',opts:['Butan-2-one','Butanal','Pentan-2-one','Méthyl-éthyl-cétone IUPAC'],a:0,exp:'CH₃-CO-CH₂-CH₃ : 4 carbones (but-), cétone (-one), C=O en C2 = butan-2-one.'},
+    {q:'Le préfixe "prop" indique...',opts:['3 carbones dans la chaîne','2 carbones','4 carbones','Un cycle'],a:0,exp:'Préfixes : meth=1, éth=2, prop=3, but=4, pent=5, hex=6, hept=7, oct=8.'},
+    {q:'L\'acide CH₃COOH se nomme...',opts:['Acide éthanoïque (ou acétique)','Acide méthanoïque','Acide propanoïque','Éthanaldéhyde'],a:0,exp:'CH₃COOH : acide (préfixe "acide ") + 2 carbones (éth-) + acide carboxylique (-anoïque) = acide éthanoïque.'},
+    {q:'Le numéro de position d\'un groupe fonctionnel doit être...',opts:['Le plus petit possible','Le plus grand','Au milieu de la chaîne','Toujours 1'],a:0,exp:'Règle IUPAC : donner le numéro le plus bas au groupe fonctionnel (prioritaire) ou à la première ramification.'},
+    {q:'CH₂=CH-CH₃ se nomme...',opts:['Propène (prop-1-ène)','Propane','Butène','Éthylène'],a:0,exp:'CH₂=CH-CH₃ : 3C (prop-) + alcène (-ène) + double liaison en C1 = prop-1-ène (ou propène). ≠ éthylène (C₂H₄).'}
+  ],
+  synthesis:[
+    {q:'Pour synthétiser un alcool tertiaire à partir d\'une cétone, on utilise...',opts:['Un réactif de Grignard (RMgX)','NaBH₄','KMnO₄','PCC'],a:0,exp:'Grignard (R-MgX) + cétone (R\'COR\'\'): carbanion attaque C=O → alcool tertiaire R-CR\'(OH)R\'\'.'},
+    {q:'PCC oxyde sélectivement un alcool primaire en...',opts:['Aldéhyde (pas d\'acide)','Acide carboxylique','Cétone','Éther'],a:0,exp:'PCC (anhydre) : alcool 1° → aldéhyde (s\'arrête là). KMnO₄ aqueux oxyde l\'aldéhyde en acide. PCC en milieu anhydre évite l\'hydratation.'},
+    {q:'L\'hydroboration-oxydation d\'un alcène donne...',opts:['Alcool anti-Markovnikov','Alcool Markovnikov','Aldéhyde','Halogénure'],a:0,exp:'Hydroboration : BH₃ sur alcène → B sur C terminal → H₂O₂/NaOH → alcool sur C terminal (anti-Markovnikov).'},
+    {q:'Pour faire une estérification, on utilise...',opts:['Acide carboxylique + alcool + H⁺ (cat.)','Alcool + alcool','Aldéhyde + alcool','Acide + amine'],a:0,exp:'Estérification de Fischer : RCOOH + R\'OH ⇌ RCOOR\' + H₂O (H₂SO₄ cat., reflux). Équilibre → éliminer H₂O.'},
+    {q:'Quelle méthode permet de synthétiser une amine depuis un nitrile ?',opts:['Réduction avec LiAlH₄','Oxydation KMnO₄','Saponification','Grignard sur amine'],a:0,exp:'R-CN + LiAlH₄ (éther, N₂) → R-CH₂-NH₂ (amine primaire). +1 carbone conservé. Hydrolyse du nitrile → amide → acide.'},
+    {q:'La nitration du benzène nécessite...',opts:['HNO₃ + H₂SO₄ conc. (NO₂⁺)','HNO₃ dilué seul','N₂/AlCl₃','KNO₃ en solution'],a:0,exp:'Mélange nitrant : HNO₃ + H₂SO₄ conc. → NO₂⁺ (ion nitronium). NO₂⁺ fait la SEAr. T°<60°C.'}
+  ],
+  mixed:[
+    {q:'Quelle réaction est stéréospécifique avec inversion totale ?',opts:['SN2','SN1','E1','AN (aldéhyde)'],a:0,exp:'SN2 = stéréospécifique par définition. Inversion totale (Walden) à 100%. SN1 = racémisation.'},
+    {q:'Le groupe NO₂ est...',opts:['Désactivant méta en SEAr','Activant ortho/para','Inductif donneur','Résonance donneur'],a:0,exp:'NO₂ = fortement désactivant (attracteur) et orienteur méta. Attracteurs inductifs et mésoméros = méta.'},
+    {q:'Quel hybride correspond à un carbone sp³ ?',opts:['Tétraédrique (angle 109.5°)','Plan trigonal (120°)','Linéaire (180°)','Pyramidal (sp²)'],a:0,exp:'sp³ : 3 liaisons σ + 1 orbital p → tétraédrique, 4 liaisons orientées à 109.5° (angle tétraédrique).'},
+    {q:'L\'ion acylium RCO⁺ est stabilisé par...',opts:['Résonance R-C≡O⁺','Induction','Hyperconjugaison seule','Solvatation'],a:0,exp:'R-CO⁺ ↔ R-C⁺=O : double liaison π cumulée → stabilisation par résonance. C\'est pourquoi pas de réarrangement (≠ alkylation FC).'},
+    {q:'DBE = 4 pour C₆H₆ correspond à...',opts:['3 doubles liaisons + 1 cycle = aromatique','4 doubles liaisons','2 cycles','4 cycles'],a:0,exp:'C₆H₆ : DBE = (2×6+2-6)/2 = 4. Benzène = 3×C=C + 1 cycle = 4. Indice d\'aromaticité.'},
+    {q:'La conformation la plus stable de l\'éthane est...',opts:['Décalée (anti, dièdre 60°)','Éclipsée (dièdre 0°)','Gauche (syn)','Plan (sp²)'],a:0,exp:'Éthane : conformation décalée (anti) = minimise les répulsions stériques et torsionnelles entre H. Barrière rot. = 12 kJ/mol.'},
+    {q:'Un alcool tertiaire soumis à KMnO₄...',opts:['Ne réagit pas (pas de H sur C-OH)','Donne une cétone','Donne un acide','Donne un aldéhyde'],a:0,exp:'Alcool 3° (R₃C-OH) : pas de H sur le C portant OH → impossible de former C=O. Résistant à l\'oxydation.'}
+  ]
+};
+
+let quizState={questions:[],current:0,score:0,answered:false};
+
+function startQuiz(){
+  const cat=document.getElementById('quizCat').value;
+  const n=+document.getElementById('quizCount').value;
+  let pool=cat==='mixed'?Object.values(QUIZ_QUESTIONS).flat():QUIZ_QUESTIONS[cat]||[];
+  pool=[...pool].sort(()=>Math.random()-0.5).slice(0,n);
+  quizState={questions:pool,current:0,score:0,answered:false};
+  sessionStats.quizTotal=n;updateSessionStats();
+  showQuizQuestion();
+  updateQuizScore();
+}
+
+function showQuizQuestion(){
+  const area=document.getElementById('quiz-area');
+  if(quizState.current>=quizState.questions.length){
+    const pct=Math.round(quizState.score/quizState.questions.length*100);
+    area.innerHTML=`<div style="text-align:center;padding:25px;"><div style="font-family:'Fraunces',serif;font-size:1.6rem;font-weight:700;color:var(--p1);margin-bottom:7px;">${pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📖'} ${pct}%</div><div style="font-size:1.05rem;font-weight:600;margin-bottom:5px;">Score final : ${quizState.score} / ${quizState.questions.length}</div><div style="color:var(--muted);font-size:.82rem;margin-bottom:14px;">${pct>=80?'Excellent ! Maîtrise parfaite.':pct>=60?'Bien ! Quelques points à revoir.':'Continuez vos révisions.'}</div><button onclick="startQuiz()" class="btn btn-p" style="width:auto;padding:8px 20px;">🔄 Nouveau quiz</button></div>`;
+    return;
+  }
+  const q=quizState.questions[quizState.current];
+  quizState.answered=false;
+  area.innerHTML=`<div class="quiz-card"><div style="font-size:.65rem;color:var(--muted);font-family:'Fira Code',monospace;margin-bottom:5px;">QUESTION ${quizState.current+1} / ${quizState.questions.length}</div><div class="quiz-q">${q.q}</div><div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQuiz(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div><div class="quiz-feedback" id="quiz-fb"></div></div><button onclick="nextQuizQ()" id="next-q-btn" style="display:none;" class="btn btn-p" style="margin-top:8px;">QUESTION SUIVANTE →</button>`;
+  document.getElementById('quiz-prog-bar').style.width=(quizState.current/quizState.questions.length*100)+'%';
+  document.getElementById('quiz-progress-text').textContent=`Question ${quizState.current+1} / ${quizState.questions.length}`;
+}
+
+function answerQuiz(i){
+  if(quizState.answered)return;
+  quizState.answered=true;
+  const q=quizState.questions[quizState.current];
+  const correct=i===q.a;
+  if(correct){quizState.score++;sessionStats.quizCorrect++;}
+  sessionStats.quizTotal=quizState.questions.length;updateSessionStats();
+  document.querySelectorAll('.quiz-opt').forEach((b,j)=>{
+    b.style.pointerEvents='none';
+    if(j===q.a)b.classList.add('correct');
+    else if(j===i&&!correct)b.classList.add('wrong');
+  });
+  const fb=document.getElementById('quiz-fb');
+  fb.className='quiz-feedback show '+(correct?'qf-correct':'qf-wrong');
+  fb.innerHTML=(correct?'✅ Correct ! ':'❌ Incorrect. La bonne réponse est : <b>'+q.opts[q.a]+'</b><br>')+q.exp;
+  document.getElementById('next-q-btn').style.display='block';
+  updateQuizScore();
+}
+
+function nextQuizQ(){quizState.current++;showQuizQuestion();}
+
+function updateQuizScore(){
+  const total=quizState.questions.length||1;
+  document.getElementById('quiz-score').textContent=`${quizState.score} / ${quizState.current}`;
+  const pct=quizState.current>0?Math.round(quizState.score/quizState.current*100):0;
+  document.getElementById('quiz-pct').textContent=quizState.current>0?pct+'% de bonnes réponses':'';
+  document.getElementById('score-bar').style.width=pct+'%';
+}
+
+// ═══════ THEORY ═══════
+const THEORY_CARDS=[
+  {lvl:'lv-g',lvlTxt:'LYCÉE',title:'Groupes Fonctionnels Essentiels',content:'La chimie organique est organisée autour des <b>groupes fonctionnels</b> : alcool (-OH), aldéhyde (-CHO), cétone (>C=O), acide carboxylique (-COOH), ester (-COO-), amine (-NH₂). Chaque groupe fonctionnel confère des propriétés chimiques et physiques caractéristiques.',formula:'R-OH : alcool | R-CHO : aldéhyde | R-CO-R\' : cétone | RCOOH : acide',extra:'Clé : le groupe fonctionnel détermine la réactivité. Même squelette → même famille.'},
+  {lvl:'lv-g',lvlTxt:'LYCÉE',title:'Nomenclature IUPAC — Règles',content:'L\'IUPAC définit des règles universelles : (1) Trouver la chaîne principale la plus longue portant le groupe fonctionnel prioritaire. (2) Numéroter pour donner le n° le plus bas au groupe prioritaire. (3) Nommer : préfixe + suffixe selon le type.',formula:'méth(1)-éth(2)-prop(3)-but(4)-pent(5)-hex(6)-hept(7)',extra:'Priorité : -COOH > -CHO > -OH > C=C > C≡C > -NH₂'},
+  {lvl:'lv-o',lvlTxt:'PRÉPA',title:'Mécanismes SN1 et SN2',content:'SN1 : substrat tertiaire, solvant polaire protique, carbocation intermédiaire, racémisation. Ordre 1. SN2 : substrat primaire, solvant polaire aprotique, attaque 180°, inversion Walden. Ordre 2. Compétition selon le substrat et les conditions.',formula:'v(SN1) = k₁[RX] | v(SN2) = k₂[RX][Nu]',extra:'Primaire → SN2 | Tertiaire → SN1 | Secondaire → compétition'},
+  {lvl:'lv-o',lvlTxt:'PRÉPA',title:'Éliminations E1 et E2',content:'E1 : substrat tertiaire, solvant polaire protique, même carbocation que SN1, Zaïtsev (alcène + substitué). E2 : base forte, anti-périplanaire requis, ordre 2, Zaïtsev ou Hofmann selon la base.',formula:'v(E1) = k₁[substrat] | v(E2) = k₂[substrat][base]',extra:'T°↑ → E1 // Base encombrée (t-BuOK) → Hofmann // Anti-périplanaire pour E2'},
+  {lvl:'lv-o',lvlTxt:'PRÉPA',title:'Additions AE et AN',content:'AE (alcènes) : électrophile H⁺ + carbocation → produit Markovnikov. X₂ → bromonium → anti-addition. AN (carbonyles) : nucléophile attaque C=O plan. Angle de Bürgi-Dunitz (107°).',formula:'Markovnikov : H⁺ → C le plus riche en H → C⁺ le plus stable',extra:'Aldéhyde > cétone en réactivité AN (stérique + électronique)'},
+  {lvl:'lv-o',lvlTxt:'PRÉPA',title:'Stéréochimie — Règles CIP',content:'Chiralité : 4 groupes différents sur C sp³. Règles CIP (Cahn-Ingold-Prelog) : classer substituants par Z. Mettre priorité 4 derrière. 1→2→3 horaire = R, antihoraire = S.',formula:'Z croissant → R = ↻ | S = ↺',extra:'Énantiomères : image miroir non superposable. Diastéréoisomères : stéréoisomères non-énantiomères.'},
+  {lvl:'lv-b',lvlTxt:'LICENCE',title:'Aromaticité & Substitution SEAr',content:'Aromaticité : règle de Hückel 4n+2 π-électrons (benzène n=1, naphtalène n=2). Stabilisation. SEAr : (1) génération E⁺, (2) σ-complexe (Wheland, lent), (3) départ H⁺ → aromaticité. Orientation selon substituants.',formula:'Hückel : 4n+2 (n=0,1,2...) | ΔE aromaticité benzène = 151 kJ/mol',extra:'Donneurs (OH, NH₂, OR) → ortho/para | Attracteurs (NO₂, CN, COOH) → méta'},
+  {lvl:'lv-b',lvlTxt:'LICENCE',title:'Thermodynamique & Cinétique',content:'Contrôle cinétique : produit de la réaction la plus rapide (Ea la plus basse). Contrôle thermodynamique : produit le plus stable (ΔG° le plus bas). Loi d\'Arrhénius : k = A·e^(-Ea/RT).',formula:'k = A · e^(-Ea/RT) | ln k = ln A - Ea/RT',extra:'T°↑ → faveur produit thermodynamique. T°↓ → cinétique. Retour à l\'équilibre si réversible.'},
+  {lvl:'lv-b',lvlTxt:'LICENCE',title:'Réactif de Grignard — Applications',content:'R-MgX est un carbanion équivalent (base et nucléophile forts). Préparé dans éther anhydre sous atmosphère inerte. Applications : +HCHO → alcool 1°, +RCHO → alcool 2°, +RCOR\' → alcool 3°, +CO₂ → acide (+1C).',formula:'R-X + Mg → R-MgX | R-MgX + C=O → alcool (H₃O⁺)',extra:'Condition absolue : anhydre et N₂/Ar. H₂O détruit immédiatement le réactif.'}
+];
+
+function initTheory(){
+  const g=document.getElementById('theory-grid');
+  if(g.children.length>0)return;
+  g.innerHTML=THEORY_CARDS.map(card=>`<div class="thy-card"><span class="lvl ${card.lvl}">${card.lvlTxt}</span><h3>${card.title}</h3><p style="margin-bottom:7px;">${card.content}</p><div class="fbox">${card.formula}</div><p style="margin-top:6px;font-size:.72rem;color:var(--p2);">${card.extra}</p></div>`).join('');
+}
+
+// ═══════ REPORT ═══════
+function generateReport(){
+  const now=new Date();
+  const mechSel=document.getElementById('mechSel');const mechName=mechSel.options[mechSel.selectedIndex].text||'Non étudié';
+  const molSel=document.getElementById('mol3dSel');const molName=molSel.options[molSel.selectedIndex].text||'Non visualisée';
+  const sc=document.getElementById('stereoConcept');const scName=sc.options[sc.selectedIndex].text||'Non étudié';
+  const qScore=`${sessionStats.quizCorrect} / ${sessionStats.quizTotal}`;
+  document.getElementById('rpt-content').innerHTML=`╔══════════════════════════════════════════════════════════════╗
+║           SIMUORG v2.0 — RAPPORT DE SÉANCE                  ║
+╠══════════════════════════════════════════════════════════════╣
+  Nom       : Edmond Atinzoun TCHOKPON
+  Programme : Licence Physique-Chimie
+  Date      : ${now.toLocaleDateString('fr-FR')} | ${now.toLocaleTimeString('fr-FR')}
+  Outil     : SimuOrg v2.0 — Simulateur Pédagogique
+╠══════════════════════════════════════════════════════════════╣
+  MÉCANISME ÉTUDIÉ
+    → ${mechName}
+    → Substrat : ${document.getElementById('substrateSel').options[document.getElementById('substrateSel').selectedIndex].text}
+    → Nucléophile : ${document.getElementById('nucleophileSel').options[document.getElementById('nucleophileSel').selectedIndex].text}
+    → Solvant : ${document.getElementById('solventSel').options[document.getElementById('solventSel').selectedIndex].text}
+╠══════════════════════════════════════════════════════════════╣
+  STÉRÉOCHIMIE
+    → Concept : ${scName}
+╠══════════════════════════════════════════════════════════════╣
+  VISUALISATION 3D
+    → Molécule : ${molName}
+    → Mode : ${document.getElementById('mol3dMode').options[document.getElementById('mol3dMode').selectedIndex].text}
+╠══════════════════════════════════════════════════════════════╣
+  QUIZ & ÉVALUATION
+    → Score    : ${qScore}
+    → Mécanismes chargés : ${sessionStats.mechLoaded}
+╠══════════════════════════════════════════════════════════════╣
+  CONCLUSION
+  Séance réalisée sur SimuOrg v2.0 dans le cadre des études
+  de Chimie Organique en Licence Physique-Chimie.
+  Le simulateur couvre : mécanismes SN/E/AE/AN/SEAr, stéréo-
+  chimie, groupes fonctionnels, synthèse, 3D moléculaire,
+  nomenclature IUPAC, isomères et calculs pratiques.
+╚══════════════════════════════════════════════════════════════╝`;
+}
+
+// ═══════ STATUS BAR ═══════
+function setStatus(color,text){
+  const dot=document.getElementById('sdot');const t=document.getElementById('stext');
+  dot.className='sdot'+(color==='orange'?' orange':'');t.textContent=text;
+}
+function updateClock(){const n=new Date();document.getElementById('sclock').textContent=n.toLocaleTimeString('fr-FR');}
+setInterval(updateClock,1000);updateClock();
+
+// ═══════ INIT ═══════
+document.addEventListener('DOMContentLoaded',()=>{
+  initFGGrid();
+  initTheory();
+  loadMechanism();
+  draw3DMol();
+  drawEnergyDiagram();
+  updateNomen();
+  showIsomers();
+  updateCalcUI();
+  showStereoConcept();
+  showSynthesis('alcool',document.querySelector('.syn-btn'));
+  setStatus('green','SimuOrg v2.0 chargé — Bienvenue, Edmond Atinzoun TCHOKPON');
+  setTimeout(()=>setStatus('green','Prêt — Sélectionnez un module'),2500);
+});
+</script>
+</body>
+</html>

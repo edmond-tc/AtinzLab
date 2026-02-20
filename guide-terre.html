@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Complet — SimuTR v1.0 | Terres Rares | E.A. TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&family=Fira+Code:wght@400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--ink:#e8ddd4;--panel:#111827;--panel2:#161d2b;
+  --p1:#c8920a;--p2:#1a6b8a;--p3:#2d7a4f;--p4:#8a3a6b;
+  --gold:#c8920a;--muted:#8a9e8c;--border:#1e293b;
+  --shadow:rgba(0,0,0,.5);--accent:#e8b84b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Manrope',sans-serif;line-height:1.7;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 20% 20%,rgba(200,146,10,.04) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 80%,rgba(26,106,138,.04) 0%,transparent 60%);}
+
+/* ── HEADER ── */
+header{position:relative;z-index:10;background:linear-gradient(135deg,#070b14 0%,#0d1421 50%,#0a1628 100%);border-bottom:3px solid var(--gold);padding:0;box-shadow:0 4px 40px rgba(200,146,10,.2);}
+.hero{padding:38px 40px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;}
+.hero-left{display:flex;align-items:center;gap:18px;}
+.atom-logo{width:64px;height:64px;border-radius:50%;background:conic-gradient(#c8920a,#e8b84b,#c8920a,#7b3f00,#c8920a);display:flex;align-items:center;justify-content:center;font-size:26px;animation:spin 10s linear infinite;box-shadow:0 0 30px rgba(200,146,10,.4);flex-shrink:0;}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.hero-title h1{font-family:'Fraunces',serif;font-size:2.1rem;font-weight:700;color:white;letter-spacing:4px;}
+.hero-title .sub{font-family:'Fira Code',monospace;font-size:.6rem;color:rgba(255,255,255,.45);letter-spacing:2.5px;margin-top:4px;}
+.hero-title .sub2{font-size:.8rem;color:var(--gold);margin-top:7px;font-weight:600;}
+.hero-right{background:rgba(255,255,255,.06);border:1px solid rgba(200,146,10,.25);border-radius:11px;padding:14px 20px;text-align:right;}
+.hero-right .name{font-family:'Fraunces',serif;font-size:.95rem;font-weight:700;color:var(--gold);}
+.hero-right .info{font-family:'Fira Code',monospace;font-size:.56rem;color:rgba(255,255,255,.4);letter-spacing:1px;margin-top:3px;}
+.guide-nav{background:rgba(0,0,0,.3);padding:0 40px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-top:1px solid rgba(200,146,10,.15);}
+.guide-nav::-webkit-scrollbar{display:none;}
+.guide-nav a{display:inline-block;padding:10px 16px;color:rgba(255,255,255,.5);text-decoration:none;font-size:.68rem;font-weight:700;letter-spacing:.7px;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;font-family:'Manrope',sans-serif;}
+.guide-nav a:hover{color:var(--gold);border-bottom-color:var(--gold);}
+
+/* ── LAYOUT ── */
+.container{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:36px 24px 80px;}
+
+/* ── SECTION HEADS ── */
+.section-head{display:flex;align-items:center;gap:14px;margin:48px 0 20px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.section-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.si-gold{background:rgba(200,146,10,.15);border:1px solid rgba(200,146,10,.3);}
+.si-blue{background:rgba(26,106,138,.15);border:1px solid rgba(26,106,138,.3);}
+.si-green{background:rgba(45,122,79,.15);border:1px solid rgba(45,122,79,.3);}
+.si-red{background:rgba(138,58,107,.15);border:1px solid rgba(138,58,107,.3);}
+.section-head h2{font-family:'Fraunces',serif;font-size:1.4rem;font-weight:700;color:white;}
+.section-head .sec-num{font-family:'Fira Code',monospace;font-size:.65rem;color:var(--muted);margin-top:2px;letter-spacing:1px;}
+
+/* ── CARDS ── */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;box-shadow:0 2px 20px var(--shadow);margin-bottom:14px;}
+.card::before{content:'';position:absolute;top:0;left:16px;right:16px;height:2px;background:linear-gradient(90deg,transparent,rgba(200,146,10,.4),transparent);border-radius:2px;}
+.card.blue::before{background:linear-gradient(90deg,transparent,rgba(26,106,138,.5),transparent);}
+.card.green::before{background:linear-gradient(90deg,transparent,rgba(45,122,79,.5),transparent);}
+.card.red::before{background:linear-gradient(90deg,transparent,rgba(138,58,107,.5),transparent);}
+.card h3{font-family:'Fraunces',serif;font-size:1rem;font-weight:700;color:var(--gold);margin-bottom:10px;}
+.card.blue h3{color:#5bb3d0;}
+.card.green h3{color:#6abf89;}
+.card.red h3{color:#c97ab5;}
+.card p{font-size:.84rem;color:var(--ink);line-height:1.75;margin-bottom:9px;}
+.card p:last-child{margin-bottom:0;}
+
+/* ── GRIDS ── */
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;}
+.g4{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;}
+
+/* ── MODULE CARDS ── */
+.mod-card{background:var(--panel);border:1.5px solid var(--border);border-radius:12px;padding:16px;transition:all .22s;}
+.mod-card:hover{border-color:rgba(200,146,10,.4);transform:translateY(-2px);box-shadow:0 6px 22px rgba(200,146,10,.12);}
+.mod-icon{font-size:24px;margin-bottom:9px;}
+.mod-title{font-family:'Fraunces',serif;font-size:.92rem;font-weight:700;color:white;margin-bottom:5px;}
+.mod-desc{font-size:.74rem;color:var(--muted);line-height:1.6;}
+.mod-level{display:inline-block;margin-top:9px;padding:2px 8px;border-radius:20px;font-size:.6rem;font-weight:700;font-family:'Fira Code',monospace;letter-spacing:.8px;}
+.lv1{background:rgba(45,122,79,.15);color:#6abf89;border:1px solid rgba(45,122,79,.3);}
+.lv2{background:rgba(26,106,138,.15);color:#5bb3d0;border:1px solid rgba(26,106,138,.3);}
+.lv3{background:rgba(138,58,107,.15);color:#c97ab5;border:1px solid rgba(138,58,107,.3);}
+.lva{background:rgba(200,146,10,.15);color:var(--gold);border:1px solid rgba(200,146,10,.3);}
+
+/* ── CODE BOXES ── */
+.cb{background:#06090f;color:#a8e6cf;font-family:'Fira Code',monospace;font-size:.8rem;border-radius:8px;padding:12px 15px;margin:9px 0;line-height:1.85;overflow-x:auto;border-left:3px solid var(--gold);}
+.cb.blue{border-left-color:#3498db;color:#89d4f5;}
+.cb.green{border-left-color:#27ae60;color:#a8e6cf;}
+.cb.red{border-left-color:#c0392b;color:#f5a8a8;}
+.cb.center{text-align:center;}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:0;}
+.step{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border);}
+.step:last-child{border-bottom:none;}
+.step-n{width:30px;height:30px;border-radius:50%;background:var(--gold);color:#000;font-family:'Fira Code',monospace;font-size:.78rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 10px rgba(200,146,10,.3);}
+.step-n.blue{background:#1a6b8a;color:white;}
+.step-n.green{background:#2d7a4f;color:white;}
+.step-body h4{font-weight:700;font-size:.88rem;color:white;margin-bottom:4px;}
+.step-body p{font-size:.79rem;color:var(--muted);line-height:1.6;}
+
+/* ── CALLOUTS ── */
+.callout{border-radius:9px;padding:12px 15px;margin:12px 0;font-size:.81rem;line-height:1.7;display:flex;gap:11px;align-items:flex-start;}
+.ci{font-size:17px;flex-shrink:0;margin-top:1px;}
+.tip{background:rgba(45,122,79,.1);border-left:3px solid #2d7a4f;color:#9dd4b0;}
+.warn{background:rgba(192,57,43,.08);border-left:3px solid #c0392b;color:#e8a0a0;}
+.info{background:rgba(26,106,138,.1);border-left:3px solid #1a6b8a;color:#89d4f5;}
+.imp{background:rgba(200,146,10,.1);border-left:3px solid var(--gold);color:#e8c97a;}
+
+/* ── TABLE ── */
+.dt{width:100%;border-collapse:collapse;font-size:.79rem;margin:12px 0;}
+.dt th{background:rgba(200,146,10,.2);color:var(--gold);padding:9px 13px;text-align:left;font-family:'Fira Code',monospace;font-size:.68rem;letter-spacing:.8px;}
+.dt th:first-child{border-radius:6px 0 0 0;}
+.dt th:last-child{border-radius:0 6px 0 0;}
+.dt td{padding:9px 13px;border-bottom:1px solid var(--border);color:var(--ink);line-height:1.55;vertical-align:top;}
+.dt tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+.dt .hl{color:var(--gold);font-weight:700;}
+.dt .hl2{color:#5bb3d0;font-weight:700;}
+
+/* ── INTERFACE DIAGRAM ── */
+.ifd{background:#06090f;border-radius:10px;padding:18px;margin:12px 0;font-family:'Fira Code',monospace;font-size:.73rem;line-height:2;border:1px solid var(--border);}
+.ifd .lbl{color:var(--gold);font-weight:600;}
+.ifd .arr{color:#6abf89;}
+.ifd .dsc{color:rgba(255,255,255,.35);}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-family:'Fira Code',monospace;font-size:.64rem;font-weight:600;}
+.bg{background:rgba(45,122,79,.15);color:#6abf89;border:1px solid rgba(45,122,79,.3);}
+.bb{background:rgba(26,106,138,.15);color:#5bb3d0;border:1px solid rgba(26,106,138,.3);}
+.br{background:rgba(138,58,107,.15);color:#c97ab5;border:1px solid rgba(138,58,107,.3);}
+.bo{background:rgba(200,146,10,.15);color:var(--gold);border:1px solid rgba(200,146,10,.3);}
+
+/* ── QUICK REF ── */
+.qr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:9px;}
+.qr{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;}
+.qr-k{font-family:'Fira Code',monospace;font-size:.63rem;color:var(--muted);letter-spacing:.8px;margin-bottom:4px;}
+.qr-v{font-size:.83rem;font-weight:700;color:white;line-height:1.5;}
+.qr-v .g{color:#6abf89;} .qr-v .b{color:#5bb3d0;} .qr-v .o{color:var(--gold);}
+
+/* ── TOC ── */
+.toc{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 26px;box-shadow:0 2px 20px var(--shadow);margin-bottom:36px;}
+.toc h3{font-family:'Fraunces',serif;font-size:.95rem;color:var(--gold);margin-bottom:14px;}
+.toc ol{list-style:none;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:5px 18px;}
+.toc li a{display:flex;align-items:center;gap:9px;padding:5px 7px;border-radius:6px;text-decoration:none;color:var(--ink);font-size:.8rem;transition:all .18s;}
+.toc li a:hover{background:rgba(200,146,10,.08);color:var(--gold);}
+.toc-num{font-family:'Fira Code',monospace;font-size:.64rem;color:var(--muted);min-width:22px;}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;background:linear-gradient(135deg,#070b14,#0d1421);padding:26px 40px;text-align:center;border-top:3px solid var(--gold);}
+footer .ft{font-family:'Fraunces',serif;font-size:1rem;color:var(--gold);margin-bottom:5px;}
+footer p{font-size:.68rem;color:rgba(255,255,255,.35);font-family:'Fira Code',monospace;letter-spacing:.8px;}
+
+/* ── PERIODIC MINI ── */
+.pt-mini{display:grid;grid-template-columns:repeat(15,1fr);gap:2px;margin:12px 0;}
+.ptm{background:rgba(200,146,10,.15);border:1px solid rgba(200,146,10,.3);border-radius:3px;padding:3px 2px;text-align:center;font-family:'Fraunces',serif;font-size:.7rem;font-weight:700;color:var(--gold);cursor:default;}
+.ptm.sc{background:rgba(142,68,173,.15);border-color:rgba(142,68,173,.3);color:#c39bd3;}
+.ptm.y{background:rgba(52,152,219,.15);border-color:rgba(52,152,219,.3);color:#7fb3d3;}
+.ptm sub{font-size:.5rem;color:var(--muted);}
+
+/* ── ANIM ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card,.mod-card{animation:fadeUp .35s ease both;}
+
+@media(max-width:640px){
+  .hero{padding:22px 16px;}
+  .hero-title h1{font-size:1.4rem;}
+  .container{padding:20px 14px 60px;}
+  .g2,.g3{grid-template-columns:1fr;}
+}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hero">
+    <div class="hero-left">
+      <div class="atom-logo">⚛</div>
+      <div class="hero-title">
+        <h1>GUIDE SIMUTR</h1>
+        <div class="sub">GUIDE COMPLET D'UTILISATION — SIMULATEUR CHIMIE DES TERRES RARES v1.0</div>
+        <div class="sub2">🪨 Comprendre et maîtriser SimuTR pour explorer les éléments 4f</div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="name">Edmond Atinzoun TCHOKPON</div>
+      <div class="info">LICENCE PHYSIQUE-CHIMIE</div>
+      <div class="info" style="margin-top:2px;color:rgba(255,255,255,.25);">GUIDE SIMUTR v1.0 — 2025</div>
+    </div>
+  </div>
+  <nav class="guide-nav">
+    <a href="#intro">🧭 Introduction</a>
+    <a href="#interface">🖥️ Interface</a>
+    <a href="#modules">📋 12 Modules</a>
+    <a href="#tableau">⚛️ Tableau</a>
+    <a href="#proprietes">🔬 Propriétés</a>
+    <a href="#complexes">🧪 Complexes</a>
+    <a href="#gisements">🌍 Gisements</a>
+    <a href="#extraction">⚙️ Extraction</a>
+    <a href="#applications">🏭 Applications</a>
+    <a href="#magnetisme">🧲 Magnétisme</a>
+    <a href="#luminescence">💡 Luminescence</a>
+    <a href="#calcul">🧮 Calculs</a>
+    <a href="#quiz">🎯 Quiz</a>
+    <a href="#strategies">🎓 Stratégies</a>
+  </nav>
+</header>
+
+<!-- CONTENT -->
+<div class="container">
+
+  <!-- TOC -->
+  <div class="toc">
+    <h3>⚛️ Table des matières — Guide SimuTR v1.0</h3>
+    <ol>
+      <li><a href="#intro"><span class="toc-num">01</span>🧭 Présentation de SimuTR</a></li>
+      <li><a href="#interface"><span class="toc-num">02</span>🖥️ Interface & navigation</a></li>
+      <li><a href="#modules"><span class="toc-num">03</span>📋 Vue d'ensemble des 12 modules</a></li>
+      <li><a href="#tableau"><span class="toc-num">04</span>⚛️ Module Tableau Périodique TR</a></li>
+      <li><a href="#proprietes"><span class="toc-num">05</span>🔬 Module Propriétés 4f</a></li>
+      <li><a href="#complexes"><span class="toc-num">06</span>🧪 Module Complexes & Coordination</a></li>
+      <li><a href="#gisements"><span class="toc-num">07</span>🌍 Module Gisements & Géochimie</a></li>
+      <li><a href="#extraction"><span class="toc-num">08</span>⚙️ Module Extraction & Métallurgie</a></li>
+      <li><a href="#applications"><span class="toc-num">09</span>🏭 Module Applications Industrielles</a></li>
+      <li><a href="#magnetisme"><span class="toc-num">10</span>🧲 Module Propriétés Magnétiques</a></li>
+      <li><a href="#luminescence"><span class="toc-num">11</span>💡 Module Luminescence & Optique</a></li>
+      <li><a href="#calcul"><span class="toc-num">12</span>🧮 Module Calculs</a></li>
+      <li><a href="#quiz"><span class="toc-num">13</span>🎯 Module Quiz Interactif</a></li>
+      <li><a href="#strategies"><span class="toc-num">14</span>🎓 Stratégies d'utilisation efficace</a></li>
+    </ol>
+  </div>
+
+
+  <!-- ══ 1. INTRODUCTION ══ -->
+  <div id="intro" class="section-head">
+    <div class="section-icon si-gold">🧭</div>
+    <div><h2>Introduction — Qu'est-ce que SimuTR v1.0 ?</h2><div class="sec-num">SECTION 01 — PRÉSENTATION</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🪨 Présentation générale</h3>
+    <p>SimuTR v1.0 est un <strong>simulateur pédagogique interactif dédié à la chimie des terres rares</strong>, conçu pour les étudiants en Licence Physique-Chimie (L1, L2, L3). C'est un fichier HTML autonome — aucune installation, aucune connexion internet requise après chargement initial.</p>
+    <p>Il couvre l'intégralité de la chimie des terres rares : des propriétés atomiques 4f jusqu'aux applications industrielles réelles (aimants NdFeB, IRM, LED, lasers…), avec des données chiffrées réelles et vérifiées (production 2023, constantes de stabilité, spectres d'émission…).</p>
+  </div>
+
+  <div class="g2">
+    <div class="card blue">
+      <h3>🎓 Les 3 niveaux de difficulté</h3>
+      <p>SimuTR s'adapte à ton niveau via des badges colorés dans le module Théorie et les Quiz :</p>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+        <div style="display:flex;align-items:center;gap:10px;"><span class="badge bg">L1</span><span style="font-size:.82rem;color:var(--muted);">Bases : tableau périodique, états d'oxydation, nomenclature, gisements</span></div>
+        <div style="display:flex;align-items:center;gap:10px;"><span class="badge bb">L2</span><span style="font-size:.82rem;color:var(--muted);">Intermédiaire : contraction lanthanidique, complexes, SX, magnétisme</span></div>
+        <div style="display:flex;align-items:center;gap:10px;"><span class="badge br">L3</span><span style="font-size:.82rem;color:var(--muted);">Avancé : niveaux 4f, luminescence, aimants NdFeB, μₑff, up-conversion</span></div>
+      </div>
+    </div>
+    <div class="card green">
+      <h3>✅ Ce que vous pouvez faire avec SimuTR</h3>
+      <div style="font-size:.82rem;color:var(--muted);line-height:2;margin-top:6px;">
+        ⚛️ Explorer les 17 éléments TR interactifs (fiche complète par clic)<br>
+        🔬 Visualiser les configurations 4f et courbes de propriétés<br>
+        🧪 Simuler 9 × 7 combinaisons Ln³⁺ / ligand (complexes)<br>
+        🌍 Consulter 6 gisements réels avec données production 2023<br>
+        ⚙️ Suivre 4 procédés d'extraction complets avec équations<br>
+        🏭 Parcourir 8 domaines d'applications industrielles<br>
+        🧲 Analyser les aimants TR en fonction de la température<br>
+        💡 Visualiser les spectres d'émission de 9 ions luminescents<br>
+        🧮 Effectuer 6 types de calculs spécialisés TR<br>
+        🎯 S'évaluer en quiz (3 niveaux, 6 thèmes, jusqu'à 12 questions)
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="ci">💡</div>
+    <div><strong>Fichier autonome :</strong> SimuTR fonctionne directement depuis votre navigateur (Chrome, Firefox, Edge). Sauvegardez-le localement pour un usage hors-ligne total. Toutes les données (éléments, gisements, quiz…) sont intégrées dans le fichier.</div>
+  </div>
+
+
+  <!-- ══ 2. INTERFACE ══ -->
+  <div id="interface" class="section-head">
+    <div class="section-icon si-blue">🖥️</div>
+    <div><h2>Découverte de l'Interface</h2><div class="sec-num">SECTION 02 — NAVIGATION & ÉLÉMENTS</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Structure de l'interface</h3>
+    <div class="ifd">
+      <div>┌──────────────────────────────────────────────────────────────┐</div>
+      <div>│ <span class="lbl">HEADER</span>  <span class="arr">→</span> <span class="dsc">⚛ Logo animé | SIMUTR | Bouton 🌙 | Nom auteur TCHOKPON</span>  │</div>
+      <div>├──────────────────────────────────────────────────────────────┤</div>
+      <div>│ <span class="lbl">ONGLETS</span> <span class="arr">→</span> <span class="dsc">12 onglets : ⚛️ TABLEAU | 🔬 PROPRIÉTÉS | 🧪 COMPLEXES...</span>   │</div>
+      <div>├──────────────────────────────────────────────────────────────┤</div>
+      <div>│                                                              │</div>
+      <div>│ <span class="lbl">CONTENU</span> <span class="arr">→</span> <span class="dsc">Panneaux actifs (sélecteurs + canvas + info + résultats)</span>   │</div>
+      <div>│                                                              │</div>
+      <div>├──────────────────────────────────────────────────────────────┤</div>
+      <div>│ <span class="lbl">STATUS</span>  <span class="arr">→</span> <span class="dsc">● Indicateur or | Dernier statut | Score quiz | Horloge</span>   │</div>
+      <div>└──────────────────────────────────────────────────────────────┘</div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card blue">
+      <h3>🌙 Mode sombre / clair</h3>
+      <p>Cliquez sur le bouton 🌙 dans le header pour basculer entre le thème <strong>sombre</strong> (fond bleu nuit, défaut) et le thème <strong>clair</strong>. Le thème sombre est recommandé pour l'étude des spectres de luminescence — le contraste des couleurs y est optimal.</p>
+    </div>
+    <div class="card">
+      <h3>⚡ Barre de statut (bas de page)</h3>
+      <p>La barre de statut affiche en permanence :</p>
+      <div class="qr-grid" style="margin-top:9px;">
+        <div class="qr"><div class="qr-k">INDICATEUR ●</div><div class="qr-v"><span class="o">Or clignotant</span> = système actif</div></div>
+        <div class="qr"><div class="qr-k">STATUT</div><div class="qr-v">Dernier élément / complexe / action</div></div>
+        <div class="qr"><div class="qr-k">QUIZ SESSION</div><div class="qr-v"><span class="g">Score cumulé</span> en temps réel</div></div>
+        <div class="qr"><div class="qr-k">HORLOGE</div><div class="qr-v">Heure en temps réel</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info">
+    <div class="ci">ℹ️</div>
+    <div><strong>Navigation :</strong> Cliquez sur n'importe quel onglet pour changer de module. SimuTR mémorise vos sélections dans la session (dernier élément choisi, complexe étudié, T° magnétisme…) pour le rapport de séance final.</div>
+  </div>
+
+
+  <!-- ══ 3. VUE D'ENSEMBLE MODULES ══ -->
+  <div id="modules" class="section-head">
+    <div class="section-icon si-gold">📋</div>
+    <div><h2>Vue d'ensemble des 12 Modules</h2><div class="sec-num">SECTION 03 — CARTE COMPLÈTE</div></div>
+  </div>
+
+  <div class="g3">
+    <div class="mod-card"><div class="mod-icon">⚛️</div><div class="mod-title">Tableau Périodique</div><div class="mod-desc">17 éléments TR interactifs. Fiche complète au clic (config. 4f, masse, rayon, E°…). Classification LREE/HREE. Courbe de contraction lanthanidique.</div><span class="mod-level lva">TOUS NIVEAUX</span></div>
+    <div class="mod-card"><div class="mod-icon">🔬</div><div class="mod-title">Propriétés 4f</div><div class="mod-desc">9 propriétés comparatives (rayon ionique, E°, Tfus, μₑff…). Fiche détaillée par élément. Graphique à barres interactif. États d'oxydation +II/+III/+IV.</div><span class="mod-level lv2">L2 → L3</span></div>
+    <div class="mod-card"><div class="mod-icon">🧪</div><div class="mod-title">Complexes & Coordination</div><div class="mod-desc">9 Ln³⁺ × 7 ligands (H₂O, EDTA, DTPA, acac, phen, NO₃, Cl). NC 6–12, géométries, log β réels. Animation canvas NC. Applications cliniques.</div><span class="mod-level lv2">L2 → L3</span></div>
+    <div class="mod-card"><div class="mod-icon">🌍</div><div class="mod-title">Gisements & Géochimie</div><div class="mod-desc">6 mines mondiales réelles (Bayan Obo, Mountain Pass, Lynas, IAC Chine, Kvanefjeld, Nolans). Production 2023, teneur LREE/HREE, radioactivité, enjeux.</div><span class="mod-level lv1">L1 → L2</span></div>
+    <div class="mod-card"><div class="mod-icon">⚙️</div><div class="mod-title">Extraction & Métallurgie</div><div class="mod-desc">4 minerais (bastnäsite, monazite, xénotime, IAC). Procédé complet en 4–7 étapes. Équations chimiques réelles. Rendements. Impacts environnementaux.</div><span class="mod-level lv2">L2 → L3</span></div>
+    <div class="mod-card"><div class="mod-icon">🏭</div><div class="mod-title">Applications Industrielles</div><div class="mod-desc">8 domaines : aimants NdFeB/SmCo, batteries NiMH, luminophores LED, catalyse auto, lasers, IRM Gd, énergie propre, verre/céramiques. Données 2023–2024.</div><span class="mod-level lva">TOUS NIVEAUX</span></div>
+    <div class="mod-card"><div class="mod-icon">🧲</div><div class="mod-title">Propriétés Magnétiques</div><div class="mod-desc">6 composés (NdFeB, SmCo₅, Sm₂Co₁₇, Gd, Terfenol-D, Fer). Curseur T° 0–400°C. Courbe BH simulée. Effet Tc. Comparaison Br, Hc, (BH)max.</div><span class="mod-level lv3">L3</span></div>
+    <div class="mod-card"><div class="mod-icon">💡</div><div class="mod-title">Luminescence & Optique</div><div class="mod-desc">9 ions (Eu³⁺, Tb³⁺, Er³⁺, Nd³⁺, Ce³⁺, Yb³⁺, Tm³⁺, Eu²⁺, Sm³⁺). Spectre d'émission en couleurs réelles. QY, τ, transitions 4f. 5 matrices hôtes.</div><span class="mod-level lv3">L3</span></div>
+    <div class="mod-card"><div class="mod-icon">🧮</div><div class="mod-title">Calculateur TR</div><div class="mod-desc">6 calculs : masse molaire oxydes, facteur d'enrichissement Clarke, constante stabilité complexe, μₑff (Van Vleck), rayon ionique, rendement extraction SX.</div><span class="mod-level lv2">L2 → L3</span></div>
+    <div class="mod-card"><div class="mod-icon">🎯</div><div class="mod-title">Quiz Interactif</div><div class="mod-desc">6 catégories × 3 niveaux (L1/L2/L3). 5, 8 ou 12 questions. Feedback détaillé avec explication scientifique pour chaque réponse. Score cumulé session.</div><span class="mod-level lva">TOUS NIVEAUX</span></div>
+    <div class="mod-card"><div class="mod-icon">📚</div><div class="mod-title">Fiches Théorie</div><div class="mod-desc">9 fiches de cours (L1→L3) : intro TR, tableau périodique, contraction lanthanidique, propriétés électroniques, coordination, extraction SX, luminescence, aimants, applications énergie.</div><span class="mod-level lv1">L1 → L3</span></div>
+    <div class="mod-card"><div class="mod-icon">📋</div><div class="mod-title">Rapport de Séance</div><div class="mod-desc">Bilan automatique : éléments étudiés, complexe sélectionné, composé magnétique, ion luminescent, score quiz total. Imprimable en PDF depuis le navigateur.</div><span class="mod-level lva">TOUS NIVEAUX</span></div>
+  </div>
+
+
+  <!-- ══ 4. TABLEAU PÉRIODIQUE ══ -->
+  <div id="tableau" class="section-head">
+    <div class="section-icon si-gold">⚛️</div>
+    <div><h2>Module Tableau Périodique — TR Interactif</h2><div class="sec-num">SECTION 04 — LES 17 ÉLÉMENTS</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Les 17 éléments des terres rares dans SimuTR</h3>
+    <p>Le tableau présente les <strong>17 terres rares officielles</strong> en 3 rangées distinctes. Cliquez sur n'importe quel élément pour afficher sa fiche complète.</p>
+    <div class="pt-mini">
+      <div class="ptm">La<sub>57</sub></div><div class="ptm">Ce<sub>58</sub></div><div class="ptm">Pr<sub>59</sub></div><div class="ptm">Nd<sub>60</sub></div><div class="ptm">Pm<sub>61</sub></div><div class="ptm">Sm<sub>62</sub></div><div class="ptm">Eu<sub>63</sub></div><div class="ptm">Gd<sub>64</sub></div><div class="ptm">Tb<sub>65</sub></div><div class="ptm">Dy<sub>66</sub></div><div class="ptm">Ho<sub>67</sub></div><div class="ptm">Er<sub>68</sub></div><div class="ptm">Tm<sub>69</sub></div><div class="ptm">Yb<sub>70</sub></div><div class="ptm">Lu<sub>71</sub></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:5px;flex-wrap:wrap;">
+      <div class="ptm sc" style="border-radius:5px;padding:4px 10px;">Sc <sub style="font-size:.55rem;">21</sub></div>
+      <div class="ptm y" style="border-radius:5px;padding:4px 10px;">Y <sub style="font-size:.55rem;">39</sub></div>
+      <span style="font-size:.75rem;color:var(--muted);align-self:center;font-family:'Fira Code',monospace;">← Sc et Y : groupe 3 (3d et 4d, pas de 4f)</span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;">
+      <div style="display:flex;align-items:center;gap:6px;"><div style="width:14px;height:14px;border-radius:3px;background:rgba(200,146,10,.3);border:1px solid var(--gold);"></div><span style="font-size:.72rem;color:var(--muted);">Lanthanides LREE (La–Eu) + HREE (Gd–Lu)</span></div>
+      <div style="display:flex;align-items:center;gap:6px;"><div style="width:14px;height:14px;border-radius:3px;background:rgba(142,68,173,.2);border:1px solid #8e44ad;"></div><span style="font-size:.72rem;color:var(--muted);">Scandium (Sc) — groupe 3, 3d¹</span></div>
+      <div style="display:flex;align-items:center;gap:6px;"><div style="width:14px;height:14px;border-radius:3px;background:rgba(52,152,219,.2);border:1px solid #3498db;"></div><span style="font-size:.72rem;color:var(--muted);">Yttrium (Y) — groupe 3, 4d¹</span></div>
+    </div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>📋 Fiche complète par élément</h3>
+      <p>Cliquez sur un élément → la fiche s'affiche à droite avec <strong>10 données réelles</strong> :</p>
+      <table class="dt" style="margin-top:9px;">
+        <thead><tr><th>DONNÉE</th><th>EXEMPLE (Nd)</th></tr></thead>
+        <tbody>
+          <tr><td>Configuration électronique</td><td><span class="hl">[Xe] 4f⁴ 6s²</span></td></tr>
+          <tr><td>Sous-couche 4f</td><td><span class="hl">4f³ → Nd³⁺</span></td></tr>
+          <tr><td>Degrés d'oxydation</td><td><span class="hl">+III</span></td></tr>
+          <tr><td>Rayon ionique M³⁺</td><td><span class="hl">98.3 pm</span></td></tr>
+          <tr><td>Potentiel standard E°</td><td><span class="hl">-2.32 V</span></td></tr>
+          <tr><td>Point de fusion</td><td><span class="hl">1021°C</span></td></tr>
+          <tr><td>Densité</td><td><span class="hl">7.007 g/cm³</span></td></tr>
+          <tr><td>Abondance terrestre</td><td><span class="hl">41.5 ppm</span></td></tr>
+          <tr><td>Électronégativité</td><td><span class="hl">1.14 (Pauling)</span></td></tr>
+          <tr><td>Structure cristalline</td><td><span class="hl">Hexagonal double</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card blue">
+      <h3>📈 Courbe de contraction lanthanidique</h3>
+      <p>Sous la fiche élément, un graphique montre la <strong>diminution du rayon ionique M³⁺</strong> de La à Lu :</p>
+      <div class="cb center">La³⁺ = 103 pm  →  Lu³⁺ = 86 pm
+Δr total = 17 pm sur 15 éléments
+Gadolinium (Gd) : point inflexion 4f⁷</div>
+      <p>Ce graphique illustre la <strong>contraction lanthanidique</strong> — phénomène central de la chimie des TR : les orbitales 4f très contractées blindent mal la charge nucléaire → Zeff augmente → le rayon diminue régulièrement.</p>
+      <div class="callout imp" style="margin-top:10px;margin-bottom:0;">
+        <div class="ci">⭐</div>
+        <div><strong>Conséquence pratique :</strong> Ce phénomène rend les TR chimiquement très similaires → séparation industrielle difficile → procédés SX avec 30–50 étages.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔵 Classification LREE / HREE</h3>
+    <p>SimuTR affiche clairement la classification fondamentale en 2 groupes :</p>
+    <div class="g2" style="margin-top:10px;">
+      <div style="background:rgba(200,146,10,.08);border:1px solid rgba(200,146,10,.2);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:var(--gold);margin-bottom:6px;">LREE — Terres Rares Légères</div>
+        <div class="cb" style="margin:0 0 8px;font-size:.75rem;">La · Ce · Pr · Nd · (Pm) · Sm · Eu</div>
+        <div style="font-size:.76rem;color:var(--muted);line-height:1.7;">Plus abondantes en nature<br>Minerais : Bastnäsite, Monazite<br>Rayon ionique élevé → NC = 9<br>Applications : aimants Nd, catalyse Ce, luminophores Eu</div>
+      </div>
+      <div style="background:rgba(26,106,138,.08);border:1px solid rgba(26,106,138,.2);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:#5bb3d0;margin-bottom:6px;">HREE — Terres Rares Lourdes</div>
+        <div class="cb blue" style="margin:0 0 8px;font-size:.75rem;">Gd · Tb · Dy · Ho · Er · Tm · Yb · Lu · Y</div>
+        <div style="font-size:.76rem;color:var(--muted);line-height:1.7;">Plus rares — Minerais : Xénotime, IAC (Chine)<br>Rayon ionique plus petit → NC = 8<br>Applications : Dy/Tb aimants haute T°, Er fibre optique, Lu PET médical</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 5. PROPRIÉTÉS 4f ══ -->
+  <div id="proprietes" class="section-head">
+    <div class="section-icon si-blue">🔬</div>
+    <div><h2>Module Propriétés 4f</h2><div class="sec-num">SECTION 05 — DONNÉES COMPARATIVES</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>⚙️ Utilisation du module</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Sélectionnez l'élément</h4><p>Menu déroulant listant les 17 TR avec leur sous-couche 4f notée (ex : "Nd — Néodyme (4f³)").</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Choisissez la propriété à visualiser</h4><p>5 graphiques disponibles : rayon ionique M³⁺, potentiel E°, point de fusion, électrons 4f, abondance croûte.</p></div></div>
+        <div class="step"><div class="step-n blue">3</div><div class="step-body"><h4>Cliquez AFFICHER</h4><p>La fiche détaillée avec toutes les propriétés physico-chimiques s'affiche au centre. La barre correspondant à l'élément sélectionné est colorée en or dans le graphique.</p></div></div>
+        <div class="step"><div class="step-n blue">4</div><div class="step-body"><h4>Lisez le moment magnétique μₑff</h4><p>La fiche affiche le moment magnétique effectif μₑff calculé selon Van Vleck, ainsi que le caractère para/diamagnétique.</p></div></div>
+      </div>
+    </div>
+    <div class="card blue">
+      <h3>📊 Les 5 graphiques comparatifs</h3>
+      <table class="dt" style="margin-top:8px;">
+        <thead><tr><th>GRAPHIQUE</th><th>CE QU'IL MONTRE</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Rayon ionique M³⁺</strong></td><td>Décroissance La→Lu (contraction lanthanidique). <span class="hl">Eu anomalie légère (4f⁷)</span></td></tr>
+          <tr><td><strong>Potentiel E°</strong></td><td>Quasi constant (~-2.3 V). Eu anomalie (<span class="hl2">-1.99 V</span>) car Eu³⁺/Eu²⁺ stabilisé</td></tr>
+          <tr><td><strong>Point de fusion</strong></td><td>Irrégulier. Eu et Yb : Tf basse (structure cristalline différente, valence mixte)</td></tr>
+          <tr><td><strong>Électrons 4f</strong></td><td>0 à 14 : linéaire La→Lu. Gd = 4f⁷ (demi-rempli, <span class="hl">point clé</span>)</td></tr>
+          <tr><td><strong>Abondance (ppm)</strong></td><td>Règle d'Oddo-Harkins : Z pair > Z impair. Ce = plus abondant (66 ppm)</td></tr>
+        </tbody>
+      </table>
+      <div class="callout imp" style="margin-top:10px;margin-bottom:0;">
+        <div class="ci">⭐</div>
+        <div><strong>Anomalies à retenir :</strong> Eu et Yb ont des points de fusion anormalement bas (valence mixte +II possible). Pm (Z=61) : abondance ≈ 0 (radioactif, pas d'isotope stable).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🧲 Tableau des moments magnétiques effectifs μₑff (Van Vleck)</h3>
+    <p>Ces valeurs sont calculées dans SimuTR depuis la formule <code style="font-family:'Fira Code',monospace;font-size:.8rem;color:var(--gold);">μₑff = g_J √[J(J+1)] μB</code>.</p>
+    <table class="dt" style="margin-top:10px;">
+      <thead><tr><th>ION</th><th>4f^n</th><th>μₑff (μB)</th><th>CARACTÈRE</th><th>APPLICATION CLÉ</th></tr></thead>
+      <tbody>
+        <tr><td>La³⁺</td><td>4f⁰</td><td><span class="hl">0</span></td><td>Diamagnétique</td><td>Matrice inerte, catalyse</td></tr>
+        <tr><td>Ce³⁺</td><td>4f¹</td><td>2.54</td><td>Paramagnétique</td><td>OSC automobile, luminescence</td></tr>
+        <tr><td>Nd³⁺</td><td>4f³</td><td>3.62</td><td>Paramagnétique</td><td>Aimants NdFeB (Nd métal)</td></tr>
+        <tr><td>Eu³⁺</td><td>4f⁶</td><td>3.40</td><td>Paramagnétique</td><td>Luminophore rouge, IRM</td></tr>
+        <tr><td><strong>Gd³⁺</strong></td><td>4f⁷</td><td><span class="hl">7.94</span></td><td><strong>Fortement paramagnétique</strong></td><td>IRM (Magnevist), réfrigération magnétique</td></tr>
+        <tr><td>Tb³⁺</td><td>4f⁸</td><td>9.72</td><td>Fortement paramagnétique</td><td>Terfenol-D, NdFeB amélioré</td></tr>
+        <tr><td><strong>Dy³⁺</strong></td><td>4f⁹</td><td><span class="hl">10.63</span></td><td><strong>Maximum tous TR</strong></td><td>Aimants VE haute T°, NdFeB Dy-dopé</td></tr>
+        <tr><td>Er³⁺</td><td>4f¹¹</td><td>9.59</td><td>Fortement paramagnétique</td><td>EDFA (fibre optique)</td></tr>
+        <tr><td>Lu³⁺</td><td>4f¹⁴</td><td><span class="hl">0</span></td><td>Diamagnétique</td><td>Scintillateur Lu-PET, Lu-177 médecine</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ 6. COMPLEXES ══ -->
+  <div id="complexes" class="section-head">
+    <div class="section-icon si-blue">🧪</div>
+    <div><h2>Module Complexes & Coordination</h2><div class="sec-num">SECTION 06 — CHIMIE DE COORDINATION 4f</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>⚙️ Comment simuler un complexe</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Choisissez le Lanthanide central</h4><p>9 ions disponibles : La³⁺, Ce³⁺/⁴⁺, Nd³⁺, Eu³⁺, Gd³⁺, Tb³⁺, Dy³⁺, Er³⁺, Yb³⁺. Chaque ion a ses propres données (taille, applications).</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Sélectionnez le ligand</h4><p>7 ligands : H₂O (mono), EDTA⁴⁻ (hexadentate), DTPA⁵⁻ (octadentate), acac⁻ (bidentate β-dicétonato), NO₃⁻ (bidentate), Cl⁻ (mono), 1,10-phénanthroline (bidentate N,N).</p></div></div>
+        <div class="step"><div class="step-n blue">3</div><div class="step-body"><h4>Cliquez AFFICHER COMPLEXE</h4><p>Affiche : formule du complexe, NC, géométrie, log β réel (issu de la littérature), application industrielle ou médicale. L'animation canvas montre les ligands autour du métal central.</p></div></div>
+        <div class="step"><div class="step-n blue">4</div><div class="step-body"><h4>Lisez les notes sur la liaison</h4><p>Le module rappelle toujours que les TR forment des liaisons <strong>ioniques dominantes</strong> (≠ métaux de transition) et que la stabilité augmente La→Lu (contraction lanthanidique).</p></div></div>
+      </div>
+    </div>
+    <div class="card blue">
+      <h3>📋 Les 7 ligands et leur intérêt</h3>
+      <table class="dt">
+        <thead><tr><th>LIGAND</th><th>DENTATE</th><th>LOG β (Gd)</th><th>APPLICATION RÉELLE</th></tr></thead>
+        <tbody>
+          <tr><td><strong>H₂O</strong></td><td>Mono (O)</td><td>—</td><td>Référence en solution aqueuse</td></tr>
+          <tr><td><strong>EDTA⁴⁻</strong></td><td>6 (2N+4O)</td><td>17.40</td><td>Séparation analytique, chromatographie TR</td></tr>
+          <tr><td><strong>DTPA⁵⁻</strong></td><td>8 (3N+5O)</td><td>22.46</td><td><span class="hl">Magnevist® (IRM clinique Gd)</span></td></tr>
+          <tr><td><strong>acac⁻</strong></td><td>2 (O,O)</td><td>~14</td><td>Précurseur CVD, luminescence Eu/Tb</td></tr>
+          <tr><td><strong>NO₃⁻</strong></td><td>2 (bidentate)</td><td>~4</td><td>Pyrochimie, nitrates TR haute pureté</td></tr>
+          <tr><td><strong>Cl⁻</strong></td><td>Mono (Cl)</td><td>Faible</td><td>Électrodéposition, synthèse précurseurs</td></tr>
+          <tr><td><strong>phen</strong></td><td>2 (N,N)</td><td>~18</td><td>Antenne luminescence, capteurs chimiques</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔑 Principes clés de la coordination des TR — à retenir</h3>
+    <div class="g2" style="margin-top:10px;">
+      <div>
+        <div class="cb">NC des lanthanides : 6 à 12
+LREE → NC = 9 : [Ln(H₂O)₉]³⁺
+HREE → NC = 8 : [Ln(H₂O)₈]³⁺
+(réduction NC due à la contraction)</div>
+        <div class="cb blue" style="margin-top:8px;">Ordre de stabilité des complexes :
+  log β(La-EDTA) = 15.36
+  log β(Lu-EDTA) = 19.83
+  → Stabilité croissante La → Lu</div>
+      </div>
+      <div>
+        <div class="callout imp">
+          <div class="ci">⭐</div>
+          <div><strong>Liaison ionique TR :</strong> Les orbitales 4f sont très contractées et blindées par 5s²5p⁶ → peu de recouvrement avec les ligands → liaison quasi-purement <strong>ionique</strong>. La stabilité dépend principalement du rapport charge/rayon (densité de charge). C'est fondamentalement différent des métaux de transition 3d.</div>
+        </div>
+        <div class="callout tip" style="margin-top:9px;">
+          <div class="ci">💡</div>
+          <div><strong>Gd-DTPA = Magnevist® :</strong> Le complexe le + important en médecine. Gd³⁺ (4f⁷, 7 électrons non appariés) raccourcit T1 des protons voisins en IRM. NC = 9 (8 du DTPA + 1 H₂O coordinée q=1). > 30 millions d'injections/an.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 7. GISEMENTS ══ -->
+  <div id="gisements" class="section-head">
+    <div class="section-icon si-green">🌍</div>
+    <div><h2>Module Gisements & Géochimie</h2><div class="sec-num">SECTION 07 — MINES MONDIALES RÉELLES</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Les 6 gisements dans SimuTR</h3>
+    <p>Cliquez sur une carte de gisement pour afficher la description complète. Chaque fiche contient le type géologique, les minerais, les réserves, le rapport LREE/HREE, la radioactivité et les enjeux géopolitiques.</p>
+    <table class="dt" style="margin-top:10px;">
+      <thead><tr><th>GISEMENT</th><th>PAYS</th><th>TYPE</th><th>DOMINANCE</th><th>PRODUCTION 2023</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Bayan Obo</strong></td><td>🇨🇳 Chine</td><td>Carbonatite-Fe</td><td><span class="hl">LREE 95%</span></td><td>~70% prod. mondiale Chine</td></tr>
+        <tr><td><strong>Mountain Pass</strong></td><td>🇺🇸 USA</td><td>Carbonatite</td><td><span class="hl">LREE 98%</span></td><td>~43 000 t/an</td></tr>
+        <tr><td><strong>Lynas Mount Weld</strong></td><td>🇦🇺 Australie</td><td>Latérite carbonatitique</td><td>LREE 90%</td><td>~18 000 t/an</td></tr>
+        <tr><td><strong>Ion Adsorption Clays</strong></td><td>🇨🇳 Chine (Sud)</td><td>Altération latéritique</td><td><span class="hl2">HREE 70%</span></td><td>~38 000 t/an HREE</td></tr>
+        <tr><td><strong>Kvanefjeld</strong></td><td>🇬🇱 Groenland</td><td>Syénite peralcaline</td><td>LREE 85%</td><td>En développement (moratoire 2021)</td></tr>
+        <tr><td><strong>Nolans Bore</strong></td><td>🇦🇺 Australie</td><td>Phosphate-silicate</td><td>LREE 92%</td><td>En développement (Arafura)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="g2">
+    <div class="card blue">
+      <h3>📊 Production mondiale 2023</h3>
+      <div style="font-size:.82rem;color:var(--muted);line-height:2.1;margin-top:6px;">
+        🇨🇳 <strong style="color:white;">Chine</strong> : ~240 000 t — <span class="hl">68%</span><br>
+        🇺🇸 <strong style="color:white;">USA</strong> : ~43 000 t — 12%<br>
+        🇲🇲 <strong style="color:white;">Myanmar</strong> : ~38 000 t — 11% (HREE)<br>
+        🇦🇺 <strong style="color:white;">Australie</strong> : ~18 000 t — 5%<br>
+        🇮🇳 <strong style="color:white;">Inde</strong> : ~2 900 t — 1%<br>
+        🌍 <strong style="color:white;">Autres</strong> : ~3%
+      </div>
+      <div class="callout warn" style="margin-top:10px;margin-bottom:0;">
+        <div class="ci">⚠️</div>
+        <div><strong>Dépendance géopolitique :</strong> La Chine contrôle 68% de la production ET domine la transformation (séparation SX). Pour les HREE (Dy, Tb, Eu), la dépendance est quasi-totale pour l'occident.</div>
+      </div>
+    </div>
+    <div class="card green">
+      <h3>🪨 Les 4 minéraux porteurs</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n green">🟡</div><div class="step-body"><h4>Bastnäsite — (La,Ce)(CO₃)F</h4><p>Principal minerai LREE mondial. Bayan Obo + Mountain Pass. Attaque HCl ou H₂SO₄ → HF gazeux dangereux !</p></div></div>
+        <div class="step"><div class="step-n green">🟡</div><div class="step-body"><h4>Monazite — (La,Ce,Th)PO₄</h4><p>Riche en LREE + Th radioactif. Sables miniers (Inde, Brésil, Australie). Décomposition NaOH puis séparation Th.</p></div></div>
+        <div class="step"><div class="step-n green">🟡</div><div class="step-body"><h4>Xénotime — YPO₄</h4><p>Source principale HREE. Malaisie, Australie. Densité 4.5 g/cm³ → séparation par gravimétrie dans les sables.</p></div></div>
+        <div class="step"><div class="step-n green">🟡</div><div class="step-body"><h4>Ion Adsorption Clays</h4><p>TR³⁺ adsorbées sur argiles du sud Chine. Teneur ultra-basse (0.05–0.2%) mais 70% HREE. Extraction douce (NH₄)₂SO₄.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 8. EXTRACTION ══ -->
+  <div id="extraction" class="section-head">
+    <div class="section-icon si-gold">⚙️</div>
+    <div><h2>Module Extraction & Métallurgie</h2><div class="sec-num">SECTION 08 — PROCÉDÉS INDUSTRIELS RÉELS</div></div>
+  </div>
+
+  <div class="card">
+    <h3>⚙️ Comment utiliser le module Extraction</h3>
+    <p>Sélectionnez le <strong>minerai source</strong> (bastnäsite, monazite, xénotime, IAC) puis cliquez sur <strong>▶ AFFICHER PROCÉDÉ</strong>. SimuTR affiche le <strong>diagramme de flux complet</strong> en étapes connectées, chacune cliquable pour voir les détails.</p>
+    <div class="callout info">
+      <div class="ci">ℹ️</div>
+      <div>Cliquez sur le contenu de chaque étape pour l'ouvrir et voir : description technique, équation chimique réelle, rendement estimé (%), impact environnemental.</div>
+    </div>
+  </div>
+
+  <div class="card blue">
+    <h3>🔬 Procédé complet Bastnäsite — 7 étapes (le + détaillé)</h3>
+    <div class="steps">
+      <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Extraction minière (open-pit)</h4><p>Concassage + broyage à P80 ~75 μm. La gangue contient calcite, dolomite, barytine, fluorite. Rendement ~95%.</p></div></div>
+      <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Flottation sélective (~60% TR₂O₃)</h4><p>Collecteur : acide oléique + Na₂CO₃. Bastnäsite hydrophobe → mousse. Rapport de concentration : 10–20×. Rdt ~85%.</p></div></div>
+      <div class="step"><div class="step-n">3</div><div class="step-body"><h4>Lixiviation acide (HCl ou H₂SO₄)</h4><div class="cb red" style="margin-top:5px;font-size:.74rem;">CeCO₃F + 2HCl → CeCl₃ + CO₂↑ + HF↑ ⚠️</div><p>Dissolution sélective TR. ⚠️ HF gazeux très toxique dégagé avec bastnäsite/HCl.</p></div></div>
+      <div class="step"><div class="step-n">4</div><div class="step-body"><h4>Extraction par solvants SX — Séparation TR individuelles</h4><div class="cb" style="margin-top:5px;font-size:.74rem;">Ln³⁺(aq) + 3 HDEHP(org) ⇌ LnDEHP₃(org) + 3H⁺
+D = [Ln]org / [Ln]aq → sélectivité par Z atomique</div><p>Batterie de 30–50 mélangeurs-décanteurs. Extractants : D2EHPA, EHEHPA, Cyanex 572. Étape la + difficile et coûteuse.</p></div></div>
+      <div class="step"><div class="step-n">5</div><div class="step-body"><h4>Précipitation des oxalates</h4><div class="cb" style="margin-top:5px;font-size:.74rem;">Ln³⁺ + 3/2 H₂C₂O₄ → Ln₂(C₂O₄)₃↓ + 3H⁺  (pH 1.5–2)</div></div></div>
+      <div class="step"><div class="step-n">6</div><div class="step-body"><h4>Calcination → Oxydes REO (800–1000°C)</h4><div class="cb" style="margin-top:5px;font-size:.74rem;">Ln₂(C₂O₄)₃ → Ln₂O₃ + 3CO + 3CO₂  (900°C)</div><p>Produit commercial : TR₂O₃ à 99–99.99%.</p></div></div>
+      <div class="step"><div class="step-n">7</div><div class="step-body"><h4>Réduction métallotherme → Métal pur</h4><div class="cb" style="margin-top:5px;font-size:.74rem;">Nd₂O₃ + 3Ca → 2Nd + 3CaO  (1000°C, sous Ar)
+LnF₃ + 3/2Ca → Ln + 3/2CaF₂</div><p>Néodyme métal obtenu pour la fabrication d'aimants NdFeB.</p></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🌿 Enjeux environnementaux par minerai</h3>
+    <table class="dt">
+      <thead><tr><th>MINERAI</th><th>RISQUE PRINCIPAL</th><th>PARTICULARITÉ</th></tr></thead>
+      <tbody>
+        <tr><td>Bastnäsite</td><td>⚠️ HF gazeux lors de la lixiviation HCl</td><td>Effluents acides, neutralisation CaO requise</td></tr>
+        <tr><td>Monazite</td><td>☢️ <span class="hl">Thorium radioactif</span> (0.1–10% Th)</td><td>Résidus à stocker long terme sous contrôle nucléaire</td></tr>
+        <tr><td>Xénotime</td><td>H₂SO₄ concentré à 250°C</td><td>H₃PO₄ co-produit récupérable</td></tr>
+        <tr><td>IAC (Chine)</td><td>NH₄⁺ dans nappes phréatiques</td><td>Sols compactés, déforestation légère, impact global modéré</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn" style="margin-top:10px;margin-bottom:0;">
+      <div class="ci">♻️</div>
+      <div><strong>Recyclage des TR (2023) : moins de 1%</strong> des TR en fin de vie sont recyclées. C'est un enjeu critique pour la transition énergétique. Initiatives en cours : Urban Mining (NdFeB), hydrometallurgie douce pour batteries NiMH.</div>
+    </div>
+  </div>
+
+
+  <!-- ══ 9. APPLICATIONS ══ -->
+  <div id="applications" class="section-head">
+    <div class="section-icon si-gold">🏭</div>
+    <div><h2>Module Applications Industrielles</h2><div class="sec-num">SECTION 09 — LES 8 DOMAINES</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🏭 Navigation dans le module Applications</h3>
+    <p>Cliquez sur l'un des <strong>8 blocs colorés</strong> (grille gauche) pour charger le contenu du domaine. SimuTR affiche : éléments TR utilisés, équations/données clés, chiffres de marché 2023–2024.</p>
+  </div>
+
+  <div class="card blue">
+    <h3>📋 Les 8 domaines — synthèse</h3>
+    <table class="dt">
+      <thead><tr><th>DOMAINE</th><th>TR CLÉS</th><th>PRODUIT / APPLICATION</th><th>CHIFFRE CLÉ</th></tr></thead>
+      <tbody>
+        <tr><td>🧲 Aimants permanents</td><td><span class="hl">Nd, Pr, Dy, Tb, Sm</span></td><td>Nd₂Fe₁₄B (VE, éoliennes), SmCo (aéro)</td><td>BHmax = 512 kJ/m³ (NdFeB)</td></tr>
+        <tr><td>🔋 Batteries & Stockage</td><td>La, Ce, Nd, Pr</td><td>Alliage AB₅ (LaNi₅) → NiMH hybrides</td><td>~10–15 kg TR/hybride Toyota Prius</td></tr>
+        <tr><td>💡 Luminophores / LED</td><td><span class="hl">Ce, Eu, Tb</span></td><td>Ce³⁺:YAG (LED blanche), Eu³⁺ (rouge), Tb³⁺ (vert)</td><td>>100 lm/W (LED Ce:YAG)</td></tr>
+        <tr><td>⚗️ Catalyse</td><td>Ce, La, Nd</td><td>CeO₂ OSC (auto 3 voies), La-zéolite FCC</td><td>50 000 t/an Ce en catalyse auto</td></tr>
+        <tr><td>🔬 Optique & Lasers</td><td><span class="hl">Nd, Er, Yb, Ho</span></td><td>Nd:YAG (1064 nm), EDFA Er (1550 nm), Yb-fibre (kW)</td><td>EDFA = base d'Internet mondial</td></tr>
+        <tr><td>🏥 Médecine & IRM</td><td><span class="hl">Gd, Lu, Pm</span></td><td>Gd-DTPA (IRM), Lu-177 (radiothérapie)</td><td>Lutathera® FDA 2018 (tumeurs NET)</td></tr>
+        <tr><td>⚡ Énergie propre</td><td>Nd, Pr, Dy, Tb, Y</td><td>Éoliennes offshore, moteurs VE, SOFC (YSZ)</td><td>1 MW éolien = 650 kg aimants NdFeB</td></tr>
+        <tr><td>🪟 Verre & Céramiques</td><td>Ce, Nd, La, Pr, Er</td><td>CeO₂ polissant, LaF₃ optique, verre Nd rose</td><td>CeO₂ polissant = 15 000 t/an</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <!-- ══ 10. MAGNÉTISME ══ -->
+  <div id="magnetisme" class="section-head">
+    <div class="section-icon si-red">🧲</div>
+    <div><h2>Module Propriétés Magnétiques</h2><div class="sec-num">SECTION 10 — AIMANTS TR ET TEMPÉRATURE</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>⚙️ Utilisation du module Magnétisme</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Sélectionnez le composé</h4><p>6 matériaux : Nd₂Fe₁₄B, SmCo₅, Sm₂Co₁₇, Gd métal, DyFe₂ (Terfenol-D type), Fer ordinaire (comparaison). Chaque matériau a ses données Br, Hc, (BH)max, Tc réelles.</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Faites varier la température (0–400°C)</h4><p>Le curseur T° recalcule la rémanence Br en temps réel selon le modèle Br(T) = Br₀ × (1 – (T/Tc)^1.5). La barre de données se met à jour instantanément.</p></div></div>
+        <div class="step"><div class="step-n blue">3</div><div class="step-body"><h4>Lisez la courbe BH simulée</h4><p>Le canvas à droite affiche la courbe B-H de désaimantation simulée. La hauteur de la courbe diminue avec la température. Si T > Tc : courbe plate → matériau paramagnétique.</p></div></div>
+      </div>
+    </div>
+    <div class="card blue">
+      <h3>📊 Comparaison des 6 matériaux magnétiques</h3>
+      <table class="dt">
+        <thead><tr><th>MATÉRIAU</th><th>Br (T)</th><th>Hc (kA/m)</th><th>(BH)max</th><th>Tc (°C)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Nd₂Fe₁₄B</strong></td><td><span class="hl">1.4</span></td><td>1000</td><td><span class="hl">512 kJ/m³</span></td><td>312°C</td></tr>
+          <tr><td>SmCo₅</td><td>1.05</td><td>900</td><td>200 kJ/m³</td><td><span class="hl">730°C</span></td></tr>
+          <tr><td>Sm₂Co₁₇</td><td>1.15</td><td>700</td><td>260 kJ/m³</td><td><span class="hl">800°C</span></td></tr>
+          <tr><td>Gd métal</td><td>0.24</td><td>2</td><td>4 kJ/m³</td><td><span class="hl">20°C !</span></td></tr>
+          <tr><td>DyFe₂ (Terfenol)</td><td>—</td><td>—</td><td>—</td><td>Magnétostriction 2000 ppm</td></tr>
+          <tr><td>Fer (référence)</td><td>2.15</td><td>0.001</td><td>0.5 kJ/m³</td><td>770°C</td></tr>
+        </tbody>
+      </table>
+      <div class="callout imp" style="margin-top:10px;margin-bottom:0;">
+        <div class="ci">⭐</div>
+        <div><strong>NdFeB vs SmCo :</strong> NdFeB est le plus puissant mais Tc = 312°C. SmCo₅ est moins puissant mais résiste jusqu'à 730°C → choix selon application (VE → NdFeB+Dy, aérospatial haute T° → SmCo).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🌡️ Comprendre l'effet de la température sur l'aimantation</h3>
+    <div class="g2" style="margin-top:10px;">
+      <div>
+        <div class="cb center">Modèle SimuTR :
+Br(T) = Br₀ × (1 – (T_K/Tc_K)^1.5)
+
+Si T > Tc → Br = 0 → PARAMAGNÉTIQUE
+(perte TOTALE de l'aimantation permanente)</div>
+        <p style="margin-top:9px;font-size:.8rem;color:var(--muted);">Testez : sélectionnez NdFeB, montez la T° à 350°C (> Tc = 312°C) → la rémanence tombe à 0 et le message d'alerte s'affiche.</p>
+      </div>
+      <div>
+        <div class="callout tip">
+          <div class="ci">💡</div>
+          <div><strong>Pourquoi Dy/Tb dans les NdFeB ?</strong> Dans les moteurs de VE, la T° peut dépasser 150°C. L'ajout de 1–3% Dy ou Tb augmente la coercitivité Hc à haute T° → l'aimant résiste mieux. Coût élevé mais indispensable pour véhicules haute performance.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 11. LUMINESCENCE ══ -->
+  <div id="luminescence" class="section-head">
+    <div class="section-icon si-gold">💡</div>
+    <div><h2>Module Luminescence & Optique</h2><div class="sec-num">SECTION 11 — SPECTRES ET TRANSITIONS 4f</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>⚙️ Utiliser le module Luminescence</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Sélectionnez l'ion luminescent</h4><p>9 ions disponibles avec longueur d'onde dominante indiquée dans le menu (ex : "Eu³⁺ — Rouge (⁵D₀→⁷F₂) 615 nm").</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Choisissez la matrice hôte</h4><p>5 matrices : Y₂O₃, YAG (Y₃Al₅O₁₂), LaF₃, NaYF₄, BaMgAl₁₀O₁₇. La matrice influence le champ cristallin et peut décaler légèrement les pics d'émission.</p></div></div>
+        <div class="step"><div class="step-n blue">3</div><div class="step-body"><h4>Cliquez SIMULER ÉMISSION</h4><p>Le spectre d'émission en <strong>couleurs réelles</strong> s'affiche (violet pour UV, vert pour 545 nm, rouge pour 615 nm, invisible pour NIR). Le pic principal est marqué avec la longueur d'onde exacte.</p></div></div>
+        <div class="step"><div class="step-n blue">4</div><div class="step-body"><h4>Lisez les données optiques</h4><p>La fiche affiche : rendement quantique QY (%), durée de vie τ (ms ou μs), type de transition (4f→4f raies fines, ou 4f→5d bande large).</p></div></div>
+      </div>
+    </div>
+    <div class="card blue">
+      <h3>📋 Les 9 ions — données complètes</h3>
+      <table class="dt">
+        <thead><tr><th>ION</th><th>ÉMISSION</th><th>QY (%)</th><th>τ</th><th>APPLICATION MAJEURE</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Eu³⁺</strong></td><td><span style="color:#e74c3c;">Rouge 615 nm</span></td><td>&gt;90%</td><td>1–3 ms</td><td>Luminophore rouge écrans, sécurité billets €</td></tr>
+          <tr><td><strong>Eu²⁺</strong></td><td><span style="color:#3498db;">Bleu 440–460 nm</span></td><td>80–90%</td><td>~1 μs</td><td>LED tricolore, photoluminescence persistante</td></tr>
+          <tr><td><strong>Tb³⁺</strong></td><td><span style="color:#27ae60;">Vert 545 nm</span></td><td>70–90%</td><td>0.5–2 ms</td><td>Luminophore vert tubes fluo, détection TNT</td></tr>
+          <tr><td><strong>Er³⁺</strong></td><td>NIR 1550 nm + Vert 550 nm</td><td>~1% (up-conv.)</td><td>10–12 ms</td><td><span class="hl">EDFA télécom — épine dorsale d'Internet</span></td></tr>
+          <tr><td><strong>Nd³⁺</strong></td><td>NIR 1064 nm</td><td>Variable</td><td>0.2–0.5 ms</td><td>Laser Nd:YAG — standard industriel mondial</td></tr>
+          <tr><td><strong>Ce³⁺</strong></td><td><span style="color:#f1c40f;">UV/Bleu 430 nm</span></td><td>&gt;90%</td><td>~60 ns</td><td><span class="hl">LED blanche Ce:YAG (Nobel 2014)</span></td></tr>
+          <tr><td><strong>Yb³⁺</strong></td><td>NIR 980–1030 nm</td><td>Variable</td><td>1–2 ms</td><td>Pompe laser Er, laser Yb-fibre industriel kW</td></tr>
+          <tr><td><strong>Tm³⁺</strong></td><td>Bleu 450–480 nm (up-conv.)</td><td>~0.1%</td><td>1–3 ms</td><td>Laser 2 μm, bioimagerie blue up-conversion</td></tr>
+          <tr><td><strong>Sm³⁺</strong></td><td>Orange-rouge 645 nm</td><td>20–60%</td><td>1–2 ms</td><td>Sm²⁺ photochrome, pigments céramiques</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🔑 Comprendre l'up-conversion (Er³⁺, Tm³⁺)</h3>
+    <div class="g2" style="margin-top:10px;">
+      <div>
+        <div class="cb">Up-conversion (Er³⁺/Yb³⁺ dans NaYF₄) :
+2 photons NIR (980 nm) absorbés
+→ 1 photon visible émis (550 nm vert)
+
+Yb³⁺ absorbe NIR → transfère à Er³⁺
+Er³⁺ monte niveau ⁴F₇/₂ → cascade → vert</div>
+        <p style="margin-top:8px;font-size:.78rem;color:var(--muted);">Le spectre SimuTR montre les deux bandes : vert (550 nm) et rouge (660 nm) pour Er³⁺ up-conversion. La longueur d'onde d'excitation (980 nm) dépasse la plage visible affichée.</p>
+      </div>
+      <div>
+        <div class="callout tip">
+          <div class="ci">💡</div>
+          <div><strong>Raies fines vs bandes larges :</strong> Les transitions 4f→4f donnent des <strong>raies fines</strong> (Eu³⁺ à 615 nm exactement) car les orbitales 4f sont blindées → insensibles au champ cristallin. Les transitions 4f→5d (Eu²⁺, Ce³⁺) donnent des <strong>bandes larges</strong> car 5d est exposé au champ cristallin.</div>
+        </div>
+        <div class="callout imp" style="margin-top:9px;">
+          <div class="ci">⭐</div>
+          <div><strong>Durée de vie longue τ ≈ ms :</strong> Les lanthanides ont une durée de vie d'émission de 0.1–10 ms (vs μs pour fluorophores organiques). C'est fondamental pour l'immunoessai à résolution temporelle (TRFIA) : on attend la fin des autofluorescences avant de mesurer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 12. CALCULS ══ -->
+  <div id="calcul" class="section-head">
+    <div class="section-icon si-green">🧮</div>
+    <div><h2>Module Calculs Spécialisés TR</h2><div class="sec-num">SECTION 12 — 6 TYPES DE CALCULS</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>🔢 Les 6 types de calculs</h3>
+      <table class="dt">
+        <thead><tr><th>TYPE</th><th>FORMULE</th><th>USAGE PRATIQUE</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Masse molaire oxydes TR</strong></td><td>M = Σ(n_i × M_atomique)</td><td>Calculer M de Nd₂O₃, CeO₂, Y₂O₃, GdF₃…</td></tr>
+          <tr><td><strong>Facteur enrichissement</strong></td><td>FE = C_éch / C_Clarke</td><td>Évaluer si un gisement est économiquement viable (FE > 10 = significatif)</td></tr>
+          <tr><td><strong>Constante stabilité log β</strong></td><td>β = [LnLₙ] / ([Ln³⁺][L]ⁿ)</td><td>Comparer stabilité complexes Ln-EDTA vs DTPA, La vs Lu</td></tr>
+          <tr><td><strong>Moment magnétique μₑff</strong></td><td>μₑff = g_J √[J(J+1)] μB</td><td>Calculer μₑff selon le nombre d'électrons 4f (0 à 14)</td></tr>
+          <tr><td><strong>Rayon ionique (contraction)</strong></td><td>Données tabulées Z=57→71</td><td>Retrouver r(M³⁺) et quantifier la contraction depuis La</td></tr>
+          <tr><td><strong>Rendement extraction SX</strong></td><td>E = (C₀–C₁)/C₀ × 100</td><td>Calculer le % extraction et le nb de phases nécessaires pour 99%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card blue">
+      <h3>📌 Guide rapide — Facteur d'enrichissement</h3>
+      <p>Le FE (Facteur d'Enrichissement, aussi appelé Facteur de Clarke) est l'outil standard pour évaluer un gisement potentiel :</p>
+      <div class="cb center">FE = C_gisement (ppm) / C_Clarke (ppm)
+Abondances Clarke de référence :
+  Ce : 66.5 ppm | La : 39 ppm | Nd : 41.5 ppm
+  Sm : 7.05 ppm | Eu : 2.0 ppm | Gd : 6.2 ppm
+  Dy : 5.2 ppm  | Er : 3.5 ppm | Yb : 3.2 ppm</div>
+      <div class="qr-grid" style="margin-top:10px;">
+        <div class="qr"><div class="qr-k">FE &lt; 1</div><div class="qr-v">Appauvrissement (non-économique)</div></div>
+        <div class="qr"><div class="qr-k">FE 3–10</div><div class="qr-v">Enrichissement notable</div></div>
+        <div class="qr"><div class="qr-k">FE &gt; 10</div><div class="qr-v"><span class="g">Gisement significatif</span></div></div>
+        <div class="qr"><div class="qr-k">FE &gt; 100</div><div class="qr-v"><span class="o">Gisement exceptionnel</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📋 Masses atomiques TR intégrées dans SimuTR</h3>
+    <div class="cb" style="font-size:.72rem;columns:2;column-gap:20px;line-height:2;">La : 138.91 | Ce : 140.12 | Pr : 140.91 | Nd : 144.24 | Pm : 145.00 | Sm : 150.36 | Eu : 151.96 | Gd : 157.25 | Tb : 158.93 | Dy : 162.50 | Ho : 164.93 | Er : 167.26 | Tm : 168.93 | Yb : 173.04 | Lu : 174.97 | Sc : 44.96 | Y : 88.91 | O : 15.999 | F : 18.998 | H : 1.008</div>
+  </div>
+
+
+  <!-- ══ 13. QUIZ ══ -->
+  <div id="quiz" class="section-head">
+    <div class="section-icon si-red">🎯</div>
+    <div><h2>Module Quiz Interactif</h2><div class="sec-num">SECTION 13 — AUTO-ÉVALUATION PAR NIVEAU</div></div>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>⚙️ Configurer et passer un quiz</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Choisissez la catégorie</h4><p>6 thèmes : <strong>Généralités</strong> (tableau, abondance), <strong>Propriétés atomiques</strong> (4f, μₑff, E°), <strong>Complexes</strong> (NC, log β, IRM), <strong>Extraction</strong> (minerais, SX, Th), <strong>Applications</strong> (NdFeB, EDFA, LED), <strong>Quiz général</strong> (mélange).</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Sélectionnez le niveau (L1/L2/L3)</h4><p>L1 = questions bases, L2 = mécanismes et calculs, L3 = questions avancées (constantes, transitions 4f, Tc, up-conversion).</p></div></div>
+        <div class="step"><div class="step-n blue">3</div><div class="step-body"><h4>Choisissez 5, 8 ou 12 questions</h4><p>5 = révision express (5 min), 8 = standard (12 min), 12 = session complète (20 min).</p></div></div>
+        <div class="step"><div class="step-n blue">4</div><div class="step-body"><h4>Lisez TOUJOURS le feedback</h4><p>Même en répondant correctement — le feedback contient une explication scientifique détaillée qui enrichit la compréhension. Le passage à la question suivante est automatique après 2.8 secondes.</p></div></div>
+      </div>
+    </div>
+    <div class="card blue">
+      <h3>📊 Interpréter son score</h3>
+      <table class="dt" style="margin-top:8px;">
+        <thead><tr><th>SCORE</th><th>INTERPRÉTATION</th><th>ACTION</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge bg">≥ 85%</span></td><td>Maîtrise solide</td><td>Passez au niveau suivant ou thème suivant</td></tr>
+          <tr><td><span class="badge bb">70–84%</span></td><td>Bonne compréhension</td><td>Révisez les 2–3 questions ratées via la Théorie</td></tr>
+          <tr><td><span class="badge bo">50–69%</span></td><td>Bases présentes</td><td>Retournez dans Propriétés 4f + Théorie</td></tr>
+          <tr><td><span class="badge br">&lt; 50%</span></td><td>Révision nécessaire</td><td>Commencez par les fiches L1 du module Théorie</td></tr>
+        </tbody>
+      </table>
+      <div class="callout warn" style="margin-top:12px;margin-bottom:0;">
+        <div class="ci">⚠️</div>
+        <div>Le score s'accumule dans la barre de statut et dans le rapport de séance. Relancez plusieurs quiz successifs : le score global de session est conservé pour le rapport final.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📚 Exemples de questions par niveau</h3>
+    <div class="g3" style="margin-top:10px;">
+      <div style="background:rgba(45,122,79,.08);border:1px solid rgba(45,122,79,.2);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:#6abf89;margin-bottom:8px;font-size:.85rem;"><span class="badge bg" style="margin-right:6px;">L1</span> EXEMPLE QUESTION</div>
+        <div style="font-size:.8rem;color:var(--muted);line-height:1.7;font-style:italic;">"Combien y a-t-il d'éléments officiellement classifiés comme terres rares ?"<br><br><strong style="color:white;">Réponse : 17</strong> (15 lanthanides + Sc + Y)</div>
+      </div>
+      <div style="background:rgba(26,106,138,.08);border:1px solid rgba(26,106,138,.2);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:#5bb3d0;margin-bottom:8px;font-size:.85rem;"><span class="badge bb" style="margin-right:6px;">L2</span> EXEMPLE QUESTION</div>
+        <div style="font-size:.8rem;color:var(--muted);line-height:1.7;font-style:italic;">"Pourquoi la stabilité des complexes Ln-EDTA augmente-t-elle de La à Lu ?"<br><br><strong style="color:white;">Réponse :</strong> Contraction lanthanidique → rayon ↓ → charge/rayon ↑ → interaction électrostatique plus forte</div>
+      </div>
+      <div style="background:rgba(138,58,107,.08);border:1px solid rgba(138,58,107,.2);border-radius:9px;padding:13px;">
+        <div style="font-weight:700;color:#c97ab5;margin-bottom:8px;font-size:.85rem;"><span class="badge br" style="margin-right:6px;">L3</span> EXEMPLE QUESTION</div>
+        <div style="font-size:.8rem;color:var(--muted);line-height:1.7;font-style:italic;">"La spectroscopie Eu³⁺ est utilisée pour déterminer quel paramètre structural ?"<br><br><strong style="color:white;">Réponse :</strong> q = nombre de molécules H₂O coordinées → via τ(H₂O) et τ(D₂O)</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══ 14. STRATÉGIES ══ -->
+  <div id="strategies" class="section-head">
+    <div class="section-icon si-gold">🎓</div>
+    <div><h2>Stratégies d'Utilisation Efficace</h2><div class="sec-num">SECTION 14 — MÉTHODES DE TRAVAIL</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🗓️ Plan de révision recommandé par session</h3>
+    <table class="dt">
+      <thead><tr><th>SESSION</th><th>DURÉE</th><th>OBJECTIF</th><th>MODULES</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Découverte L1</strong></td><td>40 min</td><td>Connaître les 17 TR, LREE/HREE, gisements</td><td>📚 Théorie L1 → ⚛️ Tableau (tous éléments) → 🌍 Gisements → 🎯 Quiz général L1 (5Q)</td></tr>
+        <tr><td><strong>Propriétés L2</strong></td><td>50 min</td><td>Contraction lanthanidique, 4f, μₑff, E°</td><td>🔬 Propriétés (5 graphiques) → 📚 Théorie L2 (contraction + magnétique) → 🎯 Quiz propriétés L2 (8Q)</td></tr>
+        <tr><td><strong>Complexes L2–L3</strong></td><td>45 min</td><td>Maîtriser la coordination TR</td><td>🧪 9 Ln × 7 ligands → lecture log β et NC → 📚 Fiche théorie coordination → 🎯 Quiz complexes L2 (8Q)</td></tr>
+        <tr><td><strong>Extraction L2</strong></td><td>50 min</td><td>Comprendre les 4 procédés industriels</td><td>⚙️ Procédé bastnäsite (7 étapes) → monazite → IAC → 🎯 Quiz extraction L2 (8Q)</td></tr>
+        <tr><td><strong>Applications L3</strong></td><td>55 min</td><td>Maîtriser les 8 domaines d'application</td><td>🏭 8 domaines → 🧲 NdFeB + T° curseur → 💡 Spectres Eu/Tb/Er/Ce → 🎯 Quiz applications L3 (12Q)</td></tr>
+        <tr><td><strong>Révision générale</strong></td><td>60 min</td><td>Test final avant examen</td><td>🎯 Quiz général L3 12Q × 2 → 🧮 Calculs (tous types) → 📋 Générer rapport</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="g2">
+    <div class="card">
+      <h3>⚡ 7 Conseils pour mieux simuler</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><h4>Commencez toujours par la Théorie</h4><p>Les 9 fiches (L1→L3) sont un point de départ essentiel. Lisez la fiche correspondante avant de simuler un module — cela donne le contexte pour interpréter les données.</p></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><h4>Parcourez TOUS les 17 éléments dans le Tableau</h4><p>Cliquez sur chaque élément et lisez sa note au bas de la fiche (notes sur les applications et anomalies). C'est le tour complet des TR en ~20 minutes.</p></div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-body"><h4>Comparez NdFeB et SmCo dans Magnétisme</h4><p>Testez les deux à la même T° (150°C). Observez la différence de performance. C'est la démonstration en temps réel du compromis puissance/résistance thermique.</p></div></div>
+        <div class="step"><div class="step-n blue">4</div><div class="step-body"><h4>Comparez Eu³⁺ et Eu²⁺ en Luminescence</h4><p>Affichez les deux spectres successivement. Observez la différence raies fines (Eu³⁺, rouge 615 nm) vs bande large (Eu²⁺, bleu 440 nm) — clé de compréhension 4f vs 4f-5d.</p></div></div>
+        <div class="step"><div class="step-n blue">5</div><div class="step-body"><h4>Combinez Complexes + Calculs</h4><p>Simulez [Gd(DTPA)]²⁻ dans Complexes (Magnevist IRM), puis calculez son log β dans Calculs. Comparez La-DTPA vs Gd-DTPA → vérification de la tendance La→Lu.</p></div></div>
+        <div class="step"><div class="step-n">6</div><div class="step-body"><h4>Testez le Prométhium (Pm) dans le Tableau</h4><p>Pm est le seul lanthanide sans isotope stable. Sa fiche explique son origine (fission), ses applications historiques et l'abondance quasi nulle. À connaître pour les questions d'examen.</p></div></div>
+        <div class="step"><div class="step-n">7</div><div class="step-body"><h4>Générez le rapport en fin de session</h4><p>Le rapport (📋) résume votre travail : éléments étudiés, complexe et ligand choisis, composé magnétique, ion luminescent, score quiz. Imprimez-le en PDF pour garder une trace.</p></div></div>
+      </div>
+    </div>
+
+    <div class="card blue">
+      <h3>🔗 Liens entre modules — Utilisation croisée</h3>
+      <div class="steps">
+        <div class="step"><div class="step-n blue">A</div><div class="step-body"><h4>Tableau + Propriétés 4f</h4><p>Cliquez La dans le Tableau → notez le rayon (103 pm). Allez en Propriétés → graphique rayon ionique → observez la décroissance jusqu'à Lu (86 pm). La contraction lanthanidique devient visuelle.</p></div></div>
+        <div class="step"><div class="step-n blue">B</div><div class="step-body"><h4>Gisements + Extraction</h4><p>Consultez la fiche "Ion Adsorption Clays" (Gisements) → puis allez dans Extraction et sélectionnez ce minerai. Vous voyez tout le chemin de la mine aux oxydes HREE.</p></div></div>
+        <div class="step"><div class="step-n blue">C</div><div class="step-body"><h4>Applications + Magnétisme</h4><p>Lisez la fiche "Aimants permanents" (Applications : Nd₂Fe₁₄B pour VE) → allez en Magnétisme → testez NdFeB à 150°C (T° moteur) puis avec Dy → comprenez pourquoi Dy est critique.</p></div></div>
+        <div class="step"><div class="step-n blue">D</div><div class="step-body"><h4>Propriétés + Luminescence</h4><p>Dans Propriétés, regardez μₑff de Eu³⁺ (3.4 μB) et Tb³⁺ (9.72 μB). Puis en Luminescence, affichez leurs spectres. Lien entre configuration 4f, magnétisme ET optique.</p></div></div>
+        <div class="step"><div class="step-n blue">E</div><div class="step-body"><h4>Complexes + Applications (IRM)</h4><p>Simulez [Gd(DTPA)(H₂O)]²⁻ dans Complexes → lisez l'application IRM et q=1. Allez dans Applications → fiche Médecine → retrouvez Magnevist® et les données cliniques complètes.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RÉCAP FINAL -->
+  <div class="section-head" style="margin-top:48px;">
+    <div class="section-icon si-gold">⭐</div>
+    <div><h2>Récapitulatif — SimuTR v1.0 en un coup d'œil</h2><div class="sec-num">RÉFÉRENCE RAPIDE</div></div>
+  </div>
+
+  <div class="card">
+    <h3>🗺️ Carte complète de SimuTR v1.0</h3>
+    <div class="qr-grid" style="margin-top:12px;">
+      <div class="qr"><div class="qr-k">⚛️ TABLEAU</div><div class="qr-v">17 TR | Fiche au clic | LREE/HREE | Courbe contraction</div></div>
+      <div class="qr"><div class="qr-k">🔬 PROPRIÉTÉS 4f</div><div class="qr-v">5 graphiques | μₑff Van Vleck | +II/+III/+IV</div></div>
+      <div class="qr"><div class="qr-k">🧪 COMPLEXES</div><div class="qr-v">9 Ln × 7 ligands | NC 6–12 | log β réels | canvas</div></div>
+      <div class="qr"><div class="qr-k">🌍 GISEMENTS</div><div class="qr-v">6 mines réelles | prod. 2023 | 4 minerais | radioactivité</div></div>
+      <div class="qr"><div class="qr-k">⚙️ EXTRACTION</div><div class="qr-v">4 minerais | 4–7 étapes | équations | environnement</div></div>
+      <div class="qr"><div class="qr-k">🏭 APPLICATIONS</div><div class="qr-v">8 domaines | données 2023 | TR clés / domaine</div></div>
+      <div class="qr"><div class="qr-k">🧲 MAGNÉTISME</div><div class="qr-v">6 matériaux | curseur T° | courbe BH | Tc</div></div>
+      <div class="qr"><div class="qr-k">💡 LUMINESCENCE</div><div class="qr-v">9 ions | spectre couleurs | QY, τ | 5 matrices hôtes</div></div>
+      <div class="qr"><div class="qr-k">🧮 CALCULS</div><div class="qr-v">6 types | masse molaire | FE | log β | μₑff | SX</div></div>
+      <div class="qr"><div class="qr-k">🎯 QUIZ</div><div class="qr-v">6 catégories | L1/L2/L3 | 5/8/12Q | feedback scientifique</div></div>
+      <div class="qr"><div class="qr-k">📚 THÉORIE</div><div class="qr-v">9 fiches L1→L3 | formules | données réelles</div></div>
+      <div class="qr"><div class="qr-k">📋 RAPPORT</div><div class="qr-v">Bilan automatique | score quiz | imprimable PDF</div></div>
+    </div>
+  </div>
+
+  <div class="callout imp">
+    <div class="ci">🎓</div>
+    <div><strong>Message final :</strong> Les terres rares sont au cœur de la transition énergétique, des technologies médicales et de l'économie numérique. SimuTR vous donne accès à toutes leurs propriétés et applications de manière interactive. L'objectif est de <strong>comprendre les liens</strong> entre structure électronique 4f → propriétés → applications — pas de mémoriser des listes. Chaque module est conçu pour révéler ces connexions.</div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="ft">⚛️ SimuTR v1.0 — Guide Complet d'Utilisation</div>
+  <p>Edmond Atinzoun TCHOKPON — Licence Physique-Chimie</p>
+  <p style="margin-top:5px;font-size:.58rem;color:rgba(255,255,255,.2);">Guide généré pour accompagner le simulateur SimuTR v1.0 | Chimie des Terres Rares | 2025</p>
+</footer>
+
+<script>
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    document.querySelector(a.getAttribute('href'))?.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+const navLinks=document.querySelectorAll('.guide-nav a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  document.querySelectorAll('[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-90)cur=s.id;});
+  navLinks.forEach(a=>{
+    const active=a.getAttribute('href')==='#'+cur;
+    a.style.color=active?'var(--gold)':'rgba(255,255,255,.5)';
+    a.style.borderBottomColor=active?'var(--gold)':'transparent';
+  });
+});
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});
+},{threshold:0.08});
+document.querySelectorAll('.card,.mod-card').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(12px)';
+  el.style.transition='opacity .4s ease, transform .4s ease';
+  obs.observe(el);
+});
+</script>
+</body>
+</html>

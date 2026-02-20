@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimuPoly — Chimie des Polymères | Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,400;0,700;1,400&family=Share+Tech+Mono&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0e0a1a;
+  --surface:#14102a;
+  --surface2:#1c1738;
+  --surface3:#241f46;
+  --p1:#e040fb;   /* magenta */
+  --p2:#00e5ff;   /* cyan */
+  --p3:#69ff47;   /* neon green */
+  --p4:#ffab00;   /* amber */
+  --p5:#ff6d00;   /* deep orange */
+  --danger:#ff1744;
+  --text:#e8e0ff;
+  --muted:#5a5280;
+  --border:#2a2550;
+  --mono:'Share Tech Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;
+}
+
+/* ANIMATED BACKGROUND */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(224,64,251,0.07) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 50% at 80% 80%, rgba(0,229,255,0.06) 0%,transparent 70%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(105,255,71,0.03) 0%,transparent 70%);
+}
+
+/* HEADER */
+header{
+  position:relative;z-index:10;
+  background:linear-gradient(90deg,rgba(14,10,26,0.98),rgba(20,16,42,0.98));
+  border-bottom:1px solid var(--border);
+  padding:12px 28px;display:flex;align-items:center;justify-content:space-between;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 40px rgba(224,64,251,0.1);
+}
+.logo{display:flex;align-items:center;gap:14px;}
+.logo-ring{
+  width:48px;height:48px;border-radius:50%;
+  border:2px solid var(--p1);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+  box-shadow:0 0 20px rgba(224,64,251,0.5),inset 0 0 20px rgba(224,64,251,0.1);
+  animation:ringPulse 3s ease-in-out infinite;
+  position:relative;
+}
+.logo-ring::after{
+  content:'';position:absolute;inset:-4px;border-radius:50%;
+  border:1px solid rgba(224,64,251,0.3);animation:ringPulse 3s ease-in-out infinite reverse;
+}
+@keyframes ringPulse{0%,100%{box-shadow:0 0 20px rgba(224,64,251,0.5)}50%{box-shadow:0 0 35px rgba(224,64,251,0.9),0 0 60px rgba(224,64,251,0.3)}}
+.logo-text h1{font-family:'Bitter',serif;font-size:1.65rem;font-weight:700;letter-spacing:3px;
+  background:linear-gradient(135deg,var(--p1),var(--p2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.logo-text p{font-size:.62rem;color:var(--muted);letter-spacing:2px;font-family:var(--mono);}
+.header-right{display:flex;align-items:center;gap:10px;}
+.author-tag{
+  background:rgba(224,64,251,0.08);border:1px solid rgba(224,64,251,0.3);
+  border-radius:8px;padding:7px 14px;text-align:right;
+}
+.author-tag .n{font-family:'Bitter',serif;font-size:.88rem;font-weight:700;color:var(--p1);}
+.author-tag .i{font-size:.58rem;color:var(--muted);font-family:var(--mono);}
+.lang-btn{
+  background:var(--surface2);border:1px solid var(--border);color:var(--text);
+  border-radius:6px;padding:7px 14px;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.8rem;letter-spacing:1px;transition:all .2s;
+}
+.lang-btn:hover{border-color:var(--p1);color:var(--p1);}
+
+/* TABS */
+.tabs{
+  position:relative;z-index:5;background:var(--surface);
+  border-bottom:1px solid var(--border);
+  padding:8px 28px;display:flex;gap:5px;overflow-x:auto;
+}
+.tab{
+  padding:7px 16px;border-radius:7px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;letter-spacing:.5px;
+  transition:all .22s;white-space:nowrap;
+}
+.tab.active{
+  background:linear-gradient(135deg,rgba(224,64,251,.2),rgba(0,229,255,.1));
+  border-color:var(--p1);color:var(--p1);
+  box-shadow:0 0 16px rgba(224,64,251,.2);
+}
+.tab:hover:not(.active){border-color:var(--muted);color:var(--text);}
+
+/* APP */
+.app{display:none;padding:20px 28px;gap:16px;flex-wrap:wrap;position:relative;z-index:1;min-height:calc(100vh-120px);}
+.app.active{display:flex;}
+
+/* PANEL */
+.panel{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:16px;position:relative;overflow:hidden;
+}
+.panel::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--p1),var(--p2),transparent);
+}
+.ptitle{
+  font-family:var(--mono);font-size:.7rem;color:var(--p1);
+  letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
+
+/* FORMS */
+.fg{margin-bottom:11px;}
+.fg label{display:block;font-size:.63rem;color:var(--muted);letter-spacing:1px;margin-bottom:3px;font-family:var(--mono);text-transform:uppercase;}
+.fg select,.fg input{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);border-radius:6px;padding:7px 10px;
+  font-family:'Outfit',sans-serif;font-size:.83rem;outline:none;transition:border-color .2s;
+}
+.fg select:focus,.fg input:focus{border-color:var(--p1);}
+.fg input[type=range]{padding:4px 0;accent-color:var(--p1);}
+
+/* BUTTONS */
+.btn{width:100%;padding:9px;border-radius:7px;border:none;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.88rem;letter-spacing:1px;
+  transition:all .22s;margin-top:4px;}
+.btn-p{background:linear-gradient(135deg,var(--p1),#aa00ff);color:white;box-shadow:0 0 20px rgba(224,64,251,.3);}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 4px 28px rgba(224,64,251,.5);}
+.btn-c{background:linear-gradient(135deg,var(--p2),#0091ea);color:#000;}
+.btn-c:hover{transform:translateY(-1px);}
+.btn-g{background:linear-gradient(135deg,var(--p3),#00c853);color:#000;}
+.btn-d{background:transparent;color:var(--danger);border:1px solid var(--danger);}
+.btn-d:hover{background:var(--danger);color:white;}
+.btn-sm{width:auto;padding:6px 14px;font-size:.72rem;margin:0;border-radius:6px;}
+
+/* INSTRUMENTS */
+.instr-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.instr{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:9px 12px;text-align:center;flex:1;min-width:75px;
+}
+.instr .val{font-family:var(--mono);font-size:1.2rem;font-weight:500;color:var(--p2);
+  text-shadow:0 0 10px rgba(0,229,255,.5);}
+.instr .unit{font-size:.58rem;color:var(--muted);margin-top:1px;}
+.instr .lbl{font-size:.58rem;color:var(--muted);letter-spacing:1px;font-family:var(--mono);}
+
+/* CHAIN CANVAS */
+canvas{display:block;border-radius:8px;}
+
+/* DATA TABLE */
+.dtable{width:100%;border-collapse:collapse;font-size:.73rem;font-family:var(--mono);}
+.dtable th{background:rgba(224,64,251,.12);color:var(--p1);padding:5px 8px;
+  text-align:center;border-bottom:1px solid var(--border);font-size:.64rem;letter-spacing:1px;}
+.dtable td{padding:5px 8px;text-align:center;border-bottom:1px solid rgba(42,37,80,.5);color:var(--text);}
+.dtable tr:hover td{background:rgba(224,64,251,.05);}
+
+/* INFO BOXES */
+.ibox{border-radius:7px;padding:11px 14px;margin:10px 0;font-size:.8rem;line-height:1.65;}
+.ib-m{background:rgba(224,64,251,.1);border-left:3px solid var(--p1);}
+.ib-c{background:rgba(0,229,255,.08);border-left:3px solid var(--p2);}
+.ib-g{background:rgba(105,255,71,.08);border-left:3px solid var(--p3);}
+.ib-a{background:rgba(255,171,0,.08);border-left:3px solid var(--p4);}
+
+/* THEORY CARDS */
+.thy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:12px;}
+.thy-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:15px;}
+.thy-card h3{font-family:'Bitter',serif;font-weight:700;color:var(--p1);margin-bottom:9px;font-size:.93rem;}
+.thy-card p,.thy-card li{font-size:.79rem;color:#8888aa;line-height:1.65;}
+.thy-card ul{padding-left:15px;}
+.fbox{background:#080614;border:1px solid var(--border);border-radius:5px;padding:9px;
+  margin:7px 0;font-family:var(--mono);color:var(--p4);font-size:.78rem;text-align:center;}
+.lvl{display:inline-block;padding:2px 7px;border-radius:3px;font-size:.6rem;
+  font-weight:700;letter-spacing:1px;margin-bottom:7px;font-family:var(--mono);}
+.lv-m{background:rgba(224,64,251,.15);color:var(--p1);border:1px solid var(--p1);}
+.lv-c{background:rgba(0,229,255,.1);color:var(--p2);border:1px solid var(--p2);}
+.lv-g{background:rgba(105,255,71,.1);color:var(--p3);border:1px solid var(--p3);}
+
+/* QUIZ */
+.quiz-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;}
+.quiz-q{font-weight:600;font-size:.92rem;color:var(--text);margin-bottom:12px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:7px;}
+.quiz-opt{
+  background:var(--surface);border:1px solid var(--border);border-radius:7px;
+  padding:9px 13px;cursor:pointer;font-size:.82rem;transition:all .18s;text-align:left;
+  font-family:'Outfit',sans-serif;color:var(--text);
+}
+.quiz-opt:hover{border-color:var(--p1);background:rgba(224,64,251,.08);}
+.quiz-opt.correct{background:rgba(105,255,71,.15);border-color:var(--p3);color:var(--p3);}
+.quiz-opt.wrong{background:rgba(255,23,68,.1);border-color:var(--danger);color:var(--danger);}
+.quiz-fb{margin-top:10px;border-radius:7px;padding:10px 14px;font-size:.79rem;line-height:1.6;display:none;}
+.quiz-fb.show{display:block;}
+.qf-ok{background:rgba(105,255,71,.1);color:var(--p3);border-left:3px solid var(--p3);}
+.qf-ko{background:rgba(255,23,68,.1);color:var(--danger);border-left:3px solid var(--danger);}
+
+/* POLYMER ARCHITECTURE VISUAL */
+.arch-visual{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:14px;font-family:var(--mono);font-size:.75rem;color:var(--text);
+  line-height:2.2;letter-spacing:2px;word-break:break-all;overflow:hidden;
+}
+
+/* STATUS BAR */
+.statusbar{
+  position:relative;z-index:5;background:var(--surface);border-top:1px solid var(--border);
+  padding:7px 28px;display:flex;align-items:center;gap:18px;
+  font-family:var(--mono);font-size:.66rem;color:var(--muted);flex-wrap:wrap;
+}
+.sindic{display:flex;align-items:center;gap:6px;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--p3);
+  box-shadow:0 0 6px var(--p3);animation:blink 2s infinite;}
+.sdot.amber{background:var(--p4);box-shadow:0 0 6px var(--p4);}
+.sdot.red{background:var(--danger);box-shadow:0 0 6px var(--danger);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-ring">🧬</div>
+    <div class="logo-text">
+      <h1 id="appTitle">SIMUPOLY</h1>
+      <p id="appSub">SIMULATEUR DE CHIMIE DES POLYMÈRES — v1.0</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="lang-btn" onclick="toggleLang()" id="langBtn">EN</button>
+    <div class="author-tag">
+      <div class="n">Edmond Atinzoun TCHOKPON</div>
+      <div class="i" id="authorInfo">LICENCE PHYSIQUE-CHIMIE | SIMUPOLY 2025</div>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="showTab('addition')" id="tab-addition">⚡ ADDITION</button>
+  <button class="tab" onclick="showTab('condensation')" id="tab-condensation">🔗 CONDENSATION</button>
+  <button class="tab" onclick="showTab('masses')" id="tab-masses">⚖ MASSES MOLAIRES</button>
+  <button class="tab" onclick="showTab('structure')" id="tab-structure">🌡️ STRUCTURE & Tg/Tf</button>
+  <button class="tab" onclick="showTab('copolymeres')" id="tab-copolymeres">🎨 COPOLYMÈRES</button>
+  <button class="tab" onclick="showTab('degradation')" id="tab-degradation">♻️ DÉGRADATION</button>
+  <button class="tab" onclick="showTab('theorie')" id="tab-theorie">📚 THÉORIE</button>
+  <button class="tab" onclick="showTab('quiz')" id="tab-quiz">🎯 QUIZ</button>
+  <button class="tab" onclick="showTab('rapport')" id="tab-rapport">📋 RAPPORT</button>
+</div>
+
+<!-- ═══════════════ ADDITION ═══════════════ -->
+<div class="app active" id="app-addition">
+
+  <div class="panel" style="flex:0 0 265px;">
+    <div class="ptitle">⚙️ Configuration</div>
+    <div class="fg"><label>Type de polymérisation</label>
+      <select id="add-type" onchange="updateAddType()">
+        <option value="radical">Radicalaire (libre)</option>
+        <option value="anionic">Anionique (vivante)</option>
+        <option value="cationic">Cationique</option>
+        <option value="coordination">Coordination (Ziegler-Natta)</option>
+      </select>
+    </div>
+    <div class="fg"><label>Monomère</label>
+      <select id="add-monomer">
+        <option value="ethylene">Éthylène CH₂=CH₂ → PE</option>
+        <option value="styrene">Styrène C₆H₅-CH=CH₂ → PS</option>
+        <option value="vinylchloride">Chlorure de vinyle → PVC</option>
+        <option value="acrylonitrile">Acrylonitrile → PAN</option>
+        <option value="methylmethacrylate">Méthacrylate de méthyle → PMMA</option>
+      </select>
+    </div>
+    <div class="fg"><label>Concentration initiateur [I]₀ (mol/L)</label>
+      <input type="number" id="add-I0" value="0.01" step="0.005" min="0.001" max="0.5">
+    </div>
+    <div class="fg"><label>Concentration monomère [M]₀ (mol/L)</label>
+      <input type="number" id="add-M0" value="1.0" step="0.1" min="0.1" max="10">
+    </div>
+    <div class="fg"><label>Température (°C)</label>
+      <input type="range" id="add-T" min="0" max="150" value="60" oninput="document.getElementById('add-T-disp').textContent=this.value+' °C'">
+      <div style="text-align:center;font-family:var(--mono);font-size:.75rem;color:var(--p1)" id="add-T-disp">60 °C</div>
+    </div>
+    <div class="fg"><label>Durée (min)</label>
+      <input type="number" id="add-tmax" value="120" step="10" min="10" max="600">
+    </div>
+    <button class="btn btn-p" onclick="runAddition()">▶ SIMULER</button>
+    <button class="btn btn-d" onclick="resetAddition()" style="margin-top:6px;">↺ RESET</button>
+
+    <div style="margin-top:12px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:11px;" id="add-type-info">
+      <div style="font-size:.62rem;color:var(--muted);font-family:var(--mono);margin-bottom:6px;">INFO MÉCANISME</div>
+      <div style="font-size:.76rem;color:var(--text);line-height:1.6;" id="add-mech-info">
+        Amorçage → Propagation → Terminaison<br>
+        <span style="color:var(--p4);font-family:var(--mono);">Rp = kp·[M]·(Ri/2kt)^0.5</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAIN ANIMATION -->
+  <div class="panel" style="flex:0 0 285px;">
+    <div class="ptitle">🧬 Chaîne polymère</div>
+    <canvas id="chainCanvas" width="253" height="260" style="background:#080614;border:1px solid var(--border);border-radius:8px;width:100%;"></canvas>
+    <div class="instr-row">
+      <div class="instr"><div class="val" id="add-conv">0.0</div><div class="unit">%</div><div class="lbl">CONV.</div></div>
+      <div class="instr"><div class="val" id="add-Mn">0</div><div class="unit">g/mol</div><div class="lbl">Mn</div></div>
+      <div class="instr"><div class="val" id="add-Ip">—</div><div class="unit"></div><div class="lbl">Đ (Ip)</div></div>
+    </div>
+    <div style="margin-top:10px;">
+      <div style="font-size:.62rem;color:var(--muted);font-family:var(--mono);margin-bottom:4px;">AVANCEMENT</div>
+      <div style="background:var(--surface2);border-radius:6px;height:10px;overflow:hidden;border:1px solid var(--border);">
+        <div id="add-prog" style="height:100%;width:0%;background:linear-gradient(90deg,var(--p1),var(--p2));border-radius:6px;transition:width .4s;box-shadow:0 0 8px var(--p1);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="panel" style="flex:1;min-width:280px;">
+    <div class="ptitle">📈 Cinétique de polymérisation</div>
+    <canvas id="addChart" height="200"></canvas>
+    <div class="ptitle" style="margin-top:12px;">📊 Distribution des masses (Schulz-Flory)</div>
+    <canvas id="mwdChart" height="140"></canvas>
+  </div>
+
+  <!-- TABLE -->
+  <div class="panel" style="flex:0 0 195px;">
+    <div class="ptitle">📋 Données</div>
+    <div style="max-height:380px;overflow-y:auto;">
+      <table class="dtable">
+        <thead><tr><th>t (min)</th><th>[M]</th><th>Conv%</th></tr></thead>
+        <tbody id="add-tbody"></tbody>
+      </table>
+    </div>
+    <button class="btn btn-p" style="margin-top:8px;font-size:.7rem;" onclick="exportCSV('add')">⬇ CSV</button>
+
+    <div style="margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px;">
+      <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:5px;">POLYMÈRE FORMÉ</div>
+      <div id="add-polymer-name" style="font-family:'Bitter',serif;font-size:1rem;font-weight:700;color:var(--p1);">—</div>
+      <div id="add-polymer-app" style="font-size:.72rem;color:var(--muted);margin-top:3px;">—</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CONDENSATION ═══════════════ -->
+<div class="app" id="app-condensation">
+  <div class="panel" style="flex:0 0 265px;">
+    <div class="ptitle">⚙️ Configuration</div>
+    <div class="fg"><label>Type</label>
+      <select id="cond-type" onchange="updateCondType()">
+        <option value="polyester">Polyestérification (diol + diacide)</option>
+        <option value="polyamide">Polyamidification (diamine + diacide)</option>
+        <option value="polyurethane">Polyuréthane (diol + diisocyanate)</option>
+        <option value="epoxy">Époxy (époxyde + amine)</option>
+      </select>
+    </div>
+    <div class="fg"><label>Monomère A (mol)</label>
+      <input type="number" id="cond-nA" value="1.0" step="0.1" min="0.1" max="5></div>
+    <div class="fg"><label>Monomère B (mol)</label>
+      <input type="number" id="cond-nB" value="1.0" step="0.1" min="0.1" max="5"></div>
+    <div class="fg"><label>Constante k (L·mol⁻¹·min⁻¹)</label>
+      <input type="number" id="cond-k" value="0.05" step="0.01" min="0.001" max="1"></div>
+    <div class="fg"><label>Durée (min)</label>
+      <input type="number" id="cond-tmax" value="200" step="20" min="20" max="1000"></div>
+    <button class="btn btn-p" onclick="runCondensation()">▶ SIMULER</button>
+    <button class="btn btn-d" onclick="resetCondensation()" style="margin-top:6px;">↺ RESET</button>
+
+    <!-- Carothers equation -->
+    <div class="ibox ib-m" style="margin-top:12px;">
+      <div style="font-size:.6rem;font-family:var(--mono);color:var(--p1);margin-bottom:4px;">ÉQUATION DE CAROTHERS</div>
+      <div style="font-family:var(--mono);font-size:.82rem;color:var(--p4);">X̄ₙ = 1/(1 – p)</div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:4px;">p = taux d'avancement (0→1)</div>
+    </div>
+
+    <div style="margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px;">
+      <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:6px;">RÉSULTATS INSTANTANÉS</div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <div style="display:flex;justify-content:space-between;font-size:.76rem;"><span style="color:var(--muted);">Taux p :</span><span id="cond-p" style="color:var(--p2);font-family:var(--mono);">0.000</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.76rem;"><span style="color:var(--muted);">X̄ₙ :</span><span id="cond-Xn" style="color:var(--p1);font-family:var(--mono);">1.0</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:.76rem;"><span style="color:var(--muted);">Mn :</span><span id="cond-Mn" style="color:var(--p3);font-family:var(--mono);">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel" style="flex:1;min-width:280px;">
+    <div class="ptitle">📈 Cinétique de condensation — p = f(t) et X̄ₙ = f(p)</div>
+    <canvas id="condChart" height="210"></canvas>
+    <div class="ptitle" style="margin-top:12px;">📊 Évolution du degré de polymérisation X̄ₙ</div>
+    <canvas id="condXnChart" height="140"></canvas>
+  </div>
+
+  <div class="panel" style="flex:0 0 220px;">
+    <div class="ptitle">🧬 Chaîne de condensation</div>
+    <canvas id="condChainCanvas" width="188" height="200" style="background:#080614;border:1px solid var(--border);border-radius:7px;width:100%;"></canvas>
+    <div class="ibox ib-c" style="margin-top:10px;">
+      <div style="font-size:.6rem;font-family:var(--mono);color:var(--p2);margin-bottom:4px;">COPRODUIT ÉLIMINÉ</div>
+      <div id="cond-byproduct" style="font-size:.82rem;color:var(--text);">H₂O (polycondensation)</div>
+    </div>
+    <div style="margin-top:8px;">
+      <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:4px;">EXEMPLE INDUSTRIEL</div>
+      <div id="cond-example" style="font-size:.78rem;color:var(--p4);font-family:var(--mono);">PET (bouteilles)</div>
+    </div>
+    <div class="dtable" style="margin-top:10px;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr><th style="background:rgba(224,64,251,.12);color:var(--p1);padding:5px;font-size:.62px;letter-spacing:1px;font-family:var(--mono);">t</th><th style="background:rgba(224,64,251,.12);color:var(--p1);padding:5px;font-size:.62rem;letter-spacing:1px;font-family:var(--mono);">p</th><th style="background:rgba(224,64,251,.12);color:var(--p1);padding:5px;font-size:.62rem;letter-spacing:1px;font-family:var(--mono);">X̄ₙ</th></tr></thead>
+        <tbody id="cond-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MASSES MOLAIRES ═══════════════ -->
+<div class="app" id="app-masses">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">⚖ Calcul des masses molaires & dispersité</div>
+    <div style="display:flex;flex-wrap:wrap;gap:18px;">
+
+      <div style="flex:0 0 280px;">
+        <div class="fg"><label>Polymère</label>
+          <select id="mm-polymer">
+            <option value="PS">Polystyrène (PS)</option>
+            <option value="PE">Polyéthylène (PE)</option>
+            <option value="PVC">PVC</option>
+            <option value="PMMA">PMMA</option>
+            <option value="Nylon66">Nylon 6,6</option>
+            <option value="PET">PET</option>
+          </select>
+        </div>
+        <div class="fg"><label>Mn cible (g/mol)</label>
+          <input type="number" id="mm-Mn" value="50000" step="5000" min="1000" max="1000000">
+        </div>
+        <div class="fg"><label>Dispersité Đ (Ip)</label>
+          <input type="range" id="mm-Ip" min="1.0" max="5.0" step="0.1" value="2.0" oninput="document.getElementById('mm-Ip-disp').textContent=parseFloat(this.value).toFixed(1)">
+          <div style="text-align:center;font-family:var(--mono);font-size:.75rem;color:var(--p1);" id="mm-Ip-disp">2.0</div>
+        </div>
+        <div class="fg"><label>Type de distribution</label>
+          <select id="mm-dist">
+            <option value="schulz">Schulz-Flory (condensation)</option>
+            <option value="poisson">Poisson (vivante)</option>
+            <option value="gaussian">Gaussienne (Đ contrôlée)</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="calcMasses()">▶ CALCULER</button>
+
+        <!-- Results -->
+        <div style="margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">RÉSULTATS</div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:.75rem;color:var(--muted);">Mn =</span>
+              <span id="res-Mn" style="font-family:var(--mono);font-size:1.1rem;color:var(--p1);">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:.75rem;color:var(--muted);">Mw =</span>
+              <span id="res-Mw" style="font-family:var(--mono);font-size:1.1rem;color:var(--p2);">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:.75rem;color:var(--muted);">Mz =</span>
+              <span id="res-Mz" style="font-family:var(--mono);font-size:.9rem;color:var(--p3);">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:.75rem;color:var(--muted);">Đ (Ip) =</span>
+              <span id="res-Ip" style="font-family:var(--mono);font-size:1rem;color:var(--p4);">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;">
+              <span style="font-size:.75rem;color:var(--muted);">DPn =</span>
+              <span id="res-DPn" style="font-family:var(--mono);font-size:.9rem;color:var(--muted);">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interpretation -->
+        <div class="ibox ib-m" style="margin-top:10px;" id="Ip-interp">
+          <div style="font-size:.6rem;font-family:var(--mono);color:var(--p1);margin-bottom:3px;">INTERPRÉTATION Đ</div>
+          <div style="font-size:.77rem;color:var(--text);">Đ = 2.0 : distribution Schulz-Flory typique d'une polymérisation radicalaire.</div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:300px;">
+        <div class="ptitle">📊 Distribution des masses molaires (DMM)</div>
+        <canvas id="mmChart" height="280"></canvas>
+        <div style="margin-top:10px;display:flex;gap:12px;font-family:var(--mono);font-size:.68rem;flex-wrap:wrap;">
+          <span><span style="color:var(--p1);">━━</span> w(M) distribution en masse</span>
+          <span><span style="color:var(--p2);">━━</span> n(M) distribution en nombre</span>
+          <span><span style="color:var(--p4);border:1px dashed;padding:0 3px;">|</span> Mn <span style="color:var(--p2);border:1px dashed;padding:0 3px;">|</span> Mw</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ STRUCTURE & Tg/Tf ═══════════════ -->
+<div class="app" id="app-structure">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🌡️ Structure, Tg, Tf & Transitions thermiques</div>
+    <div style="display:flex;flex-wrap:wrap;gap:18px;">
+
+      <div style="flex:0 0 270px;">
+        <div class="fg"><label>Polymère</label>
+          <select id="str-polymer" onchange="updateStructure()">
+            <option value="PE_ld">Polyéthylène LD (PELD)</option>
+            <option value="PE_hd">Polyéthylène HD (PEHD)</option>
+            <option value="PP">Polypropylène (PP)</option>
+            <option value="PS">Polystyrène (PS)</option>
+            <option value="PVC">PVC</option>
+            <option value="PMMA">PMMA (Plexiglas)</option>
+            <option value="PET">PET</option>
+            <option value="Nylon66">Nylon 6,6</option>
+            <option value="PC">Polycarbonate (PC)</option>
+            <option value="PTFE">PTFE (Téflon)</option>
+          </select>
+        </div>
+        <div class="fg"><label>Taux de cristallinité (%)</label>
+          <input type="range" id="str-cryst" min="0" max="100" value="50" oninput="updateCryst(this.value)">
+          <div style="text-align:center;font-family:var(--mono);font-size:.75rem;color:var(--p1);" id="str-cryst-disp">50 %</div>
+        </div>
+        <button class="btn btn-p" onclick="showStructure()">▶ ANALYSER</button>
+
+        <div style="margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">DONNÉES THERMIQUES</div>
+          <div style="display:flex;flex-direction:column;gap:6px;" id="thermal-data">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:.75rem;color:var(--muted);">Tg =</span><span id="val-Tg" style="font-family:var(--mono);color:var(--p1);">—</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:.75rem;color:var(--muted);">Tf =</span><span id="val-Tf" style="font-family:var(--mono);color:var(--p2);">—</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:.75rem;color:var(--muted);">T décomp. =</span><span id="val-Td" style="font-family:var(--mono);color:var(--danger);">—</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:.75rem;color:var(--muted);">Cristallinité =</span><span id="val-cryst" style="font-family:var(--mono);color:var(--p3);">—</span></div>
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:.75rem;color:var(--muted);">Type =</span><span id="val-type" style="font-family:var(--mono);color:var(--p4);">—</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:4px;">APPLICATIONS</div>
+          <div id="str-apps" style="font-size:.77rem;color:var(--text);line-height:1.6;">—</div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;">
+        <div class="ptitle">🌡️ Diagramme DSC simulé (flux de chaleur)</div>
+        <canvas id="dscChart" height="220"></canvas>
+        <div class="ptitle" style="margin-top:12px;">🔬 Structure moléculaire</div>
+        <canvas id="structChart" height="160"></canvas>
+      </div>
+
+      <div style="flex:0 0 240px;">
+        <div class="ptitle">📊 Propriétés mécaniques vs T</div>
+        <canvas id="mechChart" height="220"></canvas>
+        <div class="ibox ib-c" style="margin-top:10px;">
+          <div style="font-size:.6rem;font-family:var(--mono);color:var(--p2);margin-bottom:4px;">ZONES COMPORTEMENTALES</div>
+          <div style="font-size:.74rem;color:var(--text);line-height:1.65;">
+            T &lt; Tg → <strong style="color:var(--p1);">Vitreux</strong> (rigide, cassant)<br>
+            Tg &lt; T &lt; Tf → <strong style="color:var(--p3);">Caoutchoutique</strong><br>
+            T &gt; Tf → <strong style="color:var(--p4);">Fondu visqueux</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ COPOLYMÈRES ═══════════════ -->
+<div class="app" id="app-copolymeres">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🎨 Copolymères & Architectures macromoléculaires</div>
+    <div style="display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;">
+      <button onclick="showArchi('alternating')" class="archi-btn" style="background:var(--p1);color:white;border:none;border-radius:7px;padding:7px 14px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;">🔄 Alterné</button>
+      <button onclick="showArchi('block')" class="archi-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;">📦 Blocs</button>
+      <button onclick="showArchi('random')" class="archi-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;">🎲 Statistique</button>
+      <button onclick="showArchi('graft')" class="archi-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;">🌿 Greffé</button>
+      <button onclick="showArchi('star')" class="archi-btn" style="background:var(--surface2);border:1px solid var(--border);color:var(--muted);border-radius:7px;padding:7px 14px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.78rem;">⭐ Étoile</button>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:18px;">
+      <div style="flex:0 0 260px;">
+        <div class="fg"><label>Monomère A</label>
+          <select id="cop-A">
+            <option value="styrene">Styrène (S)</option>
+            <option value="butadiene">Butadiène (B)</option>
+            <option value="acrylonitrile">Acrylonitrile (A)</option>
+            <option value="ethylene">Éthylène (E)</option>
+          </select>
+        </div>
+        <div class="fg"><label>Monomère B</label>
+          <select id="cop-B">
+            <option value="butadiene">Butadiène (B)</option>
+            <option value="acrylonitrile">Acrylonitrile (A)</option>
+            <option value="styrene">Styrène (S)</option>
+            <option value="methylmethacrylate">Méthacrylate de méthyle (MMA)</option>
+          </select>
+        </div>
+        <div class="fg"><label>Fraction molaire A (%)</label>
+          <input type="range" id="cop-fA" min="10" max="90" value="50" oninput="document.getElementById('cop-fA-disp').textContent=this.value+' %';drawCopArchi()">
+          <div style="text-align:center;font-family:var(--mono);font-size:.75rem;color:var(--p1);" id="cop-fA-disp">50 %</div>
+        </div>
+        <div class="fg"><label>Longueur de bloc (N)</label>
+          <input type="range" id="cop-N" min="2" max="20" value="8" oninput="document.getElementById('cop-N-disp').textContent=this.value;drawCopArchi()">
+          <div style="text-align:center;font-family:var(--mono);font-size:.75rem;color:var(--p2);" id="cop-N-disp">8</div>
+        </div>
+
+        <!-- Properties panel -->
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">PROPRIÉTÉS ESTIMÉES</div>
+          <div id="cop-props" style="font-size:.78rem;color:var(--text);line-height:1.7;">Choisissez une architecture</div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:300px;">
+        <div class="ptitle">🎨 Visualisation de l'architecture</div>
+        <canvas id="copCanvas" height="200" style="background:#080614;border:1px solid var(--border);border-radius:8px;width:100%;"></canvas>
+        <div id="cop-sequence" class="arch-visual" style="margin-top:10px;min-height:50px;"></div>
+        <div class="ptitle" style="margin-top:12px;">🌡️ Tg en fonction de la composition (Fox)</div>
+        <canvas id="foxChart" height="150"></canvas>
+        <div style="margin-top:6px;font-family:var(--mono);font-size:.68rem;color:var(--muted);">
+          Équation de Fox : 1/Tg = w₁/Tg₁ + w₂/Tg₂
+        </div>
+      </div>
+
+      <div style="flex:0 0 230px;">
+        <div class="ptitle">📖 Exemples industriels</div>
+        <div id="cop-examples" style="display:flex;flex-direction:column;gap:8px;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DÉGRADATION ═══════════════ -->
+<div class="app" id="app-degradation">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">♻️ Dégradation & Recyclage des polymères</div>
+    <div style="display:flex;flex-wrap:wrap;gap:18px;">
+      <div style="flex:0 0 265px;">
+        <div class="fg"><label>Polymère</label>
+          <select id="deg-polymer">
+            <option value="PET">PET</option>
+            <option value="PE">Polyéthylène</option>
+            <option value="PS">Polystyrène</option>
+            <option value="PLA">PLA (biodégradable)</option>
+            <option value="Nylon66">Nylon 6,6</option>
+            <option value="PC">Polycarbonate</option>
+          </select>
+        </div>
+        <div class="fg"><label>Mode de dégradation</label>
+          <select id="deg-mode">
+            <option value="thermal">Thermique (pyrolyse)</option>
+            <option value="photo">Photo-oxydation (UV)</option>
+            <option value="hydro">Hydrolyse (eau/acide)</option>
+            <option value="bio">Biodégradation (microorganismes)</option>
+            <option value="mechano">Mécanochimique (cisaillement)</option>
+          </select>
+        </div>
+        <div class="fg"><label>Température / Intensité (%)</label>
+          <input type="range" id="deg-T" min="1" max="100" value="50" oninput="document.getElementById('deg-T-disp').textContent=this.value+'%'">
+          <div style="text-align:center;font-family:var(--mono);font-size:.75rem;color:var(--p4);" id="deg-T-disp">50%</div>
+        </div>
+        <div class="fg"><label>Durée (années / heures)</label>
+          <input type="number" id="deg-time" value="10" step="1" min="1" max="100"></div>
+        <button class="btn btn-p" onclick="runDegradation()">▶ SIMULER</button>
+
+        <!-- Recyclage codes -->
+        <div style="margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:8px;">CODES RECYCLAGE</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;" id="recycle-codes"></div>
+        </div>
+      </div>
+
+      <div style="flex:1;min-width:280px;">
+        <div class="ptitle">📉 Évolution de Mn lors de la dégradation</div>
+        <canvas id="degChart" height="200"></canvas>
+        <div class="ptitle" style="margin-top:12px;">🔬 Mécanisme de dégradation</div>
+        <div id="deg-mech-content" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:.8rem;line-height:1.7;color:var(--text);">
+          Sélectionnez un polymère et un mode de dégradation pour voir le mécanisme détaillé.
+        </div>
+      </div>
+
+      <div style="flex:0 0 230px;">
+        <div class="ptitle">♻️ Filières de recyclage</div>
+        <div id="recycle-filières" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <div style="margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:6px;">SCORE RECYCLABILITÉ</div>
+          <div id="recycle-score-bar" style="height:20px;border-radius:4px;background:var(--border);overflow:hidden;margin-bottom:4px;">
+            <div id="recycle-score-fill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--danger),var(--p4),var(--p3));border-radius:4px;transition:width .6s;"></div>
+          </div>
+          <div id="recycle-score-text" style="font-family:var(--mono);font-size:.78rem;text-align:center;color:var(--p3);">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ THÉORIE ═══════════════ -->
+<div class="app" id="app-theorie">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📚 Cours — Chimie des Polymères</div>
+    <div class="thy-grid">
+      <div class="thy-card"><span class="lvl lv-m">LICENCE</span><h3>Polymérisation radicalaire</h3>
+        <p>Mécanisme en 3 étapes :</p>
+        <ul><li><strong>Amorçage :</strong> I → 2R• (Ri = 2fkd[I])</li><li><strong>Propagation :</strong> R• + M → RM• (Rp = kp[M][R•])</li><li><strong>Terminaison :</strong> 2R• → produits (Rt = 2kt[R•]²)</li></ul>
+        <div class="fbox">Rp = kp[M](fkd[I]/kt)^0.5<br>DPn = kp[M]/(kt·[R•])^0.5</div>
+        <p>Dispersité Đ ≈ 1.5–2.0. Non contrôlée.</p>
+      </div>
+      <div class="thy-card"><span class="lvl lv-m">LICENCE</span><h3>Polymérisation vivante (anionique)</h3>
+        <p>Pas d'étape de terminaison spontanée. Toutes les chaînes croissent simultanément.</p>
+        <div class="fbox">DPn = [M]₀/[I]₀ × conversion<br>Đ → 1 (Poisson : Đ = 1 + 1/DPn)</div>
+        <p>Permet la synthèse de copolymères à blocs, étoiles, peignes. Dispersité très étroite.</p>
+      </div>
+      <div class="thy-card"><span class="lvl lv-c">PRÉPA/LICENCE</span><h3>Polycondensation & Carothers</h3>
+        <p>Réaction entre groupes fonctionnels avec élimination d'un coproduit.</p>
+        <div class="fbox">X̄ₙ = 1/(1−p) &nbsp;|&nbsp; p = taux d'avancement<br>X̄ₙ = 100 nécessite p = 0.99 !</div>
+        <p>Đ = 1 + p ≈ 2 à conversion élevée. Masse molaire augmente très lentement en début et explose vers la fin.</p>
+      </div>
+      <div class="thy-card"><span class="lvl lv-c">PRÉPA/LICENCE</span><h3>Masses molaires</h3>
+        <div class="fbox">Mn = Σ(ni·Mi)/Σni (moyenne en nombre)<br>Mw = Σ(ni·Mi²)/Σ(ni·Mi) (en masse)<br>Đ = Mw/Mn ≥ 1 toujours</div>
+        <ul><li>GPC/SEC mesure Mn, Mw, Mz</li><li>Osmométrie → Mn</li><li>Diffusion de lumière → Mw</li></ul>
+      </div>
+      <div class="thy-card"><span class="lvl lv-c">PRÉPA/LICENCE</span><h3>Transitions thermiques Tg & Tf</h3>
+        <p>Tg (température de transition vitreuse) :</p>
+        <ul><li>T&lt;Tg : vitreux, rigide</li><li>T&gt;Tg : caoutchoutique, mobilité</li></ul>
+        <div class="fbox">Équation de Fox (copolymère) :<br>1/Tg = w₁/Tg₁ + w₂/Tg₂</div>
+        <p>Tf : fusion des cristallites (polymères semi-cristallins uniquement)</p>
+      </div>
+      <div class="thy-card"><span class="lvl lv-g">LICENCE +</span><h3>Copolymères & Equation de Mayo-Lewis</h3>
+        <div class="fbox">F₁ = (r₁f₁² + f₁f₂)/(r₁f₁² + 2f₁f₂ + r₂f₂²)</div>
+        <p>r₁, r₂ : rapports de réactivité. r₁·r₂ &lt; 1 → tendance alternée. r₁·r₂ = 1 → statistique idéal. r₁·r₂ = 0 → parfaitement alterné.</p>
+      </div>
+      <div class="thy-card"><span class="lvl lv-g">LICENCE +</span><h3>Cristallinité des polymères</h3>
+        <p>Polymères semi-cristallins : zones cristallines + zones amorphes.</p>
+        <ul><li>Cristallinité χc = (ΔHf/ΔHf°) × 100%</li><li>PE: χc = 70-90% | PS: χc = 0% (amorphe)</li><li>Plus χc élevée → plus rigide, moins transparent</li></ul>
+        <div class="fbox">ρcomposite = χc·ρc + (1−χc)·ρa</div>
+      </div>
+      <div class="thy-card"><span class="lvl lv-g">LICENCE +</span><h3>Dégradation & Vieillissement</h3>
+        <ul><li><strong>Thermique :</strong> coupure de chaîne → pyrolyse</li><li><strong>Photo-oxydation :</strong> UV → radicaux → rupture C-C</li><li><strong>Hydrolyse :</strong> PET, Nylon → monomères</li><li><strong>Biodégradation :</strong> PLA → CO₂ + H₂O</li></ul>
+        <div class="fbox">Mn(t) = Mn(0) / (1 + kd·Mn(0)·t)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ QUIZ ═══════════════ -->
+<div class="app" id="app-quiz">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">🎯 Quiz — Chimie des Polymères</div>
+    <div style="display:flex;flex-wrap:wrap;gap:18px;">
+      <div style="flex:0 0 250px;">
+        <div class="fg"><label>Catégorie</label>
+          <select id="quiz-cat" onchange="startQuiz()">
+            <option value="addition">Polymérisation par addition</option>
+            <option value="condensation">Polycondensation</option>
+            <option value="masses">Masses molaires & Đ</option>
+            <option value="structure">Structure & transitions</option>
+            <option value="mixed">Quiz général</option>
+          </select>
+        </div>
+        <button class="btn btn-p" onclick="startQuiz()">▶ NOUVEAU QUIZ</button>
+        <div style="margin-top:14px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:4px;">SCORE</div>
+          <div style="font-family:'Bitter',serif;font-size:1.8rem;font-weight:700;color:var(--p1);" id="q-score">0 / 0</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px;" id="q-pct">—</div>
+          <div style="height:7px;background:var(--border);border-radius:3px;overflow:hidden;">
+            <div id="q-sbar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--p1),var(--p2));border-radius:3px;transition:width .4s;"></div>
+          </div>
+        </div>
+        <div style="margin-top:10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <div style="font-size:.6rem;color:var(--muted);font-family:var(--mono);margin-bottom:4px;">PROGRESSION</div>
+          <div id="q-prog-text" style="font-size:.76rem;color:var(--text);">Question 0/8</div>
+          <div style="height:5px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px;">
+            <div id="q-pbar" style="height:100%;width:0%;background:var(--p4);border-radius:2px;transition:width .3s;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;min-width:300px;" id="quiz-area">
+        <div style="text-align:center;padding:40px;color:var(--muted);">🎯 Lancez un quiz pour tester vos connaissances en chimie des polymères</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ RAPPORT ═══════════════ -->
+<div class="app" id="app-rapport">
+  <div class="panel" style="width:100%">
+    <div class="ptitle">📋 Rapport de séance</div>
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:20px;font-family:var(--mono);font-size:.75rem;color:var(--text);line-height:1.9;" id="rpt-content">
+      <div style="text-align:center;color:var(--muted);padding:40px;">🧬 Explorez les modules pour générer votre rapport.</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:12px;">
+      <button class="btn btn-p" style="flex:1" onclick="generateReport()">📋 GÉNÉRER RAPPORT</button>
+      <button class="btn" style="flex:1;background:rgba(0,229,255,.1);border:1px solid var(--p2);color:var(--p2);border-radius:7px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;" onclick="window.print()">🖨️ IMPRIMER</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS -->
+<div class="statusbar">
+  <div class="sindic"><div class="sdot" id="sdot"></div><span id="stext">Prêt — Configurez une simulation</span></div>
+  <span>|</span><span>SimuPoly v1.0 — Edmond Atinzoun TCHOKPON</span>
+  <span style="margin-left:auto" id="sclock"></span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+// ══ LANG ══
+let lang='fr';
+function toggleLang(){lang=lang==='fr'?'en':'fr';document.getElementById('langBtn').textContent=lang==='fr'?'EN':'FR';document.getElementById('appSub').textContent=lang==='fr'?'SIMULATEUR DE CHIMIE DES POLYMÈRES — v1.0':'POLYMER CHEMISTRY SIMULATOR — v1.0';}
+
+// ══ TABS ══
+function showTab(n){
+  document.querySelectorAll('.app').forEach(a=>a.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('app-'+n).classList.add('active');
+  document.getElementById('tab-'+n).classList.add('active');
+  if(n==='copolymeres'){setTimeout(()=>{showArchi('alternating');drawFoxChart();drawCopExamples();},50);}
+  if(n==='structure'){setTimeout(()=>showStructure(),50);}
+  if(n==='masses'){setTimeout(()=>calcMasses(),50);}
+  if(n==='degradation'){setupRecycleCodes();setupRecycleFilières();}
+  if(n==='quiz')startQuiz();
+}
+
+// ══ CHARTS REGISTRY ══
+const charts={};
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function mkOpts(xl,yl,dark=true){
+  return{responsive:true,animation:{duration:300},
+    plugins:{legend:{labels:{color:dark?'#5a5280':'#888',font:{family:'Share Tech Mono',size:10}}},
+    tooltip:{backgroundColor:'#14102a',titleColor:'#e040fb',bodyColor:'#e8e0ff'}},
+    scales:{x:{title:{display:true,text:xl,color:'#5a5280'},ticks:{color:'#5a5280',maxTicksLimit:10},grid:{color:'rgba(42,37,80,.5)'}},
+            y:{title:{display:true,text:yl,color:'#5a5280'},ticks:{color:'#5a5280'},grid:{color:'rgba(42,37,80,.5)'}}}};
+}
+
+// ══════════════════════════════════
+// ADDITION POLYMERIZATION
+// ══════════════════════════════════
+const POLYMERS={
+  ethylene:{name:'Polyéthylène (PE)',app:'Films, emballages, tuyaux, jouets',M0:28,color:'#e040fb'},
+  styrene:{name:'Polystyrène (PS)',app:'Emballages, isolants, boîtiers électroniques',M0:104,color:'#00e5ff'},
+  vinylchloride:{name:'PVC',app:'Tuyaux, profilés, câbles, revêtements de sols',M0:62.5,color:'#69ff47'},
+  acrylonitrile:{name:'Polyacrylonitrile (PAN)',app:'Fibres textiles, précurseur fibres carbone',M0:53,color:'#ffab00'},
+  methylmethacrylate:{name:'PMMA (Plexiglas)',app:'Vitres, lentilles, panneaux publicitaires',M0:100,color:'#ff6d00'},
+};
+const MECH_INFO={
+  radical:'Amorçage → Propagation → Terminaison\nRp = kp[M](fkd[I]/kt)^0.5\nĐ ≈ 1.5–2.0',
+  anionic:'Polymérisation vivante — pas de terminaison\nDPn = [M]₀/[I]₀ × conversion\nĐ → 1 (distribution Poisson)',
+  cationic:'Via carbocation — solvant polaire requis\nActif à basse T. Terminaison rapide\nĐ = 1.5–3.0',
+  coordination:'Ziegler-Natta ou métallocène\nContrôle de la tacticité (isotactique/syndiotactique)\nĐ = 2–8 (ZN) ou 1.05 (métallocène)'
+};
+let addData={times:[],concs:[],convs:[]};
+
+function updateAddType(){const t=document.getElementById('add-type').value;document.getElementById('add-mech-info').innerText=MECH_INFO[t]||'';}
+
+function runAddition(){
+  const type=document.getElementById('add-type').value;
+  const mon=document.getElementById('add-monomer').value;
+  const I0=parseFloat(document.getElementById('add-I0').value);
+  const M0=parseFloat(document.getElementById('add-M0').value);
+  const T=parseFloat(document.getElementById('add-T').value);
+  const tmax=parseFloat(document.getElementById('add-tmax').value);
+  const pol=POLYMERS[mon];
+
+  // Kinetics
+  const kp_base={radical:500,anionic:1000,cationic:2000,coordination:300}[type]||500;
+  const kd={radical:1e-4,anionic:1e-6,cationic:5e-4,coordination:1e-5}[type]||1e-4;
+  const kt={radical:1e7,anionic:0,cationic:1e6,coordination:1e5}[type]||1e7;
+  const f=0.5;
+  const Ea_kp=30000,Ea_kd=130000;
+  const R=8.314,Tabs=T+273.15;
+  const kp=kp_base*Math.exp(-Ea_kp/R*(1/Tabs-1/333));
+  const kd_eff=kd*Math.exp(-Ea_kd/R*(1/Tabs-1/333));
+  const Rstar=type==='anionic'?I0:type==='cationic'?I0*0.8:Math.sqrt(f*kd_eff*I0/kt)||I0*0.01;
+  const Rp0=kp*M0*Rstar;
+
+  addData={times:[],concs:[],convs:[]};
+  const steps=100,dt=tmax/steps;
+  let M=M0;
+  for(let i=0;i<=steps;i++){
+    const t=i*dt;
+    let conv;
+    if(type==='anionic'){conv=1-Math.exp(-Rp0/M0*t*60);}
+    else{conv=1-Math.exp(-Rp0/M0*t*60*(1-i*0.005));}
+    conv=Math.min(0.99,Math.max(0,conv));
+    M=M0*(1-conv);
+    addData.times.push(t);addData.concs.push(M.toFixed(4));addData.convs.push((conv*100).toFixed(2));
+  }
+
+  const finalConv=parseFloat(addData.convs[addData.convs.length-1]);
+  const DPn=type==='anionic'?(M0/I0*finalConv/100):Math.round(kp*Math.sqrt(M0/(2*kt*f*kd_eff||1e-10))*100)/100;
+  const DPn_final=Math.max(10,Math.min(10000,isNaN(DPn)?500:DPn));
+  const Mn=Math.round(DPn_final*pol.M0);
+  const Ip=type==='anionic'?1.05:type==='cationic'?2.2:1.8;
+
+  document.getElementById('add-conv').textContent=finalConv.toFixed(1);
+  document.getElementById('add-Mn').textContent=(Mn/1000).toFixed(0)+'k';
+  document.getElementById('add-Ip').textContent=Ip.toFixed(2);
+  document.getElementById('add-prog').style.width=finalConv+'%';
+  document.getElementById('add-polymer-name').textContent=pol.name;
+  document.getElementById('add-polymer-app').textContent=pol.app;
+
+  buildAddChart();buildMWDChart(Mn,Ip,pol.color);buildAddTable();
+  drawChain(document.getElementById('chainCanvas'),mon,type);
+  setStatus('amber','Simulation terminée — Conv. = '+finalConv.toFixed(1)+'% — Mn = '+(Mn/1000).toFixed(0)+' kg/mol');
+}
+
+function buildAddChart(){
+  dc('addChart');
+  const ctx=document.getElementById('addChart').getContext('2d');
+  charts.addChart=new Chart(ctx,{type:'line',data:{labels:addData.times.map(t=>t.toFixed(0)),datasets:[
+    {label:'[M](t) mol/L',data:addData.concs,borderColor:'#e040fb',backgroundColor:'rgba(224,64,251,.07)',borderWidth:2,pointRadius:0,tension:.4,fill:true,yAxisID:'y'},
+    {label:'Conversion %',data:addData.convs,borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,.05)',borderWidth:2,pointRadius:0,tension:.4,fill:true,yAxisID:'y1'}
+  ]},options:{...mkOpts('t (min)','[M] mol/L'),scales:{x:{ticks:{color:'#5a5280'},grid:{color:'rgba(42,37,80,.4)'},title:{display:true,text:'t (min)',color:'#5a5280'}},y:{ticks:{color:'#e040fb'},grid:{color:'rgba(42,37,80,.4)'},title:{display:true,text:'[M] mol/L',color:'#e040fb'},position:'left'},y1:{ticks:{color:'#00e5ff'},grid:{drawOnChartArea:false},title:{display:true,text:'Conv. %',color:'#00e5ff'},position:'right'}}}});
+}
+
+function buildMWDChart(Mn,Ip,color){
+  dc('mwdChart');
+  const Mw=Mn*Ip;
+  const ctx=document.getElementById('mwdChart').getContext('2d');
+  const Ms=[],ws=[];
+  for(let m=Mn*0.05;m<Mn*5;m+=Mn*0.05){
+    Ms.push((m/1000).toFixed(0)+'k');
+    const w=m/(Mw*Mw)*Math.exp(-m/Mw);
+    ws.push(w);
+  }
+  charts.mwdChart=new Chart(ctx,{type:'line',data:{labels:Ms,datasets:[{label:'w(M)',data:ws,borderColor:color,backgroundColor:color.replace(')',',0.1)').replace('rgb','rgba'),borderWidth:2,pointRadius:0,tension:.4,fill:true}]},options:mkOpts('M (kg/mol)','w(M)')});
+}
+
+function buildAddTable(){
+  const tbody=document.getElementById('add-tbody');tbody.innerHTML='';
+  const step=Math.max(1,Math.floor(addData.times.length/20));
+  for(let i=0;i<addData.times.length;i+=step){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${addData.times[i].toFixed(0)}</td><td>${addData.concs[i]}</td><td>${addData.convs[i]}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function resetAddition(){dc('addChart');dc('mwdChart');document.getElementById('add-tbody').innerHTML='';document.getElementById('add-conv').textContent='0.0';document.getElementById('add-Mn').textContent='0';document.getElementById('add-Ip').textContent='—';document.getElementById('add-prog').style.width='0%';document.getElementById('add-polymer-name').textContent='—';const cv=document.getElementById('chainCanvas');const cx=cv.getContext('2d');cx.fillStyle='#080614';cx.fillRect(0,0,cv.width,cv.height);}
+
+// ══ DRAW CHAIN ══
+function drawChain(canvas,monomer,type){
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height;
+  ctx.fillStyle='#080614';ctx.fillRect(0,0,W,H);
+  const colors={ethylene:'#e040fb',styrene:'#00e5ff',vinylchloride:'#69ff47',acrylonitrile:'#ffab00',methylmethacrylate:'#ff6d00'};
+  const col=colors[monomer]||'#e040fb';
+  const n=type==='anionic'?40:type==='cationic'?25:35;
+  const r=4;
+  let x=20,y=H/2;let dir=1,ystep=0;
+  const pts=[];
+  for(let i=0;i<n;i++){
+    pts.push({x,y});
+    x+=dir*18;
+    if(x>W-20||x<20){dir=-dir;y+=30;if(y>H-20)y=H/2-30;}
+  }
+  // Draw bonds
+  ctx.strokeStyle=col+'88';ctx.lineWidth=1.5;
+  for(let i=0;i<pts.length-1;i++){ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[i+1].x,pts[i+1].y);ctx.stroke();}
+  // Draw atoms
+  pts.forEach((p,i)=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,r,0,Math.PI*2);
+    const g=ctx.createRadialGradient(p.x-1,p.y-1,0,p.x,p.y,r);
+    g.addColorStop(0,'white');g.addColorStop(1,col);
+    ctx.fillStyle=g;ctx.fill();
+  });
+  // Active end
+  if(type!=='condensation'){
+    const last=pts[pts.length-1];
+    ctx.beginPath();ctx.arc(last.x,last.y,r+3,0,Math.PI*2);
+    ctx.strokeStyle=col;ctx.lineWidth=2;
+    ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
+  }
+  ctx.fillStyle=col;ctx.font='10px Share Tech Mono';ctx.fillText(POLYMERS[monomer]?.name.split(' ')[0]||'',8,14);
+  ctx.fillStyle='#5a5280';ctx.font='9px Share Tech Mono';ctx.fillText('n='+n+' unités repr.',8,H-8);
+}
+
+// ══════════════════════════════════
+// CONDENSATION
+// ══════════════════════════════════
+const COND_DATA={
+  polyester:{byproduct:'H₂O',example:'PET (bouteilles plastique), PBT',M_unit:192,eq:'HO-R-OH + HOOC-R\'-COOH → -[O-R-OOC-R\'-CO]ₙ- + nH₂O'},
+  polyamide:{byproduct:'H₂O',example:'Nylon 6,6, Nylon 6,10',M_unit:226,eq:'H₂N-R-NH₂ + HOOC-R\'-COOH → -[NH-R-NHCO-R\'-CO]ₙ- + nH₂O'},
+  polyurethane:{byproduct:'(aucun)',example:'Mousses PU, élastomères, peintures',M_unit:280,eq:'HO-R-OH + OCN-R\'-NCO → -[O-R-OCONH-R\'-NHCO]ₙ-'},
+  epoxy:{byproduct:'(aucun)',example:'Colles époxy, revêtements, composites',M_unit:350,eq:'Époxyde + H₂N-R-NH₂ → réseau réticulé 3D'}
+};
+let condData={ts:[],ps:[],Xns:[]};
+
+function updateCondType(){const t=document.getElementById('cond-type').value;const d=COND_DATA[t];if(d){document.getElementById('cond-byproduct').textContent=d.byproduct;document.getElementById('cond-example').textContent=d.example;}}
+
+function runCondensation(){
+  const type=document.getElementById('cond-type').value;
+  const k=parseFloat(document.getElementById('cond-k').value);
+  const tmax=parseFloat(document.getElementById('cond-tmax').value);
+  const d=COND_DATA[type];
+
+  condData={ts:[],ps:[],Xns:[]};
+  const steps=100,dt=tmax/steps;
+  // p(t) for second order: p = k*t/(1+k*t)
+  for(let i=0;i<=steps;i++){
+    const t=i*dt;
+    const p=Math.min(0.999,k*t/(1+k*t));
+    const Xn=1/(1-p);
+    condData.ts.push(t);condData.ps.push(p.toFixed(5));condData.Xns.push(Xn.toFixed(2));
+    document.getElementById('cond-p').textContent=p.toFixed(4);
+    document.getElementById('cond-Xn').textContent=Xn.toFixed(1);
+    document.getElementById('cond-Mn').textContent=Math.round(Xn*d.M_unit/1000)+'k g/mol';
+  }
+  buildCondCharts();buildCondTable();
+  drawCondChain(document.getElementById('condChainCanvas'),type);
+  const finalP=parseFloat(condData.ps[condData.ps.length-1]);
+  setStatus('amber',`Condensation p=${finalP.toFixed(4)} — X̄ₙ=${(1/(1-finalP)).toFixed(0)} — ${d.example.split(',')[0]}`);
+}
+
+function buildCondCharts(){
+  dc('condChart');
+  const ctx=document.getElementById('condChart').getContext('2d');
+  charts.condChart=new Chart(ctx,{type:'line',data:{labels:condData.ts.map(t=>parseFloat(t).toFixed(0)),datasets:[
+    {label:'p(t)',data:condData.ps,borderColor:'#e040fb',borderWidth:2,pointRadius:0,tension:.4,fill:false},
+  ]},options:mkOpts('t (min)','p (taux)')});
+
+  dc('condXnChart');
+  const ctx2=document.getElementById('condXnChart').getContext('2d');
+  const pVals=condData.ps.map(p=>parseFloat(p));
+  const XnVsP=pVals.map(p=>p>0.999?1000:1/(1-p));
+  charts.condXnChart=new Chart(ctx2,{type:'line',data:{labels:pVals.map(p=>p.toFixed(3)),datasets:[
+    {label:'X̄ₙ = f(p)',data:XnVsP,borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,.07)',borderWidth:2.5,pointRadius:0,tension:.1,fill:true}
+  ]},options:mkOpts('p','X̄ₙ')});
+}
+
+function buildCondTable(){
+  const tbody=document.getElementById('cond-tbody');tbody.innerHTML='';
+  const step=Math.max(1,Math.floor(condData.ts.length/15));
+  for(let i=0;i<condData.ts.length;i+=step){
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${parseFloat(condData.ts[i]).toFixed(0)}</td><td>${parseFloat(condData.ps[i]).toFixed(4)}</td><td>${condData.Xns[i]}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+
+function resetCondensation(){dc('condChart');dc('condXnChart');document.getElementById('cond-tbody').innerHTML='';document.getElementById('cond-p').textContent='0.000';document.getElementById('cond-Xn').textContent='1.0';document.getElementById('cond-Mn').textContent='—';}
+
+function drawCondChain(canvas,type){
+  const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+  ctx.fillStyle='#080614';ctx.fillRect(0,0,W,H);
+  const cols={'polyester':'#e040fb','polyamide':'#00e5ff','polyurethane':'#69ff47','epoxy':'#ffab00'};
+  const col=cols[type]||'#e040fb';
+  const colB='#5a5280';
+  let x=15,y=H/2;
+  for(let i=0;i<10;i++){
+    // Unit A
+    ctx.fillStyle=col;ctx.fillRect(x,y-10,20,20);
+    ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=1;ctx.strokeRect(x,y-10,20,20);
+    x+=20;
+    // Link (bond)
+    ctx.strokeStyle=colB;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+10,y);ctx.stroke();x+=10;
+    // Unit B
+    ctx.fillStyle=col+'88';ctx.fillRect(x,y-10,20,20);
+    ctx.strokeStyle='rgba(255,255,255,.1)';ctx.strokeRect(x,y-10,20,20);
+    x+=20;
+    // Link
+    if(i<9){ctx.strokeStyle=colB;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+8,y);ctx.stroke();x+=8;}
+    if(x>W-40){x=15;y+=35;}
+  }
+  ctx.fillStyle=col;ctx.font='9px Share Tech Mono';ctx.fillText(type.toUpperCase().slice(0,8),8,12);
+}
+
+// ══════════════════════════════════
+// MASSES MOLAIRES
+// ══════════════════════════════════
+const MM_M0={'PS':104,'PE':28,'PVC':62.5,'PMMA':100,'Nylon66':226,'PET':192};
+
+function calcMasses(){
+  const Mn=parseFloat(document.getElementById('mm-Mn').value);
+  const Ip=parseFloat(document.getElementById('mm-Ip').value);
+  const dist=document.getElementById('mm-dist').value;
+  const pol=document.getElementById('mm-polymer').value;
+  const M0=MM_M0[pol]||100;
+
+  const Mw=Mn*Ip;
+  const Mz=Mw*(1+1/Ip);// approx
+  const DPn=Math.round(Mn/M0);
+
+  document.getElementById('res-Mn').textContent=(Mn/1000).toFixed(0)+' kg/mol';
+  document.getElementById('res-Mw').textContent=(Mw/1000).toFixed(0)+' kg/mol';
+  document.getElementById('res-Mz').textContent=(Mz/1000).toFixed(0)+' kg/mol';
+  document.getElementById('res-Ip').textContent=Ip.toFixed(2);
+  document.getElementById('res-DPn').textContent=DPn.toLocaleString();
+
+  const interpText={
+    '1.0-1.1':'Đ ≈ 1 : polymérisation vivante parfaite (anionique). Distribution très étroite (Poisson).',
+    '1.1-1.5':'Đ modéré : polymérisation contrôlée (ATRP, RAFT). Bonne homogénéité.',
+    '1.5-2.5':'Đ = 1.5-2.5 : radicalaire conventionnelle. Schulz-Flory typique.',
+    '2.5-5.0':'Đ élevée : Ziegler-Natta, polycondensation non contrôlée. Large distribution.'
+  };
+  let iText='';
+  if(Ip<=1.1)iText=interpText['1.0-1.1'];
+  else if(Ip<=1.5)iText=interpText['1.1-1.5'];
+  else if(Ip<=2.5)iText=interpText['1.5-2.5'];
+  else iText=interpText['2.5-5.0'];
+  document.getElementById('Ip-interp').querySelector('div:last-child').textContent=iText;
+
+  buildMMChart(Mn,Mw,Ip,dist);
+}
+
+function buildMMChart(Mn,Mw,Ip,dist){
+  dc('mmChart');
+  const ctx=document.getElementById('mmChart').getContext('2d');
+  const Ms=[],wMs=[],nMs=[];
+  const Npts=80;
+  const Mmin=Mn*0.02,Mmax=Mn*8;
+  const dM=(Mmax-Mmin)/Npts;
+  for(let i=0;i<=Npts;i++){
+    const M=Mmin+i*dM;
+    Ms.push((M/1000).toFixed(0)+'k');
+    let wM,nM;
+    if(dist==='schulz'){
+      wM=(4*M/(Mw*Mw))*Math.exp(-2*M/Mw);
+      nM=(1/Mn)*Math.exp(-M/Mn);
+    } else if(dist==='poisson'){
+      const mu=Mn*Ip;
+      wM=Math.exp(-mu)*Math.pow(mu,M/Mn-1)/factorial_approx(Math.round(M/Mn-1))/(Mn);
+      nM=wM*(Mn/M);
+      wM=Math.max(0,wM);nM=Math.max(0,nM);
+    } else {
+      const sigma=Mn*Math.sqrt(Ip-1);
+      wM=Math.exp(-(M-Mw)*(M-Mw)/(2*sigma*sigma))/(sigma*Math.sqrt(2*Math.PI));
+      nM=Math.exp(-(M-Mn)*(M-Mn)/(2*sigma*sigma))/(sigma*Math.sqrt(2*Math.PI));
+    }
+    wMs.push(Math.max(0,wM));nMs.push(Math.max(0,nM));
+  }
+  // Normalize
+  const maxW=Math.max(...wMs)||1,maxN=Math.max(...nMs)||1;
+  const wNorm=wMs.map(w=>w/maxW),nNorm=nMs.map(n=>n/maxN);
+
+  // Mn and Mw positions
+  const mnIdx=Math.round((Mn-Mmin)/dM);
+  const mwIdx=Math.round((Mw-Mmin)/dM);
+
+  charts.mmChart=new Chart(ctx,{type:'line',data:{labels:Ms,datasets:[
+    {label:'w(M) — masse',data:wNorm,borderColor:'#e040fb',backgroundColor:'rgba(224,64,251,.1)',borderWidth:2.5,pointRadius:0,tension:.4,fill:true},
+    {label:'n(M) — nombre',data:nNorm,borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,.06)',borderWidth:2,pointRadius:0,tension:.4,fill:true},
+  ]},options:{...mkOpts('M (kg/mol)','Distribution normalisée'),plugins:{legend:{labels:{color:'#5a5280',font:{family:'Share Tech Mono',size:10}}},annotation:{annotations:{mn:{type:'line',xMin:mnIdx,xMax:mnIdx,borderColor:'#ffab00',borderWidth:2,borderDash:[5,3]},mw:{type:'line',xMin:mwIdx,xMax:mwIdx,borderColor:'#00e5ff',borderWidth:2,borderDash:[5,3]}}}}}});
+}
+
+function factorial_approx(n){if(n<=1)return 1;let r=1;for(let i=2;i<=Math.min(n,20);i++)r*=i;return r;}
+
+// ══════════════════════════════════
+// STRUCTURE & Tg/Tf
+// ══════════════════════════════════
+const POLY_DATA={
+  PE_ld:{name:'Polyéthylène LD',Tg:-120,Tf:105,Td:350,cryst:40,type:'Semi-cristallin',apps:'Films d\'emballage, sachets, poches de perfusion',color:'#e040fb'},
+  PE_hd:{name:'Polyéthylène HD',Tg:-120,Tf:135,Td:380,cryst:75,type:'Semi-cristallin',apps:'Bouteilles HDPE, tuyaux, jerricans, réservoirs',color:'#00e5ff'},
+  PP:{name:'Polypropylène',Tg:-10,Tf:165,Td:300,cryst:65,type:'Semi-cristallin',apps:'Emballages alimentaires, pare-chocs, fibres textiles',color:'#69ff47'},
+  PS:{name:'Polystyrène',Tg:100,Tf:null,Td:280,cryst:0,type:'Amorphe',apps:'Boîtiers électroniques, jouets, emballages EPS',color:'#ffab00'},
+  PVC:{name:'PVC',Tg:80,Tf:null,Td:200,cryst:0,type:'Amorphe',apps:'Fenêtres, tuyaux, câbles, revêtements de sols',color:'#ff6d00'},
+  PMMA:{name:'PMMA (Plexiglas)',Tg:105,Tf:null,Td:270,cryst:0,type:'Amorphe',apps:'Vitres, aquariums, lentilles optiques, pare-brises',color:'#e040fb'},
+  PET:{name:'PET',Tg:70,Tf:255,Td:350,cryst:35,type:'Semi-cristallin',apps:'Bouteilles boissons, fibres polyester, films',color:'#00e5ff'},
+  Nylon66:{name:'Nylon 6,6',Tg:50,Tf:265,Td:310,cryst:40,type:'Semi-cristallin',apps:'Pièces mécaniques, engrenages, fibres textiles, tapis',color:'#69ff47'},
+  PC:{name:'Polycarbonate',Tg:147,Tf:null,Td:330,cryst:0,type:'Amorphe',apps:'Vitres blindées, casques, CD/DVD, phares automobiles',color:'#ffab00'},
+  PTFE:{name:'PTFE (Téflon)',Tg:-113,Tf:327,Td:500,cryst:80,type:'Semi-cristallin',apps:'Poêles antiadhésives, joints, câbles, implants médicaux'},
+};
+
+function updateStructure(){showStructure();}
+function updateCryst(v){document.getElementById('str-cryst-disp').textContent=v+' %';}
+
+function showStructure(){
+  const sel=document.getElementById('str-polymer').value;
+  const d=POLY_DATA[sel];if(!d)return;
+  const cryst=parseInt(document.getElementById('str-cryst').value);
+
+  document.getElementById('val-Tg').textContent=d.Tg+'°C';
+  document.getElementById('val-Tf').textContent=d.Tf?d.Tf+'°C':'N/A (amorphe)';
+  document.getElementById('val-Td').textContent=d.Td+'°C';
+  document.getElementById('val-cryst').textContent=cryst+'%';
+  document.getElementById('val-type').textContent=d.type;
+  document.getElementById('str-apps').textContent=d.apps;
+
+  buildDSCChart(d,cryst);
+  buildMechChart(d);
+  buildStructCanvas(d,cryst);
+}
+
+function buildDSCChart(d,cryst){
+  dc('dscChart');
+  const ctx=document.getElementById('dscChart').getContext('2d');
+  const Ts=[],dHs=[];
+  const Tmin=d.Tg-80,Tmax=Math.max(d.Tf||d.Tg+150,d.Tg+200);
+  for(let T=Tmin;T<=Tmax;T+=2){
+    let dH=0;
+    // Tg step
+    if(Math.abs(T-d.Tg)<15)dH+=0.5*(1+Math.tanh((T-d.Tg)/5))-0.25;
+    // Tf peak (if semi-crystalline)
+    if(d.Tf&&cryst>0){const amp=cryst/100*3;dH+=amp*Math.exp(-(T-d.Tf)*(T-d.Tf)/50);}
+    // Baseline slope
+    dH+=0.005*(T-Tmin);
+    Ts.push(T+'°C');dHs.push(dH.toFixed(4));
+  }
+  charts.dscChart=new Chart(ctx,{type:'line',data:{labels:Ts,datasets:[{label:'Flux de chaleur (DSC simulé)',data:dHs,borderColor:d.color||'#e040fb',backgroundColor:(d.color||'#e040fb')+'22',borderWidth:2,pointRadius:0,tension:.4,fill:true}]},options:mkOpts('T (°C)','dH/dt (mW/mg)')});
+}
+
+function buildMechChart(d){
+  dc('mechChart');
+  const ctx=document.getElementById('mechChart').getContext('2d');
+  const Ts=[],Es=[];
+  const Tmin=d.Tg-100,Tmax=d.Tg+180;
+  for(let T=Tmin;T<=Tmax;T+=3){
+    let E;
+    if(T<d.Tg-10)E=3000;// glassy
+    else if(T<d.Tg+10){E=3000*Math.exp(-(T-d.Tg+10)*0.6);}// transition
+    else if(d.Tf&&T<d.Tf){E=5+10*Math.exp(-(T-d.Tg)*0.02);}// rubbery
+    else E=Math.max(0.1,1/(T-d.Tg+5));
+    Ts.push(T+'°C');Es.push(Math.max(0.1,E).toFixed(2));
+  }
+  charts.mechChart=new Chart(ctx,{type:'line',data:{labels:Ts,datasets:[{label:"Module E' (MPa)",data:Es,borderColor:'#69ff47',backgroundColor:'rgba(105,255,71,.08)',borderWidth:2,pointRadius:0,tension:.3,fill:true}]},options:mkOpts("T (°C)","E' (MPa)")});
+}
+
+function buildStructCanvas(d,cryst){
+  const canvas=document.getElementById('structChart');
+  const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+  ctx.fillStyle='#080614';ctx.fillRect(0,0,W,H);
+  const col=d.color||'#e040fb';
+  // Draw amorphous (random coils) and crystalline (ordered)
+  const nCryst=Math.floor(cryst/100*8);
+  let x=30,y=H/2;
+  for(let i=0;i<8;i++){
+    if(i<nCryst){
+      // Crystalline block
+      for(let j=0;j<6;j++){ctx.fillStyle=col;ctx.fillRect(x,y-15+j*5,30,4);}
+      ctx.strokeStyle=col+'44';ctx.strokeRect(x-2,y-17,34,32);
+      ctx.fillStyle='#5a5280';ctx.font='8px Share Tech Mono';ctx.fillText('CRIST.',x+2,y+22);
+    } else {
+      // Amorphous coil
+      ctx.strokeStyle=col+'88';ctx.lineWidth=1.5;ctx.beginPath();
+      ctx.arc(x+15,y,14,0,Math.PI*1.5);ctx.stroke();
+      ctx.beginPath();ctx.arc(x+15,y-5,8,Math.PI,Math.PI*2.5);ctx.stroke();
+      ctx.fillStyle='#5a5280';ctx.font='8px Share Tech Mono';ctx.fillText('AMOR.',x,y+22);
+    }
+    x+=50;if(x>W-50){x=30;y+=55;}
+  }
+}
+
+// ══════════════════════════════════
+// COPOLYMERS
+// ══════════════════════════════════
+let currentArchi='alternating';
+
+const ARCHI_DATA={
+  alternating:{desc:'A et B alternent strictement. r₁·r₂ ≈ 0. Une Tg unique.',props:'Une seule Tg. Propriétés homogènes. Synthèse: monomères à rapports de réactivité opposés.'},
+  block:{desc:'Blocs continus de A puis de B. Synthèse vivante (anionique). Micro-séparation de phases.',props:'Deux Tg distinctes. Micro-domaines nanométriques. SBS = caoutchouc thermoplastique.'},
+  random:{desc:'Distribution statistique (aléatoire) de A et B selon leurs concentrations.',props:'Une Tg intermédiaire. Propriétés entre homopolymères. r₁·r₂ = 1 (statistique idéal).'},
+  graft:{desc:'Chaîne principale de A avec des greffons de B. Synthèse par post-modification.',props:'Deux Tg possibles. Interface riche. ABS (acrylonitrile-butadiène-styrène).'},
+  star:{desc:'Plusieurs bras issus d\'un nœud central. Architecture 3D controlée.',props:'Faible viscosité relative à Mw élevée. Faible Rg. Utilisé en applications biomédicales.'}
+};
+const ARCHI_EXAMPLES={
+  alternating:[{name:'Poly(styrène-alt-maléique)',app:'Dispersants, épaississants'},{name:'Poly(éthylène-alt-CO)',app:'Polymère biodégradable Carilon'}],
+  block:[{name:'SBS (styrène-butadiène-styrène)',app:'Semelles de chaussures, bitume modifié'},{name:'PEO-b-PPO-b-PEO',app:'Tensioactif Pluronic, nanomédecine'},{name:'PS-b-PMMA',app:'Lithographie par micro-séparation'}],
+  random:[{name:'SAN (styrène-acrylonitrile)',app:'Pièces techniques, Lego'},{name:'EPDM (éthylène-propylène-diène)',app:'Joints automobiles, toitures'}],
+  graft:[{name:'ABS (acrylonitrile-butadiène-styrène)',app:'Pièces auto, boîtiers électroniques, Lego'},{name:'HIPS (PS choc)',app:'Réfrigérateurs, jouets'}],
+  star:[{name:'PAMAM dendrimère',app:'Nanotransporteurs médicaux'},{name:'Polyesters étoile',app:'Biomatériaux, libération contrôlée'}]
+};
+
+function showArchi(type){
+  document.querySelectorAll('.archi-btn').forEach(b=>{b.style.background='var(--surface2)';b.style.border='1px solid var(--border)';b.style.color='var(--muted)';});
+  event.target.style.background='var(--p1)';event.target.style.border='none';event.target.style.color='white';
+  currentArchi=type;
+  const d=ARCHI_DATA[type];
+  document.getElementById('cop-props').innerHTML=`<strong style="color:var(--p1);">${type.toUpperCase()}</strong><br>${d.desc}<br><br><em style="color:var(--muted);">${d.props}</em>`;
+  drawCopArchi();
+  drawFoxChart();
+  drawCopExamples();
+}
+
+function drawCopArchi(){
+  const canvas=document.getElementById('copCanvas');
+  const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+  ctx.fillStyle='#080614';ctx.fillRect(0,0,W,H);
+  const fA=parseInt(document.getElementById('cop-fA').value)/100;
+  const N=parseInt(document.getElementById('cop-N').value);
+  const colA='#e040fb',colB='#00e5ff';
+  const type=currentArchi;
+  let seq=[];
+
+  if(type==='alternating'){for(let i=0;i<60;i++)seq.push(i%2===0?'A':'B');}
+  else if(type==='block'){const nA=Math.round(60*fA),nB=60-nA;seq=[...Array(nA).fill('A'),...Array(nB).fill('B')];}
+  else if(type==='random'){for(let i=0;i<60;i++)seq.push(Math.random()<fA?'A':'B');}
+  else if(type==='graft'||type==='star'){seq=Array(60).fill('A');}
+
+  // Draw sequence
+  const r=5,gap=8,perRow=Math.floor((W-20)/(2*r+gap));
+  let x=r+10,y=r+10;
+  seq.forEach((s,i)=>{
+    const col=s==='A'?colA:colB;
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=col+'cc';ctx.fill();
+    if(i>0){ctx.strokeStyle='#333';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(x-r-gap,y);ctx.lineTo(x-r,y);ctx.stroke();}
+    x+=2*r+gap;if(x>W-r-10){x=r+10;y+=2*r+gap;}
+  });
+
+  // Graft branches
+  if(type==='graft'){
+    [10,20,30,40].forEach(idx=>{
+      const row=Math.floor(idx/perRow),col_=idx%perRow;
+      const bx=r+10+col_*(2*r+gap),by=r+10+row*(2*r+gap);
+      for(let j=1;j<=N/2;j++){ctx.beginPath();ctx.arc(bx,by-j*(2*r+gap),r,0,Math.PI*2);ctx.fillStyle=colB+'cc';ctx.fill();}
+    });
+  }
+  // Star arms
+  if(type==='star'){
+    const cx2=W/2,cy2=H/2;ctx.fillStyle='#ffab00';ctx.beginPath();ctx.arc(cx2,cy2,8,0,Math.PI*2);ctx.fill();
+    [0,60,120,180,240,300].forEach(angle=>{
+      const rad=angle*Math.PI/180;
+      for(let j=1;j<=5;j++){
+        const bx=cx2+j*22*Math.cos(rad),by=cy2+j*22*Math.sin(rad);
+        ctx.beginPath();ctx.arc(bx,by,r,0,Math.PI*2);ctx.fillStyle=(j%2===0?colA:colB)+'cc';ctx.fill();
+        if(j===1){ctx.strokeStyle='#ffab00';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(cx2,cy2);ctx.lineTo(bx,by);ctx.stroke();}
+        else{ctx.strokeStyle='#333';ctx.lineWidth=1;const px=cx2+(j-1)*22*Math.cos(rad),py=cy2+(j-1)*22*Math.sin(rad);ctx.beginPath();ctx.moveTo(px,py);ctx.lineTo(bx,by);ctx.stroke();}
+      }
+    });
+  }
+
+  // Sequence text
+  const seqStr=seq.slice(0,40).join('');
+  const seqEl=document.getElementById('cop-sequence');
+  seqEl.innerHTML=seq.slice(0,50).map(s=>`<span style="color:${s==='A'?'#e040fb':'#00e5ff'}">${s}</span>`).join('')+'<span style="color:#5a5280;">...</span>';
+}
+
+function drawFoxChart(){
+  dc('foxChart');
+  const ctx=document.getElementById('foxChart').getContext('2d');
+  const TG={'styrene':100,'butadiene':-85,'acrylonitrile':100,'ethylene':-120,'methylmethacrylate':105};
+  const selA=document.getElementById('cop-A').value;
+  const selB=document.getElementById('cop-B').value;
+  const Tg1=TG[selA]||100,Tg2=TG[selB]||-85;
+  const ws=[],Tgs=[];
+  for(let w1=0;w1<=1;w1+=0.05){
+    ws.push((w1*100).toFixed(0)+'%');
+    const TgFox=1/(w1/(Tg1+273)+( 1-w1)/(Tg2+273))-273;
+    Tgs.push(TgFox.toFixed(1));
+  }
+  charts.foxChart=new Chart(ctx,{type:'line',data:{labels:ws,datasets:[{label:`Tg Fox (${selA}/${selB})`,data:Tgs,borderColor:'#ffab00',backgroundColor:'rgba(255,171,0,.08)',borderWidth:2,pointRadius:0,tension:.4,fill:true}]},options:mkOpts('w₁ (fraction A)','Tg (°C)')});
+}
+
+function drawCopExamples(){
+  const exs=ARCHI_EXAMPLES[currentArchi]||[];
+  document.getElementById('cop-examples').innerHTML=exs.map(e=>`
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:11px;">
+      <div style="font-weight:700;font-size:.82rem;color:var(--p1);margin-bottom:4px;">${e.name}</div>
+      <div style="font-size:.75rem;color:var(--muted);">${e.app}</div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// DEGRADATION
+// ══════════════════════════════════
+const DEG_INFO={
+  PET:{thermal:'Dépolymérisation par coupure des liaisons ester à T>300°C → téréphtalate + éthylène glycol.',photo:'Photo-oxydation lente. UV → coupure C-H → peroxyde → coupure chaîne.',hydro:'Hydrolyse acide ou basique des liaisons ester → monomères récupérables (recyclage chimique).',bio:'Très faible biodégradation. Quelques micro-organismes (Ideonella sakaiensis) capables de la dégrader.',mechano:'Cisaillement intense → coupure des chaînes en extrusion.',score:75},
+  PE:{thermal:'Pyrolyse > 400°C → mélange alcanes et alcènes. Craquage des liaisons C-C.',photo:'Photo-oxydation UV → fragilisation progressive. Additifs anti-UV requis.',hydro:'Résistant à l\'hydrolyse (pas de groupes fonctionnels hydrolysables).',bio:'Très difficile. Quelques champignons (Aspergillus tubingensis) signalés.',mechano:'Résistant. Cisaillement en extrusion → légère réduction Mw.',score:30},
+  PS:{thermal:'Dépolymérisation en monomère styrène à 350°C (dépolymérisation en "zip").',photo:'Jaunissement UV → radicaux → coupure de chaîne.',hydro:'Résistant (liaisons C-C inertes).',bio:'Non biodégradable. Quelques larves de ténébrions (ver de farine).',mechano:'Fragile. Coupure par impact.',score:20},
+  PLA:{thermal:'Dégradation à 200°C → lacide lactique et oligomères.',photo:'Photo-dégradation UV progressive.',hydro:'Hydrolyse facile des liaisons ester → acide lactique (compostable).',bio:'Biodégradable sous 60°C en compostage industriel en 90 jours.',mechano:'Fragile. Coupure aisée.',score:90},
+  Nylon66:{thermal:'Coupure amide > 300°C → monomères récupérables.',photo:'Jaunissement UV, fragilisation progressive.',hydro:'Hydrolyse acide des liaisons amide → recyclage chimique possible.',bio:'Faible biodégradation. Certaines bactéries du sol capables.',mechano:'Résistant. Bonne ténacité.',score:60},
+  PC:{thermal:'Dépolymérisation → BPA + CO₂ à 350°C.',photo:'Jaunissement, crazes sous UV.',hydro:'Hydrolyse basique → BPA (bisphénol A, perturbateur endocrinien).',bio:'Non biodégradable.',mechano:'Résistant aux impacts. Coupure difficile.',score:65}
+};
+
+function setupRecycleCodes(){
+  const codes=[
+    {n:1,sym:'♻',name:'PET',col:'#00e5ff'},{n:2,sym:'♻',name:'HDPE',col:'#69ff47'},
+    {n:3,sym:'♻',name:'PVC',col:'#ff6d00'},{n:4,sym:'♻',name:'LDPE',col:'#e040fb'},
+    {n:5,sym:'♻',name:'PP',col:'#ffab00'},{n:6,sym:'♻',name:'PS',col:'#ff1744'},
+    {n:7,sym:'♻',name:'Autres',col:'#5a5280'}
+  ];
+  document.getElementById('recycle-codes').innerHTML=codes.map(c=>`
+    <div style="background:var(--surface2);border:1px solid ${c.col}33;border-radius:6px;padding:6px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:.9rem;color:${c.col};">${c.n}</div>
+      <div style="font-size:.58rem;color:var(--muted);">${c.name}</div>
+    </div>`).join('');
+}
+
+function setupRecycleFilières(){
+  const f=[
+    {name:'Mécanique',desc:'Broyage → refonte → granulés. Perd des propriétés à chaque cycle.',col:'#69ff47'},
+    {name:'Chimique',desc:'Dépolymérisation → monomères vierges. Haute qualité mais coûteux.',col:'#00e5ff'},
+    {name:'Thermique',desc:'Combustion avec récupération d\'énergie. Dernier recours.',col:'#ff6d00'},
+    {name:'Organique',desc:'Compostage (PLA, PHA). Conditions contrôlées.',col:'#e040fb'},
+  ];
+  document.getElementById('recycle-filières').innerHTML=f.map(fi=>`
+    <div style="background:var(--surface2);border:1px solid ${fi.col}44;border-left:3px solid ${fi.col};border-radius:7px;padding:10px;">
+      <div style="font-weight:700;font-size:.8rem;color:${fi.col};margin-bottom:3px;">${fi.name}</div>
+      <div style="font-size:.73rem;color:var(--muted);">${fi.desc}</div>
+    </div>`).join('');
+}
+
+function runDegradation(){
+  const pol=document.getElementById('deg-polymer').value;
+  const mode=document.getElementById('deg-mode').value;
+  const intensity=parseFloat(document.getElementById('deg-T').value)/100;
+  const tmax=parseFloat(document.getElementById('deg-time').value);
+  const info=DEG_INFO[pol];
+
+  // Mech text
+  const mechTexts={thermal:'Thermique',photo:'Photo-oxydation',hydro:'Hydrolyse',bio:'Biodégradation',mechano:'Mécanochimique'};
+  const modeKey=mode.replace('al','').replace('Oxydation','').replace('lyse','');
+  document.getElementById('deg-mech-content').innerHTML=`
+    <div style="font-family:var(--mono);font-size:.68rem;color:var(--p1);margin-bottom:8px;">${mechTexts[mode]||mode} — ${pol}</div>
+    <p style="margin-bottom:10px;">${info?info[mode]||'Mécanisme non spécifié pour ce couple.':'—'}</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px;font-family:var(--mono);font-size:.75rem;color:var(--p4);">
+      Mn(t) = Mn₀ / (1 + kd·Mn₀·t)<br>
+      kd apparent ∝ intensité = ${intensity.toFixed(2)}
+    </div>`;
+
+  // Degrade curve
+  const Mn0=100000;// 100 kg/mol ref
+  const kd=intensity*1e-5*{thermal:5,photo:2,hydro:8,bio:0.5,mechano:3}[mode];
+  const ts=[],Mns=[];
+  for(let t=0;t<=tmax;t+=tmax/50){
+    const Mn=Mn0/(1+kd*Mn0*t);
+    ts.push(t.toFixed(1));Mns.push((Mn/1000).toFixed(2));
+  }
+  dc('degChart');
+  const ctx=document.getElementById('degChart').getContext('2d');
+  charts.degChart=new Chart(ctx,{type:'line',data:{labels:ts,datasets:[{label:'Mn(t) kg/mol',data:Mns,borderColor:'#ff1744',backgroundColor:'rgba(255,23,68,.08)',borderWidth:2,pointRadius:0,tension:.4,fill:true}]},options:mkOpts('t (années)','Mn (kg/mol)')});
+
+  // Score
+  const score=info?info.score:50;
+  document.getElementById('recycle-score-fill').style.width=score+'%';
+  document.getElementById('recycle-score-text').textContent=`Recyclabilité : ${score}/100`;
+  setStatus('amber',`Dégradation simulée — ${pol} par ${mode} — Recyclabilité : ${score}/100`);
+}
+
+// ══════════════════════════════════
+// QUIZ
+// ══════════════════════════════════
+const QUIZ={
+  addition:[
+    {q:'Dans la polymérisation radicalaire, l\'étape d\'amorçage produit :',opts:['Des monomères activés','Des radicaux libres R•','Des chaînes terminées','Des copolymères'],ans:1,e:'L\'amorceur I se décompose homolytiquement sous chaleur ou UV : I → 2R•. Ces radicaux initient la croissance des chaînes.'},
+    {q:'La dispersité Đ (Ip = Mw/Mn) d\'une polymérisation anionique vivante idéale tend vers :',opts:['2.0','1.5','1.0 (distribution de Poisson)','5.0'],ans:2,e:'Sans terminaison spontanée, toutes les chaînes croissent simultanément à la même vitesse → distribution très étroite → Đ → 1 (loi de Poisson).'},
+    {q:'Quelle polymérisation permet de synthétiser des copolymères à blocs parfaitement définis ?',opts:['Radicalaire conventionnelle','Anionique vivante','Cationique','Ziegler-Natta'],ans:1,e:'La polymérisation anionique vivante (sans terminaison) permet d\'ajouter séquentiellement différents monomères → blocs parfaitement définis.'},
+    {q:'La vitesse de polymérisation radicalaire Rp est proportionnelle à :',opts:['[M]²·[I]','[M]·[I]^0.5','[M]·[I]','[I]/[M]'],ans:1,e:'Rp = kp[M]([I]·f·kd/kt)^0.5 = kp[M]·(Ri/2kt)^0.5. Rp ∝ [M]·[I]^0.5.'},
+    {q:'Le catalyseur de Ziegler-Natta permet de contrôler :',opts:['La masse molaire uniquement','La tacticité (isotactique/syndiotactique)','La dispersité Đ uniquement','La couleur du polymère'],ans:1,e:'Ziegler-Natta (TiCl₄/AlR₃) contrôle l\'insertion du monomère → tacticité (isotactique, syndiotactique, atactique). Métallocènes = contrôle encore meilleur.'},
+  ],
+  condensation:[
+    {q:'L\'équation de Carothers relie le degré de polymérisation X̄ₙ au taux d\'avancement p par :',opts:['X̄ₙ = p/(1-p)','X̄ₙ = 1/(1-p)','X̄ₙ = 1+p','X̄ₙ = p²'],ans:1,e:'X̄ₙ = 1/(1-p). À p=0.99, X̄ₙ = 100. Il faut donc une conversion quasi-totale pour atteindre de hautes masses molaires !'},
+    {q:'Dans la polyestérification, quel coproduit est éliminé ?',opts:['HCl','CO₂','H₂O','NH₃'],ans:2,e:'Polyestérification : RCOOH + R\'OH → -RCOO-R\'- + H₂O. L\'eau doit être éliminée (distillation) pour déplacer l\'équilibre vers les hautes masses molaires.'},
+    {q:'La dispersité théorique d\'une polycondensation à conversion élevée est :',opts:['Đ → 1.0','Đ → 1.5','Đ → 2.0 (Schulz-Flory)','Đ → ∞'],ans:2,e:'À p élevé, Đ = 1+p → 2.0 (distribution de Schulz-Flory). C\'est la distribution la plus probable pour les polycondensations.'},
+    {q:'Pour obtenir X̄ₙ = 200 en polycondensation, le taux d\'avancement p doit être :',opts:['p = 0.50','p = 0.90','p = 0.995','p = 0.75'],ans:2,e:'X̄ₙ = 1/(1-p) → 1-p = 1/200 = 0.005 → p = 0.995. Il faut 99.5% de conversion ! Cela explique les contraintes sévères de la polycondensation.'},
+  ],
+  masses:[
+    {q:'Mn (masse molaire moyenne en nombre) est définie par :',opts:['Mn = Σ(ni·Mi²)/Σ(ni·Mi)','Mn = Σ(ni·Mi)/Σni','Mn = Mw/Đ','Mn = (Mw·Mz)^0.5'],ans:1,e:'Mn = Σ(ni·Mi)/Σni. C\'est la moyenne arithmétique des masses molaires. Sensible aux petites masses. Mesurée par osmométrie.'},
+    {q:'Que mesure la GPC (Chromatographie par Exclusion Stérique) ?',opts:['Uniquement Mn','Mn, Mw et Đ simultanément','Seulement Đ','La température de transition vitreuse Tg'],ans:1,e:'La GPC sépare les polymères par taille hydrodynamique. Couplée à des détecteurs (réfractométrie, diffusion de lumière), elle donne Mn, Mw, Mz et Đ.'},
+    {q:'Pour une polymérisation radicalaire, la dispersité Đ théorique vaut environ :',opts:['Đ ≈ 1.0','Đ ≈ 1.5','Đ ≈ 2.0','Đ ≈ 5.0'],ans:2,e:'Polymérisation radicalaire conventionnelle : Đ ≈ 1.5–2.0 (souvent ~2). RAFT, ATRP (contrôlées) : Đ < 1.3. Anionique vivante : Đ → 1.'},
+  ],
+  structure:[
+    {q:'La température de transition vitreuse Tg correspond à :',opts:['La fusion du polymère','Le passage de l\'état vitreux à l\'état caoutchoutique','La décomposition thermique','La cristallisation'],ans:1,e:'Tg : les chaînes passent d\'un état vitreux (gelé, rigide) à un état caoutchoutique (mobile). C\'est un phénomène cinétique, pas une transition du premier ordre.'},
+    {q:'L\'équation de Fox permet de calculer Tg d\'un copolymère. Sous quelle forme s\'écrit-elle ?',opts:['Tg = w₁Tg₁ + w₂Tg₂','1/Tg = w₁/Tg₁ + w₂/Tg₂','Tg = √(Tg₁·Tg₂)','Tg = Tg₁ + w₂(Tg₂-Tg₁)'],ans:1,e:'Équation de Fox : 1/Tg = w₁/Tg₁ + w₂/Tg₂. Elle prédit la Tg d\'un copolymère statistique en fonction des fractions massiques et Tg des homopolymères.'},
+    {q:'Un polymère "semi-cristallin" possède :',opts:['Uniquement des zones cristallines','Uniquement des zones amorphes','Des zones cristallines ET amorphes','Ni cristallines ni amorphes'],ans:2,e:'Semi-cristallin = coexistence de zones cristallines ordonnées et de zones amorphes désordonnées. Exemples : PE, PP, PET, Nylon. Le PS, PMMA, PC sont entièrement amorphes.'},
+    {q:'Au-dessus de Tf (température de fusion), un polymère semi-cristallin se comporte comme :',opts:['Un solide vitreux','Un caoutchouc élastique','Un liquide visqueux (fondu)','Un cristal solide'],ans:2,e:'T > Tf : fusion des cristallites → polymère fondu visqueux. État de traitement (extrusion, injection). T entre Tg et Tf : caoutchouc (si amorphe).'},
+  ],
+  mixed:[
+    {q:'Le PET (polyéthylène téréphtalate) est produit par :',opts:['Polymérisation radicalaire','Polymérisation anionique','Polycondensation (polyestérification)','Polymérisation par coordination'],ans:2,e:'PET = acide téréphtalique + éthylène glycol par polyestérification. Coproduit = H₂O. Applications : bouteilles, fibres textiles, films.'},
+    {q:'Le Nylon 6,6 est une polyamide obtenu par condensation de :',opts:['Caprolactame','Hexaméthylènediamine + acide adipique','Aniline + formaldéhyde','Éthylènediamine + CO₂'],ans:1,e:'Nylon 6,6 = hexaméthylènediamine (6C) + acide adipique (6C) → polyamide avec élimination d\'eau. Liaison amide -CO-NH- caractéristique.'},
+    {q:'Qu\'est-ce que l\'ABS (acrylonitrile-butadiène-styrène) ?',opts:['Un polymère statistique','Un copolymère greffé (PS sur noyau PB)','Un homopolymère','Un polycondensât'],ans:1,e:'L\'ABS est un copolymère greffé : une matrice PS/AN avec des particules de polybutadiène greffées de PS. La phase PB apporte la résistance au choc.'},
+    {q:'Parmi ces polymères, lequel est biodégradable ?',opts:['PE (polyéthylène)','PS (polystyrène)','PLA (acide polylactique)','PVC'],ans:2,e:'Le PLA (poly(acide lactique)) est biodégradable (compostable sous conditions industrielles à 60°C). Il est issu de ressources renouvelables (amidon de maïs).'},
+    {q:'La polymérisation RAFT est une polymérisation :',opts:['Anionique','Cationique','Radicalaire contrôlée (par transfert de chaîne réversible)','Par coordination'],ans:2,e:'RAFT = Reversible Addition-Fragmentation chain Transfer. Polymérisation radicalaire contrôlée → Đ < 1.3, contrôle Mn, accès aux architectures complexes.'},
+  ]
+};
+
+let quizState={cat:'addition',qs:[],cur:0,score:0,answered:false};
+
+function startQuiz(){
+  const cat=document.getElementById('quiz-cat').value;
+  const pool=QUIZ[cat]||QUIZ.mixed;
+  const qs=[...pool].sort(()=>Math.random()-.5).slice(0,Math.min(8,pool.length));
+  quizState={cat,qs,cur:0,score:0,answered:false};
+  document.getElementById('q-score').textContent='0 / 0';document.getElementById('q-pct').textContent='—';
+  document.getElementById('q-sbar').style.width='0%';
+  showQ();
+}
+
+function showQ(){
+  const q=quizState.qs[quizState.cur];
+  if(!q){endQuiz();return;}
+  const tot=quizState.qs.length;
+  document.getElementById('q-prog-text').textContent=`Question ${quizState.cur+1}/${tot}`;
+  document.getElementById('q-pbar').style.width=`${quizState.cur/tot*100}%`;
+  quizState.answered=false;
+  document.getElementById('quiz-area').innerHTML=`
+    <div class="quiz-card">
+      <div class="quiz-q">${quizState.cur+1}. ${q.q}</div>
+      <div class="quiz-opts">${q.opts.map((o,i)=>`<button class="quiz-opt" onclick="answerQ(${i})">${String.fromCharCode(65+i)}. ${o}</button>`).join('')}</div>
+      <div class="quiz-fb" id="qfb"></div>
+      <div style="text-align:right;margin-top:10px;"><button onclick="nextQ()" id="btn-nq" style="display:none;background:var(--p1);color:white;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:600;font-size:.8rem;">Suivant →</button></div>
+    </div>`;
+}
+
+function answerQ(i){
+  if(quizState.answered)return;quizState.answered=true;
+  const q=quizState.qs[quizState.cur];
+  document.querySelectorAll('.quiz-opt').forEach((o,idx)=>{if(idx===q.ans)o.classList.add('correct');else if(idx===i&&i!==q.ans)o.classList.add('wrong');o.disabled=true;});
+  const ok=i===q.ans;if(ok)quizState.score++;
+  const fb=document.getElementById('qfb');fb.className='quiz-fb show '+(ok?'qf-ok':'qf-ko');
+  fb.innerHTML=`<strong>${ok?'✅ Correct !':'❌ Incorrect.'}</strong> ${q.e}`;
+  document.getElementById('btn-nq').style.display='inline-block';
+  const n=quizState.cur+1;const s=quizState.score;
+  document.getElementById('q-score').textContent=`${s} / ${n}`;
+  const pct=Math.round(s/n*100);document.getElementById('q-pct').textContent=pct+'%';
+  document.getElementById('q-sbar').style.width=pct+'%';
+}
+
+function nextQ(){quizState.cur++;showQ();}
+
+function endQuiz(){
+  const s=quizState.score,t=quizState.qs.length;const pct=Math.round(s/t*100);
+  const msg=pct>=80?'🏆 Excellent !':pct>=60?'👍 Bien !':pct>=40?'📚 Continue !':'💪 À retravailler';
+  document.getElementById('quiz-area').innerHTML=`
+    <div style="text-align:center;padding:28px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;">
+      <div style="font-size:2.5rem;margin-bottom:10px;">${msg.split(' ')[0]}</div>
+      <div style="font-family:'Bitter',serif;font-size:1.4rem;font-weight:700;color:var(--p1);margin-bottom:6px;">${msg.slice(2)}</div>
+      <div style="color:var(--muted);margin-bottom:14px;">Score : ${s} / ${t} (${pct}%)</div>
+      <div style="height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:18px;">
+        <div style="height:100%;width:${pct}%;background:${pct>=60?'var(--p1)':'var(--danger)'};border-radius:5px;transition:width .6s;"></div>
+      </div>
+      <button onclick="startQuiz()" style="background:linear-gradient(135deg,var(--p1),#aa00ff);color:white;border:none;border-radius:8px;padding:10px 24px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;">🔄 Nouveau Quiz</button>
+    </div>`;
+  document.getElementById('q-prog-bar')&&(document.getElementById('q-pbar').style.width='100%');
+}
+
+// ══ CSV EXPORT ══
+function exportCSV(type){
+  let csv='';
+  if(type==='add')csv='t(min),[M](mol/L),Conv(%)\n'+addData.times.map((t,i)=>`${t.toFixed(1)},${addData.concs[i]},${addData.convs[i]}`).join('\n');
+  if(csv){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='simupoly_'+type+'_TCHOKPON.csv';a.click();}
+}
+
+// ══ REPORT ══
+function generateReport(){
+  const date=new Date().toLocaleDateString('fr-FR');
+  const addMon=document.getElementById('add-monomer');
+  const pol=POLYMERS[addMon.value];
+  document.getElementById('rpt-content').innerHTML=`
+<div style="margin-bottom:12px;"><span style="color:var(--p1);font-size:.82rem;letter-spacing:2px;">━━━ RAPPORT DE SÉANCE — CHIMIE DES POLYMÈRES ━━━</span></div>
+<div style="margin-bottom:8px;">Auteur : <span style="color:var(--p1);">Edmond Atinzoun TCHOKPON</span> | Licence Physique-Chimie | ${date}</div>
+<br>
+<div style="color:var(--p1);font-size:.8rem;margin-bottom:4px;">1. POLYMÉRISATION PAR ADDITION</div>
+<div>Type : ${document.getElementById('add-type').options[document.getElementById('add-type').selectedIndex].text}</div>
+<div>Monomère : ${addMon.options[addMon.selectedIndex].text}</div>
+<div>Conversion finale : <span style="color:var(--p2);">${document.getElementById('add-conv').textContent} %</span></div>
+<div>Mn estimée : <span style="color:var(--p1);">${document.getElementById('add-Mn').textContent}</span> | Đ = ${document.getElementById('add-Ip').textContent}</div>
+<br>
+<div style="color:var(--p1);font-size:.8rem;margin-bottom:4px;">2. POLYCONDENSATION</div>
+<div>Type : ${document.getElementById('cond-type').options[document.getElementById('cond-type').selectedIndex].text}</div>
+<div>Taux p : ${document.getElementById('cond-p').textContent} | X̄ₙ : ${document.getElementById('cond-Xn').textContent} | Mn : ${document.getElementById('cond-Mn').textContent}</div>
+<br>
+<div style="color:var(--p1);font-size:.8rem;margin-bottom:4px;">3. ANALYSE STRUCTURALE</div>
+<div>Polymère étudié : ${document.getElementById('str-polymer').options[document.getElementById('str-polymer').selectedIndex].text}</div>
+<div>Tg : ${document.getElementById('val-Tg').textContent} | Tf : ${document.getElementById('val-Tf').textContent} | T_décomp : ${document.getElementById('val-Td').textContent}</div>
+<div>Cristallinité : ${document.getElementById('val-cryst').textContent} | Type : ${document.getElementById('val-type').textContent}</div>
+<br>
+<div style="color:var(--p1);font-size:.8rem;margin-bottom:4px;">4. COPOLYMÈRES</div>
+<div>Architecture : ${currentArchi.toUpperCase()} | Fraction A : ${document.getElementById('cop-fA').value}%</div>
+<br>
+<div style="color:var(--p1);font-size:.8rem;margin-bottom:4px;">5. QUIZ</div>
+<div>Score : ${document.getElementById('q-score').textContent} | ${document.getElementById('q-pct').textContent}</div>
+<br>
+<div style="color:var(--muted);font-size:.65rem;margin-top:12px;text-align:center;">── SimuPoly v1.0 | Edmond Atinzoun TCHOKPON | Licence Physique-Chimie ──</div>`;
+}
+
+// ══ STATUS ══
+function setStatus(type,msg){
+  const d=document.getElementById('sdot');d.className='sdot'+(type==='amber'?' amber':type==='red'?' red':'');
+  document.getElementById('stext').textContent=msg;
+}
+setInterval(()=>{document.getElementById('sclock').textContent=new Date().toLocaleTimeString('fr-FR');},1000);
+
+// ══ INIT ══
+updateAddType();
+updateCondType();
+setupRecycleCodes();
+setupRecycleFilières();
+setTimeout(()=>{showStructure();calcMasses();},200);
+</script>
+</body>
+</html>
