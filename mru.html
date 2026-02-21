@@ -1,0 +1,1818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>SimLab — MRU · Mouvement rectiligne uniforme</title>
+    <!-- Polices : Outfit + JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Three.js r128 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* ===== VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --bg: #0a0e1a;
+            --surface: #111827;
+            --surface2: #1a2540;
+            --surface3: #1f2d4a;
+            --border: #2a3a5c;
+            --cyan: #00e5ff;
+            --cyan-glow: rgba(0, 229, 255, 0.15);
+            --green: #00ff88;
+            --orange: #ff8c00;
+            --red: #ff4444;
+            --purple: #c084fc;
+            --text: #e2e8f0;
+            --text-dim: #8898b0;
+            --text-mute: #4a5568;
+            --font: 'Outfit', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, .5);
+            --header-h: 60px;
+            --panel-h: 280px;
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --header-h: 55px;
+                --panel-h: 300px;
+            }
+        }
+
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            touch-action: pan-y pinch-zoom;
+        }
+
+        /* ===== HEADER ===== */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background: rgba(10, 14, 26, 0.96);
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(14px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 12px;
+            z-index: 100;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        #header::-webkit-scrollbar { display: none; }
+
+        #btn-back {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 6px 10px;
+            border-radius: var(--radius-sm);
+            font-family: var(--font);
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        #btn-back:hover { color: var(--cyan); border-color: var(--cyan); }
+
+        #hlogo {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--cyan);
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+        #hlogo span {
+            color: var(--text-dim);
+            font-weight: 400;
+            font-size: 11px;
+        }
+        #hsep { flex: 1; min-width: 4px; }
+
+        #sim-title {
+            background: var(--surface3);
+            color: var(--cyan);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+
+        #view-toggle {
+            display: flex;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+        .view-btn {
+            padding: 5px 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .view-btn.active {
+            background: var(--cyan-glow);
+            color: var(--cyan);
+        }
+
+        #lang-btn {
+            padding: 5px 9px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            font-family: var(--mono);
+            font-size: 11px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: all .2s;
+        }
+        #lang-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+
+        /* ===== ZONE DE SIMULATION ===== */
+        #app {
+            position: fixed;
+            top: var(--header-h);
+            left: 0;
+            right: 0;
+            bottom: var(--panel-h);
+            overflow: hidden;
+        }
+
+        #canvas-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--surface);
+        }
+
+        #simCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+
+        #threeCanvas {
+            display: none;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #canvas-wrap.mode2d::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: 
+                linear-gradient(rgba(42, 58, 92, 0.28) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(42, 58, 92, 0.28) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 1;
+        }
+
+        /* ===== HUD BADGES (décalés vers le haut) ===== */
+        #sim-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            z-index: 5;
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: var(--mono);
+            font-size: 11px;
+            backdrop-filter: blur(8px);
+        }
+        #sim-time {
+            color: var(--cyan);
+            font-weight: 700;
+            font-size: 14px;
+            display: block;
+        }
+        #sim-label {
+            font-size: 10px;
+            color: var(--text-mute);
+        }
+
+        #view-info {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            z-index: 5;
+            display: none;
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 5px 10px;
+            font-size: 10px;
+            color: var(--text-mute);
+            font-family: var(--mono);
+        }
+
+        #mode-badge {
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--cyan);
+            font-family: var(--mono);
+            letter-spacing: .04em;
+            display: none;
+        }
+
+        /* ===== PANEL RÉSULTATS (décalé vers le haut) ===== */
+        #results-panel {
+            position: absolute;
+            top: 80px;
+            right: 12px;
+            z-index: 10;
+            width: 220px;
+            background: rgba(17, 24, 39, 0.96);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            backdrop-filter: blur(14px);
+            padding: 14px;
+            transform: translateX(calc(100% + 24px));
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: var(--shadow), 0 0 30px rgba(0, 229, 255, 0.06);
+        }
+        #results-panel.visible { transform: translateX(0); }
+
+        #results-panel h3 {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--cyan);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(42, 58, 92, 0.5);
+            font-size: 12px;
+        }
+        .result-row:last-child { border-bottom: none; }
+        .result-label { color: var(--text-dim); }
+        .result-value {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--cyan);
+            font-weight: 500;
+        }
+
+        /* ===== LÉGENDE VECTEURS (décalée vers le bas) ===== */
+        #vector-legend {
+            position: absolute;
+            bottom: 80px;
+            left: 12px;
+            z-index: 5;
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 8px 12px;
+            font-size: 11px;
+        }
+        .vleg-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 4px;
+        }
+        .vleg-row:last-child { margin-bottom: 0; }
+        .vleg-line {
+            width: 20px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        .vleg-label { color: var(--text-dim); }
+
+        /* ===== TIMELINE ===== */
+        #timeline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--surface2);
+            z-index: 6;
+        }
+        #timeline-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--green));
+            width: 0%;
+            transition: width .05s linear;
+            box-shadow: 0 0 8px var(--cyan);
+        }
+
+        /* ===== COUCHE PARTICULES ===== */
+        #particles-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 8;
+        }
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: prise 1s ease-out forwards;
+        }
+        @keyframes prise {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+        }
+
+        /* ===== PANEL DE CONTRÔLE ===== */
+        #ctrl-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: var(--panel-h);
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+            transition: height .3s ease;
+        }
+        #ctrl-panel.collapsed { height: 44px; }
+
+        #tabs-bar {
+            display: flex;
+            align-items: center;
+            height: 44px;
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+            padding: 0 8px;
+            gap: 2px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        #tabs-bar::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0 12px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: var(--font);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            background: var(--cyan-glow);
+            color: var(--cyan);
+        }
+        .tab-btn:hover:not(.active) {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        #tabs-collapse {
+            margin-left: auto;
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transition: all .2s;
+        }
+        #tabs-collapse:hover {
+            color: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        #action-bar {
+            display: flex;
+            gap: 8px;
+            padding: 8px 12px;
+            flex-shrink: 0;
+        }
+
+        .action-btn {
+            flex: 1;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            font-family: var(--font);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        #btn-launch {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #003320;
+            border-color: #00ff88;
+            box-shadow: 0 0 16px rgba(0, 255, 136, 0.25);
+        }
+        #btn-launch:hover {
+            box-shadow: 0 0 26px rgba(0, 255, 136, 0.5);
+            transform: translateY(-1px);
+        }
+
+        #btn-pause {
+            background: var(--surface2);
+            color: var(--text-dim);
+            border-color: var(--border);
+        }
+        #btn-pause:hover { color: var(--orange); border-color: var(--orange); }
+        #btn-pause.paused { color: var(--cyan); border-color: var(--cyan); }
+
+        #btn-reset {
+            background: var(--surface2);
+            color: var(--text-dim);
+            border-color: var(--border);
+        }
+        #btn-reset:hover { color: var(--red); border-color: var(--red); }
+
+        #tabs-content {
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+        #tabs-content::-webkit-scrollbar { width: 4px; }
+        #tabs-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        .tab-pane {
+            display: none;
+            padding: 12px;
+        }
+        .tab-pane.active { display: block; }
+
+        /* ===== PARAMÈTRES ===== */
+        .params-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        @media (min-width: 600px) { .params-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 900px) { .params-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .param-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+        }
+
+        .param-label {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+            font-weight: 500;
+            display: flex;
+            justify-content: space-between;
+        }
+        .param-label span {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--cyan);
+            font-weight: 600;
+        }
+
+        .param-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+        }
+        .param-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--cyan);
+            border: 3px solid var(--surface);
+            cursor: pointer;
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.5);
+        }
+
+        /* ===== MESURES ===== */
+        .mesures-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        @media (min-width: 600px) { .mesures-grid { grid-template-columns: repeat(4, 1fr); } }
+
+        .mesure-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            text-align: center;
+        }
+        .mesure-icon { font-size: 18px; margin-bottom: 4px; }
+        .mesure-name {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+        .mesure-val {
+            font-family: var(--mono);
+            font-size: 15px;
+            color: var(--cyan);
+            font-weight: 700;
+        }
+        .mesure-unit { font-size: 10px; color: var(--text-mute); }
+
+        /* ===== LOIS ===== */
+        .lois-container { display: flex; flex-direction: column; gap: 10px; }
+        .loi-card {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+        .loi-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            transition: background .2s;
+        }
+        .loi-header:hover { background: rgba(0, 229, 255, 0.04); }
+        .loi-header h4 {
+            font-size: 12px;
+            font-weight: 600;
+            flex: 1;
+        }
+        .loi-tag {
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background: var(--cyan-glow);
+            color: var(--cyan);
+            font-family: var(--mono);
+        }
+        .loi-chevron {
+            color: var(--text-dim);
+            transition: transform .2s;
+            font-size: 11px;
+        }
+        .loi-card.open .loi-chevron { transform: rotate(180deg); }
+        .loi-body {
+            display: none;
+            padding: 0 14px 14px;
+        }
+        .loi-card.open .loi-body { display: block; }
+
+        .formula-box {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            font-family: var(--mono);
+            font-size: 15px;
+            color: var(--cyan);
+            text-align: center;
+        }
+        .loi-desc {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+        .loi-variables { margin-top: 8px; }
+        .loi-variables p {
+            font-size: 11px;
+            color: var(--text-dim);
+            margin-bottom: 3px;
+            font-family: var(--mono);
+        }
+        .loi-variables p b { color: var(--purple); }
+
+        /* ===== RAPPORT TP ===== */
+        .rapport-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .rapport-info {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+        }
+        .rapport-info p {
+            font-size: 12px;
+            color: var(--text-dim);
+            line-height: 1.6;
+        }
+        .rapport-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .rapport-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text-dim);
+            font-family: var(--font);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .rapport-btn:hover {
+            color: var(--cyan);
+            border-color: var(--cyan);
+            background: var(--cyan-glow);
+        }
+
+        /* ===== TOAST ===== */
+        #toast {
+            position: fixed;
+            bottom: calc(var(--panel-h) + 12px);
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 10px 20px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all .3s;
+            z-index: 200;
+            box-shadow: var(--shadow);
+        }
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        #toast.toast-success { border-color: var(--green); color: var(--green); }
+        #toast.toast-info { border-color: var(--cyan); color: var(--cyan); }
+        #toast.toast-warn { border-color: var(--orange); color: var(--orange); }
+        #toast.toast-error { border-color: var(--red); color: var(--red); }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            #hlogo span { display: none; }
+            .tab-btn { padding: 0 8px; }
+            #results-panel { width: 180px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header id="header">
+    <a id="btn-back" href="index.html">← <span id="txt-back">Retour</span></a>
+    <div id="hlogo">⚗️ SimLab <span>atinzlab.pages.dev</span></div>
+    <div id="hsep"></div>
+    <div id="sim-title">MRU · Mouvement rectiligne uniforme</div>
+    <div id="view-toggle">
+        <button class="view-btn active" data-view="2d">2D</button>
+        <button class="view-btn" data-view="3d">3D</button>
+    </div>
+    <button id="lang-btn">EN</button>
+</header>
+
+<!-- ===== ZONE DE SIMULATION ===== -->
+<main id="app">
+    <div id="canvas-wrap" class="mode2d">
+        <canvas id="simCanvas"></canvas>
+        <canvas id="threeCanvas"></canvas>
+        <div id="particles-layer"></div>
+        
+        <!-- Badges d'information -->
+        <div id="sim-badge">
+            <span id="sim-time">0.00 s</span>
+            <span id="sim-label">Temps</span>
+        </div>
+        <div id="view-info">Orbite · Scroll zoom · Shift pan</div>
+        <div id="mode-badge">🚗 MRU</div>
+        
+        <!-- Panel résultats (décalé vers le haut) -->
+        <div id="results-panel">
+            <h3>📊 <span id="txt-res-title">Résultats</span></h3>
+            <div class="result-row">
+                <span class="result-label" id="rl-x">Position x</span>
+                <span class="result-value" id="res-x">0.00 m</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label" id="rl-v">Vitesse v</span>
+                <span class="result-value" id="res-v">2.00 m/s</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label" id="rl-t">Temps</span>
+                <span class="result-value" id="res-t">0.00 s</span>
+            </div>
+            <div class="result-row">
+                <span class="result-label">Distance</span>
+                <span class="result-value" id="res-dist">0.00 m</span>
+            </div>
+        </div>
+        
+        <!-- Légende vecteurs (décalée vers le bas) -->
+        <div id="vector-legend">
+            <div class="vleg-row">
+                <div class="vleg-line" style="background:#00e5ff"></div>
+                <span class="vleg-label" id="vl-v">Vecteur vitesse</span>
+            </div>
+            <div class="vleg-row">
+                <div class="vleg-line" style="background:#ff8c00"></div>
+                <span class="vleg-label" id="vl-a">Vecteur accélération</span>
+            </div>
+            <div class="vleg-row">
+                <div class="vleg-line" style="background:#c084fc"></div>
+                <span class="vleg-label" id="vl-t">Trajectoire</span>
+            </div>
+        </div>
+        
+        <!-- Timeline -->
+        <div id="timeline">
+            <div id="timeline-fill"></div>
+        </div>
+    </div>
+</main>
+
+<!-- ===== PANEL DE CONTRÔLE ===== -->
+<div id="ctrl-panel">
+    <div id="tabs-bar">
+        <button class="tab-btn active" data-tab="params">⚙️ <span id="tt-p">Paramètres</span></button>
+        <button class="tab-btn" data-tab="mesures">📐 <span id="tt-m">Mesures</span></button>
+        <button class="tab-btn" data-tab="lois">📚 <span id="tt-l">Lois</span></button>
+        <button class="tab-btn" data-tab="rapport">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span id="tt-r">Rapport TP</span>
+        </button>
+        <button id="tabs-collapse">▼</button>
+    </div>
+    
+    <div id="action-bar">
+        <button class="action-btn" id="btn-launch">▶ <span id="txt-launch">Lancer</span></button>
+        <button class="action-btn" id="btn-pause">⏸ <span id="txt-pause">Pause</span></button>
+        <button class="action-btn" id="btn-reset">↺ <span id="txt-reset">Reset</span></button>
+    </div>
+    
+    <div id="tabs-content">
+        <!-- ===== PARAMÈTRES ===== -->
+        <div class="tab-pane active" id="tab-params">
+            <div class="params-grid">
+                <div class="param-card">
+                    <div class="param-label">
+                        <span id="lbl-v0">Vitesse initiale v₀</span>
+                        <span id="val-v0">2.0 m/s</span>
+                    </div>
+                    <input type="range" class="param-slider" id="sl-v0" min="0.5" max="5.0" value="2.0" step="0.1">
+                </div>
+                <div class="param-card">
+                    <div class="param-label">
+                        <span id="lbl-x0">Position initiale x₀</span>
+                        <span id="val-x0">0.0 m</span>
+                    </div>
+                    <input type="range" class="param-slider" id="sl-x0" min="-3" max="3" value="0.0" step="0.1">
+                </div>
+                <div class="param-card">
+                    <div class="param-label">
+                        <span id="lbl-speed">Vitesse simulation</span>
+                        <span id="val-speed">1.0×</span>
+                    </div>
+                    <input type="range" class="param-slider" id="sl-speed" min="0.2" max="3.0" value="1.0" step="0.1">
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== MESURES ===== -->
+        <div class="tab-pane" id="tab-mesures">
+            <div class="mesures-grid">
+                <div class="mesure-card">
+                    <div class="mesure-icon">📍</div>
+                    <div class="mesure-name" id="ml-x">Position X</div>
+                    <div class="mesure-val" id="mv-x">0.00</div>
+                    <div class="mesure-unit">m</div>
+                </div>
+                <div class="mesure-card">
+                    <div class="mesure-icon">⚡</div>
+                    <div class="mesure-name" id="ml-v">Vitesse</div>
+                    <div class="mesure-val" id="mv-v">2.00</div>
+                    <div class="mesure-unit">m/s</div>
+                </div>
+                <div class="mesure-card">
+                    <div class="mesure-icon">⏱️</div>
+                    <div class="mesure-name" id="ml-t">Temps</div>
+                    <div class="mesure-val" id="mv-t">0.00</div>
+                    <div class="mesure-unit">s</div>
+                </div>
+                <div class="mesure-card">
+                    <div class="mesure-icon">📏</div>
+                    <div class="mesure-name" id="ml-d">Distance</div>
+                    <div class="mesure-val" id="mv-d">0.00</div>
+                    <div class="mesure-unit">m</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== LOIS ===== -->
+        <div class="tab-pane" id="tab-lois">
+            <div class="lois-container">
+                <div class="loi-card open" id="loi-mru">
+                    <div class="loi-header" onclick="toggleLoi(this)">
+                        <h4>📏 MRU — Mouvement Rectiligne Uniforme</h4>
+                        <span class="loi-tag">v = cte</span>
+                        <span class="loi-chevron">▼</span>
+                    </div>
+                    <div class="loi-body">
+                        <div class="formula-box">x(t) = x₀ + v · t</div>
+                        <p class="loi-desc">
+                            En MRU, la vitesse est <strong>constante</strong> : l'accélération est nulle. 
+                            L'objet parcourt des distances égales en des temps égaux. 
+                            Le graphe x(t) est une <em>droite</em>.
+                        </p>
+                        <div class="loi-variables">
+                            <p><b>x(t)</b> — position à l'instant t (m)</p>
+                            <p><b>x₀</b> — position initiale (m)</p>
+                            <p><b>v</b> — vitesse constante (m/s)</p>
+                            <p><b>t</b> — temps (s)</p>
+                        </div>
+                        <p class="loi-desc" style="margin-top: 8px; color: var(--cyan);">
+                            🎓 Niveau lycée / université (Bénin)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ===== RAPPORT TP ===== -->
+        <div class="tab-pane" id="tab-rapport">
+            <div class="rapport-section">
+                <div class="rapport-info">
+                    <p id="txt-rap-info">
+                        Génère un rapport de TP complet avec toutes les mesures enregistrées, 
+                        les formules utilisées et une analyse des résultats.
+                    </p>
+                </div>
+                <div class="rapport-btns">
+                    <button class="rapport-btn" id="export-csv">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="4 17 10 11 4 5"/>
+                            <line x1="12" y1="19" x2="20" y2="19"/>
+                        </svg>
+                        <span id="txt-csv">Exporter CSV</span>
+                    </button>
+                    <button class="rapport-btn" id="take-screenshot">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                            <circle cx="12" cy="13" r="4"/>
+                        </svg>
+                        <span id="txt-shot">Capture</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast"></div>
+
+<script>
+    // ===== SIMULATION MRU =====
+    
+    // --- ÉTAT GLOBAL ---
+    let lang = 'fr';
+    let currentView = '2d';
+    let simRunning = false;
+    let simPaused = false;
+    let simTime = 0;
+    let maxTime = 30;
+    let animId = null;
+    let lastTimestamp = null;
+    
+    // Paramètres
+    let v0 = 2.0;
+    let x0 = 0.0;
+    let simSpeed = 1.0;
+    
+    // État de la simulation
+    let x = 0.0;
+    
+    // Données enregistrées
+    let recordedData = [];
+    
+    // Trajectoire
+    let traj2D = [];
+    let traj3Dpts = [];
+    
+    // Références DOM
+    const simTimeEl = document.getElementById('sim-time');
+    const timelineFill = document.getElementById('timeline-fill');
+    const resX = document.getElementById('res-x');
+    const resV = document.getElementById('res-v');
+    const resT = document.getElementById('res-t');
+    const resDist = document.getElementById('res-dist');
+    const mvX = document.getElementById('mv-x');
+    const mvV = document.getElementById('mv-v');
+    const mvT = document.getElementById('mv-t');
+    const mvD = document.getElementById('mv-d');
+    const resultsPanel = document.getElementById('results-panel');
+    
+    // --- I18N ---
+    const TR = {
+        fr: {
+            back: 'Retour',
+            launch: 'Lancer',
+            pause: 'Pause',
+            resume: 'Reprendre',
+            reset: 'Reset',
+            tabP: 'Paramètres',
+            tabM: 'Mesures',
+            tabL: 'Lois',
+            tabR: 'Rapport TP',
+            resTitle: 'Résultats',
+            rlx: 'Position x',
+            rlv: 'Vitesse v',
+            rlt: 'Temps',
+            vlv: 'Vecteur vitesse',
+            vla: 'Vecteur accélération',
+            vlt: 'Trajectoire',
+            mlx: 'Position X',
+            mlv: 'Vitesse',
+            mlt: 'Temps',
+            mld: 'Distance',
+            lblV0: 'Vitesse initiale v₀',
+            lblX0: 'Position initiale x₀',
+            lblSpeed: 'Vitesse simulation',
+            rapInfo: 'Rapport de TP disponible après simulation.',
+            csv: 'Exporter CSV',
+            shot: 'Capture',
+            tLaunched: 'Simulation lancée !',
+            tPaused: 'En pause',
+            tResumed: 'Reprise !',
+            tReset: 'Réinitialisée',
+            tCsv: 'CSV exporté !',
+            tShot: 'Capture enregistrée !',
+            tNoData: "Lancez d'abord une simulation",
+            tLimit: 'Fin de course',
+            simLabel: 'Temps',
+            info3d: 'Orbite · Scroll zoom · Shift pan'
+        },
+        en: {
+            back: 'Back',
+            launch: 'Launch',
+            pause: 'Pause',
+            resume: 'Resume',
+            reset: 'Reset',
+            tabP: 'Parameters',
+            tabM: 'Measurements',
+            tabL: 'Laws',
+            tabR: 'Lab Report',
+            resTitle: 'Results',
+            rlx: 'Position x',
+            rlv: 'Velocity v',
+            rlt: 'Time',
+            vlv: 'Velocity vector',
+            vla: 'Acceleration vector',
+            vlt: 'Trajectory',
+            mlx: 'Position X',
+            mlv: 'Velocity',
+            mlt: 'Time',
+            mld: 'Distance',
+            lblV0: 'Initial speed v₀',
+            lblX0: 'Initial position x₀',
+            lblSpeed: 'Simulation speed',
+            rapInfo: 'Lab report available after simulation.',
+            csv: 'Export CSV',
+            shot: 'Screenshot',
+            tLaunched: 'Simulation launched!',
+            tPaused: 'Paused',
+            tResumed: 'Resumed!',
+            tReset: 'Reset',
+            tCsv: 'CSV exported!',
+            tShot: 'Screenshot saved!',
+            tNoData: 'Launch a simulation first',
+            tLimit: 'Out of bounds',
+            simLabel: 'Time',
+            info3d: 'Orbit · Scroll zoom · Shift pan'
+        }
+    };
+    
+    function t(key) {
+        return TR[lang][key] || key;
+    }
+    
+    function applyLang() {
+        const mappings = {
+            'txt-back': 'back',
+            'txt-launch': 'launch',
+            'txt-pause': 'pause',
+            'txt-reset': 'reset',
+            'tt-p': 'tabP',
+            'tt-m': 'tabM',
+            'tt-l': 'tabL',
+            'tt-r': 'tabR',
+            'txt-res-title': 'resTitle',
+            'rl-x': 'rlx',
+            'rl-v': 'rlv',
+            'rl-t': 'rlt',
+            'vl-v': 'vlv',
+            'vl-a': 'vla',
+            'vl-t': 'vlt',
+            'ml-x': 'mlx',
+            'ml-v': 'mlv',
+            'ml-t': 'mlt',
+            'ml-d': 'mld',
+            'lbl-v0': 'lblV0',
+            'lbl-x0': 'lblX0',
+            'lbl-speed': 'lblSpeed',
+            'txt-rap-info': 'rapInfo',
+            'txt-csv': 'csv',
+            'txt-shot': 'shot',
+            'sim-label': 'simLabel'
+        };
+        
+        for (const [id, key] of Object.entries(mappings)) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = t(key);
+        }
+        
+        document.getElementById('view-info').textContent = t('info3d');
+        document.getElementById('lang-btn').textContent = lang === 'fr' ? 'EN' : 'FR';
+    }
+    
+    document.getElementById('lang-btn').addEventListener('click', () => {
+        lang = lang === 'fr' ? 'en' : 'fr';
+        applyLang();
+        updatePauseBtn();
+    });
+    
+    // --- TOAST ---
+    let toastTimeout = null;
+    function toast(msg, type = 'info') {
+        const el = document.getElementById('toast');
+        el.textContent = msg;
+        el.className = 'show toast-' + type;
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => el.className = '', 2600);
+    }
+    
+    // --- MISE À JOUR ---
+    function updateUI() {
+        resX.textContent = x.toFixed(2) + ' m';
+        resV.textContent = v0.toFixed(2) + ' m/s';
+        resT.textContent = simTime.toFixed(2) + ' s';
+        const distance = Math.abs(x - x0);
+        resDist.textContent = distance.toFixed(2) + ' m';
+        
+        mvX.textContent = x.toFixed(2);
+        mvV.textContent = v0.toFixed(2);
+        mvT.textContent = simTime.toFixed(2);
+        mvD.textContent = distance.toFixed(2);
+        
+        simTimeEl.textContent = simTime.toFixed(2) + ' s';
+        const progress = Math.min(100, (simTime / maxTime) * 100);
+        timelineFill.style.width = progress + '%';
+        
+        if (simRunning && !simPaused && Math.floor(simTime * 10) > recordedData.length) {
+            recordedData.push({
+                t: simTime.toFixed(2),
+                x: x.toFixed(3),
+                v: v0.toFixed(3),
+                dist: distance.toFixed(3)
+            });
+        }
+    }
+    
+    // --- SLIDERS ---
+    const v0Slider = document.getElementById('sl-v0');
+    const v0Val = document.getElementById('val-v0');
+    v0Slider.addEventListener('input', () => {
+        v0 = parseFloat(v0Slider.value);
+        v0Val.textContent = v0.toFixed(1) + ' m/s';
+        if (!simRunning) {
+            x = x0;
+            updateUI();
+            if (currentView === '2d') draw2D(true);
+            else idleThree();
+        }
+    });
+    
+    const x0Slider = document.getElementById('sl-x0');
+    const x0Val = document.getElementById('val-x0');
+    x0Slider.addEventListener('input', () => {
+        x0 = parseFloat(x0Slider.value);
+        x0Val.textContent = x0.toFixed(1) + ' m';
+        if (!simRunning) {
+            x = x0;
+            updateUI();
+            if (currentView === '2d') draw2D(true);
+            else idleThree();
+        }
+    });
+    
+    const speedSlider = document.getElementById('sl-speed');
+    const speedVal = document.getElementById('val-speed');
+    speedSlider.addEventListener('input', () => {
+        simSpeed = parseFloat(speedSlider.value);
+        speedVal.textContent = simSpeed.toFixed(1) + '×';
+    });
+    
+    // --- ÉTAT INITIAL ---
+    function initState() {
+        x = x0;
+        simTime = 0;
+        traj2D = [];
+        traj3Dpts = [];
+        recordedData = [];
+        updateUI();
+        if (currentView === '2d') {
+            resize2D();
+            draw2D(true);
+        } else {
+            idleThree();
+        }
+    }
+    
+    // --- PHYSIQUE ---
+    function stepPhysics(dt) {
+        const delta = dt * simSpeed;
+        simTime += delta;
+        x = x0 + v0 * simTime;
+        
+        if (Math.abs(x) > 15) {
+            endSim();
+            toast(t('tLimit'), 'warn');
+            if (currentView === '2d') {
+                const canvas = document.getElementById('simCanvas');
+                spawnParticles(canvas.width / 2, canvas.height / 2, 15, '#00e5ff');
+            } else {
+                spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 15, '#00e5ff');
+            }
+        }
+        
+        if (simTime > maxTime) {
+            endSim();
+        }
+        
+        traj2D.push({ x: x });
+        if (traj2D.length > 500) traj2D.shift();
+        
+        if (currentView === '3d') {
+            traj3Dpts.push(new THREE.Vector3(x, 0.5, 0));
+            if (traj3Dpts.length > 500) traj3Dpts.shift();
+        }
+    }
+    
+    // --- BOUCLE ---
+    function loop(ts) {
+        if (!simRunning || simPaused) return;
+        if (!lastTimestamp) lastTimestamp = ts;
+        const dt = Math.min((ts - lastTimestamp) / 1000, 0.05);
+        lastTimestamp = ts;
+        
+        stepPhysics(dt);
+        updateUI();
+        
+        if (currentView === '2d') draw2D();
+        else updateThree();
+        
+        animId = requestAnimationFrame(loop);
+    }
+    
+    function endSim() {
+        simRunning = false;
+        simPaused = false;
+        if (animId) {
+            cancelAnimationFrame(animId);
+            animId = null;
+        }
+        lastTimestamp = null;
+        updatePauseBtn();
+    }
+    
+    function doReset() {
+        if (simRunning || simPaused) {
+            simRunning = false;
+            simPaused = false;
+            if (animId) {
+                cancelAnimationFrame(animId);
+                animId = null;
+            }
+            lastTimestamp = null;
+            updatePauseBtn();
+        }
+        resultsPanel.classList.remove('visible');
+        initState();
+    }
+    
+    function updatePauseBtn() {
+        const btn = document.getElementById('btn-pause');
+        const sp = document.getElementById('txt-pause');
+        if (simPaused) {
+            btn.classList.add('paused');
+            sp.textContent = t('resume');
+        } else {
+            btn.classList.remove('paused');
+            sp.textContent = t('pause');
+        }
+    }
+    
+    // --- CONTRÔLES ---
+    document.getElementById('btn-launch').addEventListener('click', () => {
+        if (simPaused) {
+            simPaused = false;
+            simRunning = true;
+            lastTimestamp = null;
+            updatePauseBtn();
+            animId = requestAnimationFrame(loop);
+            toast(t('tResumed'), 'info');
+            return;
+        }
+        
+        if (simRunning) return;
+        
+        initState();
+        simRunning = true;
+        simPaused = false;
+        lastTimestamp = null;
+        resultsPanel.classList.add('visible');
+        updatePauseBtn();
+        animId = requestAnimationFrame(loop);
+        toast(t('tLaunched'), 'success');
+    });
+    
+    document.getElementById('btn-pause').addEventListener('click', () => {
+        if (!simRunning) return;
+        simPaused = !simPaused;
+        if (simPaused) {
+            if (animId) {
+                cancelAnimationFrame(animId);
+                animId = null;
+            }
+            lastTimestamp = null;
+            toast(t('tPaused'), 'warn');
+        } else {
+            lastTimestamp = null;
+            animId = requestAnimationFrame(loop);
+            toast(t('tResumed'), 'info');
+        }
+        updatePauseBtn();
+    });
+    
+    document.getElementById('btn-reset').addEventListener('click', () => {
+        doReset();
+        toast(t('tReset'), 'info');
+    });
+    
+    // --- PARTICULES ---
+    function spawnParticles(cx, cy, n, col) {
+        const layer = document.getElementById('particles-layer');
+        for (let i = 0; i < n; i++) {
+            const p = document.createElement('div');
+            const a = Math.random() * Math.PI * 2;
+            const d = 25 + Math.random() * 80;
+            const s = 3 + Math.random() * 6;
+            p.className = 'particle';
+            p.style.cssText = `
+                left: ${cx}px;
+                top: ${cy}px;
+                width: ${s}px;
+                height: ${s}px;
+                background: ${col};
+                --dx: ${Math.cos(a) * d}px;
+                --dy: ${Math.sin(a) * d}px;
+                box-shadow: 0 0 6px ${col};
+            `;
+            layer.appendChild(p);
+            setTimeout(() => p.remove(), 1100);
+        }
+    }
+    
+    // ===== 2D AVEC POINT MATÉRIEL ET VECTEURS DÉCALÉS =====
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    let SCALE = 40;
+    let camOffset = 0;
+    
+    function resize2D() {
+        const wrap = document.getElementById('canvas-wrap');
+        canvas.width = wrap.clientWidth;
+        canvas.height = wrap.clientHeight;
+        SCALE = Math.max(20, Math.min(80, (canvas.width * 0.7) / 20));
+    }
+    
+    function worldToScreen(xWorld) {
+        return (xWorld - camOffset) * SCALE + canvas.width / 2;
+    }
+    
+    function draw2D(idle = false) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (simRunning) {
+            camOffset = x - (canvas.width / 2) / SCALE;
+        } else if (idle) {
+            camOffset = x0 - (canvas.width / 2) / SCALE;
+        }
+        
+        // Grille
+        const startX = Math.floor(camOffset - canvas.width / (2 * SCALE));
+        const endX = Math.ceil(camOffset + canvas.width / (2 * SCALE));
+        
+        for (let i = startX; i <= endX; i += 1) {
+            const screenX = worldToScreen(i);
+            if (screenX < 0 || screenX > canvas.width) continue;
+            
+            ctx.beginPath();
+            ctx.moveTo(screenX, 0);
+            ctx.lineTo(screenX, canvas.height);
+            ctx.strokeStyle = i === 0 ? 'rgba(100, 130, 200, 0.8)' : 'rgba(42, 58, 92, 0.5)';
+            ctx.stroke();
+            
+            if (i % 5 === 0) {
+                ctx.fillStyle = '#8898b0';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'center';
+                ctx.fillText(i + ' m', screenX, canvas.height - 70);
+            }
+        }
+        
+        // Axe horizontal (décalé vers le bas)
+        const groundY = canvas.height - 80;
+        ctx.beginPath();
+        ctx.moveTo(0, groundY);
+        ctx.lineTo(canvas.width, groundY);
+        ctx.strokeStyle = '#00e5ff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Trajectoire
+        if (traj2D.length > 1) {
+            ctx.beginPath();
+            ctx.strokeStyle = 'rgba(192, 132, 252, 0.6)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 3]);
+            
+            const first = worldToScreen(traj2D[0].x);
+            ctx.moveTo(first, groundY);
+            
+            traj2D.forEach(p => {
+                const sx = worldToScreen(p.x);
+                ctx.lineTo(sx, groundY);
+            });
+            
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        
+        // POINT MATÉRIEL
+        const objX = worldToScreen(x);
+        const objY = groundY;
+        
+        // Halo
+        const grad = ctx.createRadialGradient(objX, objY, 0, objX, objY, 30);
+        grad.addColorStop(0, 'rgba(0, 229, 255, 0.6)');
+        grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
+        ctx.beginPath();
+        ctx.arc(objX, objY, 30, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        
+        // Point central
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = '#00e5ff';
+        ctx.beginPath();
+        ctx.arc(objX, objY, 10, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        
+        ctx.shadowBlur = 25;
+        ctx.beginPath();
+        ctx.arc(objX, objY, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#00e5ff';
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        
+        // VECTEUR VITESSE (décalé vers le haut)
+        if (Math.abs(v0) > 0.01 && simRunning) {
+            const arrowStartX = objX;
+            const arrowStartY = objY - 40;
+            const arrowLength = Math.abs(v0) * 25;
+            const arrowEndX = objX + (v0 > 0 ? arrowLength : -arrowLength);
+            const arrowEndY = objY - 40;
+            
+            // Ligne
+            ctx.beginPath();
+            ctx.strokeStyle = '#00e5ff';
+            ctx.lineWidth = 3;
+            ctx.moveTo(arrowStartX, arrowStartY);
+            ctx.lineTo(arrowEndX, arrowEndY);
+            ctx.stroke();
+            
+            // Tête de flèche
+            ctx.fillStyle = '#00e5ff';
+            ctx.beginPath();
+            ctx.moveTo(arrowEndX, arrowEndY);
+            ctx.lineTo(arrowEndX - (v0 > 0 ? 14 : -14), arrowEndY - 7);
+            ctx.lineTo(arrowEndX - (v0 > 0 ? 14 : -14), arrowEndY + 7);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Label
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 13px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText('v', arrowEndX + (v0 > 0 ? 20 : -20), arrowEndY - 12);
+        }
+        
+        // VECTEUR ACCÉLÉRATION (nul en MRU, affiché grisé)
+        if (simRunning) {
+            const accelStartX = objX;
+            const accelStartY = objY - 70;
+            const accelEndX = objX; // nul
+            const accelEndY = objY - 70;
+            
+            ctx.beginPath();
+            ctx.strokeStyle = '#ff8c00';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([4, 4]);
+            ctx.moveTo(accelStartX - 15, accelStartY);
+            ctx.lineTo(accelStartX + 15, accelStartY);
+            ctx.stroke();
+            
+            ctx.fillStyle = '#ff8c00';
+            ctx.font = 'bold 11px JetBrains Mono';
+            ctx.textAlign = 'center';
+            ctx.fillText('a = 0', accelStartX, accelStartY - 10);
+            
+            ctx.setLineDash([]);
+        }
+    }
+    
+    // ===== 3D (simplifié) =====
+    let three = { renderer: null, scene: null, camera: null, car: null, velArrow: null, trajLine: null, rafId: null };
+    let orbit = { theta: Math.PI/4, phi: 0.5, r: 25, panX: 0, panY: 0, drag: false, btn: -1, sx: 0, sy: 0, pd: 0 };
+    let orbitTarget = new THREE.Vector3(0, 0.5, 0);
+    
+    function buildThree() {
+        const c3 = document.getElementById('threeCanvas');
+        const wrap = document.getElementById('canvas-wrap');
+        if (three.renderer) cancelAnimationFrame(three.rafId);
+        
+        const W = wrap.clientWidth, H = wrap.clientHeight;
+        three.renderer = new THREE.WebGLRenderer({ canvas: c3, antialias: true });
+        three.renderer.setSize(W, H);
+        three.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        three.renderer.shadowMap.enabled = true;
+        
+        three.scene = new THREE.Scene();
+        three.scene.background = new THREE.Color(0x0a0e1a);
+        three.camera = new THREE.PerspectiveCamera(55, W/H, 0.1, 300);
+        three.camera.position.set(15, 8, 15);
+        three.camera.lookAt(0, 0.5, 0);
+        
+        // Lumières
+        three.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        dirLight.position.set(10, 20, 10);
+        dirLight.castShadow = true;
+        three.scene.add(dirLight);
+        
+        // Sol
+        const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 10), new THREE.MeshStandardMaterial({ color: 0x1a2540 }));
+        ground.rotation.x = -Math.PI/2;
+        ground.position.y = -0.2;
+        ground.receiveShadow = true;
+        three.scene.add(ground);
+        
+        three.scene.add(new THREE.GridHelper(40, 20, 0x00e5ff, 0x2a3a5c));
+        
+        // Voiture
+        const car = new THREE.Group();
+        const body = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.8, 1.2), new THREE.MeshStandardMaterial({ color: 0x00e5ff }));
+        body.position.y = 0.4;
+        body.castShadow = true;
+        car.add(body);
+        
+        const roof = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.5, 0.8), new THREE.MeshStandardMaterial({ color: 0xffffff }));
+        roof.position.set(-0.2, 1.0, 0);
+        roof.castShadow = true;
+        car.add(roof);
+        
+        const wheelMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+        [[0.8,0.2,0.7],[-0.8,0.2,0.7],[0.8,0.2,-0.7],[-0.8,0.2,-0.7]].forEach(pos => {
+            const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.2,16), wheelMat);
+            wheel.rotation.z = Math.PI/2;
+            wheel.position.set(pos[0], pos[1], pos[2]);
+            wheel.castShadow = true;
+            car.add(wheel);
+        });
+        
+        three.scene.add(car);
+        three.car = car;
+        
+        three.velArrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,1.2,0), 2, 0x00e5ff);
+        three.scene.add(three.velArrow);
+        
+        three.trajLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0.5,0)]), new THREE.LineBasicMaterial({ color: 0xc084fc }));
+        three.scene.add(three.trajLine);
+        
+        setupOrbitControls(c3);
+        startRender3D();
+    }
+    
+    function setupOrbitControls(canvas) {
+        canvas.addEventListener('mousedown', e => { orbit.drag = true; orbit.btn = e.button; orbit.sx = e.clientX; orbit.sy = e.clientY; });
+        window.addEventListener('mousemove', e => {
+            if (!orbit.drag) return;
+            const dx = e.clientX - orbit.sx, dy = e.clientY - orbit.sy;
+            orbit.sx = e.clientX; orbit.sy = e.clientY;
+            if (orbit.btn === 0 && !e.shiftKey) {
+                orbit.theta -= dx * 0.006;
+                orbit.phi = Math.max(0.1, Math.min(Math.PI/2-0.1, orbit.phi + dy * 0.006));
+            } else {
+                orbit.panX -= dx * 0.02;
+                orbit.panY += dy * 0.02;
+            }
+            updateCam3D();
+        });
+        window.addEventListener('mouseup', () => orbit.drag = false);
+        canvas.addEventListener('wheel', e => { orbit.r = Math.max(8, Math.min(60, orbit.r + e.deltaY * 0.03)); updateCam3D(); e.preventDefault(); }, { passive: false });
+        canvas.addEventListener('touchstart', e => {
+            if (e.touches.length === 1) { orbit.drag = true; orbit.btn = 0; orbit.sx = e.touches[0].clientX; orbit.sy = e.touches[0].clientY; }
+            else if (e.touches.length === 2) orbit.pd = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+            e.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchmove', e => {
+            if (e.touches.length === 1 && orbit.drag) {
+                const dx = e.touches[0].clientX - orbit.sx, dy = e.touches[0].clientY - orbit.sy;
+                orbit.sx = e.touches[0].clientX; orbit.sy = e.touches[0].clientY;
+                orbit.theta -= dx * 0.007;
+                orbit.phi = Math.max(0.1, Math.min(Math.PI/2-0.1, orbit.phi + dy * 0.007));
+                updateCam3D();
+            } else if (e.touches.length === 2) {
+                const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+                orbit.r = Math.max(8, Math.min(60, orbit.r * (orbit.pd / d)));
+                orbit.pd = d;
+                updateCam3D();
+            }
+            e.preventDefault();
+        }, { passive: false });
+        canvas.addEventListener('touchend', () => orbit.drag = false);
+    }
+    
+    function updateCam3D() {
+        if (!three.camera) return;
+        const target = orbitTarget.clone().add(new THREE.Vector3(orbit.panX, 0, orbit.panY));
+        three.camera.position.set(
+            orbit.r * Math.sin(orbit.phi) * Math.sin(orbit.theta) + target.x,
+            orbit.r * Math.cos(orbit.phi) + target.y + 1,
+            orbit.r * Math.sin(orbit.phi) * Math.cos(orbit.theta) + target.z
+        );
+        three.camera.lookAt(target);
+    }
+    
+    function startRender3D() {
+        if (three.rafId) cancelAnimationFrame(three.rafId);
+        const render = () => { three.rafId = requestAnimationFrame(render); if (three.renderer && three.scene && three.camera) three.renderer.render(three.scene, three.camera); };
+        render();
+    }
+    
+    function updateThree() {
+        if (!three.car) return;
+        three.car.position.x = x;
+        if (Math.abs(v0) > 0.01) three.car.rotation.y = v0 > 0 ? 0 : Math.PI;
+        
+        if (three.velArrow) {
+            three.velArrow.position.copy(three.car.position.clone().add(new THREE.Vector3(0, 1.2, 0)));
+            if (Math.abs(v0) > 0.01 && simRunning) {
+                three.velArrow.visible = true;
+                three.velArrow.setDirection(new THREE.Vector3(v0 > 0 ? 1 : -1, 0, 0));
+                three.velArrow.setLength(Math.min(4, Math.abs(v0) * 0.8), 0.5, 0.3);
+            } else three.velArrow.visible = false;
+        }
+        
+        if (traj3Dpts.length >= 2 && three.trajLine) three.trajLine.geometry.setFromPoints(traj3Dpts);
+        orbitTarget.set(x, 0.5, 0);
+        updateCam3D();
+    }
+    
+    function idleThree() {
+        if (!three.car) return;
+        three.car.position.x = x0;
+        if (three.velArrow) three.velArrow.visible = false;
+        orbitTarget.set(x0, 0.5, 0);
+        updateCam3D();
+    }
+    
+    // ===== CHANGEMENT DE VUE =====
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const view = btn.dataset.view;
+            switchView(view === '3d');
+        });
+    });
+    
+    function switchView(to3d) {
+        currentView = to3d ? '3d' : '2d';
+        const c2 = document.getElementById('simCanvas');
+        const c3 = document.getElementById('threeCanvas');
+        const vi = document.getElementById('view-info');
+        const vl = document.getElementById('vector-legend');
+        const mb = document.getElementById('mode-badge');
+        const wrap = document.getElementById('canvas-wrap');
+        
+        if (to3d) {
+            c2.style.display = 'none';
+            c3.style.display = 'block';
+            wrap.classList.remove('mode2d');
+            vi.style.display = 'block';
+            vl.style.display = 'none';
+            mb.style.display = 'block';
+            if (!three.renderer) buildThree();
+            idleThree();
+        } else {
+            c2.style.display = 'block';
+            c3.style.display = 'none';
+            wrap.classList.add('mode2d');
+            vi.style.display = 'none';
+            vl.style.display = 'block';
+            mb.style.display = 'none';
+            resize2D();
+            draw2D(true);
+        }
+    }
+    
+    // ===== ONGLETS =====
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+            document.getElementById('ctrl-panel').classList.remove('collapsed');
+        });
+    });
+    
+    let panelCollapsed = false;
+    document.getElementById('tabs-collapse').addEventListener('click', () => {
+        panelCollapsed = !panelCollapsed;
+        document.getElementById('ctrl-panel').classList.toggle('collapsed', panelCollapsed);
+        document.getElementById('tabs-collapse').textContent = panelCollapsed ? '▲' : '▼';
+        setTimeout(resizeAll, 300);
+    });
+    
+    window.toggleLoi = function(header) {
+        header.closest('.loi-card').classList.toggle('open');
+    };
+    
+    // ===== RAPPORT =====
+    document.getElementById('export-csv').addEventListener('click', () => {
+        if (!recordedData.length) { toast(t('tNoData'), 'warn'); return; }
+        const headers = 'Temps (s),Position x (m),Vitesse v (m/s),Distance parcourue (m)';
+        const rows = recordedData.map(d => `${d.t},${d.x},${d.v},${d.dist}`);
+        const blob = new Blob([headers + '\n' + rows.join('\n')], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `simlab_mru_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        toast(t('tCsv'), 'success');
+    });
+    
+    document.getElementById('take-screenshot').addEventListener('click', () => {
+        const source = currentView === '3d' ? document.getElementById('threeCanvas') : canvas;
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = source.width;
+        tempCanvas.height = source.height;
+        const tempCtx = tempCanvas.getContext('2d');
+        tempCtx.fillStyle = '#0a0e1a';
+        tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+        tempCtx.drawImage(source, 0, 0);
+        const url = tempCanvas.toDataURL('image/png');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `simlab_mru_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.png`;
+        a.click();
+        toast(t('tShot'), 'success');
+    });
+    
+    // ===== REDIMENSIONNEMENT =====
+    function resizeAll() {
+        if (currentView === '2d') {
+            resize2D();
+            if (!simRunning) draw2D(true);
+            else draw2D();
+        } else if (three.renderer) {
+            const wrap = document.getElementById('canvas-wrap');
+            three.renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+            three.camera.aspect = wrap.clientWidth / wrap.clientHeight;
+            three.camera.updateProjectionMatrix();
+        }
+    }
+    
+    window.addEventListener('resize', () => setTimeout(resizeAll, 100));
+    
+    // ===== INITIALISATION =====
+    window.addEventListener('load', () => {
+        resize2D();
+        initState();
+        applyLang();
+    });
+</script>
+</body>
+</html>

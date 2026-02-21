@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0e1a">
+<title>Guide — Collision de Sphères · SimLab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0a0e1a; --surface:#111827; --surface2:#1a2540;
+  --border:rgba(99,179,237,0.15); --border2:rgba(99,179,237,0.35);
+  --blue:#63b3ed; --cyan:#00e5ff; --orange:#ff7043;
+  --green:#00e676; --yellow:#ffd740; --red:#ff1744;
+  --text:#e8f4fd; --muted:#7a9bbf;
+  --font:'Outfit',sans-serif; --mono:'JetBrains Mono',monospace;
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden;}
+
+/* BG ANIMÉ */
+body::before{content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse 60% 40% at 20% 20%,rgba(0,71,171,0.1) 0%,transparent 60%),
+             radial-gradient(ellipse 50% 30% at 80% 80%,rgba(0,180,216,0.07) 0%,transparent 60%);
+  pointer-events:none;z-index:0;}
+
+/* HEADER */
+header{position:sticky;top:0;z-index:100;padding:12px 20px;
+  background:rgba(10,14,26,0.95);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;
+  justify-content:space-between;gap:12px;}
+.logo{font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--text);}
+.logo span{color:var(--cyan);}
+.guide-badge{font-size:0.75rem;padding:4px 12px;border-radius:20px;
+  background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:var(--cyan);font-weight:600;}
+.btn-sim{padding:8px 16px;border-radius:8px;border:none;background:var(--green);
+  color:#000;font-family:var(--font);font-size:0.82rem;font-weight:700;
+  cursor:pointer;text-decoration:none;display:flex;align-items:center;gap:5px;transition:all 0.2s;}
+.btn-sim:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(0,230,118,0.3);}
+
+/* PROGRESS BAR */
+#progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--green));
+  z-index:200;transition:width 0.2s;width:0%;}
+
+/* LAYOUT */
+.page{position:relative;z-index:1;max-width:780px;margin:0 auto;padding:30px 20px 80px;}
+
+/* TABLE DES MATIÈRES */
+.toc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 24px;margin-bottom:40px;}
+.toc-title{font-size:0.75rem;color:var(--cyan);text-transform:uppercase;letter-spacing:0.1em;
+  font-weight:700;margin-bottom:14px;}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.toc-list a{text-decoration:none;color:var(--muted);font-size:0.88rem;display:flex;
+  align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid transparent;transition:all 0.2s;}
+.toc-list a:hover{color:var(--cyan);padding-left:6px;}
+.toc-num{font-family:var(--mono);font-size:0.75rem;color:var(--surface2);
+  background:var(--surface2);width:22px;height:22px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;border:1px solid var(--border2);
+  color:var(--cyan);flex-shrink:0;}
+
+/* SECTIONS */
+.section{margin-bottom:50px;scroll-margin-top:80px;}
+.section-tag{display:inline-block;padding:3px 12px;border:1px solid var(--border2);
+  border-radius:20px;font-size:0.72rem;color:var(--cyan);margin-bottom:10px;
+  text-transform:uppercase;letter-spacing:0.1em;font-weight:600;}
+.section h2{font-size:clamp(1.4rem,4vw,2rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:16px;}
+.section p{color:var(--muted);font-size:0.92rem;margin-bottom:14px;}
+.section p strong{color:var(--text);}
+
+/* CARDS INFO */
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 20px;margin-bottom:14px;}
+.info-card.blue  {border-left:3px solid var(--blue);}
+.info-card.orange{border-left:3px solid var(--orange);}
+.info-card.green {border-left:3px solid var(--green);}
+.info-card.yellow{border-left:3px solid var(--yellow);}
+.info-card.red   {border-left:3px solid var(--red);}
+.info-card h3{font-size:0.95rem;font-weight:700;margin-bottom:8px;}
+.info-card.blue h3  {color:var(--blue);}
+.info-card.orange h3{color:var(--orange);}
+.info-card.green h3 {color:var(--green);}
+.info-card.yellow h3{color:var(--yellow);}
+.info-card.red h3   {color:var(--red);}
+.info-card p{color:var(--muted);font-size:0.875rem;margin:0;}
+
+/* FORMULES */
+.formula-box{background:rgba(0,0,0,0.35);border:1px solid var(--border2);border-radius:10px;
+  padding:14px 18px;margin:14px 0;overflow-x:auto;}
+.formula-box .formula{font-family:var(--mono);font-size:0.95rem;color:var(--yellow);
+  white-space:nowrap;display:block;margin-bottom:6px;}
+.formula-box .desc{font-size:0.78rem;color:var(--muted);}
+
+/* ÉTAPES */
+.steps{display:flex;flex-direction:column;gap:12px;margin:16px 0;}
+.step{display:flex;gap:14px;align-items:flex-start;}
+.step-num{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:#000;font-weight:800;font-size:0.85rem;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;margin-top:2px;}
+.step-body h4{font-size:0.9rem;font-weight:700;margin-bottom:4px;color:var(--text);}
+.step-body p{font-size:0.82rem;color:var(--muted);margin:0;}
+
+/* COMPARATIF TABLE */
+.compare-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:0.83rem;}
+.compare-table th{background:var(--surface2);color:var(--cyan);padding:10px 14px;
+  text-align:left;font-weight:700;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.07em;}
+.compare-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted);}
+.compare-table td:first-child{color:var(--text);font-weight:600;}
+.compare-table tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:0.72rem;font-weight:700;}
+.b-green {background:rgba(0,230,118,0.15);color:var(--green);}
+.b-orange{background:rgba(255,112,67,0.15);color:var(--orange);}
+.b-red   {background:rgba(255,23,68,0.15); color:var(--red);}
+.b-blue  {background:rgba(99,179,237,0.15);color:var(--blue);}
+
+/* QUIZ INTERACTIF */
+.quiz-card{background:var(--surface);border:1px solid var(--border2);border-radius:var(--radius);
+  padding:20px;margin-bottom:12px;}
+.quiz-q{font-size:0.92rem;font-weight:600;margin-bottom:14px;color:var(--text);}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{padding:10px 14px;border-radius:8px;border:1px solid var(--border);
+  background:var(--surface2);color:var(--muted);cursor:pointer;
+  font-size:0.85rem;font-family:var(--font);text-align:left;
+  transition:all 0.2s;width:100%;}
+.quiz-opt:hover{border-color:var(--border2);color:var(--text);}
+.quiz-opt.correct{background:rgba(0,230,118,0.15);border-color:var(--green);color:var(--green);}
+.quiz-opt.wrong  {background:rgba(255,23,68,0.12); border-color:var(--red);color:var(--red);}
+.quiz-feedback{font-size:0.82rem;margin-top:10px;padding:8px 12px;border-radius:8px;display:none;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.ok  {background:rgba(0,230,118,0.1);color:var(--green);}
+.quiz-feedback.ko  {background:rgba(255,23,68,0.1); color:var(--red);}
+
+/* MINI DEMO CANVAS */
+.demo-wrap{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;margin:16px 0;position:relative;}
+.demo-canvas{width:100%;height:160px;display:block;}
+.demo-label{position:absolute;top:8px;left:12px;font-size:0.7rem;color:var(--muted);
+  background:rgba(10,14,26,0.8);padding:3px 8px;border-radius:10px;}
+.demo-ctrl{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.demo-btn{padding:6px 12px;border-radius:6px;border:1px solid var(--border);
+  background:var(--surface);color:var(--muted);font-size:0.75rem;font-weight:600;
+  cursor:pointer;font-family:var(--font);transition:all 0.2s;}
+.demo-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.demo-btn.active{background:rgba(0,229,255,0.1);border-color:var(--cyan);color:var(--cyan);}
+
+/* CONSEIL BOX */
+.tip-box{display:flex;gap:12px;padding:14px 16px;background:rgba(0,229,255,0.06);
+  border:1px solid rgba(0,229,255,0.2);border-radius:10px;margin:14px 0;}
+.tip-icon{font-size:1.3rem;flex-shrink:0;}
+.tip-body{font-size:0.83rem;color:var(--muted);}
+.tip-body strong{color:var(--cyan);}
+
+/* NAVIGATION BAS */
+.nav-bottom{display:flex;justify-content:space-between;gap:12px;margin-top:40px;flex-wrap:wrap;}
+.nav-btn{padding:12px 20px;border-radius:10px;border:1px solid var(--border2);
+  background:var(--surface);color:var(--text);text-decoration:none;
+  font-size:0.85rem;font-weight:600;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.nav-btn:hover{background:var(--surface2);border-color:var(--cyan);}
+.nav-btn.primary{background:linear-gradient(135deg,rgba(0,71,171,0.4),rgba(0,180,216,0.3));border-color:var(--cyan);}
+
+/* SCROLL TO TOP */
+#scrolltop{position:fixed;bottom:24px;right:24px;width:42px;height:42px;
+  border-radius:50%;background:var(--surface2);border:1px solid var(--border2);
+  color:var(--cyan);font-size:1rem;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;opacity:0;transition:all 0.3s;z-index:100;}
+#scrolltop.show{opacity:1;}
+#scrolltop:hover{background:rgba(0,229,255,0.1);}
+
+@media(max-width:500px){
+  .page{padding:20px 14px 60px;}
+  .compare-table{font-size:0.75rem;}
+  .compare-table th,.compare-table td{padding:8px 10px;}
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- HEADER -->
+<header>
+  <a href="index.html" class="logo">⚗️ Sim<span>Lab</span></a>
+  <span class="guide-badge">📖 Guide Interactif</span>
+  <a href="collision.html" class="btn-sim">🚀 Lancer la Simulation</a>
+</header>
+
+<div class="page">
+
+  <!-- HERO -->
+  <div class="section" style="text-align:center;padding:20px 0 10px;">
+    <div class="section-tag">Mécanique · Physique</div>
+    <h2 style="font-size:clamp(1.8rem,6vw,2.8rem);">Collision de Sphères</h2>
+    <p style="max-width:560px;margin:0 auto 20px;font-size:0.95rem;">
+      Ce guide t'explique tout ce que tu dois savoir pour utiliser la simulation,
+      comprendre la physique derrière et réussir tes exercices de labo.
+    </p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <span style="font-size:0.78rem;padding:4px 12px;border-radius:20px;background:rgba(0,230,118,0.1);border:1px solid rgba(0,230,118,0.25);color:var(--green);">⏱ Lecture 8 min</span>
+      <span style="font-size:0.78rem;padding:4px 12px;border-radius:20px;background:rgba(99,179,237,0.1);border:1px solid rgba(99,179,237,0.25);color:var(--blue);">🎓 Lycée · Université</span>
+      <span style="font-size:0.78rem;padding:4px 12px;border-radius:20px;background:rgba(255,215,64,0.1);border:1px solid rgba(255,215,64,0.25);color:var(--yellow);">📐 4 Quiz inclus</span>
+    </div>
+  </div>
+
+  <!-- TABLE DES MATIÈRES -->
+  <div class="toc">
+    <div class="toc-title">📋 Sommaire</div>
+    <ul class="toc-list">
+      <li><a href="#intro"><span class="toc-num">1</span>C'est quoi une collision ?</a></li>
+      <li><a href="#types"><span class="toc-num">2</span>Les 3 types de collision</a></li>
+      <li><a href="#formules"><span class="toc-num">3</span>Formules essentielles</a></li>
+      <li><a href="#utiliser"><span class="toc-num">4</span>Comment utiliser la simulation</a></li>
+      <li><a href="#demo"><span class="toc-num">5</span>Démo interactive</a></li>
+      <li><a href="#experiences"><span class="toc-num">6</span>Expériences à réaliser</a></li>
+      <li><a href="#quiz"><span class="toc-num">7</span>Quiz de compréhension</a></li>
+    </ul>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 1 : INTRO                        -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section" id="intro">
+    <div class="section-tag">Section 1</div>
+    <h2>C'est quoi une collision ?</h2>
+    <p>Une <strong>collision</strong> est une interaction de courte durée entre deux corps qui se rapprochent et exercent des forces importantes l'un sur l'autre pendant un bref instant.</p>
+
+    <div class="info-card blue">
+      <h3>⚡ Principe fondamental</h3>
+      <p>Pendant la collision, les forces extérieures (frottements, pesanteur…) sont négligeables devant les forces d'interaction entre les corps. Le système est donc considéré comme <strong>isolé</strong>.</p>
+    </div>
+
+    <p>En physique, on distingue deux grandeurs clés qui caractérisent le mouvement :</p>
+
+    <div class="formula-box">
+      <span class="formula">p = m × v</span>
+      <span class="desc">Quantité de mouvement (kg·m/s) — p : quantité de mvt · m : masse (kg) · v : vitesse (m/s)</span>
+    </div>
+    <div class="formula-box">
+      <span class="formula">Ec = ½ × m × v²</span>
+      <span class="desc">Énergie cinétique (Joules) — mesure l'énergie due au mouvement du corps</span>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">💡</span>
+      <div class="tip-body"><strong>À retenir :</strong> La quantité de mouvement est toujours conservée lors d'une collision. L'énergie cinétique, elle, peut être perdue (transformée en chaleur, son, déformation).</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 2 : TYPES                        -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section" id="types">
+    <div class="section-tag">Section 2</div>
+    <h2>Les 3 types de collision</h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Coefficient e</th>
+          <th>Énergie Ec</th>
+          <th>Exemple réel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>🔵 Élastique</td>
+          <td><span class="badge b-green">e = 1</span></td>
+          <td><span class="badge b-green">Conservée</span></td>
+          <td>Billes acier, neutrons</td>
+        </tr>
+        <tr>
+          <td>🟠 Inélastique</td>
+          <td><span class="badge b-orange">0 &lt; e &lt; 1</span></td>
+          <td><span class="badge b-orange">Partiellement perdue</span></td>
+          <td>Balle de tennis, voitures</td>
+        </tr>
+        <tr>
+          <td>⚫ Parfaitement inél.</td>
+          <td><span class="badge b-red">e = 0</span></td>
+          <td><span class="badge b-red">Max. perdue</span></td>
+          <td>Argile, crash test, fusion</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="info-card green">
+      <h3>✅ Collision élastique</h3>
+      <p>Les deux corps rebondissent sans déformation permanente. L'énergie cinétique totale avant = après. C'est un modèle idéal (billes en acier trempé s'en approchent).</p>
+    </div>
+    <div class="info-card orange">
+      <h3>⚠️ Collision inélastique partielle</h3>
+      <p>Les corps se déforment légèrement et reprennent à peu près leur forme. Une partie de l'énergie est dissipée en chaleur et son. C'est le cas le plus fréquent dans la réalité.</p>
+    </div>
+    <div class="info-card red">
+      <h3>🔥 Collision parfaitement inélastique</h3>
+      <p>Les deux corps restent collés ensemble après la collision et se déplacent à la même vitesse. C'est la perte d'énergie maximale (compatible avec la conservation de la quantité de mouvement).</p>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">🔬</span>
+      <div class="tip-body"><strong>Coefficient de restitution e :</strong> mesure le rapport des vitesses relatives après/avant. Plus e est proche de 1, plus la collision est élastique. On le mesure expérimentalement en labo.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 3 : FORMULES                     -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section" id="formules">
+    <div class="section-tag">Section 3</div>
+    <h2>Formules essentielles</h2>
+
+    <div class="info-card yellow">
+      <h3>📌 Conservation de la quantité de mouvement</h3>
+      <p>Valable pour TOUS les types de collision :</p>
+    </div>
+    <div class="formula-box">
+      <span class="formula">m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'</span>
+      <span class="desc">v₁, v₂ = vitesses avant · v₁', v₂' = vitesses après · m₁, m₂ = masses</span>
+    </div>
+
+    <div class="info-card blue">
+      <h3>🔵 Vitesses après collision élastique</h3>
+    </div>
+    <div class="formula-box">
+      <span class="formula">v₁' = [(m₁-m₂)v₁ + 2m₂v₂] / (m₁+m₂)</span>
+      <span class="desc">Vitesse de la sphère 1 après la collision élastique</span>
+    </div>
+    <div class="formula-box">
+      <span class="formula">v₂' = [(m₂-m₁)v₂ + 2m₁v₁] / (m₁+m₂)</span>
+      <span class="desc">Vitesse de la sphère 2 après la collision élastique</span>
+    </div>
+
+    <div class="info-card red">
+      <h3>⚫ Vitesse après collision parfaitement inélastique</h3>
+    </div>
+    <div class="formula-box">
+      <span class="formula">v' = (m₁v₁ + m₂v₂) / (m₁+m₂)</span>
+      <span class="desc">Vitesse commune des deux corps fusionnés</span>
+    </div>
+
+    <div class="info-card orange">
+      <h3>📐 Coefficient de restitution</h3>
+    </div>
+    <div class="formula-box">
+      <span class="formula">e = |v₂' - v₁'| / |v₁ - v₂|</span>
+      <span class="desc">Rapport des vitesses relatives de séparation / approche · e ∈ [0, 1]</span>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">📝</span>
+      <div class="tip-body"><strong>Convention de signe :</strong> dans la simulation, les vitesses vers la droite sont <strong style="color:var(--green);">positives (+)</strong> et vers la gauche <strong style="color:var(--red);">négatives (−)</strong>. Respecte bien ce signe dans tes calculs !</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 4 : UTILISER LA SIMULATION       -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section" id="utiliser">
+    <div class="section-tag">Section 4</div>
+    <h2>Comment utiliser la simulation</h2>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Choisir le type de collision</h4>
+          <p>En haut de l'onglet Paramètres, sélectionne <em>Élastique</em>, <em>Inélastique</em> ou <em>Parfaitement inélastique</em> selon l'expérience que tu veux réaliser.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Régler les paramètres des sphères</h4>
+          <p>Utilise les sliders pour ajuster la <strong>masse</strong> (0.5 à 5 kg), la <strong>vitesse initiale</strong> (−8 à +8 m/s) et le <strong>rayon</strong> de chaque sphère. Les flèches bleues/oranges indiquent la vitesse en temps réel.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Lancer la simulation</h4>
+          <p>Clique sur <strong style="color:var(--green);">▶ Lancer</strong>. Observe les sphères se déplacer, les flèches changer de direction et les particules d'impact s'afficher.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Lire les résultats</h4>
+          <p>Le panneau résultats (haut droit) affiche automatiquement : la variation de quantité de mouvement Δp, l'énergie cinétique avant/après, et le type de collision détecté.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Consulter les mesures détaillées</h4>
+          <p>Va dans l'onglet <strong>📐 Mesures</strong> pour voir p₁, p₂, Ec₁, Ec₂ avant et après, ainsi que les vitesses finales v₁' et v₂'.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Contrôle de la caméra 3D</h4>
+          <p>Sur mobile : <strong>1 doigt</strong> pour tourner autour de la scène · <strong>2 doigts (pincer)</strong> pour zoomer. Sur PC : <strong>clic-glisser</strong> pour tourner · <strong>molette</strong> pour zoomer.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <span class="tip-icon">🎯</span>
+      <div class="tip-body"><strong>Astuce :</strong> Mets v₂ = 0 (sphère 2 au repos) pour reproduire les expériences classiques du cours. C'est le cas le plus simple à analyser !</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 5 : DEMO INTERACTIVE             -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section" id="demo">
+    <div class="section-tag">Section 5</div>
+    <h2>Démo interactive</h2>
+    <p>Visualise ci-dessous le comportement des sphères selon le type de collision. Clique sur un type pour voir la différence :</p>
+
+    <div class="demo-wrap">
+      <canvas id="demo-canvas" class="demo-canvas"></canvas>
+      <div class="demo-label" id="demo-label">🔵 Élastique — e = 1</div>
+      <div class="demo-ctrl">
+        <button class="demo-btn active" onclick="setDemo('elastique', this)">🔵 Élastique</button>
+        <button class="demo-btn" onclick="setDemo('inelastique', this)">🟠 Inélastique</button>
+        <button class="demo-btn" onclick="setDemo('parfait', this)">⚫ Parfait inél.</button>
+        <button class="demo-btn" onclick="replayDemo()">↺ Rejouer</button>
+      </div>
+    </div>
+
+    <div class="info-card blue" id="demo-info-elastique">
+      <h3>🔵 Ce que tu observes : Élastique</h3>
+      <p>Les deux sphères rebondissent. Si m₁ = m₂, elles échangent exactement leurs vitesses (sphère 1 s'arrête, sphère 2 part à la même vitesse). C'est le pendule de Newton !</p>
+    </div>
+    <div class="info-card orange" id="demo-info-inelastique" style="display:none;">
+      <h3>🟠 Ce que tu observes : Inélastique partielle</h3>
+      <p>Les sphères rebondissent mais avec moins d'élan qu'avant. Une partie de l'énergie a été absorbée. Les vitesses finales sont entre celles de l'élastique et du parfaitement inélastique.</p>
+    </div>
+    <div class="info-card red" id="demo-info-parfait" style="display:none;">
+      <h3>⚫ Ce que tu observes : Parfaitement inélastique</h3>
+      <p>Les deux sphères s'accrochent et repartent ensemble à une vitesse unique v'. La perte d'énergie est maximale. La couleur change pour indiquer la fusion.</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 6 : EXPÉRIENCES                  -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section" id="experiences">
+    <div class="section-tag">Section 6</div>
+    <h2>Expériences à réaliser</h2>
+    <p>Voici 4 expériences guidées à faire dans la simulation pour approfondir ta compréhension :</p>
+
+    <div class="info-card blue" style="margin-bottom:10px;">
+      <h3>🧪 Expérience 1 — Masses égales, collision élastique</h3>
+      <p>Règle m₁ = m₂ = 1 kg · v₁ = +4 m/s · v₂ = 0 m/s · Type : Élastique.<br>
+      <strong>Observation attendue :</strong> v₁' = 0 m/s et v₂' = +4 m/s. La sphère 1 s'arrête complètement !</p>
+    </div>
+    <div class="info-card orange" style="margin-bottom:10px;">
+      <h3>🧪 Expérience 2 — Masse 1 >> Masse 2, élastique</h3>
+      <p>Règle m₁ = 5 kg · m₂ = 0.5 kg · v₁ = +3 m/s · v₂ = 0.<br>
+      <strong>Observation attendue :</strong> La sphère lourde continue presque sans changer · la légère part très vite (~+6 m/s).</p>
+    </div>
+    <div class="info-card green" style="margin-bottom:10px;">
+      <h3>🧪 Expérience 3 — Choc frontal, vitesses opposées</h3>
+      <p>Règle m₁ = m₂ = 2 kg · v₁ = +3 m/s · v₂ = −3 m/s · Type : Élastique.<br>
+      <strong>Observation attendue :</strong> Les sphères repartent exactement en sens inverse : v₁' = −3 m/s · v₂' = +3 m/s.</p>
+    </div>
+    <div class="info-card red" style="margin-bottom:10px;">
+      <h3>🧪 Expérience 4 — Fusion totale</h3>
+      <p>Règle m₁ = 2 kg · v₁ = +4 m/s · m₂ = 3 kg · v₂ = −1 m/s · Type : Parfaitement inélastique.<br>
+      <strong>Calcule d'abord :</strong> v' = (2×4 + 3×(−1)) / (2+3) = 5/5 = <strong>+1 m/s</strong>. Vérifie avec la simulation !</p>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════ -->
+  <!-- SECTION 7 : QUIZ                         -->
+  <!-- ════════════════════════════════════════ -->
+  <div class="section" id="quiz">
+    <div class="section-tag">Section 7</div>
+    <h2>Quiz de compréhension</h2>
+    <p>Teste tes connaissances avec ces 4 questions :</p>
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="quiz-q">❓ Q1 — Lors d'une collision élastique entre deux corps, qu'est-ce qui est conservé ?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 'q1')">A. Seulement la quantité de mouvement</button>
+        <button class="quiz-opt" onclick="answer(this, true,  'q1')">B. La quantité de mouvement ET l'énergie cinétique</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q1')">C. Seulement l'énergie cinétique</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q1')">D. Rien n'est conservé</button>
+      </div>
+      <div class="quiz-feedback" id="fb-q1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="quiz-q">❓ Q2 — Deux sphères identiques (m = 1 kg) : v₁ = +5 m/s, v₂ = 0. Collision élastique. Quelle est v₁' après ?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 'q2')">A. +5 m/s</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q2')">B. +2.5 m/s</button>
+        <button class="quiz-opt" onclick="answer(this, true,  'q2')">C. 0 m/s</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q2')">D. −5 m/s</button>
+      </div>
+      <div class="quiz-feedback" id="fb-q2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="quiz-q">❓ Q3 — Le coefficient de restitution e d'une collision parfaitement inélastique vaut :</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, false, 'q3')">A. e = 1</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q3')">B. e = 0.5</button>
+        <button class="quiz-opt" onclick="answer(this, true,  'q3')">C. e = 0</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q3')">D. e > 1</button>
+      </div>
+      <div class="quiz-feedback" id="fb-q3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="quiz-q">❓ Q4 — m₁ = 3 kg, v₁ = +2 m/s · m₂ = 1 kg, v₂ = −2 m/s. Collision parfaitement inélastique. Quelle est la vitesse commune v' ?</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(this, true,  'q4')">A. +1 m/s</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q4')">B. 0 m/s</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q4')">C. +2 m/s</button>
+        <button class="quiz-opt" onclick="answer(this, false, 'q4')">D. −1 m/s</button>
+      </div>
+      <div class="quiz-feedback" id="fb-q4"></div>
+    </div>
+
+    <div id="score-box" style="display:none;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--radius);padding:16px;text-align:center;margin-top:16px;">
+      <div style="font-size:2rem;margin-bottom:6px;" id="score-emoji">🎉</div>
+      <div style="font-family:var(--mono);font-size:1.4rem;font-weight:700;color:var(--yellow);" id="score-val">0/4</div>
+      <div style="font-size:0.85rem;color:var(--muted);margin-top:4px;" id="score-msg"></div>
+    </div>
+  </div>
+
+  <!-- NAVIGATION BAS -->
+  <div class="nav-bottom">
+    <a href="index.html" class="nav-btn">← Retour au catalogue</a>
+    <a href="collision.html" class="nav-btn primary">🚀 Lancer la simulation →</a>
+  </div>
+
+</div><!-- fin .page -->
+
+<button id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ═══════════════════════════════════════
+//  PROGRESS BAR
+// ═══════════════════════════════════════
+window.addEventListener('scroll', () => {
+  const max = document.body.scrollHeight - window.innerHeight;
+  const pct = max > 0 ? (window.scrollY / max) * 100 : 0;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('scrolltop').classList.toggle('show', window.scrollY > 300);
+});
+
+// ═══════════════════════════════════════
+//  DEMO CANVAS 2D
+// ═══════════════════════════════════════
+const demoCanvas = document.getElementById('demo-canvas');
+const ctx = demoCanvas.getContext('2d');
+let demoType = 'elastique';
+let demoAnim = null;
+let demoState = {};
+
+function resizeDemo() {
+  demoCanvas.width  = demoCanvas.offsetWidth;
+  demoCanvas.height = demoCanvas.offsetHeight;
+}
+resizeDemo();
+window.addEventListener('resize', () => { resizeDemo(); resetDemoState(); drawDemo(); });
+
+function resetDemoState() {
+  const W = demoCanvas.width, H = demoCanvas.height;
+  const r1 = 28, r2 = 34;
+  const m1 = 1.5, m2 = 1.5;
+  const v1 = 3.5, v2 = -2.5;
+  let v1a, v2a;
+
+  if (demoType === 'elastique') {
+    v1a = ((m1-m2)*v1 + 2*m2*v2) / (m1+m2);
+    v2a = ((m2-m1)*v2 + 2*m1*v1) / (m1+m2);
+  } else if (demoType === 'parfait') {
+    const vf = (m1*v1 + m2*v2)/(m1+m2);
+    v1a = vf; v2a = vf;
+  } else {
+    const e = 0.6;
+    v1a = (m1*v1 + m2*v2 + m2*e*(v2-v1))/(m1+m2);
+    v2a = (m1*v1 + m2*v2 + m1*e*(v1-v2))/(m1+m2);
+  }
+
+  demoState = {
+    x1: W*0.28, x2: W*0.72, y: H/2,
+    r1, r2, m1, m2,
+    vx1: v1*1.8, vx2: v2*1.8,
+    v1a: v1a*1.8, v2a: v2a*1.8,
+    collided: false,
+    phase: 'approach', // approach -> collide -> separate -> done
+    t: 0,
+  };
+}
+
+function drawSphere(x, y, r, color, glow) {
+  const grad = ctx.createRadialGradient(x-r*0.3, y-r*0.3, r*0.1, x, y, r);
+  grad.addColorStop(0, lighten(color));
+  grad.addColorStop(1, color);
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI*2);
+  if (glow) {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 18;
+  }
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.shadowBlur = 0;
+}
+
+function lighten(hex) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.min(255, ((n>>16)&0xff) + 80);
+  const g = Math.min(255, ((n>>8)&0xff) + 80);
+  const b = Math.min(255, (n&0xff) + 80);
+  return `rgb(${r},${g},${b})`;
+}
+
+function drawArrow(x, y, vx, color) {
+  if (Math.abs(vx) < 0.3) return;
+  const dir = vx > 0 ? 1 : -1;
+  const len = Math.min(Math.abs(vx) * 12, 70);
+  const ax = x + dir * 36;
+  const ex = ax + dir * len;
+  ctx.beginPath();
+  ctx.moveTo(ax, y);
+  ctx.lineTo(ex, y);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  // Tête flèche
+  ctx.beginPath();
+  ctx.moveTo(ex, y);
+  ctx.lineTo(ex - dir*10, y-6);
+  ctx.lineTo(ex - dir*10, y+6);
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function drawDemo() {
+  const W = demoCanvas.width, H = demoCanvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Fond
+  ctx.fillStyle = '#0d1829';
+  ctx.fillRect(0, 0, W, H);
+
+  // Rail
+  ctx.beginPath();
+  ctx.moveTo(10, H/2+20); ctx.lineTo(W-10, H/2+20);
+  ctx.strokeStyle = '#1a3a5c'; ctx.lineWidth = 3; ctx.stroke();
+  // Marqueurs
+  for(let x=50; x<W-40; x+=60) {
+    ctx.beginPath();
+    ctx.moveTo(x, H/2+14); ctx.lineTo(x, H/2+26);
+    ctx.strokeStyle = '#2a4a7a'; ctx.lineWidth = 1.5; ctx.stroke();
+  }
+
+  const s = demoState;
+  const col1 = demoType==='parfait' && s.collided ? '#9a5fc7' : '#4a9eff';
+  const col2 = demoType==='parfait' && s.collided ? '#9a5fc7' : '#ff6b35';
+
+  drawSphere(s.x1, s.y, s.r1, col1, true);
+  drawSphere(s.x2, s.y, s.r2, col2, true);
+  drawArrow(s.x1, s.y - s.r1 - 8, s.vx1, '#63b3ed');
+  drawArrow(s.x2, s.y - s.r2 - 8, s.vx2, '#ff7043');
+}
+
+function stepDemo() {
+  const s = demoState;
+  const dt = 0.016;
+  s.t += dt;
+
+  if (!s.collided) {
+    s.x1 += s.vx1 * dt * 55;
+    s.x2 += s.vx2 * dt * 55;
+    const dist = s.x2 - s.x1;
+    if (dist <= s.r1 + s.r2) {
+      s.collided = true;
+      s.vx1 = s.v1a;
+      s.vx2 = s.v2a;
+    }
+  } else {
+    s.x1 += s.vx1 * dt * 55;
+    s.x2 += s.vx2 * dt * 55;
+  }
+
+  drawDemo();
+
+  // Stop si hors canvas
+  const W = demoCanvas.width;
+  if (s.x1 < -50 || s.x1 > W+50 || s.x2 < -50 || s.x2 > W+50) {
+    if (s.x1 < -50 && s.x2 > W+50) {
+      cancelAnimationFrame(demoAnim);
+      return;
+    }
+  }
+  demoAnim = requestAnimationFrame(stepDemo);
+}
+
+function replayDemo() {
+  cancelAnimationFrame(demoAnim);
+  resetDemoState();
+  demoAnim = requestAnimationFrame(stepDemo);
+}
+
+function setDemo(type, btn) {
+  demoType = type;
+  document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const labels = { elastique:'🔵 Élastique — e = 1', inelastique:'🟠 Inélastique — e = 0.6', parfait:'⚫ Parfaitement inélastique — e = 0' };
+  document.getElementById('demo-label').textContent = labels[type];
+  ['elastique','inelastique','parfait'].forEach(t => {
+    document.getElementById('demo-info-'+t).style.display = t===type ? 'block' : 'none';
+  });
+  replayDemo();
+}
+
+// Lancer la démo au chargement
+resetDemoState();
+demoAnim = requestAnimationFrame(stepDemo);
+
+// ═══════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════
+const feedback = {
+  q1: { ok:'✅ Exact ! Dans une collision élastique, les deux grandeurs sont conservées.', ko:'❌ Non. Dans une collision élastique, DEUX grandeurs sont conservées : la quantité de mouvement ET l\'énergie cinétique.' },
+  q2: { ok:'✅ Parfait ! Quand m₁ = m₂ en élastique, les vitesses s\'échangent : v₁\' = 0 et v₂\' = +5 m/s.', ko:'❌ Non. Quand les masses sont égales en collision élastique, les vitesses s\'échangent : v₁\' = 0 m/s.' },
+  q3: { ok:'✅ Correct ! e = 0 signifie que les corps s\'accrochent — vitesse relative de séparation nulle.', ko:'❌ Non. Pour une collision parfaitement inélastique, e = 0 car les corps ne se séparent plus.' },
+  q4: { ok:'✅ Bravo ! v\' = (3×2 + 1×(−2))/(3+1) = (6−2)/4 = 4/4 = +1 m/s ✓', ko:'❌ Non. Applique : v\' = (m₁v₁ + m₂v₂)/(m₁+m₂) = (3×2 + 1×(−2))/(3+1) = 4/4 = +1 m/s.' },
+};
+let scores = {}, total = 0;
+
+function answer(btn, correct, qid) {
+  if (scores[qid] !== undefined) return;
+  scores[qid] = correct ? 1 : 0;
+  total = Object.values(scores).reduce((a,b) => a+b, 0);
+
+  const opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(o => o.disabled = true);
+  btn.classList.add(correct ? 'correct' : 'wrong');
+
+  const fb = document.getElementById('fb-' + qid);
+  fb.textContent = correct ? feedback[qid].ok : feedback[qid].ko;
+  fb.className = 'quiz-feedback show ' + (correct ? 'ok' : 'ko');
+
+  if (Object.keys(scores).length === 4) {
+    const box = document.getElementById('score-box');
+    box.style.display = 'block';
+    document.getElementById('score-val').textContent = total + '/4';
+    const emojis = ['😅','🙂','😊','🎉','🏆'];
+    document.getElementById('score-emoji').textContent = emojis[total];
+    const msgs = [
+      'Relis le guide, tu vas y arriver !',
+      'Pas mal ! Quelques révisions et tu seras au top.',
+      'Bien joué ! Encore un effort pour la perfection.',
+      'Excellent ! Tu maîtrises très bien les collisions !',
+      'Parfait ! Tu es prêt pour le labo réel ! 🔬'
+    ];
+    document.getElementById('score-msg').textContent = msgs[total];
+    box.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+}
+</script>
+</body>
+</html>

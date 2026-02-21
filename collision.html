@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0e1a">
+<title>Collision — SimLab | Edmond TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2540;
+  --border: rgba(99,179,237,0.15);
+  --border2: rgba(99,179,237,0.35);
+  --blue: #63b3ed;
+  --cyan: #00e5ff;
+  --orange: #ff7043;
+  --green: #00e676;
+  --yellow: #ffd740;
+  --red: #ff1744;
+  --text: #e8f4fd;
+  --muted: #7a9bbf;
+  --font: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 12px;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body { width:100%; height:100%; overflow:hidden; background:var(--bg); font-family:var(--font); color:var(--text); }
+
+/* LAYOUT */
+#app { display:flex; flex-direction:column; height:100vh; height:100dvh; }
+
+/* HEADER */
+header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 16px; background:rgba(10,14,26,0.95);
+  border-bottom:1px solid var(--border); flex-shrink:0; gap:8px;
+  backdrop-filter:blur(12px); z-index:100;
+}
+.logo { font-weight:800; font-size:1.1rem; display:flex; align-items:center; gap:6px; }
+.logo span { color:var(--cyan); }
+.sim-title { font-size:0.85rem; color:var(--muted); font-weight:500; }
+.header-btns { display:flex; gap:8px; }
+.btn-reset, .btn-play {
+  padding:7px 14px; border-radius:8px; border:none; font-family:var(--font);
+  font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.2s;
+  display:flex; align-items:center; gap:5px;
+}
+.btn-reset { background:var(--surface2); color:var(--muted); border:1px solid var(--border); }
+.btn-reset:hover { color:var(--text); border-color:var(--border2); }
+.btn-play { background:var(--green); color:#000; min-width:80px; justify-content:center; }
+.btn-play.running { background:var(--orange); }
+.btn-play:active { transform:scale(0.95); }
+
+/* CANVAS ZONE */
+#canvas-wrap {
+  flex:1; position:relative; overflow:hidden; touch-action:none;
+}
+#three-canvas { width:100% !important; height:100% !important; display:block; }
+
+/* OVERLAY LABELS */
+.label-overlay {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  pointer-events:none; z-index:10;
+}
+
+/* COLLISION FLASH */
+#flash {
+  position:absolute; inset:0; background:rgba(255,255,255,0);
+  pointer-events:none; z-index:20; transition:background 0.05s;
+}
+#flash.bang { background:rgba(255,200,0,0.18); }
+
+/* RESULT PANEL */
+#result-panel {
+  position:absolute; top:12px; right:12px;
+  background:rgba(10,14,26,0.92); border:1px solid var(--border2);
+  border-radius:var(--radius); padding:12px 14px; z-index:30;
+  backdrop-filter:blur(16px); min-width:160px;
+  transform:translateX(200px); transition:transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+#result-panel.show { transform:translateX(0); }
+#result-panel h4 { font-size:0.75rem; color:var(--cyan); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:8px; }
+.res-row { display:flex; justify-content:space-between; gap:12px; font-size:0.78rem; margin-bottom:4px; }
+.res-row .label { color:var(--muted); }
+.res-row .val { font-family:var(--mono); font-weight:600; color:var(--yellow); }
+.res-type { font-size:0.72rem; padding:3px 8px; border-radius:20px; font-weight:700; margin-top:6px; text-align:center; }
+.res-elastic { background:rgba(0,230,118,0.15); color:var(--green); border:1px solid rgba(0,230,118,0.3); }
+.res-inelastic { background:rgba(255,112,67,0.15); color:var(--orange); border:1px solid rgba(255,112,67,0.3); }
+.res-parfait { background:rgba(0,229,255,0.15); color:var(--cyan); border:1px solid rgba(0,229,255,0.3); }
+
+/* BOTTOM PANEL - CONTROLS */
+#controls {
+  background:var(--surface); border-top:1px solid var(--border);
+  flex-shrink:0; z-index:50; max-height:45vh; overflow-y:auto;
+}
+
+/* TABS */
+.tabs { display:flex; border-bottom:1px solid var(--border); }
+.tab {
+  flex:1; padding:10px 8px; text-align:center; font-size:0.78rem;
+  font-weight:600; color:var(--muted); cursor:pointer; border:none;
+  background:none; font-family:var(--font); transition:all 0.2s;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+}
+.tab.active { color:var(--cyan); border-bottom-color:var(--cyan); }
+
+.tab-content { display:none; padding:12px 14px; }
+.tab-content.active { display:block; }
+
+/* SPHERES GRID */
+.spheres-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px; }
+.sphere-card {
+  background:var(--surface2); border-radius:10px; padding:10px 12px;
+  border:1px solid var(--border);
+}
+.sphere-card.s1 { border-left:3px solid var(--blue); }
+.sphere-card.s2 { border-left:3px solid var(--orange); }
+.sphere-label { font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px; }
+.s1 .sphere-label { color:var(--blue); }
+.s2 .sphere-label { color:var(--orange); }
+
+/* SLIDERS */
+.ctrl-row { margin-bottom:8px; }
+.ctrl-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
+.ctrl-name { font-size:0.73rem; color:var(--muted); }
+.ctrl-val { font-family:var(--mono); font-size:0.73rem; font-weight:600; color:var(--text); }
+input[type=range] {
+  -webkit-appearance:none; width:100%; height:5px;
+  background:var(--border2); border-radius:3px; outline:none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:18px; height:18px;
+  border-radius:50%; background:var(--cyan); cursor:pointer;
+  box-shadow:0 0 8px rgba(0,229,255,0.5);
+}
+.s1-range::-webkit-slider-thumb { background:var(--blue); box-shadow:0 0 8px rgba(99,179,237,0.5); }
+.s2-range::-webkit-slider-thumb { background:var(--orange); box-shadow:0 0 8px rgba(255,112,67,0.5); }
+
+/* TYPE COLLISION */
+.type-btns { display:flex; gap:6px; margin-bottom:10px; }
+.type-btn {
+  flex:1; padding:8px 4px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface2); color:var(--muted); font-size:0.72rem;
+  font-weight:700; cursor:pointer; font-family:var(--font); text-align:center;
+  transition:all 0.2s;
+}
+.type-btn.active { background:rgba(0,229,255,0.12); color:var(--cyan); border-color:var(--cyan); }
+
+/* MESURES */
+.mesures-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.mesure-card {
+  background:var(--surface2); border-radius:8px; padding:10px;
+  border:1px solid var(--border);
+}
+.mesure-title { font-size:0.68rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.07em; margin-bottom:4px; }
+.mesure-val { font-family:var(--mono); font-size:1rem; font-weight:700; color:var(--yellow); }
+.mesure-unit { font-size:0.68rem; color:var(--muted); }
+
+/* LOIS */
+.loi-section { background:var(--surface2); border-radius:10px; padding:12px; margin-bottom:8px; }
+.loi-title { font-size:0.75rem; font-weight:700; color:var(--cyan); margin-bottom:6px; }
+.loi-formula {
+  font-family:var(--mono); font-size:0.78rem; color:var(--yellow);
+  background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px;
+  margin-bottom:6px; overflow-x:auto; white-space:nowrap;
+}
+.loi-text { font-size:0.75rem; color:var(--muted); line-height:1.6; }
+
+/* CAMERA HINT */
+.cam-hint {
+  position:absolute; bottom:8px; left:50%; transform:translateX(-50%);
+  background:rgba(10,14,26,0.8); border:1px solid var(--border);
+  border-radius:20px; padding:5px 12px; font-size:0.7rem; color:var(--muted);
+  pointer-events:none; white-space:nowrap; z-index:10;
+  animation:fadeout 4s ease 3s forwards;
+}
+@keyframes fadeout { to { opacity:0; } }
+
+/* SCROLLBAR */
+#controls::-webkit-scrollbar { width:4px; }
+#controls::-webkit-scrollbar-track { background:var(--surface); }
+#controls::-webkit-scrollbar-thumb { background:var(--border2); border-radius:2px; }
+
+/* RESPONSIVE */
+@media (min-width:600px) {
+  .mesures-grid { grid-template-columns:repeat(4,1fr); }
+  #result-panel { min-width:200px; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <div class="logo">⚗️ Sim<span>Lab</span></div>
+      <div class="sim-title">Collision de Sphères · 3D</div>
+    </div>
+    <div class="header-btns">
+      <button class="btn-reset" onclick="resetSim()">↺ Reset</button>
+      <button class="btn-play" id="playBtn" onclick="togglePlay()">▶ Lancer</button>
+    </div>
+  </header>
+
+  <!-- CANVAS 3D -->
+  <div id="canvas-wrap">
+    <canvas id="three-canvas"></canvas>
+    <div id="flash"></div>
+    <div id="result-panel">
+      <h4>📊 Résultats</h4>
+      <div class="res-row"><span class="label">Δp total</span><span class="val" id="res-dp">—</span></div>
+      <div class="res-row"><span class="label">Ec avant</span><span class="val" id="res-ec-avant">—</span></div>
+      <div class="res-row"><span class="label">Ec après</span><span class="val" id="res-ec-apres">—</span></div>
+      <div class="res-row"><span class="label">ΔEc</span><span class="val" id="res-dec">—</span></div>
+      <div class="res-type" id="res-type"></div>
+    </div>
+    <div class="cam-hint">👆 Glisser pour tourner · Pincer pour zoomer</div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div id="controls">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('parametres', this)">⚙️ Paramètres</button>
+      <button class="tab" onclick="switchTab('mesures', this)">📐 Mesures</button>
+      <button class="tab" onclick="switchTab('lois', this)">📚 Lois</button>
+    </div>
+
+    <!-- PARAMETRES -->
+    <div id="tab-parametres" class="tab-content active">
+      <div style="margin-bottom:10px;">
+        <div style="font-size:0.73rem;color:var(--muted);margin-bottom:6px;font-weight:600;">TYPE DE COLLISION</div>
+        <div class="type-btns">
+          <button class="type-btn active" id="btn-elastique" onclick="setType('elastique')">🔵 Élastique</button>
+          <button class="type-btn" id="btn-inelastique" onclick="setType('inelastique')">🟠 Inélastique</button>
+          <button class="type-btn" id="btn-parfait" onclick="setType('parfait')">⚫ Parfaitement inél.</button>
+        </div>
+      </div>
+      <div class="spheres-row">
+        <!-- SPHÈRE 1 -->
+        <div class="sphere-card s1">
+          <div class="sphere-label">🔵 Sphère 1</div>
+          <div class="ctrl-row">
+            <div class="ctrl-top"><span class="ctrl-name">Masse (kg)</span><span class="ctrl-val" id="v-m1">1.0</span></div>
+            <input type="range" class="s1-range" id="s-m1" min="0.5" max="5" step="0.1" value="1.0" oninput="updateParam('m1',this.value)">
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-top"><span class="ctrl-name">Vitesse (m/s)</span><span class="ctrl-val" id="v-v1">+3.0</span></div>
+            <input type="range" class="s1-range" id="s-v1" min="-8" max="8" step="0.5" value="3" oninput="updateParam('v1',this.value)">
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-top"><span class="ctrl-name">Rayon (cm)</span><span class="ctrl-val" id="v-r1">30</span></div>
+            <input type="range" class="s1-range" id="s-r1" min="0.2" max="0.8" step="0.05" value="0.35" oninput="updateParam('r1',this.value)">
+          </div>
+        </div>
+        <!-- SPHÈRE 2 -->
+        <div class="sphere-card s2">
+          <div class="sphere-label">🟠 Sphère 2</div>
+          <div class="ctrl-row">
+            <div class="ctrl-top"><span class="ctrl-name">Masse (kg)</span><span class="ctrl-val" id="v-m2">2.0</span></div>
+            <input type="range" class="s2-range" id="s-m2" min="0.5" max="5" step="0.1" value="2.0" oninput="updateParam('m2',this.value)">
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-top"><span class="ctrl-name">Vitesse (m/s)</span><span class="ctrl-val" id="v-v2">-1.0</span></div>
+            <input type="range" class="s2-range" id="s-v2" min="-8" max="8" step="0.5" value="-1" oninput="updateParam('v2',this.value)">
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-top"><span class="ctrl-name">Rayon (cm)</span><span class="ctrl-val" id="v-r2">40</span></div>
+            <input type="range" class="s2-range" id="s-r2" min="0.2" max="0.8" step="0.05" value="0.45" oninput="updateParam('r2',this.value)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MESURES -->
+    <div id="tab-mesures" class="tab-content">
+      <div class="mesures-grid">
+        <div class="mesure-card">
+          <div class="mesure-title">p₁ avant</div>
+          <div><span class="mesure-val" id="m-p1a">—</span> <span class="mesure-unit">kg·m/s</span></div>
+        </div>
+        <div class="mesure-card">
+          <div class="mesure-title">p₂ avant</div>
+          <div><span class="mesure-val" id="m-p2a">—</span> <span class="mesure-unit">kg·m/s</span></div>
+        </div>
+        <div class="mesure-card">
+          <div class="mesure-title">p₁ après</div>
+          <div><span class="mesure-val" id="m-p1p">—</span> <span class="mesure-unit">kg·m/s</span></div>
+        </div>
+        <div class="mesure-card">
+          <div class="mesure-title">p₂ après</div>
+          <div><span class="mesure-val" id="m-p2p">—</span> <span class="mesure-unit">kg·m/s</span></div>
+        </div>
+        <div class="mesure-card">
+          <div class="mesure-title">Ec₁ avant</div>
+          <div><span class="mesure-val" id="m-ec1a">—</span> <span class="mesure-unit">J</span></div>
+        </div>
+        <div class="mesure-card">
+          <div class="mesure-title">Ec₂ avant</div>
+          <div><span class="mesure-val" id="m-ec2a">—</span> <span class="mesure-unit">J</span></div>
+        </div>
+        <div class="mesure-card">
+          <div class="mesure-title">v₁ après</div>
+          <div><span class="mesure-val" id="m-v1p">—</span> <span class="mesure-unit">m/s</span></div>
+        </div>
+        <div class="mesure-card">
+          <div class="mesure-title">v₂ après</div>
+          <div><span class="mesure-val" id="m-v2p">—</span> <span class="mesure-unit">m/s</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOIS -->
+    <div id="tab-lois" class="tab-content">
+      <div class="loi-section">
+        <div class="loi-title">📌 Conservation de la quantité de mouvement</div>
+        <div class="loi-formula">m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'</div>
+        <div class="loi-text">La quantité de mouvement totale du système est conservée lors de toute collision, quelle que soit son type, en l'absence de forces extérieures.</div>
+      </div>
+      <div class="loi-section">
+        <div class="loi-title">⚡ Collision élastique (e = 1)</div>
+        <div class="loi-formula">v₁' = (m₁-m₂)v₁+2m₂v₂ / (m₁+m₂)</div>
+        <div class="loi-formula">v₂' = (m₂-m₁)v₂+2m₁v₁ / (m₁+m₂)</div>
+        <div class="loi-text">L'énergie cinétique totale est conservée. Les corps se déforment et reprennent leur forme initiale (billes en acier, neutrons).</div>
+      </div>
+      <div class="loi-section">
+        <div class="loi-title">🔥 Collision parfaitement inélastique (e = 0)</div>
+        <div class="loi-formula">v' = (m₁v₁ + m₂v₂) / (m₁+m₂)</div>
+        <div class="loi-text">Les deux corps s'unissent et se déplacent à la même vitesse. L'énergie cinétique perdue est convertie en chaleur, son, déformation.</div>
+      </div>
+      <div class="loi-section">
+        <div class="loi-title">📐 Coefficient de restitution</div>
+        <div class="loi-formula">e = (v₂'-v₁') / (v₁-v₂) ∈ [0,1]</div>
+        <div class="loi-text">e=1 : élastique parfait · e=0 : inélastique parfait · 0&lt;e&lt;1 : partiellement inélastique (caoutchouc, balle de tennis).</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ═══════════════════════════════════════════════
+//  ÉTAT DE LA SIMULATION
+// ═══════════════════════════════════════════════
+const state = {
+  m1: 1.0, v1: 3.0, r1: 0.35,
+  m2: 2.0, v2: -1.0, r2: 0.45,
+  type: 'elastique',
+  running: false,
+  collided: false,
+  time: 0,
+};
+
+let v1_after = 0, v2_after = 0;
+
+// ═══════════════════════════════════════════════
+//  THREE.JS SETUP
+// ═══════════════════════════════════════════════
+const canvas = document.getElementById('three-canvas');
+const wrap = document.getElementById('canvas-wrap');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor(0x0a0e1a);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(0x0a0e1a, 0.04);
+
+const camera = new THREE.PerspectiveCamera(55, 1, 0.1, 100);
+camera.position.set(0, 4, 12);
+camera.lookAt(0, 0, 0);
+
+function resizeRenderer() {
+  const w = wrap.clientWidth;
+  const h = wrap.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+resizeRenderer();
+window.addEventListener('resize', resizeRenderer);
+
+// ═══════════════════════════════════════════════
+//  ÉCLAIRAGE
+// ═══════════════════════════════════════════════
+const ambientLight = new THREE.AmbientLight(0x1a2a4a, 1.2);
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+dirLight.position.set(5, 10, 5);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.set(1024, 1024);
+dirLight.shadow.camera.near = 0.1;
+dirLight.shadow.camera.far = 50;
+dirLight.shadow.camera.left = -10;
+dirLight.shadow.camera.right = 10;
+dirLight.shadow.camera.top = 10;
+dirLight.shadow.camera.bottom = -10;
+scene.add(dirLight);
+
+const pointLight1 = new THREE.PointLight(0x63b3ed, 2, 15);
+pointLight1.position.set(-6, 3, 2);
+scene.add(pointLight1);
+
+const pointLight2 = new THREE.PointLight(0xff7043, 2, 15);
+pointLight2.position.set(6, 3, 2);
+scene.add(pointLight2);
+
+// ═══════════════════════════════════════════════
+//  PLAN DE LA TABLE DE LABO
+// ═══════════════════════════════════════════════
+// Sol réfléchissant style table de labo
+const tableGeo = new THREE.BoxGeometry(20, 0.15, 6);
+const tableMat = new THREE.MeshStandardMaterial({
+  color: 0x0d1b2e,
+  roughness: 0.3,
+  metalness: 0.4,
+});
+const table = new THREE.Mesh(tableGeo, tableMat);
+table.position.y = -1.5;
+table.receiveShadow = true;
+scene.add(table);
+
+// Grille sur la table (repère de référence)
+const gridHelper = new THREE.GridHelper(18, 36, 0x1a3a5c, 0x112233);
+gridHelper.position.y = -1.42;
+scene.add(gridHelper);
+
+// Rail de guidage (tube central)
+const railGeo = new THREE.CylinderGeometry(0.04, 0.04, 18, 12);
+const railMat = new THREE.MeshStandardMaterial({ color: 0x2a4a7a, metalness: 0.8, roughness: 0.2 });
+const rail = new THREE.Mesh(railGeo, railMat);
+rail.rotation.z = Math.PI / 2;
+rail.position.y = -1.34;
+rail.receiveShadow = true;
+scene.add(rail);
+
+// Marqueurs de position (comme en vrai labo)
+for (let x = -8; x <= 8; x += 2) {
+  const markerGeo = new THREE.BoxGeometry(0.04, 0.12, 0.04);
+  const markerMat = new THREE.MeshStandardMaterial({ color: 0x63b3ed, emissive: 0x1a3a6a });
+  const marker = new THREE.Mesh(markerGeo, markerMat);
+  marker.position.set(x, -1.38, 0);
+  scene.add(marker);
+
+  // Étiquettes numériques (simples cubes)
+}
+
+// ═══════════════════════════════════════════════
+//  SPHÈRES
+// ═══════════════════════════════════════════════
+let sphere1, sphere2, trail1, trail2;
+const trailPoints1 = [], trailPoints2 = [];
+
+function createSpheres() {
+  if (sphere1) { scene.remove(sphere1); scene.remove(sphere2); }
+  if (trail1) { scene.remove(trail1); scene.remove(trail2); }
+
+  // Sphère 1 (bleue)
+  const geo1 = new THREE.SphereGeometry(state.r1, 32, 32);
+  const mat1 = new THREE.MeshStandardMaterial({
+    color: 0x4a9eff,
+    emissive: 0x0a2a5a,
+    roughness: 0.15,
+    metalness: 0.7,
+    envMapIntensity: 1.5,
+  });
+  sphere1 = new THREE.Mesh(geo1, mat1);
+  sphere1.position.x = -4;
+  sphere1.position.y = -1.5 + state.r1;
+  sphere1.castShadow = true;
+  sphere1.receiveShadow = true;
+  scene.add(sphere1);
+
+  // Ombre portée sphère 1
+  const shadow1Geo = new THREE.CircleGeometry(state.r1 * 0.9, 16);
+  const shadow1Mat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.3 });
+  const shadow1 = new THREE.Mesh(shadow1Geo, shadow1Mat);
+  shadow1.rotation.x = -Math.PI / 2;
+  shadow1.position.y = -1.41;
+  sphere1.add(shadow1);
+  shadow1.position.x = 0;
+
+  // Sphère 2 (orange)
+  const geo2 = new THREE.SphereGeometry(state.r2, 32, 32);
+  const mat2 = new THREE.MeshStandardMaterial({
+    color: 0xff6b35,
+    emissive: 0x5a1a00,
+    roughness: 0.15,
+    metalness: 0.7,
+  });
+  sphere2 = new THREE.Mesh(geo2, mat2);
+  sphere2.position.x = 4;
+  sphere2.position.y = -1.5 + state.r2;
+  sphere2.castShadow = true;
+  sphere2.receiveShadow = true;
+  scene.add(sphere2);
+
+  trailPoints1.length = 0;
+  trailPoints2.length = 0;
+}
+
+createSpheres();
+
+// Vecteurs de vitesse (flèches)
+let arrow1, arrow2;
+function updateArrows() {
+  if (arrow1) scene.remove(arrow1);
+  if (arrow2) scene.remove(arrow2);
+
+  const arrowLen1 = Math.abs(state.v1) * 0.4;
+  const arrowLen2 = Math.abs(state.v2) * 0.4;
+  const dir1 = new THREE.Vector3(state.v1 >= 0 ? 1 : -1, 0, 0);
+  const dir2 = new THREE.Vector3(state.v2 >= 0 ? 1 : -1, 0, 0);
+
+  if (arrowLen1 > 0.01) {
+    arrow1 = new THREE.ArrowHelper(dir1,
+      new THREE.Vector3(sphere1.position.x, sphere1.position.y + 0.1, 0),
+      arrowLen1 + state.r1, 0x63b3ed, 0.25, 0.18);
+    scene.add(arrow1);
+  }
+  if (arrowLen2 > 0.01) {
+    arrow2 = new THREE.ArrowHelper(dir2,
+      new THREE.Vector3(sphere2.position.x, sphere2.position.y + 0.1, 0),
+      arrowLen2 + state.r2, 0xff7043, 0.25, 0.18);
+    scene.add(arrow2);
+  }
+}
+updateArrows();
+
+// ═══════════════════════════════════════════════
+//  PARTICULES DE COLLISION
+// ═══════════════════════════════════════════════
+const particles = [];
+function spawnParticles(x, y) {
+  for (let i = 0; i < 30; i++) {
+    const geo = new THREE.SphereGeometry(0.04 + Math.random() * 0.06, 6, 6);
+    const hue = Math.random() > 0.5 ? 0xffcc00 : 0xff4400;
+    const mat = new THREE.MeshBasicMaterial({ color: hue, transparent: true });
+    const p = new THREE.Mesh(geo, mat);
+    p.position.set(x, y, 0);
+    p.userData.vel = new THREE.Vector3(
+      (Math.random() - 0.5) * 4,
+      Math.random() * 3,
+      (Math.random() - 0.5) * 2
+    );
+    p.userData.life = 1.0;
+    scene.add(p);
+    particles.push(p);
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  CAMERA CONTROLS (touch + mouse)
+// ═══════════════════════════════════════════════
+let camTheta = 0, camPhi = 0.35, camR = 12;
+let isDragging = false, lastX = 0, lastY = 0;
+let pinchStart = 0;
+
+function applyCamera() {
+  camera.position.x = camR * Math.sin(camTheta) * Math.cos(camPhi);
+  camera.position.y = camR * Math.sin(camPhi);
+  camera.position.z = camR * Math.cos(camTheta) * Math.cos(camPhi);
+  camera.lookAt(0, -0.5, 0);
+}
+applyCamera();
+
+// Mouse
+canvas.addEventListener('mousedown', e => { isDragging = true; lastX = e.clientX; lastY = e.clientY; });
+window.addEventListener('mouseup', () => isDragging = false);
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  camTheta -= (e.clientX - lastX) * 0.008;
+  camPhi = Math.max(-0.1, Math.min(1.2, camPhi + (e.clientY - lastY) * 0.006));
+  lastX = e.clientX; lastY = e.clientY;
+  applyCamera();
+});
+canvas.addEventListener('wheel', e => {
+  camR = Math.max(4, Math.min(20, camR + e.deltaY * 0.02));
+  applyCamera();
+  e.preventDefault();
+}, { passive: false });
+
+// Touch
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    isDragging = true;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+  } else if (e.touches.length === 2) {
+    isDragging = false;
+    pinchStart = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+}, { passive: true });
+
+canvas.addEventListener('touchmove', e => {
+  if (e.touches.length === 1 && isDragging) {
+    camTheta -= (e.touches[0].clientX - lastX) * 0.01;
+    camPhi = Math.max(-0.1, Math.min(1.2, camPhi + (e.touches[0].clientY - lastY) * 0.008));
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    applyCamera();
+  } else if (e.touches.length === 2) {
+    const pinchNow = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    camR = Math.max(4, Math.min(20, camR * (pinchStart / pinchNow)));
+    pinchStart = pinchNow;
+    applyCamera();
+  }
+  e.preventDefault();
+}, { passive: false });
+
+canvas.addEventListener('touchend', () => { isDragging = false; });
+
+// ═══════════════════════════════════════════════
+//  PHYSIQUE
+// ═══════════════════════════════════════════════
+function computeAfterCollision() {
+  const m1 = state.m1, m2 = state.m2;
+  const vi1 = state.v1, vi2 = state.v2;
+
+  if (state.type === 'elastique') {
+    v1_after = ((m1 - m2) * vi1 + 2 * m2 * vi2) / (m1 + m2);
+    v2_after = ((m2 - m1) * vi2 + 2 * m1 * vi1) / (m1 + m2);
+  } else if (state.type === 'parfait') {
+    const vf = (m1 * vi1 + m2 * vi2) / (m1 + m2);
+    v1_after = vf;
+    v2_after = vf;
+  } else { // inelastique partiel (e=0.6)
+    const e = 0.6;
+    v1_after = (m1 * vi1 + m2 * vi2 + m2 * e * (vi2 - vi1)) / (m1 + m2);
+    v2_after = (m1 * vi1 + m2 * vi2 + m1 * e * (vi1 - vi2)) / (m1 + m2);
+  }
+}
+
+function updateMeasures(after) {
+  const m1 = state.m1, m2 = state.m2;
+  const vi1 = state.v1, vi2 = state.v2;
+
+  document.getElementById('m-p1a').textContent = (m1 * vi1).toFixed(2);
+  document.getElementById('m-p2a').textContent = (m2 * vi2).toFixed(2);
+  document.getElementById('m-ec1a').textContent = (0.5 * m1 * vi1 * vi1).toFixed(2);
+  document.getElementById('m-ec2a').textContent = (0.5 * m2 * vi2 * vi2).toFixed(2);
+
+  if (after) {
+    document.getElementById('m-p1p').textContent = (m1 * v1_after).toFixed(2);
+    document.getElementById('m-p2p').textContent = (m2 * v2_after).toFixed(2);
+    document.getElementById('m-v1p').textContent = v1_after.toFixed(2);
+    document.getElementById('m-v2p').textContent = v2_after.toFixed(2);
+
+    const pAvant = m1 * vi1 + m2 * vi2;
+    const pApres = m1 * v1_after + m2 * v2_after;
+    const ecAvant = 0.5 * m1 * vi1 * vi1 + 0.5 * m2 * vi2 * vi2;
+    const ecApres = 0.5 * m1 * v1_after * v1_after + 0.5 * m2 * v2_after * v2_after;
+    const dec = ecApres - ecAvant;
+
+    document.getElementById('res-dp').textContent = Math.abs(pApres - pAvant).toFixed(3) + ' kg·m/s';
+    document.getElementById('res-ec-avant').textContent = ecAvant.toFixed(2) + ' J';
+    document.getElementById('res-ec-apres').textContent = ecApres.toFixed(2) + ' J';
+    document.getElementById('res-dec').textContent = (dec >= 0 ? '+' : '') + dec.toFixed(2) + ' J';
+
+    const panel = document.getElementById('result-panel');
+    const typeEl = document.getElementById('res-type');
+    if (state.type === 'elastique') {
+      typeEl.textContent = '✅ Énergie conservée (élastique)';
+      typeEl.className = 'res-type res-elastic';
+    } else if (state.type === 'parfait') {
+      typeEl.textContent = '🔥 Énergie perdue (parfaitement inél.)';
+      typeEl.className = 'res-type res-inelastic';
+    } else {
+      typeEl.textContent = '⚠️ Énergie partiellement perdue';
+      typeEl.className = 'res-type res-parfait';
+    }
+    panel.classList.add('show');
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  ANIMATION LOOP
+// ═══════════════════════════════════════════════
+let curV1 = state.v1, curV2 = state.v2;
+const SPEED_SCALE = 0.04;
+let collisionX = 0;
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  if (state.running) {
+    state.time += 0.016;
+
+    // Déplacement sphères
+    sphere1.position.x += curV1 * SPEED_SCALE;
+    sphere2.position.x += curV2 * SPEED_SCALE;
+
+    // Rotation des sphères (effet physique réaliste)
+    sphere1.rotation.z -= curV1 * SPEED_SCALE / state.r1;
+    sphere2.rotation.z -= curV2 * SPEED_SCALE / state.r2;
+
+    // Détection collision
+    const dist = Math.abs(sphere2.position.x - sphere1.position.x);
+    const collisionDist = state.r1 + state.r2;
+
+    if (!state.collided && dist <= collisionDist) {
+      state.collided = true;
+      collisionX = (sphere1.position.x + sphere2.position.x) / 2;
+      computeAfterCollision();
+      updateMeasures(true);
+
+      // Flash visuel
+      const flash = document.getElementById('flash');
+      flash.classList.add('bang');
+      setTimeout(() => flash.classList.remove('bang'), 120);
+
+      // Particules
+      spawnParticles(collisionX, sphere1.position.y);
+
+      // Pour collision parfaitement inélastique: fusionner visuellement
+      if (state.type === 'parfait') {
+        sphere1.material.color.setHex(0x9a5fc7);
+        sphere2.material.color.setHex(0x9a5fc7);
+      }
+
+      curV1 = v1_after;
+      curV2 = v2_after;
+
+      // Mettre à jour les flèches après collision
+      setTimeout(() => {
+        if (arrow1) scene.remove(arrow1);
+        if (arrow2) scene.remove(arrow2);
+        const dir1n = new THREE.Vector3(curV1 >= 0 ? 1 : -1, 0, 0);
+        const dir2n = new THREE.Vector3(curV2 >= 0 ? 1 : -1, 0, 0);
+        const len1 = Math.abs(curV1) * 0.4;
+        const len2 = Math.abs(curV2) * 0.4;
+        if (len1 > 0.05) {
+          arrow1 = new THREE.ArrowHelper(dir1n, new THREE.Vector3(sphere1.position.x, sphere1.position.y + 0.1, 0), len1 + state.r1, 0x00ff99, 0.25, 0.18);
+          scene.add(arrow1);
+        }
+        if (len2 > 0.05) {
+          arrow2 = new THREE.ArrowHelper(dir2n, new THREE.Vector3(sphere2.position.x, sphere2.position.y + 0.1, 0), len2 + state.r2, 0xffdd00, 0.25, 0.18);
+          scene.add(arrow2);
+        }
+      }, 100);
+    }
+
+    // Stop si hors écran
+    if (Math.abs(sphere1.position.x) > 11 && Math.abs(sphere2.position.x) > 11) {
+      state.running = false;
+      document.getElementById('playBtn').textContent = '↺ Terminé';
+      document.getElementById('playBtn').classList.remove('running');
+    }
+  }
+
+  // Particules
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.userData.life -= 0.025;
+    p.position.add(p.userData.vel.clone().multiplyScalar(0.016));
+    p.userData.vel.y -= 9.8 * 0.016 * 0.5;
+    p.material.opacity = p.userData.life;
+    p.scale.setScalar(p.userData.life);
+    if (p.userData.life <= 0) {
+      scene.remove(p);
+      particles.splice(i, 1);
+    }
+  }
+
+  // Légère rotation auto de la caméra si pas en drag
+  if (!isDragging && !state.running) {
+    camTheta += 0.002;
+    applyCamera();
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
+
+// ═══════════════════════════════════════════════
+//  CONTRÔLES UI
+// ═══════════════════════════════════════════════
+function togglePlay() {
+  if (state.running) return;
+  if (state.collided || document.getElementById('playBtn').textContent.includes('Terminé')) {
+    resetSim();
+    return;
+  }
+  state.running = true;
+  curV1 = state.v1;
+  curV2 = state.v2;
+  updateArrows();
+  document.getElementById('playBtn').textContent = '⏸ En cours...';
+  document.getElementById('playBtn').classList.add('running');
+}
+
+function resetSim() {
+  state.running = false;
+  state.collided = false;
+  state.time = 0;
+  document.getElementById('result-panel').classList.remove('show');
+  document.getElementById('playBtn').textContent = '▶ Lancer';
+  document.getElementById('playBtn').classList.remove('running');
+
+  // Remettre les couleurs
+  if (sphere1) {
+    sphere1.material.color.setHex(0x4a9eff);
+    sphere2.material.color.setHex(0xff6b35);
+  }
+
+  createSpheres();
+  updateArrows();
+  updateMeasures(false);
+
+  // Reset flèches
+  if (arrow1) scene.remove(arrow1);
+  if (arrow2) scene.remove(arrow2);
+  arrow1 = null; arrow2 = null;
+  updateArrows();
+}
+
+function updateParam(param, value) {
+  state[param] = parseFloat(value);
+  const labels = {
+    'm1': ['v-m1', v => v + ' kg'],
+    'm2': ['v-m2', v => v + ' kg'],
+    'v1': ['v-v1', v => (v >= 0 ? '+' : '') + v + ' m/s'],
+    'v2': ['v-v2', v => (v >= 0 ? '+' : '') + v + ' m/s'],
+    'r1': ['v-r1', v => Math.round(v * 100) + ' cm'],
+    'r2': ['v-r2', v => Math.round(v * 100) + ' cm'],
+  };
+  const [id, fmt] = labels[param];
+  document.getElementById(id).textContent = fmt(value);
+
+  if (!state.running) {
+    resetSim();
+  }
+}
+
+function setType(type) {
+  state.type = type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + type).classList.add('active');
+  if (!state.running) resetSim();
+}
+
+function switchTab(name, el) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+// Init mesures
+updateMeasures(false);
+</script>
+</body>
+</html>

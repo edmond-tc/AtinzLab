@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>SimLab — Guide Interactif : Chute Libre</title>
+    <!-- Google AdSense (Code d'activation prioritaire) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0e1a;
+            --surface: #111827;
+            --surface2: #1a2540;
+            --surface3: #1f2d4a;
+            --border: #2a3a5c;
+            --cyan: #00e5ff;
+            --cyan-glow: rgba(0, 229, 255, 0.15);
+            --yellow: #ffd740;
+            --yellow-glow: rgba(255, 215, 64, 0.15);
+            --green: #00ff88;
+            --green-glow: rgba(0, 255, 136, 0.15);
+            --orange: #ff8c00;
+            --orange-glow: rgba(255, 140, 0, 0.15);
+            --red: #ff4444;
+            --purple: #c084fc;
+            --blue: #3b82f6;
+            --text: #e2e8f0;
+            --text-dim: #8898b0;
+            --text-mute: #4a5568;
+            --font: 'Outfit', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+            --radius: 16px;
+            --radius-sm: 8px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan), var(--yellow), var(--green));
+            z-index: 1000;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 20px var(--cyan);
+        }
+
+        /* ===== HEADER FIXE ===== */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            background: var(--surface2);
+            border: 1px solid var(--yellow);
+            color: var(--yellow);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-sim {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #003320;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-sim:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-back {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-back:hover {
+            color: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        /* ===== CONTENEUR PRINCIPAL ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 90px 24px 40px;
+        }
+
+        /* ===== TITRE PRINCIPAL ===== */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, var(--cyan), var(--yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ===== TABLE DES MATIÈRES ===== */
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 48px;
+        }
+
+        .toc h2 {
+            color: var(--cyan);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+        .toc-item:hover {
+            border-color: var(--cyan);
+            transform: translateX(4px);
+        }
+
+        .toc-num {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--cyan), var(--yellow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0e1a;
+        }
+
+        .toc-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            flex: 1;
+        }
+        .toc-link:hover {
+            color: var(--cyan);
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            margin-bottom: 64px;
+            scroll-margin-top: 80px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title span {
+            background: var(--surface2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+        }
+
+        /* ===== CARDS AVEC BORDURE COLORÉE ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-blue { border-left: 6px solid var(--blue); }
+        .card-orange { border-left: 6px solid var(--orange); }
+        .card-green { border-left: 6px solid var(--green); }
+        .card-red { border-left: 6px solid var(--red); }
+        .card-yellow { border-left: 6px solid var(--yellow); }
+        .card-purple { border-left: 6px solid var(--purple); }
+
+        /* ===== TABLEAU COMPARATIF ===== */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: var(--surface2);
+            color: var(--cyan);
+            font-weight: 600;
+            padding: 16px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .comparison-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        /* ===== FORMULES ===== */
+        .formula-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            font-family: var(--mono);
+            font-size: 1.2rem;
+            color: var(--yellow);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .formula-desc {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        /* ===== ÉTAPES NUMÉROTÉES ===== */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .step {
+            text-align: center;
+            padding: 24px;
+            background: var(--surface2);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--cyan), var(--yellow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin: 0 auto 16px;
+            color: #0a0e1a;
+        }
+
+        /* ===== DÉMO INTERACTIVE ===== */
+        #demo-canvas {
+            width: 100%;
+            height: 300px;
+            background: var(--surface2);
+            border-radius: var(--radius);
+            margin: 20px 0;
+            display: block;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .demo-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .demo-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+        .demo-btn.active {
+            background: var(--cyan-glow);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* ===== EXPÉRIENCES ===== */
+        .exp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .exp-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .exp-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--cyan);
+        }
+
+        .exp-title {
+            color: var(--cyan);
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exp-params {
+            background: var(--surface2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            margin: 12px 0;
+        }
+
+        .exp-result {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        /* ===== QUIZ ===== */
+        .quiz-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .quiz-question {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+        }
+
+        .quiz-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .quiz-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-option {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option:hover {
+            border-color: var(--cyan);
+        }
+        .quiz-option.correct {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .quiz-option.incorrect {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .quiz-feedback {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            min-height: 24px;
+        }
+
+        .quiz-score {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--surface2);
+            border-radius: var(--radius);
+        }
+
+        /* ===== SCROLL TO TOP ===== */
+        #scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--surface2);
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 99;
+            color: var(--cyan);
+            font-size: 1.2rem;
+        }
+        #scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        #scroll-top:hover {
+            background: var(--cyan);
+            color: #0a0e1a;
+        }
+
+        /* ===== BANNIÈRE NATIVE ADS ===== */
+        .ad-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            padding: 10px;
+            background: var(--surface);
+            border-radius: var(--radius);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        .privacy-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            margin: 10px 0;
+        }
+        .privacy-link:hover {
+            color: var(--cyan);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header-left {
+                gap: 8px;
+            }
+            .badge {
+                display: none;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+            #scroll-top {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barre de progression -->
+    <div id="progress-bar"></div>
+
+    <!-- Header fixe -->
+    <header id="header">
+        <div class="header-left">
+            <div class="logo">
+                ⚗️ SimLab
+                <span class="badge">📖 Guide Interactif</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="chute-libre-simulation.html" class="btn-sim">
+                🚀 Lancer la Simulation
+            </a>
+            <a href="index.html" class="btn-back">
+                ← Retour
+            </a>
+        </div>
+    </header>
+
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+            <h1>Chute Libre</h1>
+            <p>Guide interactif complet pour comprendre, expérimenter et maîtriser la chute libre — niveau lycée et université (Bénin)</p>
+        </div>
+
+        <!-- Table des matières -->
+        <div class="toc">
+            <h2>📑 Table des matières</h2>
+            <div class="toc-grid">
+                <div class="toc-item">
+                    <span class="toc-num">1</span>
+                    <a href="#intro" class="toc-link">Introduction</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">2</span>
+                    <a href="#types" class="toc-link">Les types / cas possibles</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">3</span>
+                    <a href="#formules" class="toc-link">Formules essentielles</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">4</span>
+                    <a href="#utilisation" class="toc-link">Comment utiliser la simulation</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">5</span>
+                    <a href="#demo" class="toc-link">Démo interactive</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">6</span>
+                    <a href="#experiences" class="toc-link">Expériences à réaliser</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">7</span>
+                    <a href="#quiz" class="toc-link">Quiz</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <section id="intro">
+            <h2 class="section-title"><span>1</span> Introduction</h2>
+            <div class="card card-blue">
+                <p style="font-size: 1.1rem; margin-bottom: 16px;">
+                    La <strong>chute libre</strong> est le mouvement d'un corps uniquement soumis à son <strong>poids</strong>, 
+                    c'est-à-dire à la force de gravité. En l'absence de frottements (air négligé), tous les corps tombent 
+                    avec la <strong>même accélération</strong>, notée <strong>g</strong> (environ 9,81 m/s² sur Terre).
+                </p>
+                <p style="color: var(--text-dim);">
+                    📌 C'est un cas particulier du <strong>Mouvement Rectiligne Uniformément Accéléré (MRUA)</strong> 
+                    avec une accélération constante dirigée vers le bas. La trajectoire est verticale.
+                </p>
+                <div style="background: var(--surface2); padding: 16px; border-radius: var(--radius-sm); margin-top: 16px;">
+                    <p style="color: var(--yellow); font-family: var(--mono);">
+                        Expérience de Galilée (Tour de Pise) : deux objets de masses différentes lâchés simultanément 
+                        touchent le sol en même temps (dans le vide).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bannière native Adsterra -->
+        <div class="ad-container">
+            <div id="container-ced9d6bd01657bda6021abb1c5919291"></div>
+            <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
+        </div>
+
+        <!-- Section 2: Types / Cas possibles -->
+        <section id="types">
+            <h2 class="section-title"><span>2</span> Les types / cas possibles</h2>
+            <div class="card card-orange">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Équations</th>
+                            <th>Exemple concret</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Chute sans vitesse initiale</strong></td>
+                            <td>Objet lâché (v₀ = 0)</td>
+                            <td>y = h₀ - ½·g·t²<br>v = -g·t</td>
+                            <td>Lâcher d'une pierre du haut d'un pont</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lancer vers le bas</strong></td>
+                            <td>Vitesse initiale dirigée vers le bas (v₀ < 0)</td>
+                            <td>y = h₀ + v₀·t - ½·g·t²<br>v = v₀ - g·t</td>
+                            <td>Lancer une balle vers le sol</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Lancer vers le haut</strong></td>
+                            <td>Vitesse initiale dirigée vers le haut (v₀ > 0)</td>
+                            <td>y = h₀ + v₀·t - ½·g·t²<br>v = v₀ - g·t</td>
+                            <td>Lancer une balle en l'air (elle monte puis redescend)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Chute avec différents g</strong></td>
+                            <td>Sur d'autres astres (Lune, Mars)</td>
+                            <td>Mêmes équations avec g différent</td>
+                            <td>g Lune ≈ 1,62 m/s², g Mars ≈ 3,71 m/s²</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 3: Formules essentielles -->
+        <section id="formules">
+            <h2 class="section-title"><span>3</span> Formules essentielles</h2>
+            <div class="card card-yellow">
+                <div class="formula-box">
+                    y(t) = h₀ + v₀·t - ½·g·t²
+                </div>
+                <p class="formula-desc">
+                    Équation horaire de la hauteur (parabole)
+                </p>
+                
+                <div class="formula-box" style="margin-top: 24px;">
+                    v(t) = v₀ - g·t
+                </div>
+                <p class="formula-desc">
+                    Équation horaire de la vitesse (droite décroissante)
+                </p>
+                
+                <div class="formula-box" style="margin-top: 24px;">
+                    v² = v₀² - 2·g·(y - h₀)
+                </div>
+                <p class="formula-desc">
+                    Relation indépendante du temps (Torricelli)
+                </p>
+                
+                <div class="formula-box" style="margin-top: 24px;">
+                    t_chute = (v₀ + √(v₀² + 2gh₀)) / g
+                </div>
+                <p class="formula-desc">
+                    Temps de chute jusqu'au sol (y = 0)
+                </p>
+                
+                <div style="background: var(--surface2); padding: 16px; border-radius: var(--radius-sm); margin-top: 20px;">
+                    <p style="color: var(--text-dim);">
+                        <strong>🎓 Niveau lycée (Bénin) :</strong> g = 9,81 m/s² sur Terre. 
+                        Ces formules sont à connaître par cœur. L'énergie mécanique se conserve : 
+                        E_m = ½·m·v² + m·g·y = constante.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Comment utiliser la simulation -->
+        <section id="utilisation">
+            <h2 class="section-title"><span>4</span> Comment utiliser la simulation</h2>
+            <div class="card card-green">
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Ajustez les paramètres</h3>
+                        <p style="color: var(--text-dim);">Modifiez la hauteur initiale h₀, la vitesse initiale v₀ et la gravité g avec les sliders.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Lancez la simulation</h3>
+                        <p style="color: var(--text-dim);">Cliquez sur "Lancer" pour démarrer la chute et observer la trajectoire parabolique.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Observez les vecteurs</h3>
+                        <p style="color: var(--text-dim);">Le vecteur vitesse (cyan) et le vecteur accélération (orange) sont décalés pour une meilleure visibilité.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Analysez les résultats</h3>
+                        <p style="color: var(--text-dim);">Le panneau de résultats affiche en temps réel la hauteur, la vitesse, l'accélération et les énergies.</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="chute-libre-simulation.html" class="btn-sim" style="display: inline-block; padding: 12px 30px;">
+                        🚀 Accéder à la simulation complète
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Démo interactive -->
+        <section id="demo">
+            <h2 class="section-title"><span>5</span> Démo interactive</h2>
+            <div class="card card-purple">
+                <canvas id="demo-canvas"></canvas>
+                <div class="demo-controls">
+                    <button class="demo-btn active" id="demo-sans">Sans v₀ (lâcher)</button>
+                    <button class="demo-btn" id="demo-bas">Lancer vers le bas</button>
+                    <button class="demo-btn" id="demo-haut">Lancer vers le haut</button>
+                    <button class="demo-btn" id="demo-reset">↺ Reset</button>
+                </div>
+                <p style="text-align: center; color: var(--text-dim);">
+                    Une petite démo pour visualiser rapidement les différents cas. Le point lumineux représente le mobile.
+                    <br>Hauteur initiale fixée à 10 m, gravité g = 9,81 m/s².
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 6: Expériences à réaliser -->
+        <section id="experiences">
+            <h2 class="section-title"><span>6</span> Expériences à réaliser</h2>
+            <div class="exp-grid">
+                <div class="exp-card card-blue">
+                    <div class="exp-title">🧪 Expérience 1 : Chute sans vitesse initiale</div>
+                    <p>Lâchez un objet d'une hauteur de 20 m avec v₀ = 0. Calculez le temps de chute et la vitesse à l'impact.</p>
+                    <div class="exp-params">Paramètres : h₀ = 20 m, v₀ = 0 m/s, g = 9,81 m/s²</div>
+                    <div class="exp-result">t ≈ 2,02 s, v ≈ 19,8 m/s</div>
+                </div>
+                <div class="exp-card card-orange">
+                    <div class="exp-title">🧪 Expérience 2 : Lancer vers le bas</div>
+                    <p>Lancez une balle vers le bas avec v₀ = 5 m/s depuis 15 m de haut.</p>
+                    <div class="exp-params">Paramètres : h₀ = 15 m, v₀ = -5 m/s, g = 9,81 m/s²</div>
+                    <div class="exp-result">t ≈ 1,24 s, v ≈ -17,2 m/s</div>
+                </div>
+                <div class="exp-card card-green">
+                    <div class="exp-title">🧪 Expérience 3 : Lancer vers le haut</div>
+                    <p>Lancez une balle vers le haut avec v₀ = 8 m/s depuis 10 m. Quelle hauteur maximale atteint-elle ?</p>
+                    <div class="exp-params">Paramètres : h₀ = 10 m, v₀ = +8 m/s, g = 9,81 m/s²</div>
+                    <div class="exp-result">h_max ≈ 13,26 m (à t = 0,82 s)</div>
+                </div>
+                <div class="exp-card card-red">
+                    <div class="exp-title">🧪 Expérience 4 : Sur la Lune</div>
+                    <p>Simulez la même chute que l'expérience 1 mais sur la Lune (g = 1,62 m/s²).</p>
+                    <div class="exp-params">Paramètres : h₀ = 20 m, v₀ = 0 m/s, g = 1,62 m/s²</div>
+                    <div class="exp-result">t ≈ 4,97 s (2,5× plus long), v ≈ 8,05 m/s</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Quiz -->
+        <section id="quiz">
+            <h2 class="section-title"><span>7</span> Quiz</h2>
+            <div class="quiz-container">
+                <div class="quiz-question" id="q1">
+                    <div class="quiz-text">1️⃣ Que vaut l'accélération d'un corps en chute libre (sans frottements) ?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="1" data-a="g">g = 9,81 m/s² vers le bas</button>
+                        <button class="quiz-option" data-q="1" data-a="zero">0 (vitesse constante)</button>
+                        <button class="quiz-option" data-q="1" data-a="variable">Elle varie avec la masse</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb1"></div>
+                </div>
+                
+                <div class="quiz-question" id="q2">
+                    <div class="quiz-text">2️⃣ Quelle est l'équation de la hauteur en chute libre ?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="2" data-a="y = h0 + v0·t - ½·g·t²">y = h₀ + v₀·t - ½·g·t²</button>
+                        <button class="quiz-option" data-q="2" data-a="y = h0 - ½·g·t²">y = h₀ - ½·g·t²</button>
+                        <button class="quiz-option" data-q="2" data-a="y = h0 + v0·t">y = h₀ + v₀·t</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb2"></div>
+                </div>
+                
+                <div class="quiz-question" id="q3">
+                    <div class="quiz-text">3️⃣ Un objet est lâché sans vitesse initiale d'une hauteur de 20 m. Quel est son temps de chute ? (g = 10 m/s² pour simplifier)</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="3" data-a="2">2 secondes</button>
+                        <button class="quiz-option" data-q="3" data-a="4">4 secondes</button>
+                        <button class="quiz-option" data-q="3" data-a="1">1 seconde</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb3"></div>
+                </div>
+                
+                <div class="quiz-question" id="q4">
+                    <div class="quiz-text">4️⃣ Sur quel astre la chute est-elle la plus lente ?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="4" data-a="lune">La Lune (g = 1,62 m/s²)</button>
+                        <button class="quiz-option" data-q="4" data-a="terre">La Terre (g = 9,81 m/s²)</button>
+                        <button class="quiz-option" data-q="4" data-a="mars">Mars (g = 3,71 m/s²)</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb4"></div>
+                </div>
+                
+                <div class="quiz-score" id="quiz-score">
+                    Score : 0/4
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scroll to top button -->
+    <div id="scroll-top">↑</div>
+
+    <!-- Adsterra Social Bar (avant </body>) -->
+    <script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+
+    <!-- Politique de Confidentialité -->
+    <div class="footer">
+        <a href="politique-confidentialite.html" class="privacy-link">Politique de Confidentialité</a>
+        <p style="color: var(--text-mute); font-size: 0.8rem;">© 2026 SimLab · atinzlab.pages.dev · UAC Bénin</p>
+    </div>
+
+    <script>
+        // ===== PROGRESS BAR =====
+        const progressBar = document.getElementById('progress-bar');
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+
+        // ===== SCROLL TO TOP =====
+        const scrollTop = document.getElementById('scroll-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTop.classList.add('visible');
+            } else {
+                scrollTop.classList.remove('visible');
+            }
+        });
+        scrollTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ===== DÉMO INTERACTIVE CHUTE LIBRE =====
+        const canvas = document.getElementById('demo-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Paramètres de la démo
+        let demoCase = 'sans'; // 'sans', 'bas', 'haut'
+        let demoTime = 0;
+        let demoAnimFrame;
+        let lastTimestamp;
+        let demoRunning = true;
+        
+        // Constantes
+        const DEMO_H0 = 10;
+        const DEMO_G = 9.81;
+        
+        function getDemoParams() {
+            switch(demoCase) {
+                case 'sans': return { v0: 0, color: '#00e5ff' };
+                case 'bas': return { v0: -5, color: '#ff8c00' };
+                case 'haut': return { v0: 8, color: '#ffd740' };
+                default: return { v0: 0, color: '#00e5ff' };
+            }
+        }
+
+        function resetDemo() {
+            demoTime = 0;
+        }
+
+        function drawDemo() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const params = getDemoParams();
+            const v0 = params.v0;
+            
+            // Calcul de la position selon chute libre
+            const y = DEMO_H0 + v0 * demoTime - 0.5 * DEMO_G * demoTime * demoTime;
+            const v = v0 - DEMO_G * demoTime;
+            
+            const centerX = canvas.width / 2;
+            const groundY = canvas.height - 50;
+            const scale = 15; // pixels par mètre
+            
+            // Sol
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.strokeStyle = '#ff8c00';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // Lignes de hauteur
+            for (let i = 0; i <= DEMO_H0; i += 2) {
+                const yPos = groundY - i * scale;
+                if (yPos < 20) continue;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX - 100, yPos);
+                ctx.lineTo(centerX + 100, yPos);
+                ctx.strokeStyle = i === 0 ? '#ff4444' : 'rgba(42, 58, 92, 0.5)';
+                ctx.stroke();
+                
+                ctx.fillStyle = '#8898b0';
+                ctx.font = '10px JetBrains Mono';
+                ctx.textAlign = 'right';
+                ctx.fillText(i + ' m', centerX - 110, yPos - 4);
+            }
+            
+            // Point matériel
+            const objY = groundY - Math.max(0, y) * scale;
+            
+            if (y >= 0) {
+                // Halo
+                const grad = ctx.createRadialGradient(centerX, objY, 0, centerX, objY, 30);
+                grad.addColorStop(0, 'rgba(0, 229, 255, 0.6)');
+                grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
+                ctx.beginPath();
+                ctx.arc(centerX, objY, 30, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                
+                // Point
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = '#00e5ff';
+                ctx.beginPath();
+                ctx.arc(centerX, objY, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#ffffff';
+                ctx.fill();
+                
+                ctx.shadowBlur = 25;
+                ctx.beginPath();
+                ctx.arc(centerX, objY, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#00e5ff';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+                
+                // Vecteur vitesse
+                if (Math.abs(v) > 0.1) {
+                    const arrowStartX = centerX - 40;
+                    const arrowStartY = objY;
+                    const arrowLength = Math.abs(v) * 5;
+                    const arrowEndX = centerX - 40 - (v > 0 ? arrowLength : -arrowLength);
+                    
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#00e5ff';
+                    ctx.lineWidth = 2;
+                    ctx.moveTo(arrowStartX, arrowStartY);
+                    ctx.lineTo(arrowEndX, arrowStartY);
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = '#00e5ff';
+                    ctx.beginPath();
+                    ctx.moveTo(arrowEndX, arrowStartY);
+                    ctx.lineTo(arrowEndX - (v > 0 ? 10 : -10), arrowStartY - 5);
+                    ctx.lineTo(arrowEndX - (v > 0 ? 10 : -10), arrowStartY + 5);
+                    ctx.closePath();
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px JetBrains Mono';
+                    ctx.fillText('v', arrowEndX - (v > 0 ? 20 : -20), arrowStartY - 10);
+                }
+                
+                // Vecteur gravité
+                const gStartX = centerX + 40;
+                const gEndX = centerX + 40 + 40;
+                
+                ctx.beginPath();
+                ctx.strokeStyle = '#ff8c00';
+                ctx.lineWidth = 2;
+                ctx.moveTo(gStartX, objY);
+                ctx.lineTo(gEndX, objY);
+                ctx.stroke();
+                
+                ctx.fillStyle = '#ff8c00';
+                ctx.beginPath();
+                ctx.moveTo(gEndX, objY);
+                ctx.lineTo(gEndX - 10, objY - 5);
+                ctx.lineTo(gEndX - 10, objY + 5);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px JetBrains Mono';
+                ctx.fillText('g', gEndX + 15, objY - 10);
+            }
+            
+            // Réinitialisation si hors écran
+            if (y < 0) {
+                resetDemo();
+            }
+        }
+
+        function updateDemo(ts) {
+            if (!lastTimestamp) lastTimestamp = ts;
+            const dt = Math.min((ts - lastTimestamp) / 1000, 0.05);
+            lastTimestamp = ts;
+            
+            demoTime += dt;
+            
+            drawDemo();
+            demoAnimFrame = requestAnimationFrame(updateDemo);
+        }
+
+        demoAnimFrame = requestAnimationFrame(updateDemo);
+
+        // Contrôles démo
+        document.getElementById('demo-sans').addEventListener('click', (e) => {
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            demoCase = 'sans';
+            resetDemo();
+        });
+        
+        document.getElementById('demo-bas').addEventListener('click', (e) => {
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            demoCase = 'bas';
+            resetDemo();
+        });
+        
+        document.getElementById('demo-haut').addEventListener('click', (e) => {
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            demoCase = 'haut';
+            resetDemo();
+        });
+        
+        document.getElementById('demo-reset').addEventListener('click', () => {
+            resetDemo();
+        });
+
+        // ===== QUIZ =====
+        const correctAnswers = {
+            1: 'g',
+            2: 'y = h0 + v0·t - ½·g·t²',
+            3: '2',
+            4: 'lune'
+        };
+
+        let score = 0;
+        let answered = { 1: false, 2: false, 3: false, 4: false };
+
+        document.querySelectorAll('.quiz-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const q = btn.dataset.q;
+                const a = btn.dataset.a;
+                
+                if (answered[q]) return;
+                
+                const isCorrect = (a === correctAnswers[q]);
+                const feedback = document.getElementById(`fb${q}`);
+                
+                if (isCorrect) {
+                    btn.classList.add('correct');
+                    feedback.textContent = '✓ Correct !';
+                    feedback.style.color = 'var(--green)';
+                    score++;
+                } else {
+                    btn.classList.add('incorrect');
+                    feedback.textContent = '✗ Incorrect. Essaie encore !';
+                    feedback.style.color = 'var(--red)';
+                }
+                
+                answered[q] = true;
+                
+                // Trouver la bonne réponse pour la mettre en évidence
+                document.querySelectorAll(`[data-q="${q}"]`).forEach(opt => {
+                    if (opt.dataset.a === correctAnswers[q]) {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                updateScore();
+            });
+        });
+
+        function updateScore() {
+            const scoreEl = document.getElementById('quiz-score');
+            let emoji = '';
+            if (score === 4) emoji = '🏆 Parfait ! Tu maîtrises la chute libre !';
+            else if (score === 3) emoji = '👍 Très bien ! Encore un petit effort';
+            else if (score === 2) emoji = '👌 Peux mieux faire, revise les formules';
+            else emoji = '📚 À réviser, relis attentivement le guide';
+            
+            scoreEl.textContent = `Score : ${score}/4 ${emoji}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide Interactif — Interférences Ondulatoires | SimLab</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2540;
+  --surface3: #1f2d4a;
+  --cyan: #00e5ff;
+  --cyan-dim: rgba(0,229,255,0.12);
+  --cyan-glow: rgba(0,229,255,0.35);
+  --yellow: #ffd740;
+  --green: #00ff88;
+  --red: #ff4060;
+  --orange: #ff9800;
+  --blue: #448aff;
+  --purple: #d048ff;
+  --text: #e0eaff;
+  --text-dim: #7a8db3;
+  --border: rgba(0,229,255,0.1);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --header-h: 60px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Outfit',sans-serif;font-size:15px;
+  line-height:1.7;min-height:100vh;
+  padding-top:var(--header-h);
+}
+
+/* PROGRESS BAR */
+#progress-bar{
+  position:fixed;top:0;left:0;height:3px;width:0%;
+  background:linear-gradient(90deg,var(--cyan),var(--yellow));
+  z-index:200;transition:width .1s linear;
+  box-shadow:0 0 10px var(--cyan-glow);
+}
+
+/* HEADER */
+#header{
+  position:fixed;top:0;left:0;right:0;z-index:150;
+  height:var(--header-h);
+  background:rgba(10,14,26,0.97);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(16px);
+  display:flex;align-items:center;gap:10px;padding:0 20px;
+}
+.header-logo{
+  font-size:14px;font-weight:700;color:var(--cyan);
+  letter-spacing:.5px;white-space:nowrap;display:flex;align-items:center;gap:6px;
+}
+.header-badge{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:3px 10px;font-size:11px;
+  color:var(--yellow);font-weight:600;white-space:nowrap;
+}
+.header-spacer{flex:1;}
+.btn-sim{
+  padding:7px 16px;border-radius:var(--radius-sm);
+  background:var(--green);color:#0a1a0a;
+  font-size:12px;font-weight:700;font-family:'Outfit',sans-serif;
+  border:none;cursor:pointer;transition:all .2s;white-space:nowrap;
+  text-decoration:none;display:flex;align-items:center;gap:5px;
+}
+.btn-sim:hover{filter:brightness(1.15);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,255,136,.35);}
+.btn-back{
+  padding:7px 14px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text-dim);font-size:12px;font-family:'Outfit',sans-serif;
+  cursor:pointer;transition:all .2s;white-space:nowrap;text-decoration:none;
+  display:flex;align-items:center;gap:4px;
+}
+.btn-back:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* LAYOUT */
+.container{max-width:900px;margin:0 auto;padding:40px 20px 80px;}
+
+/* HERO */
+.hero{
+  text-align:center;padding:60px 20px 40px;
+  background:radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.07) 0%, transparent 60%);
+  border-bottom:1px solid var(--border);margin-bottom:40px;
+}
+.hero-tag{
+  display:inline-block;background:var(--cyan-dim);border:1px solid var(--border);
+  color:var(--cyan);font-size:12px;font-weight:600;letter-spacing:1px;
+  text-transform:uppercase;padding:4px 14px;border-radius:20px;margin-bottom:16px;
+}
+.hero h1{
+  font-size:clamp(26px,5vw,42px);font-weight:800;line-height:1.2;
+  background:linear-gradient(135deg,var(--text) 0%,var(--cyan) 60%,var(--yellow) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:14px;
+}
+.hero p{color:var(--text-dim);font-size:15px;max-width:600px;margin:0 auto;}
+
+/* TABLE OF CONTENTS */
+.toc{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;margin-bottom:48px;
+}
+.toc-title{
+  font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:1px;
+  text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;}
+.toc-item{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;border-radius:var(--radius-sm);
+  border:1px solid transparent;
+  text-decoration:none;color:var(--text-dim);
+  transition:all .2s;font-size:13px;
+}
+.toc-item:hover{background:var(--surface2);border-color:var(--border);color:var(--cyan);}
+.toc-num{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;color:var(--bg);
+}
+
+/* SECTIONS */
+.section{margin-bottom:64px;scroll-margin-top:80px;}
+.section-header{
+  display:flex;align-items:center;gap:14px;margin-bottom:24px;
+}
+.section-num{
+  width:40px;height:40px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:800;color:var(--bg);
+  box-shadow:0 0 20px var(--cyan-glow);
+}
+.section-title{font-size:clamp(18px,3vw,24px);font-weight:700;color:var(--text);}
+.section-sub{font-size:13px;color:var(--text-dim);margin-top:2px;}
+
+/* CARDS */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:16px;
+}
+.card-blue{border-left:4px solid var(--blue);}
+.card-orange{border-left:4px solid var(--orange);}
+.card-green{border-left:4px solid var(--green);}
+.card-red{border-left:4px solid var(--red);}
+.card-yellow{border-left:4px solid var(--yellow);}
+.card-cyan{border-left:4px solid var(--cyan);}
+.card-purple{border-left:4px solid var(--purple);}
+.card-title{font-size:14px;font-weight:700;color:var(--cyan);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.card p{color:var(--text-dim);font-size:14px;}
+
+/* FORMULA BOX */
+.formula-box{
+  background:#0d1525;border:1px solid rgba(255,215,64,0.2);
+  border-radius:var(--radius-sm);padding:16px 20px;margin:14px 0;
+  border-left:4px solid var(--yellow);
+}
+.formula-box .formula{
+  font-family:'JetBrains Mono',monospace;font-size:15px;
+  color:var(--yellow);font-weight:600;letter-spacing:.5px;
+  display:block;margin-bottom:8px;
+}
+.formula-box .formula-desc{font-size:12px;color:var(--text-dim);line-height:1.7;}
+.formula-box .formula-desc b{color:var(--cyan);}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead{background:var(--surface2);}
+th{padding:12px 16px;text-align:left;color:var(--cyan);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);}
+td{padding:11px 16px;border-bottom:1px solid rgba(0,229,255,0.05);color:var(--text-dim);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);color:var(--text);}
+.badge{
+  display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600;
+}
+.badge-green{background:rgba(0,255,136,.15);color:var(--green);border:1px solid rgba(0,255,136,.3);}
+.badge-red{background:rgba(255,64,96,.15);color:var(--red);border:1px solid rgba(255,64,96,.3);}
+.badge-yellow{background:rgba(255,215,64,.15);color:var(--yellow);border:1px solid rgba(255,215,64,.3);}
+.badge-blue{background:rgba(68,138,255,.15);color:var(--blue);border:1px solid rgba(68,138,255,.3);}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:16px;}
+.step{display:flex;gap:16px;align-items:flex-start;}
+.step-num{
+  width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--cyan) 0%,var(--blue) 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;font-weight:800;color:var(--bg);
+  box-shadow:0 0 14px var(--cyan-glow);margin-top:2px;
+}
+.step-body{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.step-desc{font-size:13px;color:var(--text-dim);line-height:1.6;}
+
+/* MINI CANVAS */
+#demo-canvas{
+  width:100%;height:280px;
+  background:#060b14;border-radius:var(--radius);
+  display:block;border:1px solid var(--border);
+}
+.demo-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.demo-btn{
+  padding:7px 16px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text-dim);font-size:12px;font-family:'Outfit',sans-serif;font-weight:600;
+  cursor:pointer;transition:all .2s;
+}
+.demo-btn.active,.demo-btn:hover{background:var(--cyan-dim);border-color:var(--cyan);color:var(--cyan);}
+
+/* EXPERIMENTS */
+.exp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.exp-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;position:relative;overflow:hidden;
+}
+.exp-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.exp-1::before{background:linear-gradient(90deg,var(--cyan),var(--blue));}
+.exp-2::before{background:linear-gradient(90deg,var(--yellow),var(--orange));}
+.exp-3::before{background:linear-gradient(90deg,var(--green),var(--cyan));}
+.exp-4::before{background:linear-gradient(90deg,var(--purple),var(--red));}
+.exp-num{
+  font-size:10px;font-weight:700;color:var(--text-dim);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;
+}
+.exp-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:12px;}
+.exp-params{
+  background:var(--surface2);border-radius:var(--radius-sm);
+  padding:10px;margin-bottom:12px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:var(--yellow);line-height:1.9;
+}
+.exp-result{
+  font-size:12px;color:var(--text-dim);
+  border-top:1px solid var(--border);padding-top:10px;
+}
+.exp-result b{color:var(--green);}
+
+/* QUIZ */
+.quiz-question{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:22px;margin-bottom:16px;
+}
+.quiz-q-text{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;}
+.quiz-q-num{font-size:11px;color:var(--cyan);font-weight:700;text-transform:uppercase;margin-bottom:6px;}
+.quiz-options{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{
+  padding:10px 16px;border-radius:var(--radius-sm);
+  border:1px solid var(--border);background:var(--surface2);
+  color:var(--text-dim);font-size:13px;font-family:'Outfit',sans-serif;
+  cursor:pointer;transition:all .2s;text-align:left;
+}
+.quiz-opt:hover:not(:disabled){background:var(--cyan-dim);border-color:var(--cyan);color:var(--text);}
+.quiz-opt.correct{background:rgba(0,255,136,.12);border-color:var(--green);color:var(--green);}
+.quiz-opt.wrong{background:rgba(255,64,96,.12);border-color:var(--red);color:var(--red);}
+.quiz-opt:disabled{cursor:default;}
+.quiz-feedback{
+  margin-top:10px;padding:10px 14px;border-radius:var(--radius-sm);
+  font-size:13px;display:none;
+}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.ok{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--green);}
+.quiz-feedback.ko{background:rgba(255,64,96,.1);border:1px solid rgba(255,64,96,.3);color:var(--red);}
+#quiz-score{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;text-align:center;
+  display:none;
+}
+.score-emoji{font-size:48px;margin-bottom:10px;}
+.score-text{font-size:20px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.score-sub{font-size:14px;color:var(--text-dim);}
+.score-pct{
+  font-family:'JetBrains Mono',monospace;font-size:36px;
+  font-weight:700;color:var(--cyan);margin:14px 0;
+}
+.btn-retry{
+  padding:10px 24px;border-radius:var(--radius-sm);
+  background:var(--cyan);color:var(--bg);border:none;
+  font-size:14px;font-weight:700;font-family:'Outfit',sans-serif;
+  cursor:pointer;margin-top:12px;transition:all .2s;
+}
+.btn-retry:hover{filter:brightness(1.1);}
+
+/* SCROLL TOP */
+#scroll-top{
+  position:fixed;bottom:24px;right:20px;z-index:100;
+  width:44px;height:44px;border-radius:50%;
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--cyan);font-size:18px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s;opacity:0;transform:translateY(20px);
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+#scroll-top.visible{opacity:1;transform:translateY(0);}
+#scroll-top:hover{background:var(--cyan-dim);border-color:var(--cyan);}
+
+/* HIGHLIGHT */
+.highlight{color:var(--cyan);font-weight:600;}
+.yellow{color:var(--yellow);}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:48px 0;}
+
+/* NATIVE AD */
+.native-ad-wrap{display:flex;justify-content:center;margin:32px 0;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* RESPONSIVE */
+@media(max-width:640px){
+  .header-badge{display:none;}
+  #header{padding:0 12px;gap:6px;}
+  .container{padding:24px 14px 60px;}
+  .hero{padding:40px 14px 30px;}
+  .exp-grid{grid-template-columns:1fr;}
+  .toc-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- HEADER -->
+<header id="header">
+  <a href="index.html" class="btn-back">← Retour</a>
+  <div class="header-logo">⚗️ SimLab <span class="header-badge">📖 Guide Interactif</span></div>
+  <div class="header-spacer"></div>
+  <a href="interferences.html" class="btn-sim">🚀 Lancer la Simulation</a>
+</header>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">🌊 Physique des Ondes</div>
+    <h1>Guide Complet sur les<br>Interférences Ondulatoires</h1>
+    <p>Comprendre, visualiser et maîtriser les interférences lumineuses. Guide niveau lycée &amp; université — Bénin.</p>
+  </div>
+
+  <!-- TABLE DES MATIÈRES -->
+  <div class="toc">
+    <div class="toc-title">📋 Table des matières</div>
+    <div class="toc-grid">
+      <a href="#s1" class="toc-item"><span class="toc-num">1</span> Introduction au phénomène</a>
+      <a href="#s2" class="toc-item"><span class="toc-num">2</span> Types d'interférences</a>
+      <a href="#s3" class="toc-item"><span class="toc-num">3</span> Formules essentielles</a>
+      <a href="#s4" class="toc-item"><span class="toc-num">4</span> Utiliser la simulation</a>
+      <a href="#s5" class="toc-item"><span class="toc-num">5</span> Démo interactive</a>
+      <a href="#s6" class="toc-item"><span class="toc-num">6</span> Expériences à réaliser</a>
+      <a href="#s7" class="toc-item"><span class="toc-num">7</span> Quiz de validation</a>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 1 ===== -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div><div class="section-title">Introduction au phénomène</div><div class="section-sub">Qu'est-ce que les interférences ?</div></div>
+    </div>
+
+    <div class="card card-blue">
+      <div class="card-title">🌊 Définition</div>
+      <p>Les <span class="highlight">interférences</span> sont un phénomène physique qui se produit quand <strong>deux ou plusieurs ondes se superposent</strong> dans le même milieu au même endroit et au même moment. Le résultat dépend de leur déphasage relatif.</p>
+    </div>
+
+    <div class="card card-cyan">
+      <div class="card-title">💡 Condition de cohérence</div>
+      <p>Pour observer des interférences stables, les sources doivent être <span class="highlight">cohérentes</span> : même fréquence, déphasage constant. En optique, on utilise le dispositif des <strong>fentes d'Young</strong> pour créer deux sources cohérentes à partir d'une seule.</p>
+    </div>
+
+    <div class="card card-orange">
+      <div class="card-title">🔬 Historique — Thomas Young (1801)</div>
+      <p>Le physicien britannique <strong>Thomas Young</strong> fut le premier à démontrer la nature ondulatoire de la lumière en faisant passer un faisceau lumineux à travers deux fentes étroites parallèles. Il observa sur un écran des <span class="highlight">franges alternativement brillantes et sombres</span>.</p>
+    </div>
+
+    <div class="card card-green">
+      <div class="card-title">📌 Principe de superposition</div>
+      <p>Lorsque deux ondes se rencontrent, leur amplitude résultante est la <span class="highlight">somme algébrique</span> de leurs amplitudes individuelles :<br><br>
+      <code style="color:var(--yellow);font-family:'JetBrains Mono',monospace;">y(x,t) = y₁(x,t) + y₂(x,t)</code><br><br>
+      C'est ce principe qui rend possible l'amplification (constructive) ou l'annulation (destructive).</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== SECTION 2 ===== -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div><div class="section-title">Les types d'interférences</div><div class="section-sub">Tableau comparatif complet</div></div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Condition</th>
+            <th>Différence de chemin δ</th>
+            <th>Résultat visuel</th>
+            <th>Intensité</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:var(--green);">Constructive</strong></td>
+            <td>En phase (Δφ = 2mπ)</td>
+            <td><code style="color:var(--yellow);font-family:'JetBrains Mono',monospace;">δ = m·λ</code></td>
+            <td><span class="badge badge-green">Frange brillante</span></td>
+            <td>I = 4I₀ (max)</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--red);">Destructive</strong></td>
+            <td>Opposition (Δφ = (2m+1)π)</td>
+            <td><code style="color:var(--yellow);font-family:'JetBrains Mono',monospace;">δ = (m+½)·λ</code></td>
+            <td><span class="badge badge-red">Frange sombre</span></td>
+            <td>I = 0 (min)</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--yellow);">Partielle</strong></td>
+            <td>Δφ quelconque</td>
+            <td>0 &lt; δ &lt; λ</td>
+            <td><span class="badge badge-yellow">Luminosité variable</span></td>
+            <td>0 &lt; I &lt; 4I₀</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--blue);">Stationnaire</strong></td>
+            <td>Ondes contra-propagatives</td>
+            <td>Nœuds et ventres fixes</td>
+            <td><span class="badge badge-blue">Nœuds / Ventres</span></td>
+            <td>Variable selon x</td>
+          </tr>
+          <tr>
+            <td><strong style="color:var(--cyan);">Young (lumière)</strong></td>
+            <td>2 fentes cohérentes</td>
+            <td><code style="color:var(--yellow);font-family:'JetBrains Mono',monospace;">δ = d·x/D</code></td>
+            <td><span class="badge badge-green">Franges équidistantes</span></td>
+            <td>Alternée max/0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top:16px;" class="card card-yellow">
+      <div class="card-title">🎨 Lumière blanche vs monochromatique</div>
+      <p>Avec une lumière <span class="highlight">monochromatique</span> (une seule longueur d'onde), les franges sont nettes et équidistantes. Avec la lumière blanche, chaque couleur interfère à un endroit différent → on obtient des <strong>irisations colorées</strong> au centre (ordre 0 blanc) et arc-en-ciel sur les côtés.</p>
+    </div>
+  </section>
+
+  <!-- NATIVE AD -->
+  <div class="native-ad-wrap">
+    <div id="container-ced9d6bd01657bda6021abb1c5919291"></div>
+    <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ===== SECTION 3 ===== -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div><div class="section-title">Formules essentielles</div><div class="section-sub">Les relations mathématiques clés</div></div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula">i = λ · D / d</span>
+      <div class="formula-desc">
+        <b>Interfrange i</b> = espacement entre deux franges brillantes (ou sombres) consécutives.<br>
+        • <b>λ</b> = longueur d'onde de la lumière (en mètres) — ex: 500 nm = 500×10⁻⁹ m<br>
+        • <b>D</b> = distance entre les fentes et l'écran (en mètres)<br>
+        • <b>d</b> = écartement entre les deux fentes (en mètres)<br>
+        📌 Plus <b>d</b> est grand → franges serrées. Plus <b>D</b> est grand → franges larges.
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula">δ = r₂ - r₁ = d · x / D</span>
+      <div class="formula-desc">
+        <b>Différence de marche δ</b> (ou chemin optique) entre les deux ondes arrivant en un point M situé à la distance <b>x</b> de l'axe central sur l'écran.<br>
+        • Si δ = m·λ (m entier) → <b>interférence constructive</b> → frange brillante<br>
+        • Si δ = (m + ½)·λ → <b>interférence destructive</b> → frange sombre
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula">Iₘ = 4·I₀·cos²(δπ/λ)</span>
+      <div class="formula-desc">
+        <b>Intensité lumineuse</b> en un point M de l'écran, en fonction de la différence de marche δ.<br>
+        • <b>I₀</b> = intensité d'une source seule<br>
+        • Maximum : I = 4I₀ quand δ = m·λ (frange brillante)<br>
+        • Minimum : I = 0 quand δ = (m+½)·λ (frange sombre)
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula">c = λ · f &nbsp;&nbsp;→&nbsp;&nbsp; f = c / λ</span>
+      <div class="formula-desc">
+        <b>Relation fondamentale</b> entre célérité <b>c</b>, longueur d'onde <b>λ</b> et fréquence <b>f</b>.<br>
+        • c ≈ 3×10⁸ m/s dans le vide<br>
+        • Pour λ = 500 nm : f = 3×10⁸ / 500×10⁻⁹ ≈ <b>600 THz</b> (lumière verte)
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula">y(x,t) = A·cos(kx − ωt + φ₀)</span>
+      <div class="formula-desc">
+        <b>Équation d'une onde progressive</b> harmonique.<br>
+        • <b>A</b> = amplitude (m) &nbsp;|&nbsp; <b>k = 2π/λ</b> = nombre d'onde (rad/m)<br>
+        • <b>ω = 2πf</b> = pulsation (rad/s) &nbsp;|&nbsp; <b>φ₀</b> = phase initiale (rad)<br>
+        La superposition y₁ + y₂ donne le phénomène d'interférence.
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <span class="formula">Ordre d'interférence : m = δ / λ</span>
+      <div class="formula-desc">
+        L'ordre m (entier) identifie le numéro de la frange.<br>
+        • m = 0 → frange centrale (brillante, sur l'axe)<br>
+        • m = ±1, ±2, ±3… → franges d'ordre 1, 2, 3…<br>
+        • Ordre maximum : m_max = d / (2λ) → au-delà, les franges se confondent.
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== SECTION 4 ===== -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div><div class="section-title">Comment utiliser la simulation</div><div class="section-sub">Guide pas à pas</div></div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Lancer la simulation</div>
+          <div class="step-desc">Cliquez sur le bouton <span style="background:var(--green);color:#0a1a0a;padding:2px 8px;border-radius:4px;font-size:12px;font-weight:700;">🚀 Lancer la Simulation</span> en haut de cette page, ou directement sur le bouton <strong>▶ Lancer</strong> dans l'interface de la simulation.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Régler la longueur d'onde λ</div>
+          <div class="step-desc">Dans l'onglet <strong>⚙️ Paramètres</strong>, faites glisser le slider <em>Longueur d'onde</em> entre 380 nm (violet) et 780 nm (rouge). Observez comment la couleur du patron change et les franges se déplacent.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Modifier d et D</div>
+          <div class="step-desc">Le slider <em>distance sources d</em> contrôle l'écartement des fentes (0.5 à 5 mm). Le slider <em>distance écran D</em> éloigne ou rapproche l'écran (0.5 à 3 m). Vérifiez que l'interfrange change selon <code style="color:var(--yellow);">i = λD/d</code>.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Lire les mesures en temps réel</div>
+          <div class="step-desc">Le panneau <strong>📊 Résultats</strong> (en haut à droite) s'affiche dès que la simulation tourne. L'onglet <strong>📐 Mesures</strong> détaille l'interfrange i, la fréquence f, la période T et la différence de marche δ.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Interagir avec le canvas</div>
+          <div class="step-desc">Sur ordinateur : survolez le canvas avec la souris → une info-bulle indique l'ordre d'interférence et si le point est constructif (vert) ou destructif (rouge). Sur mobile : touchez l'écran avec un doigt, ou pincez avec 2 doigts pour ajuster d en temps réel.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <div class="step-title">Exporter un rapport de TP</div>
+          <div class="step-desc">Dans l'onglet <strong>TP</strong> (icône document), cliquez sur <em>📄 Exporter TP (TXT)</em> pour télécharger un rapport automatique avec tous les paramètres et résultats calculés.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== SECTION 5 ===== -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div><div class="section-title">Démo interactive</div><div class="section-sub">Visualisation en direct du phénomène</div></div>
+    </div>
+
+    <canvas id="demo-canvas"></canvas>
+    <div class="demo-btns">
+      <button class="demo-btn active" onclick="setDemo('young')">🌊 Fentes d'Young</button>
+      <button class="demo-btn" onclick="setDemo('constructive')">✅ Constructive pure</button>
+      <button class="demo-btn" onclick="setDemo('destructive')">❌ Destructive pure</button>
+      <button class="demo-btn" onclick="setDemo('stationary')">〰️ Ondes stationnaires</button>
+    </div>
+    <div id="demo-desc" style="margin-top:12px;font-size:13px;color:var(--text-dim);padding:10px 14px;background:var(--surface);border-radius:var(--radius-sm);border:1px solid var(--border);"></div>
+  </section>
+
+  <!-- NATIVE AD 2 -->
+  <div class="native-ad-wrap">
+    <div id="container-ced9d6bd01657bda6021abb1c5919291-2"></div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ===== SECTION 6 ===== -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <div><div class="section-title">Expériences à réaliser</div><div class="section-sub">4 protocoles guidés avec résultats attendus</div></div>
+    </div>
+
+    <div class="exp-grid">
+      <div class="exp-card exp-1">
+        <div class="exp-num">Expérience N°1</div>
+        <div class="exp-title">🔵 Effet de la longueur d'onde</div>
+        <div class="exp-params">
+λ = 450 nm (bleu) → 650 nm (rouge)<br>
+d = 2,0 mm (fixe)<br>
+D = 1,0 m (fixe)
+        </div>
+        <div class="exp-result">
+          <b>Résultat attendu :</b><br>
+          i₁ = 0,225 mm (bleu)<br>
+          i₂ = 0,325 mm (rouge)<br>
+          → Les franges rouges sont ~44% plus larges.<br>
+          Formule : Δi = (λ₂−λ₁)·D/d
+        </div>
+      </div>
+
+      <div class="exp-card exp-2">
+        <div class="exp-num">Expérience N°2</div>
+        <div class="exp-title">🟡 Effet de la distance D</div>
+        <div class="exp-params">
+λ = 550 nm (vert, fixe)<br>
+d = 1,5 mm (fixe)<br>
+D = 0,5 m → 2,0 m
+        </div>
+        <div class="exp-result">
+          <b>Résultat attendu :</b><br>
+          i(D=0.5) ≈ 0,183 mm<br>
+          i(D=2.0) ≈ 0,733 mm<br>
+          → i est proportionnel à D. Multiplier D par 4 → i×4.
+        </div>
+      </div>
+
+      <div class="exp-card exp-3">
+        <div class="exp-num">Expérience N°3</div>
+        <div class="exp-title">🟢 Effet de l'écartement d</div>
+        <div class="exp-params">
+λ = 600 nm (orange, fixe)<br>
+D = 1,5 m (fixe)<br>
+d = 0,5 mm → 4,0 mm
+        </div>
+        <div class="exp-result">
+          <b>Résultat attendu :</b><br>
+          i(d=0.5) ≈ 1,80 mm<br>
+          i(d=4.0) ≈ 0,225 mm<br>
+          → i inversement proportionnel à d. Doubler d → i divisé par 2.
+        </div>
+      </div>
+
+      <div class="exp-card exp-4">
+        <div class="exp-num">Expérience N°4</div>
+        <div class="exp-title">🔴 Mesure de λ par interfrange</div>
+        <div class="exp-params">
+Objectif : retrouver λ<br>
+Mesurer i = 0,40 mm<br>
+d = 1,0 mm, D = 0,8 m
+        </div>
+        <div class="exp-result">
+          <b>Résultat attendu :</b><br>
+          λ = i·d/D = (0,40×10⁻³ × 1×10⁻³) / 0,8<br>
+          <b>λ = 500 nm</b> ✓ (lumière verte)<br>
+          → Méthode expérimentale classique au lycée.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ===== SECTION 7 ===== -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <div><div class="section-title">Quiz de validation</div><div class="section-sub">Testez vos connaissances — 4 questions</div></div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-question" id="q1">
+      <div class="quiz-q-num">Question 1 / 4</div>
+      <div class="quiz-q-text">La formule de l'interfrange dans l'expérience des fentes d'Young est :</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(1, this, false)">A — i = d · D / λ</button>
+        <button class="quiz-opt" onclick="answer(1, this, true)">B — i = λ · D / d</button>
+        <button class="quiz-opt" onclick="answer(1, this, false)">C — i = λ · d / D</button>
+        <button class="quiz-opt" onclick="answer(1, this, false)">D — i = λ / (d · D)</button>
+      </div>
+      <div class="quiz-feedback" id="fb1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-question" id="q2">
+      <div class="quiz-q-num">Question 2 / 4</div>
+      <div class="quiz-q-text">Pour qu'il y ait interférence constructive, la différence de marche δ doit vérifier :</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(2, this, false)">A — δ = (m + ½)·λ</button>
+        <button class="quiz-opt" onclick="answer(2, this, false)">B — δ = λ / 2</button>
+        <button class="quiz-opt" onclick="answer(2, this, true)">C — δ = m·λ &nbsp;(m entier)</button>
+        <button class="quiz-opt" onclick="answer(2, this, false)">D — δ = 2m·λ + 1</button>
+      </div>
+      <div class="quiz-feedback" id="fb2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-question" id="q3">
+      <div class="quiz-q-num">Question 3 / 4</div>
+      <div class="quiz-q-text">Si on double la distance d entre les fentes (D et λ constants), l'interfrange i :</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(3, this, false)">A — Double</button>
+        <button class="quiz-opt" onclick="answer(3, this, true)">B — Est divisé par 2</button>
+        <button class="quiz-opt" onclick="answer(3, this, false)">C — Ne change pas</button>
+        <button class="quiz-opt" onclick="answer(3, this, false)">D — Est multiplié par 4</button>
+      </div>
+      <div class="quiz-feedback" id="fb3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-question" id="q4">
+      <div class="quiz-q-num">Question 4 / 4</div>
+      <div class="quiz-q-text">Avec d = 1 mm, D = 2 m et λ = 500 nm, l'interfrange i vaut :</div>
+      <div class="quiz-options">
+        <button class="quiz-opt" onclick="answer(4, this, false)">A — 0,025 mm</button>
+        <button class="quiz-opt" onclick="answer(4, this, false)">B — 0,50 mm</button>
+        <button class="quiz-opt" onclick="answer(4, this, true)">C — 1,00 mm</button>
+        <button class="quiz-opt" onclick="answer(4, this, false)">D — 2,50 mm</button>
+      </div>
+      <div class="quiz-feedback" id="fb4"></div>
+    </div>
+
+    <!-- SCORE -->
+    <div id="quiz-score">
+      <div class="score-emoji" id="score-emoji">🏆</div>
+      <div class="score-text" id="score-text">Excellent !</div>
+      <div class="score-pct" id="score-pct">4/4</div>
+      <div class="score-sub" id="score-sub">Vous maîtrisez les interférences !</div>
+      <button class="btn-retry" onclick="resetQuiz()">🔄 Recommencer le quiz</button>
+    </div>
+
+    <div style="margin-top:20px;">
+      <a href="interferences.html" class="btn-sim" style="display:inline-flex;">🚀 Aller pratiquer sur la simulation →</a>
+    </div>
+  </section>
+
+</div><!-- /container -->
+
+<!-- SCROLL TOP -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ===== PROGRESS BAR =====
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement;
+  const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
+  document.getElementById('progress-bar').style.width=pct+'%';
+  const st=document.getElementById('scroll-top');
+  if(h.scrollTop>300) st.classList.add('visible');
+  else st.classList.remove('visible');
+});
+
+// ===== QUIZ =====
+let score=0, answered=0;
+const correctFb={
+  1:'✅ Bonne réponse ! i = λ·D/d. L\'interfrange est proportionnel à λ et D, et inversement proportionnel à d.',
+  2:'✅ Exact ! δ = m·λ (m entier) → franges brillantes. C\'est la condition d\'interférence constructive.',
+  3:'✅ Parfait ! i = λD/d → si d double, i = λD/(2d) → i est divisé par 2.',
+  4:'✅ Correct ! i = 500×10⁻⁹ × 2 / 1×10⁻³ = 1 000×10⁻⁶ m = 1,00 mm.'
+};
+const wrongFb={
+  1:'❌ Incorrect. La bonne formule est i = λ·D/d. Attention aux positions de λ, D et d !',
+  2:'❌ Incorrect. δ = m·λ pour la constructive. δ = (m+½)λ est la condition DESTRUCTIVE.',
+  3:'❌ Incorrect. i = λD/d → d et i sont inversement proportionnels. Si d×2 → i÷2.',
+  4:'❌ Incorrect. Calcul : i = (500×10⁻⁹ × 2) / (1×10⁻³) = 10⁻³ m = 1,00 mm.'
+};
+
+function answer(q, btn, correct){
+  const opts=document.querySelectorAll('#q'+q+' .quiz-opt');
+  opts.forEach(b=>b.disabled=true);
+  const fb=document.getElementById('fb'+q);
+  if(correct){
+    btn.classList.add('correct');
+    fb.className='quiz-feedback show ok';
+    fb.textContent=correctFb[q];
+    score++;
+  } else {
+    btn.classList.add('wrong');
+    fb.className='quiz-feedback show ko';
+    fb.textContent=wrongFb[q];
+    // highlight correct
+    opts.forEach(b=>{
+      if(b.onclick.toString().includes('true')) b.classList.add('correct');
+    });
+  }
+  answered++;
+  if(answered===4) setTimeout(showScore,700);
+}
+
+function showScore(){
+  const sc=document.getElementById('quiz-score');
+  sc.style.display='block';
+  document.getElementById('score-pct').textContent=score+'/4';
+  const msgs=[
+    {e:'😞',t:'À revoir !',s:'Relisez les formules et retentez.'},
+    {e:'😐',t:'Passable',s:'Quelques lacunes à combler.'},
+    {e:'👍',t:'Bien !',s:'Encore un effort pour maîtriser.'},
+    {e:'🌟',t:'Très bien !',s:'Vous avez de bonnes bases !'},
+    {e:'🏆',t:'Excellent !',s:'Vous maîtrisez les interférences !'},
+  ];
+  const m=msgs[score];
+  document.getElementById('score-emoji').textContent=m.e;
+  document.getElementById('score-text').textContent=m.t;
+  document.getElementById('score-sub').textContent=m.s;
+  sc.scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function resetQuiz(){
+  score=0;answered=0;
+  [1,2,3,4].forEach(q=>{
+    document.querySelectorAll('#q'+q+' .quiz-opt').forEach(b=>{
+      b.disabled=false;
+      b.classList.remove('correct','wrong');
+    });
+    const fb=document.getElementById('fb'+q);
+    fb.className='quiz-feedback';fb.textContent='';
+  });
+  document.getElementById('quiz-score').style.display='none';
+}
+
+// ===== DEMO CANVAS =====
+const dc=document.getElementById('demo-canvas');
+const dctx=dc.getContext('2d');
+let dW,dH,dTime=0,dMode='young',dRAF;
+
+function resizeDemo(){
+  dW=dc.parentElement.clientWidth;
+  dH=280;dc.width=dW;dc.height=dH;
+}
+resizeDemo();
+window.addEventListener('resize',resizeDemo);
+
+const demoDescriptions={
+  young:'🌊 <b>Fentes d\'Young :</b> Deux sources cohérentes S₁ et S₂ émettent des ondes circulaires. Leurs superpositions créent un patron de franges alternées brillantes (constructive) et sombres (destructive) sur l\'écran de droite.',
+  constructive:'✅ <b>Interférence constructive :</b> Les deux ondes arrivent exactement en phase (δ = m·λ). Les crêtes se superposent → amplitude double → intensité maximale (I = 4I₀).',
+  destructive:'❌ <b>Interférence destructive :</b> Les deux ondes arrivent en opposition de phase (δ = (m+½)λ). Crête + creux = annulation → amplitude nulle → obscurité (I = 0).',
+  stationary:'〰️ <b>Ondes stationnaires :</b> Superposition de deux ondes contra-propagatives de même fréquence. Les nœuds (amplitude nulle) et ventres (amplitude max) restent fixes dans l\'espace.'
+};
+
+function setDemo(mode){
+  dMode=mode;
+  document.querySelectorAll('.demo-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('demo-desc').innerHTML=demoDescriptions[mode];
+}
+document.getElementById('demo-desc').innerHTML=demoDescriptions['young'];
+
+function drawDemo(){
+  dctx.clearRect(0,0,dW,dH);
+  dctx.fillStyle='#060b14';
+  dctx.fillRect(0,0,dW,dH);
+
+  if(dMode==='young'){
+    const s1y=dH/2-35, s2y=dH/2+35, sx=dW*0.2, scrX=dW*0.82;
+    // Interference field
+    const imgD=dctx.createImageData(Math.round(scrX-sx),dH);
+    const dd=imgD.data;
+    for(let px=0;px<imgD.width;px++){
+      for(let py=0;py<dH;py++){
+        const wx=sx+px,wy=py;
+        const r1=Math.sqrt((wx-sx)**2+(wy-s1y)**2);
+        const r2=Math.sqrt((wx-sx)**2+(wy-s2y)**2);
+        const phase=(r2-r1)*0.18+dTime*0.04;
+        const I=0.5*(1+Math.cos(phase));
+        const i4=(py*imgD.width+px)*4;
+        dd[i4]=0;dd[i4+1]=Math.round(I*200);dd[i4+2]=Math.round(I*255);dd[i4+3]=Math.round(I*180);
+      }
+    }
+    dctx.putImageData(imgD,sx,0);
+    // Screen
+    for(let py=0;py<dH;py++){
+      const r1=Math.sqrt((scrX-sx)**2+(py-s1y)**2);
+      const r2=Math.sqrt((scrX-sx)**2+(py-s2y)**2);
+      const phase=(r2-r1)*0.18+dTime*0.04;
+      const I=0.5*(1+Math.cos(phase));
+      dctx.fillStyle=`rgba(0,${Math.round(I*220)},${Math.round(I*255)},${I*0.9})`;
+      dctx.fillRect(scrX,py,14,1);
+    }
+    // Wavefronts
+    [[sx,s1y],[sx,s2y]].forEach(([x,y])=>{
+      for(let n=0;n<5;n++){
+        const r=((dTime*1.2+n*45))%300;
+        dctx.beginPath();dctx.arc(x,y,r,0,2*Math.PI);
+        dctx.strokeStyle=`rgba(0,229,255,${0.18*(1-r/300)})`;
+        dctx.lineWidth=1;dctx.stroke();
+      }
+      dctx.beginPath();dctx.arc(x,y,7,0,2*Math.PI);
+      dctx.fillStyle='#00e5ff';dctx.fill();
+    });
+    dctx.fillStyle='rgba(0,229,255,0.7)';dctx.font='11px JetBrains Mono';
+    dctx.fillText('S₁',sx-18,s1y+4);dctx.fillText('S₂',sx-18,s2y+4);
+    dctx.fillText('Écran',scrX+16,16);
+  }
+
+  else if(dMode==='constructive'){
+    const y=dH/2;
+    const A=35,k=0.08,omega=0.05;
+    // Wave 1
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y-A*Math.cos(k*x-omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(0,229,255,0.6)';dctx.lineWidth=2;dctx.stroke();
+    // Wave 2
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y-A*Math.cos(k*x-omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(255,215,64,0.6)';dctx.lineWidth=2;dctx.stroke();
+    // Resultante
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y-2*A*Math.cos(k*x-omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(0,255,136,0.9)';dctx.lineWidth=3;dctx.stroke();
+    dctx.fillStyle='rgba(0,255,136,0.7)';dctx.font='12px Outfit';
+    dctx.fillText('Résultante (A×2)',12,y-75);
+    dctx.fillStyle='rgba(0,229,255,0.7)';dctx.fillText('Onde 1',12,y+60);
+    dctx.fillStyle='rgba(255,215,64,0.7)';dctx.fillText('Onde 2 (en phase)',12,y+76);
+  }
+
+  else if(dMode==='destructive'){
+    const y=dH/2;
+    const A=35,k=0.08,omega=0.05;
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y-A*Math.cos(k*x-omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(0,229,255,0.6)';dctx.lineWidth=2;dctx.stroke();
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y+A*Math.cos(k*x-omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(255,64,96,0.6)';dctx.lineWidth=2;dctx.stroke();
+    // Résultante = 0
+    dctx.beginPath();dctx.moveTo(0,y);dctx.lineTo(dW,y);
+    dctx.strokeStyle='rgba(255,160,0,0.9)';dctx.lineWidth=3;dctx.stroke();
+    dctx.fillStyle='rgba(255,160,0,0.8)';dctx.font='12px Outfit';
+    dctx.fillText('Résultante = 0 (annulation)',12,y-10);
+    dctx.fillStyle='rgba(0,229,255,0.7)';dctx.fillText('Onde 1',12,y-65);
+    dctx.fillStyle='rgba(255,64,96,0.7)';dctx.fillText('Onde 2 (opposition de phase)',12,y+70);
+  }
+
+  else if(dMode==='stationary'){
+    const y=dH/2;
+    const A=40,k=0.07,omega=0.04;
+    // Forward
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y-A*Math.cos(k*x-omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(0,229,255,0.3)';dctx.lineWidth=1.5;dctx.stroke();
+    // Backward
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y-A*Math.cos(k*x+omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(255,215,64,0.3)';dctx.lineWidth=1.5;dctx.stroke();
+    // Standing
+    dctx.beginPath();
+    for(let x=0;x<dW;x++){
+      const yp=y-2*A*Math.sin(k*x)*Math.sin(omega*dTime);
+      x===0?dctx.moveTo(x,yp):dctx.lineTo(x,yp);
+    }
+    dctx.strokeStyle='rgba(0,255,136,0.9)';dctx.lineWidth=2.5;dctx.stroke();
+    // Nodes
+    const lambda=2*Math.PI/k;
+    for(let n=0;n<20;n++){
+      const nx=(n*lambda/2)%dW;
+      dctx.beginPath();dctx.arc(nx,y,4,0,2*Math.PI);
+      dctx.fillStyle='rgba(255,64,96,0.7)';dctx.fill();
+    }
+    dctx.fillStyle='rgba(0,255,136,0.7)';dctx.font='12px Outfit';
+    dctx.fillText('Onde stationnaire',12,24);
+    dctx.fillStyle='rgba(255,64,96,0.7)';dctx.fillText('● Nœuds',12,44);
+  }
+
+  dTime++;
+  dRAF=requestAnimationFrame(drawDemo);
+}
+drawDemo();
+</script>
+
+<!-- SCROLL TOP BTN -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- Adsterra Social Bar -->
+<script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+<a href="politique-confidentialite.html" style="display:block;text-align:center;padding:10px 0 6px;font-size:12px;color:var(--text-dim);text-decoration:none;">Politique de Confidentialité</a>
+</body>
+</html>

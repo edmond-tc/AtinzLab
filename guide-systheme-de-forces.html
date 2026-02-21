@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>SimLab — Guide Interactif : Système de forces</title>
+    <!-- Google AdSense (Code d'activation prioritaire) -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #0a0e1a;
+            --surface: #111827;
+            --surface2: #1a2540;
+            --surface3: #1f2d4a;
+            --border: #2a3a5c;
+            --cyan: #00e5ff;
+            --cyan-glow: rgba(0, 229, 255, 0.15);
+            --yellow: #ffd740;
+            --yellow-glow: rgba(255, 215, 64, 0.15);
+            --green: #00ff88;
+            --green-glow: rgba(0, 255, 136, 0.15);
+            --orange: #ff8c00;
+            --orange-glow: rgba(255, 140, 0, 0.15);
+            --red: #ff4444;
+            --purple: #c084fc;
+            --blue: #3b82f6;
+            --text: #e2e8f0;
+            --text-dim: #8898b0;
+            --text-mute: #4a5568;
+            --font: 'Outfit', sans-serif;
+            --mono: 'JetBrains Mono', monospace;
+            --radius: 16px;
+            --radius-sm: 8px;
+            --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--cyan), var(--yellow), var(--green));
+            z-index: 1000;
+            transition: width 0.1s ease;
+            box-shadow: 0 0 20px var(--cyan);
+        }
+
+        /* ===== HEADER FIXE ===== */
+        #header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            background: var(--surface2);
+            border: 1px solid var(--yellow);
+            color: var(--yellow);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-sim {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #003320;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        .btn-sim:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn-back {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .btn-back:hover {
+            color: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        /* ===== CONTENEUR PRINCIPAL ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 90px 24px 40px;
+        }
+
+        /* ===== TITRE PRINCIPAL ===== */
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, var(--cyan), var(--yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            color: var(--text-dim);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ===== TABLE DES MATIÈRES ===== */
+        .toc {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 48px;
+        }
+
+        .toc h2 {
+            color: var(--cyan);
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toc-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 12px;
+        }
+
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s;
+        }
+        .toc-item:hover {
+            border-color: var(--cyan);
+            transform: translateX(4px);
+        }
+
+        .toc-num {
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--cyan), var(--yellow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #0a0e1a;
+        }
+
+        .toc-link {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            flex: 1;
+        }
+        .toc-link:hover {
+            color: var(--cyan);
+        }
+
+        /* ===== SECTIONS ===== */
+        section {
+            margin-bottom: 64px;
+            scroll-margin-top: 80px;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title span {
+            background: var(--surface2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+        }
+
+        /* ===== CARDS AVEC BORDURE COLORÉE ===== */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .card-blue { border-left: 6px solid var(--blue); }
+        .card-orange { border-left: 6px solid var(--orange); }
+        .card-green { border-left: 6px solid var(--green); }
+        .card-red { border-left: 6px solid var(--red); }
+        .card-yellow { border-left: 6px solid var(--yellow); }
+        .card-purple { border-left: 6px solid var(--purple); }
+
+        /* ===== TABLEAU COMPARATIF ===== */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .comparison-table th {
+            background: var(--surface2);
+            color: var(--cyan);
+            font-weight: 600;
+            padding: 16px;
+            text-align: left;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .comparison-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        /* ===== FORMULES ===== */
+        .formula-box {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            font-family: var(--mono);
+            font-size: 1.2rem;
+            color: var(--yellow);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .formula-desc {
+            color: var(--text-dim);
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        /* ===== ÉTAPES NUMÉROTÉES ===== */
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .step {
+            text-align: center;
+            padding: 24px;
+            background: var(--surface2);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--cyan), var(--yellow));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin: 0 auto 16px;
+            color: #0a0e1a;
+        }
+
+        /* ===== DÉMO INTERACTIVE ===== */
+        #demo-canvas {
+            width: 100%;
+            height: 300px;
+            background: var(--surface2);
+            border-radius: var(--radius);
+            margin: 20px 0;
+            display: block;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .demo-btn {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .demo-btn:hover {
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+        .demo-btn.active {
+            background: var(--cyan-glow);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        /* ===== EXPÉRIENCES ===== */
+        .exp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .exp-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+            transition: transform 0.2s;
+        }
+        .exp-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--cyan);
+        }
+
+        .exp-title {
+            color: var(--cyan);
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exp-params {
+            background: var(--surface2);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-family: var(--mono);
+            font-size: 0.9rem;
+            margin: 12px 0;
+        }
+
+        .exp-result {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        /* ===== QUIZ ===== */
+        .quiz-container {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .quiz-question {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .quiz-question:last-child {
+            border-bottom: none;
+        }
+
+        .quiz-text {
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .quiz-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .quiz-option {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px 20px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quiz-option:hover {
+            border-color: var(--cyan);
+        }
+        .quiz-option.correct {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .quiz-option.incorrect {
+            background: rgba(255, 68, 68, 0.2);
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .quiz-feedback {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            min-height: 24px;
+        }
+
+        .quiz-score {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 20px;
+            padding: 20px;
+            background: var(--surface2);
+            border-radius: var(--radius);
+        }
+
+        /* ===== SCROLL TO TOP ===== */
+        #scroll-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: var(--surface2);
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 99;
+            color: var(--cyan);
+            font-size: 1.2rem;
+        }
+        #scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        #scroll-top:hover {
+            background: var(--cyan);
+            color: #0a0e1a;
+        }
+
+        /* ===== BANNIÈRE NATIVE ADS ===== */
+        .ad-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            padding: 10px;
+            background: var(--surface);
+            border-radius: var(--radius);
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        .privacy-link {
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            margin: 10px 0;
+        }
+        .privacy-link:hover {
+            color: var(--cyan);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .header-left {
+                gap: 8px;
+            }
+            .badge {
+                display: none;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            .toc-grid {
+                grid-template-columns: 1fr;
+            }
+            #scroll-top {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barre de progression -->
+    <div id="progress-bar"></div>
+
+    <!-- Header fixe -->
+    <header id="header">
+        <div class="header-left">
+            <div class="logo">
+                ⚗️ SimLab
+                <span class="badge">📖 Guide Interactif</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <a href="forces-simulation.html" class="btn-sim">
+                🚀 Lancer la Simulation
+            </a>
+            <a href="index.html" class="btn-back">
+                ← Retour
+            </a>
+        </div>
+    </header>
+
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+            <h1>Système de forces</h1>
+            <p>Guide interactif complet pour comprendre la composition, la décomposition et l'équilibre des forces — niveau lycée et université (Bénin)</p>
+        </div>
+
+        <!-- Table des matières -->
+        <div class="toc">
+            <h2>📑 Table des matières</h2>
+            <div class="toc-grid">
+                <div class="toc-item">
+                    <span class="toc-num">1</span>
+                    <a href="#intro" class="toc-link">Introduction</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">2</span>
+                    <a href="#types" class="toc-link">Types de systèmes</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">3</span>
+                    <a href="#formules" class="toc-link">Formules essentielles</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">4</span>
+                    <a href="#utilisation" class="toc-link">Comment utiliser la simulation</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">5</span>
+                    <a href="#demo" class="toc-link">Démo interactive</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">6</span>
+                    <a href="#experiences" class="toc-link">Expériences à réaliser</a>
+                </div>
+                <div class="toc-item">
+                    <span class="toc-num">7</span>
+                    <a href="#quiz" class="toc-link">Quiz</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <section id="intro">
+            <h2 class="section-title"><span>1</span> Introduction</h2>
+            <div class="card card-blue">
+                <p style="font-size: 1.1rem; margin-bottom: 16px;">
+                    Un <strong>système de forces</strong> est un ensemble de forces agissant sur un même corps ou sur un système de corps. 
+                    L'étude des systèmes de forces permet de déterminer le mouvement résultant ou les conditions d'équilibre.
+                </p>
+                <p style="color: var(--text-dim);">
+                    📌 Les forces sont des <strong>grandeurs vectorielles</strong> : elles possèdent une intensité (norme), 
+                    une direction et un sens. La <strong>résultante</strong> d'un système de forces est la somme vectorielle 
+                    de toutes les forces.
+                </p>
+                <div style="background: var(--surface2); padding: 16px; border-radius: var(--radius-sm); margin-top: 16px;">
+                    <p style="color: var(--yellow); font-family: var(--mono);">
+                        Un corps est en équilibre si la somme vectorielle des forces qui s'exercent sur lui est nulle : ΣF = 0.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bannière native Adsterra -->
+        <div class="ad-container">
+            <div id="container-ced9d6bd01657bda6021abb1c5919291"></div>
+            <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
+        </div>
+
+        <!-- Section 2: Types de systèmes -->
+        <section id="types">
+            <h2 class="section-title"><span>2</span> Types de systèmes de forces</h2>
+            <div class="card card-orange">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Caractéristiques</th>
+                            <th>Exemple</th>
+                            <th>Résultante</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Forces colinéaires</strong></td>
+                            <td>Même direction (même ligne d'action)</td>
+                            <td>Deux personnes qui tirent sur une corde</td>
+                            <td>Somme algébrique (avec signe)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Forces concourantes</strong></td>
+                            <td>Même point d'application</td>
+                            <td>Nœud d'un pont suspendu</td>
+                            <td>Somme vectorielle (règle du parallélogramme)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Forces parallèles</strong></td>
+                            <td>Directions parallèles, points d'application différents</td>
+                            <td>Poutre supportée en plusieurs points</td>
+                            <td>Force unique + moment résultant</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Forces quelconques</strong></td>
+                            <td>Directions et points d'application quelconques</td>
+                            <td>Actions sur un solide dans l'espace</td>
+                            <td>Torseur (force + moment)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Section 3: Formules essentielles -->
+        <section id="formules">
+            <h2 class="section-title"><span>3</span> Formules essentielles</h2>
+            <div class="card card-yellow">
+                <div class="formula-box">
+                    R = F₁ + F₂ + F₃ + ... = ΣFᵢ
+                </div>
+                <p class="formula-desc">
+                    Résultante d'un système de forces (somme vectorielle)
+                </p>
+                
+                <div class="formula-box" style="margin-top: 24px;">
+                    Fx = F·cos θ<br>
+                    Fy = F·sin θ
+                </div>
+                <p class="formula-desc">
+                    Décomposition d'une force selon les axes x et y
+                </p>
+                
+                <div class="formula-box" style="margin-top: 24px;">
+                    ΣFx = 0<br>
+                    ΣFy = 0
+                </div>
+                <p class="formula-desc">
+                    Conditions d'équilibre dans le plan
+                </p>
+                
+                <div class="formula-box" style="margin-top: 24px;">
+                    |R| = √(Rx² + Ry²)<br>
+                    θ_R = arctan(Ry/Rx)
+                </div>
+                <p class="formula-desc">
+                    Norme et direction de la résultante
+                </p>
+                
+                <div class="formula-box" style="margin-top: 24px;">
+                    F = -R
+                </div>
+                <p class="formula-desc">
+                    Force d'équilibre (opposée à la résultante)
+                </p>
+                
+                <div style="background: var(--surface2); padding: 16px; border-radius: var(--radius-sm); margin-top: 20px;">
+                    <p style="color: var(--text-dim);">
+                        <strong>🎓 Niveau lycée (Bénin) :</strong> La décomposition en composantes est la méthode la plus simple 
+                        pour additionner des forces. On additionne séparément les composantes x et y.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Comment utiliser la simulation -->
+        <section id="utilisation">
+            <h2 class="section-title"><span>4</span> Comment utiliser la simulation</h2>
+            <div class="card card-green">
+                <div class="steps-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Ajustez les forces</h3>
+                        <p style="color: var(--text-dim);">Modifiez l'intensité et l'angle de chaque force avec les sliders.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Observez la résultante</h3>
+                        <p style="color: var(--text-dim);">La résultante (violet) apparaît automatiquement.</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Trouvez l'équilibre</h3>
+                        <p style="color: var(--text-dim);">Cliquez sur "Équilibrer" pour connaître la force d'équilibre (jaune).</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Analysez les composantes</h3>
+                        <p style="color: var(--text-dim);">L'onglet "Composantes" montre les projections sur les axes.</p>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 20px;">
+                    <a href="forces-simulation.html" class="btn-sim" style="display: inline-block; padding: 12px 30px;">
+                        🚀 Accéder à la simulation complète
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Démo interactive -->
+        <section id="demo">
+            <h2 class="section-title"><span>5</span> Démo interactive</h2>
+            <div class="card card-purple">
+                <canvas id="demo-canvas"></canvas>
+                <div class="demo-controls">
+                    <button class="demo-btn active" id="demo-2forces">2 forces</button>
+                    <button class="demo-btn" id="demo-3forces">3 forces</button>
+                    <button class="demo-btn" id="demo-equilibre">Équilibre</button>
+                    <button class="demo-btn" id="demo-opposees">Forces opposées</button>
+                    <button class="demo-btn" id="demo-reset">↺ Reset</button>
+                </div>
+                <p style="text-align: center; color: var(--text-dim);">
+                    Une petite démo pour visualiser rapidement différents systèmes de forces.
+                    <br>Les flèches colorées représentent les forces, la flèche violette est la résultante.
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 6: Expériences à réaliser -->
+        <section id="experiences">
+            <h2 class="section-title"><span>6</span> Expériences à réaliser</h2>
+            <div class="exp-grid">
+                <div class="exp-card card-blue">
+                    <div class="exp-title">🧪 Expérience 1 · Deux forces perpendiculaires</div>
+                    <p>F₁ = 6 N à 0°, F₂ = 8 N à 90°. Calculez la résultante.</p>
+                    <div class="exp-params">Paramètres : F₁ = 6 N (0°), F₂ = 8 N (90°)</div>
+                    <div class="exp-result">R = 10 N, angle = 53,1°</div>
+                </div>
+                <div class="exp-card card-orange">
+                    <div class="exp-title">🧪 Expérience 2 · Forces colinéaires</div>
+                    <p>F₁ = 5 N à 0°, F₂ = 3 N à 0°, F₃ = 2 N à 180°.</p>
+                    <div class="exp-params">Paramètres : F₁=5N(0°), F₂=3N(0°), F₃=2N(180°)</div>
+                    <div class="exp-result">R = 6 N à 0° (somme algébrique)</div>
+                </div>
+                <div class="exp-card card-green">
+                    <div class="exp-title">🧪 Expérience 3 · Équilibre à 3 forces</div>
+                    <p>Trouvez F₃ pour équilibrer F₁=10N(0°) et F₂=10N(120°).</p>
+                    <div class="exp-params">Paramètres : F₁=10N(0°), F₂=10N(120°)</div>
+                    <div class="exp-result">F₃ = 10 N à 240° (triangle équilatéral)</div>
+                </div>
+                <div class="exp-card card-red">
+                    <div class="exp-title">🧪 Expérience 4 · Force d'équilibre</div>
+                    <p>F₁ = 8 N à 30°, F₂ = 5 N à -45°. Calculez la force d'équilibre.</p>
+                    <div class="exp-params">Paramètres : F₁=8N(30°), F₂=5N(-45°)</div>
+                    <div class="exp-result">R ≈ (5,93 N; 0,46 N) → F_eq = 5,95 N à 184,4°</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Quiz -->
+        <section id="quiz">
+            <h2 class="section-title"><span>7</span> Quiz</h2>
+            <div class="quiz-container">
+                <div class="quiz-question" id="q1">
+                    <div class="quiz-text">1️⃣ Que vaut la résultante de deux forces de 5 N et 12 N perpendiculaires ?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="1" data-a="13">13 N</button>
+                        <button class="quiz-option" data-q="1" data-a="17">17 N</button>
+                        <button class="quiz-option" data-q="1" data-a="7">7 N</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb1"></div>
+                </div>
+                
+                <div class="quiz-question" id="q2">
+                    <div class="quiz-text">2️⃣ Quelle est la condition d'équilibre d'un point matériel ?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="2" data-a="somme nulle">ΣF = 0</button>
+                        <button class="quiz-option" data-q="2" data-a="forces egales">Toutes les forces sont égales</button>
+                        <button class="quiz-option" data-q="2" data-a="repos">Le corps est au repos</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb2"></div>
+                </div>
+                
+                <div class="quiz-question" id="q3">
+                    <div class="quiz-text">3️⃣ Comment décompose-t-on une force F selon l'axe x ?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="3" data-a="F cos">F·cos θ</button>
+                        <button class="quiz-option" data-q="3" data-a="F sin">F·sin θ</button>
+                        <button class="quiz-option" data-q="3" data-a="F tan">F·tan θ</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb3"></div>
+                </div>
+                
+                <div class="quiz-question" id="q4">
+                    <div class="quiz-text">4️⃣ Si ΣFx = 3 N et ΣFy = 4 N, que vaut la norme de la résultante ?</div>
+                    <div class="quiz-options">
+                        <button class="quiz-option" data-q="4" data-a="5">5 N</button>
+                        <button class="quiz-option" data-q="4" data-a="7">7 N</button>
+                        <button class="quiz-option" data-q="4" data-a="1">1 N</button>
+                    </div>
+                    <div class="quiz-feedback" id="fb4"></div>
+                </div>
+                
+                <div class="quiz-score" id="quiz-score">
+                    Score : 0/4
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Scroll to top button -->
+    <div id="scroll-top">↑</div>
+
+    <!-- Adsterra Social Bar (avant </body>) -->
+    <script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+
+    <!-- Politique de Confidentialité -->
+    <div class="footer">
+        <a href="politique-confidentialite.html" class="privacy-link">Politique de Confidentialité</a>
+        <p style="color: var(--text-mute); font-size: 0.8rem;">© 2026 SimLab · atinzlab.pages.dev · UAC Bénin</p>
+    </div>
+
+    <script>
+        // ===== PROGRESS BAR =====
+        const progressBar = document.getElementById('progress-bar');
+        window.addEventListener('scroll', () => {
+            const winScroll = document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + '%';
+        });
+
+        // ===== SCROLL TO TOP =====
+        const scrollTop = document.getElementById('scroll-top');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                scrollTop.classList.add('visible');
+            } else {
+                scrollTop.classList.remove('visible');
+            }
+        });
+        scrollTop.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // ===== DÉMO INTERACTIVE SYSTÈME DE FORCES =====
+        const canvas = document.getElementById('demo-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            drawDemo();
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Paramètres de la démo
+        let demoCase = '2forces';
+        
+        function getDemoForces() {
+            switch(demoCase) {
+                case '2forces':
+                    return [
+                        { f: 6, angle: 0, color: '#00e5ff', label: 'F₁' },
+                        { f: 8, angle: 90, color: '#ff8c00', label: 'F₂' }
+                    ];
+                case '3forces':
+                    return [
+                        { f: 5, angle: 0, color: '#00e5ff', label: 'F₁' },
+                        { f: 5, angle: 120, color: '#ff8c00', label: 'F₂' },
+                        { f: 5, angle: 240, color: '#ff4444', label: 'F₃' }
+                    ];
+                case 'equilibre':
+                    return [
+                        { f: 8, angle: 30, color: '#00e5ff', label: 'F₁' },
+                        { f: 8, angle: 150, color: '#ff8c00', label: 'F₂' },
+                        { f: 8, angle: 270, color: '#ff4444', label: 'F₃' }
+                    ];
+                case 'opposees':
+                    return [
+                        { f: 10, angle: 0, color: '#00e5ff', label: 'F₁' },
+                        { f: 10, angle: 180, color: '#ff8c00', label: 'F₂' }
+                    ];
+                default:
+                    return [];
+            }
+        }
+
+        function drawDemo() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const forces = getDemoForces();
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = 15;
+            
+            // Grille
+            ctx.strokeStyle = 'rgba(42, 58, 92, 0.3)';
+            ctx.lineWidth = 1;
+            for (let i = -4; i <= 4; i++) {
+                const x = centerX + i * 40;
+                const y = centerY + i * 40;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.strokeStyle = i === 0 ? 'rgba(100, 130, 200, 0.3)' : 'rgba(42, 58, 92, 0.3)';
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Axes
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(canvas.width, centerY);
+            ctx.strokeStyle = '#2a3a5c';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, canvas.height);
+            ctx.stroke();
+            
+            // Origine
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 5, 0, 2 * Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.strokeStyle = '#00e5ff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Calcul de la résultante
+            let fx = 0, fy = 0;
+            
+            // Dessin des forces (méthode du polygone)
+            let x = centerX;
+            let y = centerY;
+            
+            forces.forEach((force, index) => {
+                const angleRad = force.angle * Math.PI / 180;
+                const dx = force.f * scale * Math.cos(angleRad);
+                const dy = -force.f * scale * Math.sin(angleRad);
+                
+                fx += force.f * Math.cos(angleRad);
+                fy += force.f * Math.sin(angleRad);
+                
+                const endX = x + dx;
+                const endY = y + dy;
+                
+                // Ligne
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = force.color;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                
+                // Tête de flèche
+                const angle = Math.atan2(dy, dx);
+                const arrowSize = 10;
+                
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(endX - arrowSize * Math.cos(angle) + arrowSize * 0.3 * Math.sin(angle), 
+                          endY - arrowSize * Math.sin(angle) - arrowSize * 0.3 * Math.cos(angle));
+                ctx.lineTo(endX - arrowSize * Math.cos(angle) - arrowSize * 0.3 * Math.sin(angle), 
+                          endY - arrowSize * Math.sin(angle) + arrowSize * 0.3 * Math.cos(angle));
+                ctx.closePath();
+                ctx.fillStyle = force.color;
+                ctx.fill();
+                
+                // Étiquette
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px JetBrains Mono';
+                ctx.fillText(force.label, endX + 10, endY - 10);
+                
+                x = endX;
+                y = endY;
+            });
+            
+            // Résultante
+            const fr = Math.sqrt(fx*fx + fy*fy);
+            if (fr > 0.1) {
+                const angleR = Math.atan2(fy, fx);
+                const dx = fr * scale * Math.cos(angleR);
+                const dy = -fr * scale * Math.sin(angleR);
+                
+                const endX = centerX + dx;
+                const endY = centerY + dy;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(endX, endY);
+                ctx.strokeStyle = '#c084fc';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([8, 4]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#c084fc';
+                ctx.beginPath();
+                ctx.moveTo(endX, endY);
+                ctx.lineTo(endX - 12, endY - 6);
+                ctx.lineTo(endX - 12, endY + 6);
+                ctx.closePath();
+                ctx.fill();
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 12px JetBrains Mono';
+                ctx.fillText('R', endX + 15, endY - 10);
+            }
+            
+            // Informations
+            ctx.fillStyle = '#8898b0';
+            ctx.font = '12px JetBrains Mono';
+            ctx.fillText(`ΣFx = ${fx.toFixed(1)} N`, 20, 40);
+            ctx.fillText(`ΣFy = ${fy.toFixed(1)} N`, 20, 60);
+            ctx.fillText(`|R| = ${fr.toFixed(1)} N`, 20, 80);
+        }
+
+        // Contrôles démo
+        document.getElementById('demo-2forces').addEventListener('click', (e) => {
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            demoCase = '2forces';
+            drawDemo();
+        });
+        
+        document.getElementById('demo-3forces').addEventListener('click', (e) => {
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            demoCase = '3forces';
+            drawDemo();
+        });
+        
+        document.getElementById('demo-equilibre').addEventListener('click', (e) => {
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            demoCase = 'equilibre';
+            drawDemo();
+        });
+        
+        document.getElementById('demo-opposees').addEventListener('click', (e) => {
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            demoCase = 'opposees';
+            drawDemo();
+        });
+        
+        document.getElementById('demo-reset').addEventListener('click', () => {
+            demoCase = '2forces';
+            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('demo-2forces').classList.add('active');
+            drawDemo();
+        });
+
+        // ===== QUIZ =====
+        const correctAnswers = {
+            1: '13',
+            2: 'somme nulle',
+            3: 'F cos',
+            4: '5'
+        };
+
+        let score = 0;
+        let answered = { 1: false, 2: false, 3: false, 4: false };
+
+        document.querySelectorAll('.quiz-option').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const q = btn.dataset.q;
+                const a = btn.dataset.a;
+                
+                if (answered[q]) return;
+                
+                const isCorrect = (a === correctAnswers[q]);
+                const feedback = document.getElementById(`fb${q}`);
+                
+                if (isCorrect) {
+                    btn.classList.add('correct');
+                    feedback.textContent = '✓ Correct !';
+                    feedback.style.color = 'var(--green)';
+                    score++;
+                } else {
+                    btn.classList.add('incorrect');
+                    feedback.textContent = '✗ Incorrect. Essaie encore !';
+                    feedback.style.color = 'var(--red)';
+                }
+                
+                answered[q] = true;
+                
+                // Trouver la bonne réponse pour la mettre en évidence
+                document.querySelectorAll(`[data-q="${q}"]`).forEach(opt => {
+                    if (opt.dataset.a === correctAnswers[q]) {
+                        opt.classList.add('correct');
+                    }
+                });
+                
+                updateScore();
+            });
+        });
+
+        function updateScore() {
+            const scoreEl = document.getElementById('quiz-score');
+            let emoji = '';
+            if (score === 4) emoji = '🏆 Parfait ! Tu maîtrises les forces !';
+            else if (score === 3) emoji = '👍 Très bien ! Encore un petit effort';
+            else if (score === 2) emoji = '👌 Peux mieux faire, revise les formules';
+            else emoji = '📚 À réviser, relis attentivement le guide';
+            
+            scoreEl.textContent = `Score : ${score}/4 ${emoji}`;
+        }
+    </script>
+</body>
+</html>
