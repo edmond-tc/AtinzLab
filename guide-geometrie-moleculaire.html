@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Guide — Géométrie Moléculaire | SimLab</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0e1a;--s1:#111827;--s2:#1a2540;--s3:#0d1530;
+  --acc:#00e5ff;--grn:#00ff88;--red:#ff4060;--yel:#ffd740;
+  --ora:#ff9f43;--pur:#c084fc;--blu:#4fc3f7;
+  --txt:#e8eaf6;--sub:#7986a3;--brd:rgba(0,229,255,0.13);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;
+  font-size:15px;line-height:1.7;overflow-x:hidden;}
+
+/* ── PROGRESS BAR ── */
+#prog{position:fixed;top:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--acc),var(--grn),var(--pur));
+  width:0%;z-index:1001;transition:width .1s;border-radius:0 2px 2px 0;}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:500;
+  background:rgba(10,14,26,.97);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--brd);
+  padding:0 16px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.hlogo{font-size:15px;font-weight:800;color:var(--acc);white-space:nowrap;
+  display:flex;align-items:center;gap:8px;}
+.hlogo-badge{font-size:10px;font-weight:500;color:var(--txt);
+  background:rgba(0,229,255,.1);border:1px solid var(--brd);
+  padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.hbtns{display:flex;gap:8px;align-items:center;}
+.btn-back{font-size:11px;padding:5px 12px;border:1px solid var(--brd);
+  border-radius:8px;color:var(--acc);background:transparent;
+  cursor:pointer;text-decoration:none;font-family:'Outfit',sans-serif;
+  font-weight:600;transition:.2s;white-space:nowrap;}
+.btn-back:hover{background:rgba(0,229,255,.1);}
+.btn-launch{font-size:11px;padding:5px 14px;border:none;border-radius:8px;
+  background:var(--grn);color:#000;cursor:pointer;
+  font-family:'Outfit',sans-serif;font-weight:700;
+  transition:.2s;text-decoration:none;white-space:nowrap;}
+.btn-launch:hover{filter:brightness(1.15);}
+@media(max-width:520px){
+  .hlogo-badge{display:none;}
+  .hlogo{font-size:13px;}
+  header{padding:0 10px;}
+}
+
+/* ── CONTAINER ── */
+.container{max-width:880px;margin:0 auto;padding:0 16px;}
+
+/* ── HERO ── */
+.hero{padding:56px 0 36px;text-align:center;}
+.hero h1{
+  font-size:clamp(28px,5.5vw,48px);font-weight:800;
+  background:linear-gradient(135deg,#fff 0%,var(--acc) 45%,var(--pur) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;margin-bottom:14px;line-height:1.2;
+}
+.hero p{color:var(--sub);font-size:15px;max-width:560px;margin:0 auto 24px;}
+.hero-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.tag{background:var(--s2);border:1px solid var(--brd);border-radius:20px;
+  padding:4px 12px;font-size:11px;color:var(--acc);}
+
+/* ── TABLE DES MATIÈRES ── */
+.toc{background:var(--s1);border:1px solid var(--brd);border-radius:18px;
+  padding:24px 28px;margin:32px 0;}
+.toc-title{font-size:12px;font-weight:700;color:var(--acc);
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.toc-grid a{display:flex;align-items:center;gap:10px;padding:8px 10px;
+  border-radius:10px;text-decoration:none;color:var(--txt);
+  font-size:13px;transition:.2s;border:1px solid transparent;}
+.toc-grid a:hover{background:var(--s2);border-color:var(--brd);color:var(--acc);}
+.toc-num{width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--acc),var(--pur));
+  color:#000;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;}
+@media(max-width:540px){.toc-grid{grid-template-columns:1fr;}}
+
+/* ── SECTIONS ── */
+section{padding:64px 0 0;scroll-margin-top:70px;}
+.sec-hdr{display:flex;align-items:center;gap:14px;margin-bottom:30px;}
+.sec-num{width:44px;height:44px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--acc),var(--grn));
+  color:#000;font-size:17px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;}
+.sec-title{font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;}
+.sec-sub{font-size:13px;color:var(--sub);margin-top:2px;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--brd),transparent);
+  margin:56px 0 0;}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;
+  padding:20px 22px;margin-bottom:14px;transition:.2s;}
+.card:hover{border-color:rgba(0,229,255,.25);}
+.card.blue{border-left:4px solid var(--blu);}
+.card.green{border-left:4px solid var(--grn);}
+.card.orange{border-left:4px solid var(--ora);}
+.card.red{border-left:4px solid var(--red);}
+.card.yellow{border-left:4px solid var(--yel);}
+.card.purple{border-left:4px solid var(--pur);}
+.card h3{font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;}
+.card p{font-size:13px;color:var(--sub);line-height:1.7;}
+.card p b{color:var(--txt);}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--brd);
+  margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;background:var(--s1);min-width:540px;}
+th{background:var(--s2);color:var(--acc);font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;padding:11px 14px;text-align:left;}
+td{padding:10px 14px;font-size:12px;color:var(--txt);border-top:1px solid var(--brd);}
+tr:hover td{background:rgba(0,229,255,.03);}
+.tbadge{display:inline-block;padding:2px 7px;border-radius:5px;
+  font-size:10px;font-weight:700;}
+.tb-blu{background:rgba(79,195,247,.15);color:var(--blu);}
+.tb-grn{background:rgba(0,255,136,.12);color:var(--grn);}
+.tb-yel{background:rgba(255,215,64,.12);color:var(--yel);}
+.tb-red{background:rgba(255,64,96,.12);color:var(--red);}
+.tb-pur{background:rgba(192,132,252,.12);color:var(--pur);}
+.tb-ora{background:rgba(255,159,67,.12);color:var(--ora);}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;}
+
+/* ── FORMULA BOX ── */
+.formula-box{background:var(--s3);border:1px solid rgba(255,215,64,.22);
+  border-radius:14px;padding:20px 24px;margin-bottom:14px;position:relative;
+  overflow:hidden;}
+.formula-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--yel),transparent);}
+.fb-label{font-size:10px;color:var(--sub);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:7px;font-weight:600;}
+.fb-formula{font-family:'JetBrains Mono',monospace;
+  font-size:clamp(13px,2.5vw,18px);color:var(--yel);
+  font-weight:600;margin-bottom:10px;line-height:1.5;}
+.fb-explain{font-size:12px;color:var(--sub);line-height:1.65;}
+.fb-explain b{color:var(--txt);}
+.fb-explain .h{color:var(--acc);}
+
+/* ── STEPS ── */
+.steps{list-style:none;display:flex;flex-direction:column;gap:12px;}
+.steps li{display:flex;gap:14px;align-items:flex-start;
+  background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:15px 16px;}
+.step-circle{width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--acc),#0099ff);
+  color:#000;font-size:15px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;}
+.step-body h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.step-body p{font-size:12px;color:var(--sub);line-height:1.6;}
+.step-body code{font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:var(--s2);color:var(--acc);padding:1px 6px;border-radius:4px;}
+.step-tip{margin-top:6px;padding:6px 10px;background:rgba(0,229,255,.07);
+  border-radius:8px;font-size:11px;color:var(--acc);border-left:2px solid var(--acc);}
+
+/* ── DEMO CANVAS ── */
+.demo-wrap{background:var(--s1);border:1px solid var(--brd);
+  border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.demo-header{padding:12px 18px;border-bottom:1px solid var(--brd);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.demo-header h3{font-size:13px;font-weight:700;color:var(--acc);}
+.demo-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.demo-btn{padding:4px 12px;border-radius:6px;font-size:10px;font-weight:600;
+  cursor:pointer;border:1px solid var(--brd);background:var(--s2);
+  color:var(--sub);font-family:'Outfit',sans-serif;transition:.2s;}
+.demo-btn.act,.demo-btn:hover{background:var(--acc);color:#000;border-color:var(--acc);}
+#demoCanvas{display:block;width:100%;height:230px;cursor:grab;}
+#demoCanvas:active{cursor:grabbing;}
+.demo-info{padding:8px 18px;font-size:10px;color:var(--sub);
+  font-family:'JetBrains Mono',monospace;border-top:1px solid var(--brd);
+  background:rgba(0,0,0,.2);}
+.demo-legend{display:flex;gap:12px;flex-wrap:wrap;padding:8px 18px;
+  border-top:1px solid var(--brd);}
+.leg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--sub);}
+.leg-dot{width:10px;height:10px;border-radius:50%;}
+
+/* ── EXPERIMENTS ── */
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.exp-card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;
+  padding:18px;position:relative;overflow:hidden;}
+.exp-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+.exp-card:nth-child(1)::after{background:var(--acc);}
+.exp-card:nth-child(2)::after{background:var(--yel);}
+.exp-card:nth-child(3)::after{background:var(--grn);}
+.exp-card:nth-child(4)::after{background:var(--pur);}
+.exp-card h3{font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;}
+.exp-param{font-size:11px;color:var(--sub);margin-bottom:4px;
+  display:flex;gap:6px;align-items:baseline;}
+.exp-param b{color:var(--acc);font-family:'JetBrains Mono',monospace;font-size:11px;}
+.exp-obj{font-size:11px;color:var(--sub);margin:8px 0 6px;font-style:italic;}
+.exp-result{padding:8px 10px;background:rgba(0,255,136,.07);
+  border:1px solid rgba(0,255,136,.2);border-radius:8px;font-size:11px;color:var(--grn);
+  font-family:'JetBrains Mono',monospace;line-height:1.5;}
+@media(max-width:560px){.exp-grid{grid-template-columns:1fr;}}
+
+/* ── QUIZ ── */
+.quiz-card{background:var(--s1);border:1px solid var(--brd);
+  border-radius:14px;padding:20px 22px;margin-bottom:14px;}
+.qnum{font-size:10px;color:var(--acc);font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.qtext{font-size:14px;font-weight:600;color:#fff;margin-bottom:14px;
+  line-height:1.5;}
+.qopts{display:flex;flex-direction:column;gap:8px;}
+.qopt{padding:10px 14px;border:1px solid var(--brd);border-radius:10px;
+  cursor:pointer;font-size:13px;color:var(--txt);transition:.2s;
+  background:var(--s2);text-align:left;font-family:'Outfit',sans-serif;}
+.qopt:hover:not(.qdis){border-color:var(--acc);color:var(--acc);}
+.qopt.ok{border-color:var(--grn);background:rgba(0,255,136,.1);color:var(--grn);}
+.qopt.ko{border-color:var(--red);background:rgba(255,64,96,.1);color:var(--red);}
+.qopt.qdis{cursor:not-allowed;}
+.qfb{margin-top:10px;padding:9px 12px;border-radius:9px;
+  font-size:12px;display:none;line-height:1.6;}
+.qfb.show{display:block;}
+.qfb.ok{background:rgba(0,255,136,.08);color:var(--grn);border:1px solid rgba(0,255,136,.2);}
+.qfb.ko{background:rgba(255,64,96,.08);color:var(--red);border:1px solid rgba(255,64,96,.2);}
+.score-box{background:var(--s2);border:1px solid var(--brd);border-radius:18px;
+  padding:32px;text-align:center;display:none;margin-top:14px;}
+.score-box.show{display:block;}
+.score-val{font-size:52px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--acc);}
+.score-msg{font-size:16px;color:var(--txt);margin-top:10px;font-weight:500;}
+.score-sub{font-size:12px;color:var(--sub);margin-top:6px;}
+.btn-retry{margin-top:18px;padding:9px 26px;background:var(--acc);color:#000;
+  border:none;border-radius:10px;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:'Outfit',sans-serif;transition:.2s;}
+.btn-retry:hover{filter:brightness(1.1);}
+
+/* ── SCROLL TOP ── */
+#scrollTop{position:fixed;bottom:22px;right:16px;width:42px;height:42px;
+  border-radius:12px;background:var(--s2);border:1px solid var(--brd);
+  color:var(--acc);font-size:20px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;
+  z-index:400;transition:.2s;box-shadow:0 4px 20px rgba(0,0,0,.45);}
+#scrollTop:hover{background:var(--acc);color:#000;}
+#scrollTop.show{display:flex;}
+
+/* ── FOOTER ── */
+footer{margin-top:80px;padding:28px 0 14px;
+  border-top:1px solid var(--brd);text-align:center;}
+footer p{font-size:12px;color:var(--sub);}
+footer a{color:var(--acc);text-decoration:none;}
+
+/* ── NATIVE AD ── */
+.native-ad{display:flex;justify-content:center;margin:36px 0;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hero{padding:36px 0 24px;}
+  section{padding:44px 0 0;}
+  .container{padding:0 12px;}
+}
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="hlogo">
+    &#x2697;&#xFE0F; SimLab
+    <span class="hlogo-badge">&#x1F4D6; Guide Interactif</span>
+  </div>
+  <div class="hbtns">
+    <a href="index.html" class="btn-back">&#8592; Retour</a>
+    <a href="geometrie-moleculaire.html" class="btn-launch">&#x1F680; Lancer la Simulation</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- ═══ HERO ═══ -->
+  <div class="hero">
+    <h1>Géométrie Moléculaire<br/>— Méthode VSEPR</h1>
+    <p>Comprendre la forme 3D des molécules à partir des répulsions électroniques, prédire les angles de liaison et la polarité moléculaire.</p>
+    <div class="hero-tags">
+      <span class="tag">Chimie structurale</span>
+      <span class="tag">VSEPR / AXmEn</span>
+      <span class="tag">Lycée / CPGE Bénin</span>
+      <span class="tag">Polarité &amp; Dipôles</span>
+      <span class="tag">Hybridation</span>
+    </div>
+  </div>
+
+  <!-- ═══ TABLE DES MATIÈRES ═══ -->
+  <nav class="toc">
+    <div class="toc-title">&#x1F4CB; Table des matières</div>
+    <div class="toc-grid">
+      <a href="#s1"><span class="toc-num">1</span>Introduction — Géométrie moléculaire</a>
+      <a href="#s2"><span class="toc-num">2</span>Types de géométries VSEPR</a>
+      <a href="#s3"><span class="toc-num">3</span>Formules essentielles</a>
+      <a href="#s4"><span class="toc-num">4</span>Utiliser la simulation</a>
+      <a href="#s5"><span class="toc-num">5</span>Démo interactive</a>
+      <a href="#s6"><span class="toc-num">6</span>Expériences guidées</a>
+      <a href="#s7"><span class="toc-num">7</span>Quiz de vérification</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 1 — INTRODUCTION
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="s1">
+    <div class="sec-hdr">
+      <div class="sec-num">1</div>
+      <div>
+        <div class="sec-title">Introduction</div>
+        <div class="sec-sub">Pourquoi les molécules ont-elles une forme 3D ?</div>
+      </div>
+    </div>
+
+    <div class="card blue">
+      <h3>&#x1F9EA; Qu'est-ce que la géométrie moléculaire ?</h3>
+      <p>La <b>géométrie moléculaire</b> décrit la disposition spatiale des atomes dans une molécule. Elle détermine les <b>angles de liaison</b>, la <b>longueur des liaisons</b> et la <b>forme tridimensionnelle</b> de la molécule. Cette forme influence directement les propriétés physiques (point de fusion, ébullition) et chimiques (réactivité, polarité, interactions intermoléculaires).</p>
+    </div>
+
+    <div class="card green">
+      <h3>&#x1F4A1; Théorie VSEPR — Principe fondamental</h3>
+      <p>La méthode <b>VSEPR</b> (Valence Shell Electron Pair Repulsion — Répulsion des Paires d'Électrons de la Couche de Valence) postule que les <b>paires d'électrons</b> (liantes et non-liantes) autour d'un atome central se repoussent mutuellement et s'arrangent pour <b>maximiser les distances</b> entre elles, minimisant ainsi l'énergie du système. La géométrie moléculaire est la position des seuls <b>atomes liés</b>, sans tenir compte des doublets libres.</p>
+    </div>
+
+    <div class="card yellow">
+      <h3>&#x1F4CC; Notation AXmEn — Clé de la méthode VSEPR</h3>
+      <p>
+        <b>A</b> = atome central | <b>X</b> = atomes liés (m liaisons sigma) | <b>E</b> = doublets non-liants (n paires).<br/>
+        Le nombre total de <b>groupes électroniques</b> = m + n détermine d'abord la géométrie électronique, puis les doublets libres "écrasent" la géométrie moléculaire réelle.<br/><br/>
+        <b>Exemple :</b> H₂O = AX₂E₂ → 2 liaisons + 2 doublets libres → 4 groupes → base tétraédrique, mais géométrie moléculaire <b>coudée</b> à 104,5°.
+      </p>
+    </div>
+
+    <div class="card orange">
+      <h3>&#x26A1; Ordre des répulsions électroniques</h3>
+      <p>
+        Les doublets libres occupent plus d'espace angulaire que les doublets liants :<br/>
+        <b style="color:var(--red)">LP–LP</b> &gt; <b style="color:var(--yel)">LP–X</b> &gt; <b style="color:var(--grn)">X–X</b><br/><br/>
+        Chaque doublet libre (LP) réduit les angles de liaison d'environ <b>2,5°</b> par rapport à la valeur théorique.<br/>
+        NH₃ : 109,5° − 2,5° = <b>107°</b> | H₂O : 109,5° − 2×2,5° = <b>104,5°</b>
+      </p>
+    </div>
+
+    <div class="card purple">
+      <h3>&#x1F30D; Applications industrielles et biologiques</h3>
+      <p>La géométrie moléculaire explique pourquoi l'eau est un <b>solvant universel</b> (coudée, polaire), pourquoi le dioxyde de carbone est <b>apolaire</b> (linéaire, moments s'annulent), et pourquoi l'ADN adopte une <b>double hélice</b>. Les médicaments sont conçus en fonction de la forme 3D de leur cible protéique (biologie structurale).</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 2 — TYPES ET CAS
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="s2">
+    <div class="sec-hdr">
+      <div class="sec-num">2</div>
+      <div>
+        <div class="sec-title">Types de géométries VSEPR</div>
+        <div class="sec-sub">Tableau comparatif complet des 13 géométries moléculaires</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Notation</th>
+            <th>Groupes (m+n)</th>
+            <th>Géom. électronique</th>
+            <th>Géom. moléculaire</th>
+            <th>Angle</th>
+            <th>Hybr.</th>
+            <th>Exemple</th>
+            <th>Polarité</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="mono">AX₁E₃</td><td>4</td>
+            <td>Tétraédrique</td>
+            <td><span class="tbadge tb-blu">Linéaire diatomique</span></td>
+            <td class="mono">—</td><td class="mono tb-pur">sp³</td>
+            <td>HCl, HF</td><td><span class="tbadge tb-red">Polaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₂E₀</td><td>2</td>
+            <td>Linéaire</td>
+            <td><span class="tbadge tb-grn">Linéaire</span></td>
+            <td class="mono">180°</td><td class="mono tb-pur">sp</td>
+            <td>CO₂, C₂H₂</td><td><span class="tbadge tb-grn">Apolaire*</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₂E₁</td><td>3</td>
+            <td>Trigonale plane</td>
+            <td><span class="tbadge tb-yel">Coudée ~120°</span></td>
+            <td class="mono">~119°</td><td class="mono tb-pur">sp²</td>
+            <td>SO₂, O₃</td><td><span class="tbadge tb-red">Polaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₂E₂</td><td>4</td>
+            <td>Tétraédrique</td>
+            <td><span class="tbadge tb-yel">Coudée 104,5°</span></td>
+            <td class="mono">104,5°</td><td class="mono tb-pur">sp³</td>
+            <td>H₂O, H₂S</td><td><span class="tbadge tb-red">Polaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₃E₀</td><td>3</td>
+            <td>Trigonale plane</td>
+            <td><span class="tbadge tb-grn">Trigonale plane</span></td>
+            <td class="mono">120°</td><td class="mono tb-pur">sp²</td>
+            <td>BF₃, H₂CO</td><td><span class="tbadge tb-grn">Apolaire*</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₃E₁</td><td>4</td>
+            <td>Tétraédrique</td>
+            <td><span class="tbadge tb-ora">Pyramidale trig.</span></td>
+            <td class="mono">107°</td><td class="mono tb-pur">sp³</td>
+            <td>NH₃, PH₃</td><td><span class="tbadge tb-red">Polaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₃E₂</td><td>5</td>
+            <td>Bipyramidale trig.</td>
+            <td><span class="tbadge tb-ora">Forme en T</span></td>
+            <td class="mono">90°</td><td class="mono tb-pur">sp³d</td>
+            <td>ClF₃</td><td><span class="tbadge tb-red">Polaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₄E₀</td><td>4</td>
+            <td>Tétraédrique</td>
+            <td><span class="tbadge tb-grn">Tétraédrique</span></td>
+            <td class="mono">109,5°</td><td class="mono tb-pur">sp³</td>
+            <td>CH₄, CCl₄</td><td><span class="tbadge tb-grn">Apolaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₄E₁</td><td>5</td>
+            <td>Bipyramidale trig.</td>
+            <td><span class="tbadge tb-ora">Balançoire (seesaw)</span></td>
+            <td class="mono">90°/120°</td><td class="mono tb-pur">sp³d</td>
+            <td>SF₄</td><td><span class="tbadge tb-red">Polaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₄E₂</td><td>6</td>
+            <td>Octaédrique</td>
+            <td><span class="tbadge tb-blu">Plan carré</span></td>
+            <td class="mono">90°</td><td class="mono tb-pur">sp³d²</td>
+            <td>XeF₄</td><td><span class="tbadge tb-grn">Apolaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₅E₀</td><td>5</td>
+            <td>Bipyramidale trig.</td>
+            <td><span class="tbadge tb-blu">Bipyramidale trig.</span></td>
+            <td class="mono">90°/120°</td><td class="mono tb-pur">sp³d</td>
+            <td>PCl₅</td><td><span class="tbadge tb-grn">Apolaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₅E₁</td><td>6</td>
+            <td>Octaédrique</td>
+            <td><span class="tbadge tb-ora">Pyramidale carrée</span></td>
+            <td class="mono">90°</td><td class="mono tb-pur">sp³d²</td>
+            <td>BrF₅</td><td><span class="tbadge tb-red">Polaire</span></td>
+          </tr>
+          <tr>
+            <td class="mono">AX₆E₀</td><td>6</td>
+            <td>Octaédrique</td>
+            <td><span class="tbadge tb-grn">Octaédrique</span></td>
+            <td class="mono">90°</td><td class="mono tb-pur">sp³d²</td>
+            <td>SF₆</td><td><span class="tbadge tb-grn">Apolaire</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:11px;color:var(--sub);margin-top:-10px;margin-bottom:20px;">
+      * Apolaire uniquement si tous les substituants sont identiques et la géométrie est symétrique.
+    </p>
+
+    <div class="card blue">
+      <h3>&#x1F4D0; Géométrie électronique vs moléculaire</h3>
+      <p>La <b>géométrie électronique</b> tient compte de tous les groupes (liaisons + LP). La <b>géométrie moléculaire</b> ne décrit que la position des atomes. Exemple : NH₃ a une géométrie électronique <b>tétraédrique</b> (4 groupes) mais une géométrie moléculaire <b>pyramidale trigonale</b> (3 atomes H + 1 LP visible).</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 3 — FORMULES
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="s3">
+    <div class="sec-hdr">
+      <div class="sec-num">3</div>
+      <div>
+        <div class="sec-title">Formules essentielles</div>
+        <div class="sec-sub">Équations et règles fondamentales de la géométrie moléculaire</div>
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="fb-label">Règle des groupes électroniques (VSEPR)</div>
+      <div class="fb-formula">Groupes = m (liaisons sigma) + n (doublets libres)</div>
+      <div class="fb-explain">
+        <b>m</b> = nombre de liaisons sigma avec les atomes liés (X). Une double ou triple liaison compte pour <b>1 seul groupe</b> (sigma + pi).<br/>
+        <b>n</b> = nombre de doublets non-liants sur l'atome central (E).<br/>
+        Le total <b class="h">m + n</b> détermine la géométrie électronique de base : 2→linéaire, 3→trigonale plane, 4→tétraédrique, 5→bipyramidale, 6→octaédrique.
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="fb-label">Angle tétraédrique (arccos)</div>
+      <div class="fb-formula">θ_tétra = arccos(−1/3) ≈ 109,47°</div>
+      <div class="fb-explain">
+        Angle caractéristique des molécules <b>AX₄E₀</b> parfaitement symétriques (CH₄, CCl₄, SiH₄).<br/>
+        Dérivé de la géométrie du tétraèdre régulier inscrit dans une sphère.<br/>
+        Avec 1 LP (AX₃E₁) → <b class="h">~107°</b> | Avec 2 LP (AX₂E₂) → <b class="h">~104,5°</b><br/>
+        La réduction est d'environ <b>2,5°</b> par doublet libre supplémentaire.
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="fb-label">Différence d'électronégativité et polarité de liaison</div>
+      <div class="fb-formula">Liaison polaire si ΔEN = |EN_A − EN_B| &gt; 0,4</div>
+      <div class="fb-explain">
+        <b>EN</b> = électronégativité selon l'échelle de Pauling (F=3,98 max).<br/>
+        <b class="h">ΔEN &lt; 0,4</b> → liaison covalente non polaire (ex: C–H, ΔEN=0,35)<br/>
+        <b class="h">0,4 &lt; ΔEN &lt; 1,7</b> → liaison covalente polaire (ex: O–H, ΔEN=1,24)<br/>
+        <b class="h">ΔEN &gt; 1,7</b> → liaison ionique (ex: Na–Cl, ΔEN=2,23)<br/>
+        Valeurs clés : H=2,20 | C=2,55 | N=3,04 | O=3,44 | F=3,98 | Cl=3,16 | S=2,58
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="fb-label">Moment dipolaire d'une liaison</div>
+      <div class="fb-formula">μ = q × d   [C·m]   ou   μ [D] = q [C] × d [m] / 3,336×10⁻³⁰</div>
+      <div class="fb-explain">
+        <b>q</b> = charge partielle séparée (fraction de charge élémentaire e) | <b>d</b> = distance entre les charges (≈ longueur de liaison).<br/>
+        <b>1 Debye (D)</b> = 3,336 × 10⁻³⁰ C·m (unité pratique en chimie).<br/>
+        La molécule est <b class="h">polaire</b> si la <b>somme vectorielle</b> de tous les moments dipolaires de liaison est non nulle.<br/>
+        Exemples : H₂O μ=1,85D | NH₃ μ=1,47D | HCl μ=1,08D | CO₂ μ=0 (annulation symétrique)
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="fb-label">Hybridation des orbitales atomiques</div>
+      <div class="fb-formula">sp → 2 groupes | sp² → 3 | sp³ → 4 | sp³d → 5 | sp³d² → 6</div>
+      <div class="fb-explain">
+        L'hybridation explique la formation de liaisons sigma équivalentes à partir d'orbitales de symétries différentes (s, p, d).<br/>
+        <b class="h">sp</b> : 2 orbitales hybrides, angle 180°, linéaire. Les 2 orb. p restantes forment des liaisons π (triple liaison possible).<br/>
+        <b class="h">sp²</b> : 3 orbitales hybrides, angle 120°, trigonal plan. 1 orb. p pour liaison π (double liaison).<br/>
+        <b class="h">sp³</b> : 4 orbitales hybrides, angle 109,5°, tétraédrique. Atome C du méthane, N de NH₃, O de H₂O.<br/>
+        <b class="h">sp³d et sp³d²</b> : réservés aux atomes de la 3e période et au-delà (P, S, Xe...) avec couche d disponible.
+      </div>
+    </div>
+
+    <div class="formula-box">
+      <div class="fb-label">Règle de l'octet et exceptions</div>
+      <div class="fb-formula">Atomes de 2ᵉ période : maximum 4 paires (8 électrons) autour de A</div>
+      <div class="fb-explain">
+        La règle de l'octet stipule que les atomes tendent à s'entourer de <b>8 électrons</b> (4 paires) dans leur couche de valence.<br/>
+        <b>Exceptions :</b><br/>
+        — <b class="h">Octet incomplet</b> : BF₃ (6e sur B), AlCl₃ → atomes de la 2e période avec peu d'électrons<br/>
+        — <b class="h">Radical</b> : NO₂, ClO₂ → nombre impair d'électrons<br/>
+        — <b class="h">Hypervalent</b> : PCl₅ (10e), SF₆ (12e) → possible pour les éléments de la 3e période et au-delà grâce aux orbitales d
+      </div>
+    </div>
+  </section>
+
+  <!-- NATIVE BANNER AD -->
+  <div class="native-ad">
+    <div id="container-ced9d6bd01657bda6021abb1c5919291"></div>
+    <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 4 — UTILISER LA SIMULATION
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="s4">
+    <div class="sec-hdr">
+      <div class="sec-num">4</div>
+      <div>
+        <div class="sec-title">Comment utiliser la simulation</div>
+        <div class="sec-sub">Guide pas à pas pour exploiter SimLab Géométrie Moléculaire</div>
+      </div>
+    </div>
+
+    <ul class="steps">
+      <li>
+        <div class="step-circle">1</div>
+        <div class="step-body">
+          <h4>Lancer la simulation</h4>
+          <p>Clique sur le bouton <strong style="color:var(--grn)">&#x1F680; Lancer la Simulation</strong> en haut de cette page. La simulation s'ouvre dans le même onglet. Elle démarre automatiquement avec la molécule <code>H₂O</code> en rotation.</p>
+          <div class="step-tip">&#x1F4A1; La simulation fonctionne sur ordinateur, tablette et smartphone.</div>
+        </div>
+      </li>
+      <li>
+        <div class="step-circle">2</div>
+        <div class="step-body">
+          <h4>Choisir une molécule</h4>
+          <p>Dans l'onglet <code>⚙️ Paramètres</code>, tu verras trois groupes de molécules cliquables : géométries de base (H₂O, CH₄, NH₃...), molécules courantes (HCN, C₂H₄...) et hypervalentes (PCl₅, SF₆...). Clique sur une molécule pour changer la visualisation instantanément.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-circle">3</div>
+        <div class="step-body">
+          <h4>Faire tourner la molécule en 3D</h4>
+          <p>
+            <b>Souris :</b> clique et glisse sur le canvas pour orienter la molécule dans l'espace.<br/>
+            <b>Tactile :</b> glisse avec 1 doigt pour tourner | Pinche avec 2 doigts pour zoomer.<br/>
+            <b>Molette :</b> zoom avant/arrière.<br/>
+            Tu peux aussi ajuster les sliders <code>Rotation X</code>, <code>Rotation Y</code> et <code>Zoom</code>.
+          </p>
+          <div class="step-tip">&#x1F504; Active l'<b>Auto-rotation</b> et ajuste la vitesse avec le slider <code>Vitesse rotation</code>.</div>
+        </div>
+      </li>
+      <li>
+        <div class="step-circle">4</div>
+        <div class="step-body">
+          <h4>Lire les informations affichées</h4>
+          <p>Sur le canvas, tu peux voir : les <b>étiquettes des atomes</b> avec leur électronégativité EN, les <b>liaisons</b> (simple, double ou triple), les <b>doublets libres</b> en pointillés jaunes, les <b>angles de liaison</b> affichés en cyan, et la <b>flèche de dipôle</b> en rouge pour les molécules polaires.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-circle">5</div>
+        <div class="step-body">
+          <h4>Activer/désactiver les affichages</h4>
+          <p>Utilise les cases à cocher dans l'onglet Paramètres : <code>Doublets libres</code> | <code>Étiquettes</code> | <code>Angles</code> | <code>Dipôle</code> | <code>Auto-rotation</code>. Chaque option peut être activée ou désactivée pour simplifier ou enrichir la vue.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-circle">6</div>
+        <div class="step-body">
+          <h4>Consulter les onglets d'analyse</h4>
+          <p>
+            <code>📐 Mesures</code> : 12 cards avec toutes les grandeurs (AXmEn, géométrie, angle réel, angle théorique, hybridation, moment dipolaire, ΔEN, groupes électroniques + électronégativités par atome).<br/>
+            <code>📚 Lois VSEPR</code> : table VSEPR complète avec 13 géométries + règles de répulsion + échelle EN.<br/>
+            <code>📊 Résultats</code> : résultats complets + cases de vérification TP + molécules similaires cliquables.
+          </p>
+        </div>
+      </li>
+      <li>
+        <div class="step-circle">7</div>
+        <div class="step-body">
+          <h4>Exporter le rapport TP</h4>
+          <p>Dans l'onglet <code>📄 TP</code>, clique sur <b>⬇ Exporter rapport TXT</b>. Un fichier texte est téléchargé avec : formule, notation AXmEn, géométrie électronique et moléculaire, angles, hybridation, polarité, électronégativités et les lois VSEPR appliquées.</p>
+          <div class="step-tip">&#x1F4BE; Le rapport TXT peut être directement collé dans ton cahier de TP numérique.</div>
+        </div>
+      </li>
+      <li>
+        <div class="step-circle">8</div>
+        <div class="step-body">
+          <h4>Survol interactif (tooltip)</h4>
+          <p>Passe la souris sur un atome dans la simulation : un tooltip apparaît avec le <b>symbole de l'atome</b>, son <b>électronégativité EN</b> et son <b>rayon relatif</b>. Sur mobile, le tap fonctionne de même.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 5 — DÉMO INTERACTIVE
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="s5">
+    <div class="sec-hdr">
+      <div class="sec-num">5</div>
+      <div>
+        <div class="sec-title">Démo interactive</div>
+        <div class="sec-sub">Visualise les géométries moléculaires directement dans ce guide</div>
+      </div>
+    </div>
+
+    <div class="demo-wrap">
+      <div class="demo-header">
+        <h3>&#x1F52C; Visualisation VSEPR — Mini Simulation</h3>
+        <div class="demo-btns">
+          <button class="demo-btn act" id="db0" onclick="setDemoMol(0)">H₂O</button>
+          <button class="demo-btn" id="db1" onclick="setDemoMol(1)">CH₄</button>
+          <button class="demo-btn" id="db2" onclick="setDemoMol(2)">NH₃</button>
+          <button class="demo-btn" id="db3" onclick="setDemoMol(3)">CO₂</button>
+          <button class="demo-btn" id="db4" onclick="setDemoMol(4)">BF₃</button>
+          <button class="demo-btn" id="db5" onclick="setDemoMol(5)">SF₆</button>
+        </div>
+      </div>
+      <canvas id="demoCanvas"></canvas>
+      <div class="demo-info" id="demoInfo">Chargement…</div>
+      <div class="demo-legend">
+        <div class="leg"><div class="leg-dot" style="background:#e8eaf6"></div>H</div>
+        <div class="leg"><div class="leg-dot" style="background:#ff4466"></div>O</div>
+        <div class="leg"><div class="leg-dot" style="background:#999"></div>C</div>
+        <div class="leg"><div class="leg-dot" style="background:#4488ff"></div>N</div>
+        <div class="leg"><div class="leg-dot" style="background:#ffd740"></div>B</div>
+        <div class="leg"><div class="leg-dot" style="background:#44ff88"></div>F</div>
+        <div class="leg"><div class="leg-dot" style="background:#ffee44"></div>S</div>
+        <div class="leg"><div class="leg-dot" style="background:rgba(255,215,64,0.55)"></div>Doublet libre (LP)</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 6 — EXPÉRIENCES
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="s6">
+    <div class="sec-hdr">
+      <div class="sec-num">6</div>
+      <div>
+        <div class="sec-title">Expériences à réaliser</div>
+        <div class="sec-sub">4 exercices guidés avec paramètres précis et résultats attendus</div>
+      </div>
+    </div>
+
+    <div class="exp-grid">
+
+      <div class="exp-card">
+        <h3>&#x1F9EA; Expérience 1 — Effet des doublets libres sur l'angle</h3>
+        <div class="exp-param">Molécule 1 : <b>CH₄</b> (AX₄E₀)</div>
+        <div class="exp-param">Molécule 2 : <b>NH₃</b> (AX₃E₁)</div>
+        <div class="exp-param">Molécule 3 : <b>H₂O</b> (AX₂E₂)</div>
+        <div class="exp-param">Action : Comparer les angles mesurés</div>
+        <div class="exp-obj">Objectif : Observer la réduction progressive de l'angle quand les doublets libres augmentent.</div>
+        <div class="exp-result">
+          CH₄ : 109,5° (0 LP)<br/>
+          NH₃ : 107,0° (1 LP → -2,5°)<br/>
+          H₂O : 104,5° (2 LP → -5,0°)<br/>
+          ✓ Chaque LP réduit l'angle de ≈ 2,5°
+        </div>
+      </div>
+
+      <div class="exp-card">
+        <h3>&#x1F9EA; Expérience 2 — Molécules linéaires : CO₂ vs HCN</h3>
+        <div class="exp-param">Molécule 1 : <b>CO₂</b> (AX₂E₀)</div>
+        <div class="exp-param">Molécule 2 : <b>HCN</b> (AX₂E₀)</div>
+        <div class="exp-param">Paramètre clé : <b>Moment dipolaire μ</b></div>
+        <div class="exp-param">Action : Onglet Mesures → comparer μ</div>
+        <div class="exp-obj">Objectif : Comprendre pourquoi deux molécules linéaires ont des polarités différentes.</div>
+        <div class="exp-result">
+          CO₂ : μ = 0 D (symétrique, O=C=O)<br/>
+          HCN : μ = 2,98 D (H-C≡N polaire)<br/>
+          ✓ La symétrie annule les dipôles dans CO₂
+        </div>
+      </div>
+
+      <div class="exp-card">
+        <h3>&#x1F9EA; Expérience 3 — Comparer H₂O et H₂S</h3>
+        <div class="exp-param">Molécule 1 : <b>H₂O</b> (O, 2e période)</div>
+        <div class="exp-param">Molécule 2 : <b>H₂S</b> (S, 3e période)</div>
+        <div class="exp-param">Paramètres : Angle + μ + ΔEN</div>
+        <div class="exp-param">Action : Comparer via onglet Mesures</div>
+        <div class="exp-obj">Objectif : Comprendre l'effet de la période de l'atome central sur la géométrie.</div>
+        <div class="exp-result">
+          H₂O : 104,5° | μ=1,85 D | ΔEN=1,24<br/>
+          H₂S :  92,0° | μ=0,97 D | ΔEN=0,38<br/>
+          ✓ Orbitales 3p plus diffuses → angle réduit
+        </div>
+      </div>
+
+      <div class="exp-card">
+        <h3>&#x1F9EA; Expérience 4 — Molécules hypervalentes</h3>
+        <div class="exp-param">Molécule 1 : <b>PCl₅</b> (AX₅E₀)</div>
+        <div class="exp-param">Molécule 2 : <b>SF₄</b> (AX₄E₁)</div>
+        <div class="exp-param">Molécule 3 : <b>ClF₃</b> (AX₃E₂)</div>
+        <div class="exp-param">Action : Observer géométries successives</div>
+        <div class="exp-obj">Objectif : Voir comment les LP modifient la géométrie bipyramidale de base en seesaw puis T-shape.</div>
+        <div class="exp-result">
+          PCl₅ : bipyramidale (apolaire)<br/>
+          SF₄ : seesaw / balançoire (polaire)<br/>
+          ClF₃ : forme en T (polaire)<br/>
+          ✓ Les LP occupent positions équatoriales
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       SECTION 7 — QUIZ
+  ═══════════════════════════════════════════════════════════════ -->
+  <section id="s7">
+    <div class="sec-hdr">
+      <div class="sec-num">7</div>
+      <div>
+        <div class="sec-title">Quiz de vérification</div>
+        <div class="sec-sub">4 questions pour tester ta maîtrise de la géométrie moléculaire</div>
+      </div>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-card">
+      <div class="qnum">Question 1 / 4</div>
+      <div class="qtext">La molécule H₂O possède 2 liaisons O–H et 2 doublets libres sur l'oxygène. Quelle est sa notation AXmEn et sa géométrie moléculaire ?</div>
+      <div class="qopts" id="qo1">
+        <button class="qopt" onclick="qAns(1,this,false)">A. AX₂E₀ → linéaire</button>
+        <button class="qopt" onclick="qAns(1,this,true)">B. AX₂E₂ → coudée à 104,5°</button>
+        <button class="qopt" onclick="qAns(1,this,false)">C. AX₃E₁ → pyramidale trigonale</button>
+        <button class="qopt" onclick="qAns(1,this,false)">D. AX₄E₀ → tétraédrique</button>
+      </div>
+      <div class="qfb" id="qfb1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card">
+      <div class="qnum">Question 2 / 4</div>
+      <div class="qtext">Pourquoi la molécule CO₂ est-elle apolaire alors que ses liaisons C=O sont polaires (ΔEN = 0,89) ?</div>
+      <div class="qopts" id="qo2">
+        <button class="qopt" onclick="qAns(2,this,false)">A. Parce que ΔEN &lt; 0,4 dans CO₂</button>
+        <button class="qopt" onclick="qAns(2,this,false)">B. Parce que le carbone est au centre</button>
+        <button class="qopt" onclick="qAns(2,this,true)">C. Parce que la géométrie linéaire symétrique annule les moments dipolaires</button>
+        <button class="qopt" onclick="qAns(2,this,false)">D. Parce que CO₂ ne possède pas de doublets libres</button>
+      </div>
+      <div class="qfb" id="qfb2"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card">
+      <div class="qnum">Question 3 / 4</div>
+      <div class="qtext">Quelle est l'hybridation de l'atome central dans la molécule NH₃ (3 liaisons N–H + 1 doublet libre sur N) ?</div>
+      <div class="qopts" id="qo3">
+        <button class="qopt" onclick="qAns(3,this,false)">A. sp (2 groupes → linéaire)</button>
+        <button class="qopt" onclick="qAns(3,this,false)">B. sp² (3 groupes → trigonale plane)</button>
+        <button class="qopt" onclick="qAns(3,this,true)">C. sp³ (4 groupes → tétraédrique avec 1 LP)</button>
+        <button class="qopt" onclick="qAns(3,this,false)">D. sp³d (5 groupes → bipyramidale)</button>
+      </div>
+      <div class="qfb" id="qfb3"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card">
+      <div class="qnum">Question 4 / 4</div>
+      <div class="qtext">La molécule PCl₅ possède 5 liaisons P–Cl et aucun doublet libre. Quelle est sa géométrie moléculaire et son hybridation ?</div>
+      <div class="qopts" id="qo4">
+        <button class="qopt" onclick="qAns(4,this,false)">A. Octaédrique — sp³d²</button>
+        <button class="qopt" onclick="qAns(4,this,false)">B. Tétraédrique — sp³</button>
+        <button class="qopt" onclick="qAns(4,this,true)">C. Bipyramidale trigonale — sp³d</button>
+        <button class="qopt" onclick="qAns(4,this,false)">D. Plan carré — sp³d²</button>
+      </div>
+      <div class="qfb" id="qfb4"></div>
+    </div>
+
+    <!-- Score -->
+    <div class="score-box" id="scoreBox">
+      <div class="score-val" id="scoreVal">0/4</div>
+      <div class="score-msg" id="scoreMsg"></div>
+      <div class="score-sub" id="scoreSub"></div>
+      <button class="btn-retry" onclick="retryQuiz()">&#x21BA; Réessayer</button>
+    </div>
+
+  </section>
+
+</div><!-- /container -->
+
+<footer>
+  <div class="container">
+    <p>&#x2697;&#xFE0F; SimLab — Simulations pédagogiques interactives — Chimie / Physique — Niveau lycée &amp; université Bénin</p>
+    <p style="margin-top:8px;">
+      <a href="index.html">&#x1F3E0; Accueil</a> &nbsp;·&nbsp;
+      <a href="geometrie-moleculaire.html">&#x1F680; Simulation</a> &nbsp;·&nbsp;
+      <a href="guide-carnot.html">&#x1F4D6; Guide Carnot</a>
+    </p>
+  </div>
+</footer>
+
+<button id="scrollTop" title="Remonter en haut" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#x2191;</button>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════════════════════ -->
+<script>
+// ─── PROGRESS BAR + SCROLL TOP ───────────────────────────────────────────────
+window.addEventListener('scroll', function(){
+  var sc = document.documentElement.scrollTop;
+  var sh = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('prog').style.width = (sc / sh * 100) + '%';
+  var btn = document.getElementById('scrollTop');
+  if(sc > 300){ btn.classList.add('show'); } else { btn.classList.remove('show'); }
+});
+
+// ─── DEMO CANVAS DATA ─────────────────────────────────────────────────────────
+var DMOLS = [
+  {
+    name:'H₂O', ax:'AX₂E₂', geo:'Coudée 104,5°', hyb:'sp³', dipole:1.85, polar:true,
+    atoms:[
+      {sym:'O',col:'#ff4466',r:18,x:0,  y:0, z:0, en:3.44},
+      {sym:'H',col:'#e8eaf6',r:11,x:-60,y:52,z:0, en:2.20},
+      {sym:'H',col:'#e8eaf6',r:11,x:60, y:52,z:0, en:2.20}
+    ],
+    bonds:[[0,1],[0,2]], btype:[1,1],
+    lps:[{ax:0,dx:-20,dy:-44,dz:15},{ax:0,dx:20,dy:-44,dz:-15}]
+  },
+  {
+    name:'CH₄', ax:'AX₄E₀', geo:'Tétraédrique 109,5°', hyb:'sp³', dipole:0, polar:false,
+    atoms:[
+      {sym:'C',col:'#999',   r:15,x:0,  y:0,  z:0,  en:2.55},
+      {sym:'H',col:'#e8eaf6',r:11,x:-65,y:-50,z:40, en:2.20},
+      {sym:'H',col:'#e8eaf6',r:11,x:65, y:-50,z:40, en:2.20},
+      {sym:'H',col:'#e8eaf6',r:11,x:0,  y:75, z:40, en:2.20},
+      {sym:'H',col:'#e8eaf6',r:11,x:0,  y:0,  z:-80,en:2.20}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4]], btype:[1,1,1,1], lps:[]
+  },
+  {
+    name:'NH₃', ax:'AX₃E₁', geo:'Pyramidale 107°', hyb:'sp³', dipole:1.47, polar:true,
+    atoms:[
+      {sym:'N',col:'#4488ff',r:16,x:0,  y:0, z:0,  en:3.04},
+      {sym:'H',col:'#e8eaf6',r:11,x:-65,y:50,z:25, en:2.20},
+      {sym:'H',col:'#e8eaf6',r:11,x:65, y:50,z:25, en:2.20},
+      {sym:'H',col:'#e8eaf6',r:11,x:0,  y:50,z:-55,en:2.20}
+    ],
+    bonds:[[0,1],[0,2],[0,3]], btype:[1,1,1],
+    lps:[{ax:0,dx:0,dy:-55,dz:0}]
+  },
+  {
+    name:'CO₂', ax:'AX₂E₀', geo:'Linéaire 180°', hyb:'sp', dipole:0, polar:false,
+    atoms:[
+      {sym:'O',col:'#ff4466',r:16,x:-90,y:0,z:0, en:3.44},
+      {sym:'C',col:'#999',   r:14,x:0,  y:0,z:0, en:2.55},
+      {sym:'O',col:'#ff4466',r:16,x:90, y:0,z:0, en:3.44}
+    ],
+    bonds:[[1,0],[1,2]], btype:[2,2], lps:[]
+  },
+  {
+    name:'BF₃', ax:'AX₃E₀', geo:'Trigonale plane 120°', hyb:'sp²', dipole:0, polar:false,
+    atoms:[
+      {sym:'B',col:'#ffd740',r:14,x:0,  y:0,  z:0, en:2.04},
+      {sym:'F',col:'#44ff88',r:13,x:-80,y:0,  z:0, en:3.98},
+      {sym:'F',col:'#44ff88',r:13,x:40, y:-70,z:0, en:3.98},
+      {sym:'F',col:'#44ff88',r:13,x:40, y:70, z:0, en:3.98}
+    ],
+    bonds:[[0,1],[0,2],[0,3]], btype:[1,1,1], lps:[]
+  },
+  {
+    name:'SF₆', ax:'AX₆E₀', geo:'Octaédrique 90°', hyb:'sp³d²', dipole:0, polar:false,
+    atoms:[
+      {sym:'S',col:'#ffee44',r:16,x:0,  y:0,  z:0,  en:2.58},
+      {sym:'F',col:'#44ff88',r:12,x:-82,y:0,  z:0,  en:3.98},
+      {sym:'F',col:'#44ff88',r:12,x:82, y:0,  z:0,  en:3.98},
+      {sym:'F',col:'#44ff88',r:12,x:0,  y:-82,z:0,  en:3.98},
+      {sym:'F',col:'#44ff88',r:12,x:0,  y:82, z:0,  en:3.98},
+      {sym:'F',col:'#44ff88',r:12,x:0,  y:0,  z:-82,en:3.98},
+      {sym:'F',col:'#44ff88',r:12,x:0,  y:0,  z:82, en:3.98}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6]], btype:[1,1,1,1,1,1], lps:[]
+  }
+];
+
+var demoIdx = 0;
+var demoT = 0;
+var demoRX = 25, demoRY = 40;
+var demoDrag = null, demoDRX = 25, demoDRY = 40;
+var dc = document.getElementById('demoCanvas');
+var dx = dc.getContext('2d');
+
+function setDemoMol(i){
+  demoIdx = i;
+  document.querySelectorAll('.demo-btn').forEach(function(b,j){ b.classList.toggle('act', j===i); });
+}
+
+function proj(x,y,z,rx,ry,zoom,cx,cy){
+  var cosY=Math.cos(ry*Math.PI/180), sinY=Math.sin(ry*Math.PI/180);
+  var x1=x*cosY-z*sinY, z1=x*sinY+z*cosY;
+  var cosX=Math.cos(rx*Math.PI/180), sinX=Math.sin(rx*Math.PI/180);
+  var y2=y*cosX-z1*sinX, z2=y*sinX+z1*cosX;
+  var fov=420, sc=fov/(fov+z2)*zoom/100;
+  return {sx:cx+x1*sc, sy:cy+y2*sc, sc:sc, z:z2};
+}
+
+function drawDemo(){
+  var W=dc.width, H=dc.height;
+  dx.clearRect(0,0,W,H);
+  var bg=dx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#04080f'); bg.addColorStop(1,'#060d18');
+  dx.fillStyle=bg; dx.fillRect(0,0,W,H);
+  dx.strokeStyle='rgba(0,229,255,0.03)'; dx.lineWidth=1;
+  for(var gx=0;gx<W;gx+=35){dx.beginPath();dx.moveTo(gx,0);dx.lineTo(gx,H);dx.stroke();}
+  for(var gy=0;gy<H;gy+=35){dx.beginPath();dx.moveTo(0,gy);dx.lineTo(W,gy);dx.stroke();}
+
+  var mol=DMOLS[demoIdx];
+  var cx=W/2, cy=H/2;
+  var rx=demoRX, ry=demoRY+demoT*12;
+  var zm=100;
+
+  var P=mol.atoms.map(function(a){ return proj(a.x,a.y,a.z,rx,ry,zm,cx,cy); });
+  var order=mol.atoms.map(function(_,i){return i;}).sort(function(a,b){return P[a].z-P[b].z;});
+
+  // bonds
+  mol.bonds.forEach(function(bond,bi){
+    var i0=bond[0],i1=bond[1];
+    var p0=P[i0],p1=P[i1];
+    var sc=(p0.sc+p1.sc)/2;
+    var bt=mol.btype[bi]||1;
+    dx.shadowBlur=6; dx.shadowColor='rgba(150,200,255,0.3)';
+    if(bt===1){
+      dx.strokeStyle='rgba(180,200,240,0.6)'; dx.lineWidth=3.2*sc;
+      dx.beginPath(); dx.moveTo(p0.sx,p0.sy); dx.lineTo(p1.sx,p1.sy); dx.stroke();
+    } else if(bt===2){
+      var ddx=p1.sy-p0.sy, ddy=p0.sx-p1.sx;
+      var dl=Math.sqrt(ddx*ddx+ddy*ddy)||1, off=4*sc;
+      var ox=ddx/dl*off, oy=ddy/dl*off;
+      dx.strokeStyle='rgba(180,200,240,0.6)'; dx.lineWidth=2*sc;
+      dx.beginPath(); dx.moveTo(p0.sx+ox,p0.sy+oy); dx.lineTo(p1.sx+ox,p1.sy+oy); dx.stroke();
+      dx.beginPath(); dx.moveTo(p0.sx-ox,p0.sy-oy); dx.lineTo(p1.sx-ox,p1.sy-oy); dx.stroke();
+    }
+    dx.shadowBlur=0;
+  });
+
+  // lone pairs
+  if(mol.lps && mol.lps.length){
+    mol.lps.forEach(function(lp){
+      var pa=P[lp.ax];
+      var pe=proj(mol.atoms[lp.ax].x+lp.dx,mol.atoms[lp.ax].y+lp.dy,mol.atoms[lp.ax].z+lp.dz,rx,ry,zm,cx,cy);
+      dx.strokeStyle='rgba(255,215,64,0.5)'; dx.lineWidth=1.5;
+      dx.setLineDash([5,4]);
+      dx.beginPath(); dx.moveTo(pa.sx,pa.sy); dx.lineTo(pe.sx,pe.sy); dx.stroke();
+      dx.setLineDash([]);
+      var lg=dx.createRadialGradient(pe.sx,pe.sy,0,pe.sx,pe.sy,14*pe.sc);
+      lg.addColorStop(0,'rgba(255,215,64,0.55)');
+      lg.addColorStop(1,'rgba(255,215,64,0)');
+      dx.fillStyle=lg;
+      dx.beginPath(); dx.arc(pe.sx,pe.sy,14*pe.sc,0,Math.PI*2); dx.fill();
+      dx.fillStyle='rgba(255,215,64,0.85)'; dx.font='bold 8px JetBrains Mono';
+      dx.textAlign='center'; dx.textBaseline='middle';
+      dx.fillText('LP',pe.sx,pe.sy-13*pe.sc);
+    });
+  }
+
+  // atoms
+  order.forEach(function(i){
+    var a=mol.atoms[i]; var p=P[i]; var r=a.r*p.sc;
+    var g1=dx.createRadialGradient(p.sx,p.sy,0,p.sx,p.sy,r*2.4);
+    g1.addColorStop(0,a.col+'77'); g1.addColorStop(1,a.col+'00');
+    dx.fillStyle=g1; dx.beginPath(); dx.arc(p.sx,p.sy,r*2.4,0,Math.PI*2); dx.fill();
+    var g2=dx.createRadialGradient(p.sx-r*0.3,p.sy-r*0.3,r*0.05,p.sx,p.sy,r);
+    g2.addColorStop(0,'#fff'); g2.addColorStop(0.25,a.col); g2.addColorStop(1,a.col+'66');
+    dx.fillStyle=g2; dx.shadowBlur=10; dx.shadowColor=a.col;
+    dx.beginPath(); dx.arc(p.sx,p.sy,r,0,Math.PI*2); dx.fill(); dx.shadowBlur=0;
+    dx.strokeStyle=a.col+'99'; dx.lineWidth=1;
+    dx.beginPath(); dx.arc(p.sx,p.sy,r,0,Math.PI*2); dx.stroke();
+    if(r>9){
+      dx.fillStyle='#fff'; dx.font='bold '+Math.max(9,Math.round(11*p.sc))+'px Outfit';
+      dx.textAlign='center'; dx.textBaseline='middle';
+      dx.shadowBlur=3; dx.shadowColor='#000';
+      dx.fillText(a.sym,p.sx,p.sy); dx.shadowBlur=0;
+    }
+  });
+
+  // angle arc
+  if(mol.bonds.length>=2){
+    var c0=P[mol.bonds[0][0]], l1=P[mol.bonds[0][1]], l2=P[mol.bonds[1][1]];
+    var ra=26*c0.sc;
+    var a1=Math.atan2(l1.sy-c0.sy,l1.sx-c0.sx);
+    var a2=Math.atan2(l2.sy-c0.sy,l2.sx-c0.sx);
+    var da=a2-a1; while(da>Math.PI)da-=2*Math.PI; while(da<-Math.PI)da+=2*Math.PI;
+    dx.strokeStyle='rgba(0,229,255,0.5)'; dx.lineWidth=1.5;
+    dx.beginPath(); dx.arc(c0.sx,c0.sy,ra,a1,a1+da,da<0); dx.stroke();
+  }
+
+  // info
+  document.getElementById('demoInfo').textContent =
+    mol.name+' | '+mol.ax+' | '+mol.geo+' | '+mol.hyb+
+    ' | '+(mol.polar?'POLAIRE μ='+mol.dipole+' D':'APOLAIRE μ=0');
+
+  demoT+=0.01;
+  requestAnimationFrame(drawDemo);
+}
+
+function resizeDC(){
+  dc.width=dc.parentElement.clientWidth;
+  dc.height=230;
+}
+
+// Drag on demo canvas
+dc.addEventListener('mousedown',function(e){
+  demoDrag={x:e.clientX,y:e.clientY}; demoDRX=demoRX; demoDRY=demoRY;
+});
+dc.addEventListener('mousemove',function(e){
+  if(!demoDrag)return;
+  demoRX=demoDRX+(e.clientY-demoDrag.y)*0.5;
+  demoRY=demoDRY+(e.clientX-demoDrag.x)*0.5;
+});
+dc.addEventListener('mouseup',function(){demoDrag=null;});
+dc.addEventListener('mouseleave',function(){demoDrag=null;});
+var tdragD=null, tdRXD=25, tdRYD=40;
+dc.addEventListener('touchstart',function(e){
+  if(e.touches.length===1){tdragD={x:e.touches[0].clientX,y:e.touches[0].clientY};tdRXD=demoRX;tdRYD=demoRY;}
+  e.preventDefault();},{passive:false});
+dc.addEventListener('touchmove',function(e){
+  if(e.touches.length===1&&tdragD){
+    demoRX=tdRXD+(e.touches[0].clientY-tdragD.y)*0.5;
+    demoRY=tdRYD+(e.touches[0].clientX-tdragD.x)*0.5;
+  }e.preventDefault();},{passive:false});
+dc.addEventListener('touchend',function(){tdragD=null;});
+
+resizeDC();
+window.addEventListener('resize', resizeDC);
+drawDemo();
+
+// ─── QUIZ ─────────────────────────────────────────────────────────────────────
+var qScore=0, qDone=0;
+var QFB={
+  1:{
+    ok:'✅ Correct ! H₂O = AX₂E₂ : 2 liaisons O–H (X=2) + 2 doublets libres sur O (E=2) = 4 groupes électroniques → base tétraédrique. Les 2 LP compriment l\'angle à 104,5° (< 109,5°). Géométrie moléculaire : coudée.',
+    ko:'❌ Incorrect. H₂O a 2 liaisons (X=2) et 2 doublets libres sur O (E=2) → notation AX₂E₂. Les 2 LP réduisent l\'angle à 104,5°. Géométrie moléculaire : coudée (pas linéaire ni tétraédrique).'
+  },
+  2:{
+    ok:'✅ Correct ! CO₂ est linéaire (O=C=O). Les deux liaisons C=O sont polaires (ΔEN=0,89) mais leurs moments dipolaires sont exactement opposés (→←). La somme vectorielle est nulle → molécule apolaire malgré liaisons polaires.',
+    ko:'❌ Incorrect. CO₂ a bien des liaisons polaires (ΔEN=0,89 > 0,4). Mais la géométrie linéaire crée une symétrie parfaite : les 2 dipôles O=C et C=O s\'annulent (vecteurs opposés). C\'est la symétrie qui rend CO₂ apolaire.'
+  },
+  3:{
+    ok:'✅ Correct ! NH₃ : N central avec 3 liaisons N–H (X=3) + 1 doublet libre (E=1) = 4 groupes électroniques → hybridation sp³. L\'angle est 107° (< 109,5° à cause du LP). Géométrie : pyramidale trigonale.',
+    ko:'❌ Incorrect. NH₃ a 3 liaisons + 1 doublet libre = 4 groupes électroniques. 4 groupes → hybridation sp³. Si N était sp², il y aurait 3 groupes et 120°. Si sp, 2 groupes et 180°. La présence du LP sp³ donne la forme pyramidale à 107°.'
+  },
+  4:{
+    ok:'✅ Correct ! PCl₅ = AX₅E₀ : 5 liaisons (m=5) + 0 LP (n=0) = 5 groupes → hybridation sp³d (orbitale d de la 3e période utilisée). Géométrie bipyramidale trigonale : 3 positions équatoriales (120°) + 2 positions axiales (90°).',
+    ko:'❌ Incorrect. PCl₅ a 5 liaisons et 0 LP = 5 groupes électroniques. 5 groupes → sp³d (pas sp³ qui donne 4 groupes, ni sp³d² qui donne 6). La géométrie résultante est bipyramidale trigonale avec des angles de 90° (axial/équatorial) et 120° (entre équatoriaux).'
+  }
+};
+
+function qAns(qn, el, correct){
+  var opts=document.getElementById('qo'+qn).querySelectorAll('.qopt');
+  var fb=document.getElementById('qfb'+qn);
+  if(el.classList.contains('qdis')) return;
+  opts.forEach(function(o){o.classList.add('qdis');});
+  el.classList.add(correct?'ok':'ko');
+  fb.textContent=QFB[qn][correct?'ok':'ko'];
+  fb.className='qfb show '+(correct?'ok':'ko');
+  if(correct) qScore++;
+  qDone++;
+  if(qDone===4) showScore();
+}
+
+function showScore(){
+  var box=document.getElementById('scoreBox');
+  box.classList.add('show');
+  document.getElementById('scoreVal').textContent=qScore+'/4';
+  var msgs=[
+    ['😞','Continue à étudier ! Relis les sections 1, 2 et 3.','La méthode VSEPR demande de la pratique.'],
+    ['🤔','Pas mal ! Quelques points à consolider.','Relis la section 2 (tableau VSEPR) et les formules.'],
+    ['👍','Bien ! Tu maîtrises l\'essentiel.','Quelques détails à affiner sur la polarité.'],
+    ['🎉','Très bien ! Bonne maîtrise de VSEPR.','Tu peux passer aux géométries hypervalentes.'],
+    ['🏆','Excellent ! Parfaite maîtrise de la géométrie moléculaire !','Tu es prêt(e) pour les TP de chimie avancée.']
+  ];
+  var m=msgs[qScore]||msgs[4];
+  document.getElementById('scoreMsg').textContent=m[0]+' '+m[1];
+  document.getElementById('scoreSub').textContent=m[2];
+}
+
+function retryQuiz(){
+  qScore=0; qDone=0;
+  document.getElementById('scoreBox').classList.remove('show');
+  for(var i=1;i<=4;i++){
+    document.getElementById('qo'+i).querySelectorAll('.qopt').forEach(function(o){
+      o.classList.remove('ok','ko','qdis');
+    });
+    var fb=document.getElementById('qfb'+i);
+    fb.className='qfb'; fb.textContent='';
+  }
+  window.scrollTo({top:document.getElementById('s7').offsetTop-80,behavior:'smooth'});
+}
+</script>
+
+<script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+<a href="politique-confidentialite.html" style="display:block;text-align:center;padding:12px 0 8px;font-size:12px;color:#7986a3;font-family:'Outfit',sans-serif;">Politique de Confidentialité</a>
+</body>
+</html>

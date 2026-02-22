@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cycle de Carnot — SimLab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --hh:48px;--ph:185px;
+  --bg:#0a0e1a;--s1:#111827;--s2:#1a2540;
+  --acc:#00e5ff;--grn:#00ff88;--red:#ff4060;--yel:#ffd740;
+  --txt:#e8eaf6;--sub:#7986a3;
+}
+@media(max-width:600px){:root{--hh:44px;--ph:178px;}}
+@media(max-width:380px){:root{--hh:42px;--ph:168px;}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;overflow:hidden;}
+
+/* HEADER */
+#hd{
+  position:fixed;top:0;left:0;right:0;height:var(--hh);
+  background:linear-gradient(90deg,#060c1a,#0d1830);
+  border-bottom:1px solid rgba(0,229,255,.15);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;z-index:100;gap:6px;
+}
+#hd a{color:var(--acc);text-decoration:none;font-size:11px;font-weight:600;white-space:nowrap;
+  padding:4px 8px;border:1px solid rgba(0,229,255,.3);border-radius:6px;}
+#hd a:hover{background:rgba(0,229,255,.1);}
+#htitle{font-size:13px;font-weight:700;color:#fff;text-align:center;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#logo{font-size:12px;font-weight:600;color:var(--acc);white-space:nowrap;}
+#v3btn{background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--acc);
+  font-size:10px;padding:4px 8px;border-radius:6px;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;}
+#v3btn:hover{background:rgba(0,229,255,.2);}
+@media(max-width:600px){#logo{display:none;}#htitle{font-size:11px;}}
+
+/* SIMULATION ZONE */
+#sw{
+  position:fixed;
+  top:var(--hh);
+  bottom:var(--ph);
+  left:0;right:0;
+  overflow:hidden;
+}
+#c2{display:block;width:100%;height:100%;}
+
+/* TOOLTIP */
+#tt{
+  position:fixed;background:rgba(10,14,26,.92);border:1px solid rgba(0,229,255,.4);
+  border-radius:8px;padding:6px 10px;font-size:10px;pointer-events:none;
+  display:none;z-index:200;font-family:'JetBrains Mono',monospace;color:var(--acc);
+  line-height:1.6;
+}
+
+/* PANEL BAS */
+#pb{
+  position:fixed;bottom:0;left:0;right:0;height:var(--ph);
+  background:var(--s1);border-top:1px solid rgba(0,229,255,.15);
+  display:flex;flex-direction:column;z-index:100;
+}
+#tabs{
+  display:flex;overflow-x:auto;border-bottom:1px solid rgba(0,229,255,.1);
+  scrollbar-width:none;flex-shrink:0;
+}
+#tabs::-webkit-scrollbar{display:none;}
+.tab{
+  flex-shrink:0;padding:5px 10px;font-size:10px;font-weight:600;cursor:pointer;
+  color:var(--sub);border-bottom:2px solid transparent;white-space:nowrap;transition:.2s;
+}
+.tab.active{color:var(--acc);border-bottom-color:var(--acc);}
+.tab:hover{color:var(--txt);}
+#tcon{flex:1;overflow-y:auto;padding:6px 8px;scrollbar-width:thin;scrollbar-color:var(--s2) transparent;}
+#tcon::-webkit-scrollbar{width:4px;}
+#tcon::-webkit-scrollbar-thumb{background:var(--s2);border-radius:2px;}
+.tp{display:none;}.tp.active{display:block;}
+
+/* SLIDERS */
+.prow{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.prow label{font-size:9px;color:var(--sub);width:90px;flex-shrink:0;}
+.prow input[type=range]{
+  flex:1;height:4px;-webkit-appearance:none;appearance:none;
+  background:linear-gradient(90deg,var(--acc) var(--pct,50%),rgba(255,255,255,.1) var(--pct,50%));
+  border-radius:2px;outline:none;cursor:pointer;
+}
+.prow input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--acc);box-shadow:0 0 8px var(--acc);cursor:pointer;
+}
+.prow input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:var(--acc);
+  box-shadow:0 0 8px var(--acc);cursor:pointer;border:none;
+}
+.lv{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--acc);min-width:40px;text-align:right;}
+.brow{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.btn{
+  flex:1;min-width:60px;padding:5px 8px;border-radius:8px;font-size:11px;font-weight:600;
+  cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:.15s;
+}
+.btn-g{background:var(--grn);color:#000;}.btn-g:hover{filter:brightness(1.15);}
+.btn-p{background:var(--yel);color:#000;}.btn-p:hover{filter:brightness(1.15);}
+.btn-r{background:var(--red);color:#fff;}.btn-r:hover{filter:brightness(1.15);}
+.chk{display:flex;align-items:center;gap:6px;font-size:9px;color:var(--sub);margin-bottom:5px;}
+.chk input{accent-color:var(--acc);}
+
+/* CARDS grilles */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.card{background:var(--s2);border-radius:8px;padding:6px 8px;border:1px solid rgba(0,229,255,.07);}
+.card .cv{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--acc);}
+.card .cu{font-size:8px;color:var(--sub);margin-top:1px;}
+.card .cl{font-size:8px;color:var(--sub);}
+.fcard{background:var(--s2);border-radius:8px;padding:7px 10px;margin-bottom:5px;border-left:3px solid var(--yel);}
+.fcard .ff{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--yel);margin-bottom:3px;}
+.fcard .fd{font-size:9px;color:var(--sub);line-height:1.5;}
+.sec{font-size:9px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:1px;margin:6px 0 3px;}
+/* TP */
+.tptxt{font-size:9px;color:var(--sub);line-height:1.6;margin-bottom:6px;}
+.btn-exp{background:var(--acc);color:#000;padding:5px 12px;border-radius:8px;font-size:10px;font-weight:700;cursor:pointer;border:none;font-family:'Outfit',sans-serif;}
+/* Vérif */
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:6px;}
+.vcard{background:var(--s2);border-radius:8px;padding:6px 8px;display:flex;align-items:center;gap:6px;}
+.vcard input{accent-color:var(--grn);}
+.vcard label{font-size:9px;color:var(--sub);flex:1;}
+.vbadge{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--grn);font-weight:700;white-space:nowrap;}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:calc(var(--ph) + 10px);left:50%;transform:translateX(-50%);
+  background:rgba(0,229,255,.15);border:1px solid var(--acc);border-radius:8px;
+  padding:6px 14px;font-size:11px;color:var(--acc);z-index:300;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hd">
+  <a href="index.html">← Retour</a>
+  <span id="htitle">🌡️ Cycle de Carnot</span>
+  <button id="v3btn" onclick="switchV()">🔄 PV / Diag</button>
+  <span id="logo">⚗️ SimLab</span>
+</header>
+
+<!-- SIMULATION -->
+<div id="sw"><canvas id="c2"></canvas></div>
+
+<!-- TOOLTIP -->
+<div id="tt"></div>
+<div id="toast"></div>
+
+<!-- PANEL BAS -->
+<div id="pb">
+  <div id="tabs">
+    <div class="tab active" onclick="selTab(0)">⚙️ Paramètres</div>
+    <div class="tab" onclick="selTab(1)">📐 Mesures</div>
+    <div class="tab" onclick="selTab(2)">📚 Lois</div>
+    <div class="tab" onclick="selTab(3)">📄 TP</div>
+    <div class="tab" onclick="selTab(4)">📊 Résultats</div>
+  </div>
+  <div id="tcon">
+
+    <!-- PARAMETRES -->
+    <div class="tp active" id="t0">
+      <div class="prow"><label>T_chaud Th (K)</label>
+        <input type="range" id="sTh" min="400" max="1200" value="800" oninput="bindSlider('sTh','lTh',0,uR)"/>
+        <span class="lv" id="lTh">800</span></div>
+      <div class="prow"><label>T_froid Tc (K)</label>
+        <input type="range" id="sTc" min="100" max="500" value="300" oninput="bindSlider('sTc','lTc',0,uR)"/>
+        <span class="lv" id="lTc">300</span></div>
+      <div class="prow"><label>P₁ initiale (kPa)</label>
+        <input type="range" id="sP1" min="50" max="500" value="200" oninput="bindSlider('sP1','lP1',0,uR)"/>
+        <span class="lv" id="lP1">200</span></div>
+      <div class="prow"><label>V₁ initial (L)</label>
+        <input type="range" id="sV1" min="1" max="20" value="5" step="0.5" oninput="bindSlider('sV1','lV1',1,uR)"/>
+        <span class="lv" id="lV1">5.0</span></div>
+      <div class="prow"><label>γ (Cp/Cv)</label>
+        <input type="range" id="sGam" min="100" max="175" value="140" oninput="bindSlider('sGam','lGam',2,uR)"/>
+        <span class="lv" id="lGam">1.40</span></div>
+      <div class="chk"><input type="checkbox" id="chkAnim" checked/><label for="chkAnim">Animation continue</label>
+        <input type="checkbox" id="chkPt" checked style="margin-left:8px"/><label for="chkPt">Afficher étapes</label>
+        <input type="checkbox" id="chkArr" checked style="margin-left:8px"/><label for="chkArr">Flèches</label></div>
+      <div class="brow">
+        <button class="btn btn-g" onclick="doLancer()">▶ Lancer</button>
+        <button class="btn btn-p" onclick="doPause()">⏸ Pause</button>
+        <button class="btn btn-r" onclick="doReset()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- MESURES -->
+    <div class="tp" id="t1">
+      <div class="cgrid">
+        <div class="card"><div class="cl">Rendement η</div><div class="cv" id="mEta">—</div><div class="cu">%</div></div>
+        <div class="card"><div class="cl">Travail W_net</div><div class="cv" id="mW">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">Chaleur Q_h</div><div class="cv" id="mQh">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">Chaleur Q_c</div><div class="cv" id="mQc">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">Rapport r = V₂/V₁</div><div class="cv" id="mRatio">—</div><div class="cu">—</div></div>
+        <div class="card"><div class="cl">COP (réfrig.)</div><div class="cv" id="mCop">—</div><div class="cu">—</div></div>
+        <div class="card"><div class="cl">Phase actuelle</div><div class="cv" id="mPhase" style="color:var(--grn);font-size:10px;">—</div><div class="cu">—</div></div>
+        <div class="card"><div class="cl">Progression</div><div class="cv" id="mProg">—</div><div class="cu">%</div></div>
+      </div>
+    </div>
+
+    <!-- LOIS -->
+    <div class="tp" id="t2">
+      <div class="fcard">
+        <div class="ff">η = 1 - Tc/Th</div>
+        <div class="fd">Rendement de Carnot : fraction maximale d'énergie thermique convertible en travail. Tc et Th en Kelvin. Plus l'écart de températures est grand, meilleur est le rendement.</div>
+      </div>
+      <div class="fcard">
+        <div class="ff">PV = nRT (gaz parfait)</div>
+        <div class="fd">Équation d'état du gaz parfait. Lors des isothermes, T est constante donc PV = cste. Le gaz se dilate en absorbant de la chaleur sur l'isotherme chaude.</div>
+      </div>
+      <div class="fcard">
+        <div class="ff">PV^γ = cste (adiabatique)</div>
+        <div class="fd">Lors des adiabatiques, aucun échange de chaleur. γ = Cp/Cv ≈ 1,4 pour l'air diatomique. La pression chute rapidement lors de la détente adiabatique.</div>
+      </div>
+      <div class="fcard">
+        <div class="ff">W = Q_h × η</div>
+        <div class="fd">Le travail net produit par le cycle est le produit de la chaleur absorbée à la source chaude par le rendement. Conservation de l'énergie : Q_h = W + Q_c.</div>
+      </div>
+      <div class="fcard">
+        <div class="ff">COP = Tc / (Th - Tc)</div>
+        <div class="fd">Coefficient de performance en mode réfrigérateur (cycle inverse). Mesure l'efficacité du pompage de chaleur. Plus Th-Tc est faible, plus le COP est élevé.</div>
+      </div>
+    </div>
+
+    <!-- TP -->
+    <div class="tp" id="t3">
+      <p class="tptxt"><b style="color:var(--acc)">TP — Cycle de Carnot</b><br/>
+      Le cycle de Carnot est le cycle thermodynamique idéal composé de 4 transformations réversibles : deux isothermes et deux adiabatiques. Il définit le rendement maximal théorique d'une machine thermique fonctionnant entre deux sources de température fixe Th et Tc.<br/><br/>
+      <b>Étapes :</b> (1→2) Isotherme à Th — détente, absorption de Q_h ; (2→3) Adiabatique — détente, refroidissement sans échange ; (3→4) Isotherme à Tc — compression, cession de Q_c ; (4→1) Adiabatique — compression, retour état initial.<br/><br/>
+      <b>Formules :</b> η = 1 - Tc/Th | W = nRTh·ln(V₂/V₁) | Q_h = W/η | Q_c = Q_h - W
+      </p>
+      <button class="btn-exp" onclick="exportTP()">⬇ Exporter rapport TXT</button>
+    </div>
+
+    <!-- RESULTATS -->
+    <div class="tp" id="t4">
+      <div class="sec">Résultats calculés</div>
+      <div class="cgrid" id="resGrid">
+        <div class="card"><div class="cl">η Carnot théorique</div><div class="cv" id="rEta">—</div><div class="cu">%</div></div>
+        <div class="card"><div class="cl">W travail net</div><div class="cv" id="rW">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">Q_h absorbée</div><div class="cv" id="rQh">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">Q_c cédée</div><div class="cv" id="rQc">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">ΔS total (irréver.)</div><div class="cv" id="rDS">0</div><div class="cu">J/K</div></div>
+        <div class="card"><div class="cl">COP réfrigérateur</div><div class="cv" id="rCop">—</div><div class="cu">—</div></div>
+      </div>
+      <div class="sec">✅ Vérification TP</div>
+      <div class="vgrid">
+        <div class="vcard"><input type="checkbox" id="v1"/><label for="v1">η = 1 - Tc/Th</label><span class="vbadge" id="vb1">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v2"/><label for="v2">W = Q_h·η</label><span class="vbadge" id="vb2">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v3"/><label for="v3">Q_h = W + Q_c</label><span class="vbadge" id="vb3">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v4"/><label for="v4">ΔS cycle = 0</label><span class="vbadge" id="vb4">0 J/K</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+const ST = {
+  running:false, time:0, view:'pv',
+  Th:800, Tc:300, P1:200, V1:5, gam:1.40,
+  particles:[], mx:null, my:null, raf:null,
+  phase:0, phaseT:0, totalT:2.5
+};
+
+const canvas = document.getElementById('c2');
+const ctx = canvas.getContext('2d');
+const sw = document.getElementById('sw');
+
+// ─── RESIZE ──────────────────────────────────────────────────────────────────
+function rsz(){
+  canvas.width = sw.clientWidth;
+  canvas.height = sw.clientHeight;
+  d2();
+}
+
+// ─── SLIDER BIND ─────────────────────────────────────────────────────────────
+function bindSlider(id, lvId, dec, cb){
+  const sl = document.getElementById(id);
+  const lv = document.getElementById(lvId);
+  let val = parseFloat(sl.value);
+  if(id==='sGam') val = val/100;
+  lv.textContent = val.toFixed(dec);
+  const pct = (sl.value - sl.min)/(sl.max - sl.min)*100;
+  sl.style.setProperty('--pct', pct+'%');
+  updateST();
+  if(cb) cb();
+}
+
+function updateST(){
+  ST.Th = parseFloat(document.getElementById('sTh').value);
+  ST.Tc = parseFloat(document.getElementById('sTc').value);
+  if(ST.Tc >= ST.Th) ST.Tc = ST.Th - 1;
+  ST.P1 = parseFloat(document.getElementById('sP1').value)*1000; // Pa
+  ST.V1 = parseFloat(document.getElementById('sV1').value)*0.001; // m³
+  ST.gam = parseFloat(document.getElementById('sGam').value)/100;
+}
+
+// ─── COMPUTE CYCLE ────────────────────────────────────────────────────────────
+function computeCycle(){
+  updateST();
+  const Th=ST.Th, Tc=ST.Tc, g=ST.gam;
+  const P1=ST.P1, V1=ST.V1;
+  // nR = P1V1/Th
+  const nR = P1*V1/Th;
+  // Isotherme 1→2 at Th: P1V1=P2V2 => V2 via adiabatic back
+  // Adiabatic 2→3: T goes from Th to Tc
+  // ratio V2/V1 from adiab 4→1: T4=Tc, T1=Th => V4/V1=(Th/Tc)^(1/(g-1))
+  // V3/V2 = V4/V1 (same ratio)
+  const vRatio = Math.pow(Th/Tc, 1/(g-1));
+  const V2 = V1 * vRatio;
+  const V3 = V2 * vRatio;
+  const V4 = V1 * vRatio;
+  // P at each point
+  const P2 = P1*V1/V2; // isotherme
+  const P3 = P2*Math.pow(V2/V3, g); // adiabatic
+  const P4 = P1*Math.pow(V1/V4, g);
+
+  const Wiso_hot = nR*Th*Math.log(V2/V1);
+  const Wiso_cold = nR*Tc*Math.log(V4/V3); // negative
+  const Wad1 = nR*(Tc-Th)/(g-1); // adiab 2→3
+  const Wad2 = nR*(Th-Tc)/(g-1); // adiab 4→1
+  const Wnet = Wiso_hot + Wiso_cold; // adiab cancel
+  const Qh = Wiso_hot;
+  const Qc = -Wiso_cold;
+  const eta = 1 - Tc/Th;
+  const cop = Tc/(Th-Tc);
+
+  return {Th,Tc,P1,V1,P2,V2,P3,V3,P4,V4,nR,Wnet,Qh,Qc,eta,cop,vRatio,g};
+}
+
+// ─── UPDATE RESULTS ───────────────────────────────────────────────────────────
+function uR(){
+  const r = computeCycle();
+  const etaPct = (r.eta*100).toFixed(1);
+  const Wf = r.Wnet.toFixed(0);
+  const Qhf = r.Qh.toFixed(0);
+  const Qcf = r.Qc.toFixed(0);
+
+  // Mesures tab
+  document.getElementById('mEta').textContent = etaPct;
+  document.getElementById('mW').textContent = Wf;
+  document.getElementById('mQh').textContent = Qhf;
+  document.getElementById('mQc').textContent = Qcf;
+  document.getElementById('mRatio').textContent = r.vRatio.toFixed(2);
+  document.getElementById('mCop').textContent = r.cop.toFixed(2);
+
+  // Resultats tab
+  document.getElementById('rEta').textContent = etaPct;
+  document.getElementById('rW').textContent = Wf;
+  document.getElementById('rQh').textContent = Qhf;
+  document.getElementById('rQc').textContent = Qcf;
+  document.getElementById('rDS').textContent = '0.00';
+  document.getElementById('rCop').textContent = r.cop.toFixed(2);
+
+  // Verification badges
+  document.getElementById('vb1').textContent = etaPct+'%';
+  document.getElementById('vb2').textContent = (r.Qh*r.eta).toFixed(0)+'J';
+  document.getElementById('vb3').textContent = (r.Wnet+r.Qc).toFixed(0)+'J';
+  document.getElementById('vb4').textContent = '0 J/K';
+
+  d2();
+}
+
+// ─── DRAW 2D ─────────────────────────────────────────────────────────────────
+function d2(){
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Background
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#04080f'); bg.addColorStop(1,'#060d18');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // Grid
+  ctx.strokeStyle='rgba(0,229,255,0.03)';ctx.lineWidth=1;
+  for(let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for(let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  if(ST.view==='pv') drawPV(W,H);
+  else drawTS(W,H);
+
+  tkP();
+}
+
+function drawPV(W,H){
+  const r = computeCycle();
+  const mg = {l:60,r:30,t:30,b:50};
+  const pw = W-mg.l-mg.r, ph = H-mg.t-mg.b;
+
+  // Axis limits with some padding
+  const Vmax = r.V3*1.15, Pmax = r.P1*1.2;
+  const Vmin = r.V1*0.75, Pmin = r.P3*0.75;
+
+  function toX(v){ return mg.l + (v-Vmin)/(Vmax-Vmin)*pw; }
+  function toY(p){ return mg.t + ph - (p-Pmin)/(Pmax-Pmin)*ph; }
+
+  // Axes
+  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(mg.l,mg.t);ctx.lineTo(mg.l,mg.t+ph);ctx.lineTo(mg.l+pw,mg.t+ph);ctx.stroke();
+
+  // Labels axes
+  ctx.fillStyle='rgba(121,134,163,0.9)';ctx.font='11px Outfit';ctx.textAlign='center';
+  ctx.fillText('Volume (m³)',mg.l+pw/2,H-8);
+  ctx.save();ctx.translate(14,mg.t+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Pression (Pa)',0,0);ctx.restore();
+
+  // Draw cycle path
+  const pts = buildCyclePts(r, toX, toY);
+
+  // Fill cycle area
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  pts.forEach(p=>ctx.lineTo(p.x,p.y));
+  ctx.closePath();
+  ctx.fillStyle='rgba(0,229,255,0.05)';
+  ctx.fill();
+
+  // Segments colors
+  const segCols = ['#ff6060','#ffd740','#00aaff','#00ff88'];
+  const segLabels = ['1→2 Isotherme Th','2→3 Adiab. détente','3→4 Isotherme Tc','4→1 Adiab. comp.'];
+  const n = pts.length;
+  const segSize = Math.floor(n/4);
+
+  for(let s=0;s<4;s++){
+    const start = s*segSize;
+    const end = s===3 ? n : (s+1)*segSize+1;
+    ctx.beginPath();
+    ctx.moveTo(pts[start].x, pts[start].y);
+    for(let i=start+1;i<end;i++) ctx.lineTo(pts[i].x, pts[i].y);
+    ctx.strokeStyle = segCols[s];
+    ctx.lineWidth=2.5;
+    ctx.stroke();
+    // Glow
+    ctx.shadowBlur=8;ctx.shadowColor=segCols[s];ctx.stroke();ctx.shadowBlur=0;
+  }
+
+  // Corner points
+  const corners = [
+    {x:toX(r.V1),y:toY(r.P1),lbl:'1',col:'#fff'},
+    {x:toX(r.V2),y:toY(r.P2),lbl:'2',col:'#ff6060'},
+    {x:toX(r.V3),y:toY(r.P3),lbl:'3',col:'#ffd740'},
+    {x:toX(r.V4),y:toY(r.P4),lbl:'4',col:'#00ff88'},
+  ];
+  corners.forEach(function(c){
+    ctx.beginPath();ctx.arc(c.x,c.y,6,0,Math.PI*2);
+    ctx.fillStyle=c.col;ctx.fill();
+    ctx.shadowBlur=12;ctx.shadowColor=c.col;ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='#fff';ctx.font='bold 11px Outfit';ctx.textAlign='center';
+    ctx.fillText(c.lbl,c.x,c.y-10);
+  });
+
+  // Animated piston dot
+  if(ST.running || ST.time>0){
+    const prog = (ST.time % ST.totalT)/ST.totalT;
+    const pi = Math.floor(prog*pts.length);
+    const pt = pts[Math.min(pi, pts.length-1)];
+    ctx.beginPath();ctx.arc(pt.x,pt.y,8,0,Math.PI*2);
+    ctx.fillStyle='#fff';ctx.shadowBlur=16;ctx.shadowColor='#fff';ctx.fill();ctx.shadowBlur=0;
+  }
+
+  // Phase labels if enabled
+  if(document.getElementById('chkPt').checked){
+    const midpts = [segSize/2, segSize+segSize/2, 2*segSize+segSize/2, 3*segSize+segSize/2].map(function(i){
+      return pts[Math.min(Math.floor(i),pts.length-1)];
+    });
+    segLabels.forEach(function(lb,i){
+      const mp = midpts[i];
+      ctx.fillStyle=segCols[i];ctx.font='9px Outfit';ctx.textAlign='center';
+      ctx.fillText(lb,mp.x,mp.y-12);
+    });
+  }
+
+  // Arrows if enabled
+  if(document.getElementById('chkArr').checked){
+    ar2(toX(r.V1),toY(r.P3)-10, toX(r.V3),toY(r.P3)-10, 'ΔV total', true);
+  }
+
+  // W label in center
+  const cx = toX((r.V1+r.V3)/2), cy = toY((r.P1+r.P3)/2)+10;
+  ctx.fillStyle='rgba(0,229,255,0.85)';ctx.font='bold 12px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('W = '+r.Wnet.toFixed(0)+' J',cx,cy);
+  ctx.font='10px Outfit';ctx.fillStyle='rgba(0,229,255,0.5)';
+  ctx.fillText('η = '+(r.eta*100).toFixed(1)+'%',cx,cy+15);
+
+  // Legend
+  const legX=W-120, legY=mg.t+10;
+  segLabels.forEach(function(lb,i){
+    ctx.fillStyle=segCols[i];ctx.fillRect(legX,legY+i*15,12,10);
+    ctx.fillStyle='rgba(200,210,230,0.8)';ctx.font='8px Outfit';ctx.textAlign='left';
+    ctx.fillText(lb.replace('→','→'),legX+16,legY+i*15+9);
+  });
+
+  // Title
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='bold 13px Outfit';ctx.textAlign='left';
+  ctx.fillText('Diagramme P-V',mg.l,mg.t-8);
+}
+
+function buildCyclePts(r, toX, toY){
+  const pts=[];
+  const N=50;
+  // 1→2 isotherme à Th: PV = P1V1
+  for(let i=0;i<=N;i++){
+    const v = r.V1 + (r.V2-r.V1)*i/N;
+    const p = r.P1*r.V1/v;
+    pts.push({x:toX(v),y:toY(p)});
+  }
+  // 2→3 adiabatique: PV^g = P2V2^g
+  const C23 = r.P2*Math.pow(r.V2,r.g);
+  for(let i=1;i<=N;i++){
+    const v = r.V2 + (r.V3-r.V2)*i/N;
+    const p = C23/Math.pow(v,r.g);
+    pts.push({x:toX(v),y:toY(p)});
+  }
+  // 3→4 isotherme à Tc: PV = P3V3
+  for(let i=1;i<=N;i++){
+    const v = r.V3 + (r.V4-r.V3)*i/N;
+    const p = r.P3*r.V3/v;
+    pts.push({x:toX(v),y:toY(p)});
+  }
+  // 4→1 adiabatique
+  const C41 = r.P4*Math.pow(r.V4,r.g);
+  for(let i=1;i<=N;i++){
+    const v = r.V4 + (r.V1-r.V4)*i/N;
+    const p = C41/Math.pow(v,r.g);
+    pts.push({x:toX(v),y:toY(p)});
+  }
+  return pts;
+}
+
+function drawTS(W,H){
+  const r = computeCycle();
+  const mg = {l:65,r:30,t:30,b:50};
+  const pw = W-mg.l-mg.r, ph = H-mg.t-mg.b;
+
+  // For ideal gas: Q_h = T_h * ΔS_h, Q_c = T_c * ΔS_c
+  // ΔS = Q/T at each isotherme
+  const DS = r.Qh/r.Th;
+  const Smin=0.2, Smax=Smin+DS*1.3;
+  const Tmin=r.Tc*0.85, Tmax=r.Th*1.1;
+
+  function toX(s){ return mg.l + (s-Smin)/(Smax-Smin)*pw; }
+  function toY(t){ return mg.t + ph - (t-Tmin)/(Tmax-Tmin)*ph; }
+
+  // Axes
+  ctx.strokeStyle='rgba(255,255,255,0.25)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(mg.l,mg.t);ctx.lineTo(mg.l,mg.t+ph);ctx.lineTo(mg.l+pw,mg.t+ph);ctx.stroke();
+  ctx.fillStyle='rgba(121,134,163,0.9)';ctx.font='11px Outfit';ctx.textAlign='center';
+  ctx.fillText('Entropie S (J/K)',mg.l+pw/2,H-8);
+  ctx.save();ctx.translate(14,mg.t+ph/2);ctx.rotate(-Math.PI/2);
+  ctx.fillText('Température T (K)',0,0);ctx.restore();
+
+  const S1=Smin, S2=S1+DS, S3=S2, S4=S1;
+  const corners=[
+    {s:S1,t:r.Th,lbl:'1'},{s:S2,t:r.Th,lbl:'2'},
+    {s:S3,t:r.Tc,lbl:'3'},{s:S4,t:r.Tc,lbl:'4'}
+  ];
+
+  // Fill rectangle
+  ctx.fillStyle='rgba(0,229,255,0.07)';
+  ctx.fillRect(toX(S1),toY(r.Th),toX(S2)-toX(S1),toY(r.Tc)-toY(r.Th));
+
+  // Sides
+  const segCols=['#ff6060','#ffd740','#00aaff','#00ff88'];
+  // 1→2 isotherme Th (horizontal top)
+  ctx.strokeStyle=segCols[0];ctx.lineWidth=3;ctx.shadowBlur=8;ctx.shadowColor=segCols[0];
+  ctx.beginPath();ctx.moveTo(toX(S1),toY(r.Th));ctx.lineTo(toX(S2),toY(r.Th));ctx.stroke();ctx.shadowBlur=0;
+  // 2→3 adiab (vertical right)
+  ctx.strokeStyle=segCols[1];ctx.shadowBlur=8;ctx.shadowColor=segCols[1];
+  ctx.beginPath();ctx.moveTo(toX(S2),toY(r.Th));ctx.lineTo(toX(S3),toY(r.Tc));ctx.stroke();ctx.shadowBlur=0;
+  // 3→4 isotherme Tc (horizontal bottom)
+  ctx.strokeStyle=segCols[2];ctx.shadowBlur=8;ctx.shadowColor=segCols[2];
+  ctx.beginPath();ctx.moveTo(toX(S3),toY(r.Tc));ctx.lineTo(toX(S4),toY(r.Tc));ctx.stroke();ctx.shadowBlur=0;
+  // 4→1 adiab (vertical left)
+  ctx.strokeStyle=segCols[3];ctx.shadowBlur=8;ctx.shadowColor=segCols[3];
+  ctx.beginPath();ctx.moveTo(toX(S4),toY(r.Tc));ctx.lineTo(toX(S1),toY(r.Th));ctx.stroke();ctx.shadowBlur=0;
+
+  // Points
+  corners.forEach(function(c){
+    ctx.beginPath();ctx.arc(toX(c.s),toY(c.t),6,0,Math.PI*2);
+    ctx.fillStyle='#fff';ctx.shadowBlur=12;ctx.shadowColor='#fff';ctx.fill();ctx.shadowBlur=0;
+    ctx.fillStyle='#fff';ctx.font='bold 11px Outfit';ctx.textAlign='center';
+    ctx.fillText(c.lbl,toX(c.s),toY(c.t)-10);
+  });
+
+  // T labels
+  ctx.fillStyle='rgba(200,210,230,0.6)';ctx.font='9px JetBrains Mono';ctx.textAlign='right';
+  ctx.fillText('Th='+r.Th+'K',toX(S1)-4,toY(r.Th)+4);
+  ctx.fillText('Tc='+r.Tc+'K',toX(S1)-4,toY(r.Tc)+4);
+
+  // Center W label
+  const cx=(toX(S1)+toX(S2))/2, cy=(toY(r.Th)+toY(r.Tc))/2;
+  ctx.fillStyle='rgba(0,229,255,0.9)';ctx.font='bold 12px JetBrains Mono';ctx.textAlign='center';
+  ctx.fillText('W = Aire',cx,cy);
+  ctx.font='10px Outfit';ctx.fillStyle='rgba(0,229,255,0.5)';
+  ctx.fillText('η = '+(r.eta*100).toFixed(1)+'%',cx,cy+15);
+
+  ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font='bold 13px Outfit';ctx.textAlign='left';
+  ctx.fillText('Diagramme T-S',mg.l,mg.t-8);
+
+  // Animated dot
+  if(ST.running || ST.time>0){
+    const prog = (ST.time % ST.totalT)/ST.totalT;
+    let sx,ty;
+    if(prog<0.25){const t=prog/0.25;sx=S1+(S2-S1)*t;ty=r.Th;}
+    else if(prog<0.5){const t=(prog-0.25)/0.25;sx=S2;ty=r.Th+(r.Tc-r.Th)*t;}
+    else if(prog<0.75){const t=(prog-0.5)/0.25;sx=S2+(S4-S2)*t;ty=r.Tc;}
+    else{const t=(prog-0.75)/0.25;sx=S4;ty=r.Tc+(r.Th-r.Tc)*t;}
+    ctx.beginPath();ctx.arc(toX(sx),toY(ty),8,0,Math.PI*2);
+    ctx.fillStyle='#fff';ctx.shadowBlur=16;ctx.shadowColor='#fff';ctx.fill();ctx.shadowBlur=0;
+  }
+}
+
+// ─── PARTICLES ───────────────────────────────────────────────────────────────
+function spP(x,y,col,n){
+  col=col||'#00e5ff';n=n||8;
+  for(let i=0;i<n;i++){
+    const a=Math.random()*Math.PI*2;
+    const sp=1+Math.random()*3;
+    ST.particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,col});
+  }
+}
+function tkP(){
+  ST.particles = ST.particles.filter(function(p){return p.life>0;});
+  ST.particles.forEach(function(p){
+    p.x+=p.vx;p.y+=p.vy;p.vy+=0.05;p.life-=0.035;
+    ctx.beginPath();ctx.arc(p.x,p.y,3*p.life,0,Math.PI*2);
+    ctx.fillStyle=p.col;ctx.globalAlpha=p.life;ctx.fill();
+    ctx.globalAlpha=1;
+  });
+}
+
+// ─── ARROW ───────────────────────────────────────────────────────────────────
+function ar2(x1,y1,x2,y2,label,horiz){
+  ctx.strokeStyle='rgba(0,229,255,0.6)';ctx.lineWidth=1;
+  ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  ctx.setLineDash([]);
+  // arrowhead at x2,y2
+  const angle = Math.atan2(y2-y1,x2-x1);
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2-8*Math.cos(angle-0.4),y2-8*Math.sin(angle-0.4));
+  ctx.lineTo(x2-8*Math.cos(angle+0.4),y2-8*Math.sin(angle+0.4));
+  ctx.closePath();ctx.fillStyle='rgba(0,229,255,0.6)';ctx.fill();
+  if(label){
+    const mx=(x1+x2)/2, my=(y1+y2)/2;
+    ctx.fillStyle='rgba(0,229,255,0.8)';ctx.font='9px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText(label,mx,my-6);
+  }
+}
+
+// ─── ANIMATION LOOP ──────────────────────────────────────────────────────────
+function lp2(){
+  if(!ST.running){ST.raf=null;return;}
+  ST.time += 0.016;
+  const prog = (ST.time % ST.totalT)/ST.totalT;
+  const phaseNames=['Isotherme Th (détente)','Adiabatique (détente)','Isotherme Tc (compression)','Adiabatique (compression)'];
+  const ph = Math.floor(prog*4);
+  document.getElementById('mPhase').textContent = phaseNames[ph];
+  document.getElementById('mProg').textContent = (prog*100).toFixed(0);
+  d2();
+  ST.raf = requestAnimationFrame(lp2);
+}
+
+// ─── CONTROLS ────────────────────────────────────────────────────────────────
+function doLancer(){
+  if(ST.running) return;
+  ST.running=true;
+  if(!document.getElementById('chkAnim').checked){
+    ST.running=false; toast('Animation continue désactivée'); return;
+  }
+  toast('Cycle démarré');
+  lp2();
+}
+function doPause(){
+  ST.running = !ST.running;
+  if(ST.running) lp2();
+  toast(ST.running ? '▶ Reprise':'⏸ Pause');
+}
+function doReset(){
+  ST.running=false;
+  if(ST.raf){cancelAnimationFrame(ST.raf);ST.raf=null;}
+  ST.time=0;ST.particles=[];
+  document.getElementById('mPhase').textContent='—';
+  document.getElementById('mProg').textContent='—';
+  d2();toast('Reset effectué');
+}
+
+// ─── TAB SWITCH ──────────────────────────────────────────────────────────────
+function selTab(i){
+  document.querySelectorAll('.tab').forEach(function(t,j){t.classList.toggle('active',j===i);});
+  document.querySelectorAll('.tp').forEach(function(t,j){t.classList.toggle('active',j===i);});
+}
+
+// ─── VIEW SWITCH ─────────────────────────────────────────────────────────────
+function switchV(){
+  ST.view = ST.view==='pv'?'ts':'pv';
+  document.getElementById('v3btn').textContent = ST.view==='pv'?'🔄 PV / Diag':'🔄 TS / Diag';
+  d2();
+}
+
+// ─── TOAST ───────────────────────────────────────────────────────────────────
+function toast(m){
+  const t=document.getElementById('toast');
+  t.textContent=m;t.style.opacity='1';
+  clearTimeout(toast._t);
+  toast._t=setTimeout(function(){t.style.opacity='0';},2600);
+}
+
+// ─── EXPORT TP ───────────────────────────────────────────────────────────────
+function exportTP(){
+  const r=computeCycle();
+  const txt=`RAPPORT TP — CYCLE DE CARNOT
+SimLab — ${new Date().toLocaleDateString('fr-FR')}
+==========================================
+Paramètres :
+  Th = ${r.Th} K
+  Tc = ${r.Tc} K
+  P1 = ${(r.P1/1000).toFixed(0)} kPa
+  V1 = ${(r.V1*1000).toFixed(1)} L
+  γ  = ${r.g.toFixed(2)}
+
+Résultats :
+  Rendement η  = ${(r.eta*100).toFixed(2)} %
+  Travail Wnet = ${r.Wnet.toFixed(1)} J
+  Chaleur Qh   = ${r.Qh.toFixed(1)} J
+  Chaleur Qc   = ${r.Qc.toFixed(1)} J
+  COP (réfrig) = ${r.cop.toFixed(3)}
+  Rapport V    = ${r.vRatio.toFixed(3)}
+
+Vérifications :
+  η = 1 - Tc/Th = ${(r.eta*100).toFixed(2)}% ✓
+  W = Qh×η = ${(r.Qh*r.eta).toFixed(1)} J ✓
+  Qh = W + Qc = ${(r.Wnet+r.Qc).toFixed(1)} J ✓
+  ΔS total = 0 J/K ✓
+
+Formules utilisées :
+  η = 1 - Tc/Th
+  PV = nRT (gaz parfait)
+  PVγ = cste (adiabatique)
+  W = nRTh·ln(V2/V1)
+==========================================
+SimLab — Simulation pédagogique`;
+  const blob=new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='TP_Carnot.txt';a.click();
+  toast('Export TXT téléchargé');
+}
+
+// ─── MOUSE / TOUCH ───────────────────────────────────────────────────────────
+canvas.addEventListener('mousemove',function(e){
+  ST.mx=e.clientX;ST.my=e.clientY;
+  const tt=document.getElementById('tt');
+  const r=computeCycle();
+  // Find nearest corner
+  const W=canvas.width,H=canvas.height;
+  const mg={l:60,r:30,t:30,b:50};
+  const pw=W-mg.l-mg.r,ph=H-mg.t-mg.b;
+  const Vmax=r.V3*1.15,Pmax=r.P1*1.2,Vmin=r.V1*0.75,Pmin=r.P3*0.75;
+  const cx=e.clientX-canvas.getBoundingClientRect().left;
+  const cy=e.clientY-canvas.getBoundingClientRect().top;
+  const V=(cx-mg.l)/(pw)*(Vmax-Vmin)+Vmin;
+  const P=(1-(cy-mg.t)/ph)*(Pmax-Pmin)+Pmin;
+  tt.innerHTML='V = '+(V*1000).toFixed(2)+' L<br>P = '+(P/1000).toFixed(1)+' kPa';
+  tt.style.display='block';
+  tt.style.left=(e.clientX+12)+'px';
+  tt.style.top=(e.clientY-30)+'px';
+});
+canvas.addEventListener('mouseleave',function(){document.getElementById('tt').style.display='none';});
+canvas.addEventListener('click',function(e){
+  const rect=canvas.getBoundingClientRect();
+  spP(e.clientX-rect.left,e.clientY-rect.top,'#00e5ff',10);
+  d2();
+});
+
+let t2dist0=null;
+canvas.addEventListener('touchstart',function(e){
+  if(e.touches.length===2){
+    const dx=e.touches[0].clientX-e.touches[1].clientX;
+    const dy=e.touches[0].clientY-e.touches[1].clientY;
+    t2dist0=Math.sqrt(dx*dx+dy*dy);
+    e.preventDefault();
+  }
+},{passive:false});
+canvas.addEventListener('touchmove',function(e){
+  if(e.touches.length===2 && t2dist0){
+    const dx=e.touches[0].clientX-e.touches[1].clientX;
+    const dy=e.touches[0].clientY-e.touches[1].clientY;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const sl=document.getElementById('sV1');
+    sl.value = Math.max(sl.min,Math.min(sl.max, parseFloat(sl.value)*(dist/t2dist0)));
+    t2dist0=dist;
+    bindSlider('sV1','lV1',1,uR);
+    e.preventDefault();
+  }
+},{passive:false});
+
+// ─── SLIDER INIT ─────────────────────────────────────────────────────────────
+['sTh','sTc','sP1','sV1','sGam'].forEach(function(id){
+  const sl=document.getElementById(id);
+  sl.addEventListener('input',function(){
+    const decMap={sTh:0,sTc:0,sP1:0,sV1:1,sGam:2};
+    const lvMap={sTh:'lTh',sTc:'lTc',sP1:'lP1',sV1:'lV1',sGam:'lGam'};
+    const dec=decMap[id];
+    let val=parseFloat(sl.value);
+    if(id==='sGam') val=val/100;
+    document.getElementById(lvMap[id]).textContent=val.toFixed(dec);
+    const pct=(sl.value-sl.min)/(sl.max-sl.min)*100;
+    sl.style.setProperty('--pct',pct+'%');
+    updateST();
+    uR();
+  });
+  // init pct
+  const pct=(sl.value-sl.min)/(sl.max-sl.min)*100;
+  sl.style.setProperty('--pct',pct+'%');
+});
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+window.addEventListener('resize',rsz);
+rsz();
+uR();
+</script>
+
+<script type='text/javascript' src='//pl26527913.profitableratecpm.com/5c/8e/2e/5c8e2eebcfa5e97f9c7d66bb3d9bfcf1.js'></script>
+</body>
+</html>

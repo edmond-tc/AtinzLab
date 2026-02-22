@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Guide — Cycle de Carnot | SimLab</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0a0e1a;--s1:#111827;--s2:#1a2540;
+  --acc:#00e5ff;--grn:#00ff88;--red:#ff4060;--yel:#ffd740;--ora:#ff9f43;
+  --txt:#e8eaf6;--sub:#7986a3;--brd:rgba(0,229,255,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;font-size:15px;line-height:1.7;}
+
+#prog-bar{position:fixed;top:0;left:0;height:3px;
+  background:linear-gradient(90deg,var(--acc),var(--grn));width:0%;z-index:1000;transition:width .1s;}
+
+header{
+  position:sticky;top:0;z-index:500;
+  background:rgba(10,14,26,0.97);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--brd);
+  padding:0 20px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.hlogo{font-size:15px;font-weight:800;color:var(--acc);white-space:nowrap;}
+.hlogo span{color:var(--txt);font-weight:400;font-size:11px;margin-left:6px;
+  background:rgba(0,229,255,.12);border:1px solid var(--brd);padding:2px 8px;border-radius:20px;}
+.hbtns{display:flex;gap:8px;align-items:center;}
+.btn-back{font-size:11px;padding:5px 12px;border:1px solid var(--brd);border-radius:8px;
+  color:var(--acc);background:transparent;cursor:pointer;text-decoration:none;
+  font-family:'Outfit',sans-serif;font-weight:600;transition:.2s;white-space:nowrap;}
+.btn-back:hover{background:rgba(0,229,255,.1);}
+.btn-launch{font-size:11px;padding:5px 14px;border:none;border-radius:8px;
+  background:var(--grn);color:#000;cursor:pointer;font-family:'Outfit',sans-serif;
+  font-weight:700;transition:.2s;text-decoration:none;white-space:nowrap;}
+.btn-launch:hover{filter:brightness(1.15);}
+@media(max-width:520px){.hlogo span{display:none;}.hlogo{font-size:13px;}}
+
+.container{max-width:860px;margin:0 auto;padding:0 16px;}
+
+.hero{padding:60px 0 40px;text-align:center;}
+.hero h1{font-size:clamp(26px,5vw,42px);font-weight:800;
+  background:linear-gradient(135deg,#fff 0%,var(--acc) 50%,var(--grn) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:12px;}
+.hero p{color:var(--sub);font-size:15px;max-width:540px;margin:0 auto 24px;}
+.hero-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.tag{background:var(--s2);border:1px solid var(--brd);border-radius:20px;
+  padding:4px 12px;font-size:11px;color:var(--acc);}
+
+.toc{background:var(--s1);border:1px solid var(--brd);border-radius:16px;padding:24px;margin:32px 0;}
+.toc h2{font-size:13px;font-weight:700;color:var(--acc);text-transform:uppercase;
+  letter-spacing:1px;margin-bottom:16px;}
+.toc-list{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.toc-list li a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;
+  text-decoration:none;color:var(--txt);font-size:13px;transition:.2s;border:1px solid transparent;}
+.toc-list li a:hover{background:var(--s2);border-color:var(--brd);color:var(--acc);}
+.toc-num{width:24px;height:24px;border-radius:50%;
+  background:linear-gradient(135deg,var(--acc),var(--grn));
+  color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;}
+@media(max-width:520px){.toc-list{grid-template-columns:1fr;}}
+
+section{padding:56px 0 0;scroll-margin-top:70px;}
+.sec-header{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.sec-num{width:40px;height:40px;border-radius:12px;
+  background:linear-gradient(135deg,var(--acc),var(--grn));
+  color:#000;font-size:16px;font-weight:800;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;}
+.sec-title{font-size:clamp(18px,3vw,24px);font-weight:700;color:#fff;}
+.sec-sub{font-size:13px;color:var(--sub);}
+
+.card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:14px;}
+.card.blue{border-left:4px solid #4fc3f7;}
+.card.orange{border-left:4px solid var(--ora);}
+.card.green{border-left:4px solid var(--grn);}
+.card.red{border-left:4px solid var(--red);}
+.card.yellow{border-left:4px solid var(--yel);}
+.card h3{font-size:14px;font-weight:700;color:#fff;margin-bottom:8px;}
+.card p{font-size:13px;color:var(--sub);line-height:1.7;}
+
+.table-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--brd);margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;background:var(--s1);}
+th{background:var(--s2);color:var(--acc);font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;padding:12px 16px;text-align:left;}
+td{padding:11px 16px;font-size:13px;color:var(--txt);border-top:1px solid var(--brd);}
+tr:hover td{background:rgba(0,229,255,.03);}
+.badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:10px;font-weight:700;}
+.badge-blue{background:rgba(79,195,247,.15);color:#4fc3f7;}
+.badge-grn{background:rgba(0,255,136,.12);color:var(--grn);}
+.badge-yel{background:rgba(255,215,64,.12);color:var(--yel);}
+.badge-red{background:rgba(255,64,96,.12);color:var(--red);}
+
+.formula-box{
+  background:#060d18;border:1px solid rgba(255,215,64,.25);border-radius:14px;
+  padding:20px 24px;margin-bottom:14px;position:relative;overflow:hidden;
+}
+.formula-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--yel),transparent);}
+.formula-box .label{font-size:11px;color:var(--sub);text-transform:uppercase;
+  letter-spacing:.8px;margin-bottom:8px;}
+.formula-box .formula{font-family:'JetBrains Mono',monospace;
+  font-size:clamp(14px,2.5vw,18px);color:var(--yel);font-weight:600;margin-bottom:10px;}
+.formula-box .explain{font-size:12px;color:var(--sub);line-height:1.6;}
+.formula-box .explain b{color:var(--txt);}
+
+.steps{list-style:none;display:flex;flex-direction:column;gap:14px;}
+.steps li{display:flex;gap:16px;align-items:flex-start;background:var(--s1);
+  border:1px solid var(--brd);border-radius:14px;padding:16px;}
+.step-num{width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--acc),#0096ff);
+  color:#000;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.step-body h4{font-size:13px;font-weight:700;color:#fff;margin-bottom:4px;}
+.step-body p{font-size:12px;color:var(--sub);}
+.step-body code{font-family:'JetBrains Mono',monospace;font-size:11px;
+  background:var(--s2);color:var(--acc);padding:1px 6px;border-radius:4px;}
+
+.demo-wrap{background:var(--s1);border:1px solid var(--brd);border-radius:16px;
+  overflow:hidden;margin-bottom:14px;}
+.demo-header{padding:14px 18px;border-bottom:1px solid var(--brd);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.demo-header h3{font-size:13px;font-weight:700;color:var(--acc);}
+.demo-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.demo-btn{padding:4px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1px solid var(--brd);background:var(--s2);color:var(--txt);
+  font-family:'Outfit',sans-serif;transition:.2s;}
+.demo-btn.active,.demo-btn:hover{background:var(--acc);color:#000;border-color:var(--acc);}
+#demoCanvas{display:block;width:100%;height:220px;}
+.demo-info{padding:10px 18px;font-size:11px;color:var(--sub);
+  font-family:'JetBrains Mono',monospace;border-top:1px solid var(--brd);}
+
+.exp-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.exp-card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;
+  padding:18px;position:relative;overflow:hidden;}
+.exp-card::after{content:'';position:absolute;top:0;left:0;width:100%;height:3px;}
+.exp-card:nth-child(1)::after{background:var(--acc);}
+.exp-card:nth-child(2)::after{background:var(--yel);}
+.exp-card:nth-child(3)::after{background:var(--grn);}
+.exp-card:nth-child(4)::after{background:var(--ora);}
+.exp-card h3{font-size:13px;font-weight:700;color:#fff;margin-bottom:10px;}
+.exp-param{font-size:11px;color:var(--sub);margin-bottom:4px;}
+.exp-param b{color:var(--acc);font-family:'JetBrains Mono',monospace;}
+.exp-result{margin-top:10px;padding:8px;background:var(--s2);border-radius:8px;
+  font-size:11px;color:var(--grn);}
+@media(max-width:540px){.exp-grid{grid-template-columns:1fr;}}
+
+.quiz-card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;
+  padding:20px;margin-bottom:14px;}
+.quiz-card .qnum{font-size:10px;color:var(--acc);font-weight:700;
+  text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;}
+.quiz-card .qtext{font-size:14px;font-weight:600;color:#fff;margin-bottom:14px;}
+.qopts{display:flex;flex-direction:column;gap:8px;}
+.qopt{padding:10px 14px;border:1px solid var(--brd);border-radius:10px;cursor:pointer;
+  font-size:13px;color:var(--txt);transition:.2s;background:var(--s2);}
+.qopt:hover:not(.qdisabled){border-color:var(--acc);color:var(--acc);}
+.qopt.correct{border-color:var(--grn);background:rgba(0,255,136,.1);color:var(--grn);}
+.qopt.wrong{border-color:var(--red);background:rgba(255,64,96,.1);color:var(--red);}
+.qopt.qdisabled{cursor:not-allowed;}
+.qfeedback{margin-top:10px;padding:8px 12px;border-radius:8px;font-size:12px;display:none;}
+.qfeedback.show{display:block;}
+.qfeedback.ok{background:rgba(0,255,136,.1);color:var(--grn);}
+.qfeedback.ko{background:rgba(255,64,96,.1);color:var(--red);}
+.score-box{background:var(--s2);border:1px solid var(--brd);border-radius:16px;
+  padding:28px;text-align:center;display:none;}
+.score-box.show{display:block;}
+.score-val{font-size:48px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--acc);}
+.score-msg{font-size:15px;color:var(--txt);margin-top:8px;}
+.btn-retry{margin-top:16px;padding:8px 24px;background:var(--acc);color:#000;
+  border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;
+  font-family:'Outfit',sans-serif;}
+
+footer{margin-top:80px;padding:28px 0 16px;border-top:1px solid var(--brd);text-align:center;}
+footer p{font-size:12px;color:var(--sub);}
+footer a{color:var(--acc);text-decoration:none;}
+
+#scrollTop{position:fixed;bottom:20px;right:16px;width:40px;height:40px;border-radius:12px;
+  background:var(--s2);border:1px solid var(--brd);color:var(--acc);font-size:18px;
+  cursor:pointer;display:none;align-items:center;justify-content:center;z-index:400;
+  transition:.2s;box-shadow:0 4px 16px rgba(0,0,0,.4);}
+#scrollTop:hover{background:var(--acc);color:#000;}
+#scrollTop.show{display:flex;}
+
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--brd),transparent);margin:48px 0 0;}
+.native-ad-wrap{display:flex;justify-content:center;margin:32px 0;}
+</style>
+</head>
+<body>
+
+<div id="prog-bar"></div>
+
+<header>
+  <div class="hlogo">&#9879;&#65039; SimLab <span>&#128218; Guide Interactif</span></div>
+  <div class="hbtns">
+    <a href="index.html" class="btn-back">&#8592; Retour</a>
+    <a href="carnot_cycle.html" class="btn-launch">&#128640; Lancer la Simulation</a>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+    <h1>Cycle de Carnot</h1>
+    <p>Le moteur thermique idéal — comprendre le rendement maximal théorique entre deux sources de température</p>
+    <div class="hero-tags">
+      <span class="tag">Thermodynamique</span>
+      <span class="tag">Lycée / Université</span>
+      <span class="tag">Physique</span>
+      <span class="tag">Bénin / CPGE</span>
+    </div>
+  </div>
+
+  <nav class="toc">
+    <h2>&#128203; Table des matières</h2>
+    <ul class="toc-list">
+      <li><a href="#s1"><span class="toc-num">1</span> Introduction</a></li>
+      <li><a href="#s2"><span class="toc-num">2</span> Types et cas possibles</a></li>
+      <li><a href="#s3"><span class="toc-num">3</span> Formules essentielles</a></li>
+      <li><a href="#s4"><span class="toc-num">4</span> Utiliser la simulation</a></li>
+      <li><a href="#s5"><span class="toc-num">5</span> Démo interactive</a></li>
+      <li><a href="#s6"><span class="toc-num">6</span> Expériences à réaliser</a></li>
+      <li><a href="#s7"><span class="toc-num">7</span> Quiz de vérification</a></li>
+    </ul>
+  </nav>
+
+  <!-- SECTION 1 -->
+  <section id="s1">
+    <div class="sec-header">
+      <div class="sec-num">1</div>
+      <div><div class="sec-title">Introduction</div><div class="sec-sub">Définition et contexte physique</div></div>
+    </div>
+    <div class="card blue">
+      <h3>&#127777;&#65039; Qu'est-ce que le cycle de Carnot ?</h3>
+      <p>Le cycle de Carnot est un cycle thermodynamique théorique proposé par l'ingénieur français <strong style="color:#fff">Sadi Carnot</strong> en 1824. Il décrit le fonctionnement d'une machine thermique idéale (réversible) fonctionnant entre une source chaude à température <strong style="color:#ff6060">Th</strong> et une source froide à température <strong style="color:#4fc3f7">Tc</strong>, toutes deux exprimées en Kelvin.</p>
+    </div>
+    <div class="card green">
+      <h3>&#128161; Pourquoi est-il important ?</h3>
+      <p>Le cycle de Carnot définit le <strong style="color:#fff">rendement maximal théorique</strong> de toute machine thermique. Aucun moteur réel ne peut dépasser ce rendement pour des températures sources données. C'est un résultat fondamental du second principe de la thermodynamique, valable dans tous les contextes : moteurs, réfrigérateurs, climatiseurs.</p>
+    </div>
+    <div class="card yellow">
+      <h3>&#128204; Les 4 transformations du cycle</h3>
+      <p>
+        <strong style="color:#ff6060">1 &#8594; 2 :</strong> Détente isotherme à Th — le gaz absorbe la chaleur Q_h et se dilate.<br/>
+        <strong style="color:#ffd740">2 &#8594; 3 :</strong> Détente adiabatique — refroidissement de Th à Tc sans échange de chaleur.<br/>
+        <strong style="color:#4fc3f7">3 &#8594; 4 :</strong> Compression isotherme à Tc — le gaz cède la chaleur Q_c.<br/>
+        <strong style="color:#00ff88">4 &#8594; 1 :</strong> Compression adiabatique — remontée de Tc à Th sans échange.
+      </p>
+    </div>
+    <div class="card orange">
+      <h3>&#128218; Contexte historique</h3>
+      <p>Sadi Carnot a établi ce cycle en 1824 dans son ouvrage <em>"Réflexions sur la puissance motrice du feu"</em>. Ce travail précède la formulation complète des lois de la thermodynamique. Le théorème de Carnot constitue encore aujourd'hui une limite infranchissable pour tous les moteurs thermiques réels.</p>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 2 -->
+  <section id="s2">
+    <div class="sec-header">
+      <div class="sec-num">2</div>
+      <div><div class="sec-title">Types et cas possibles</div><div class="sec-sub">Tableau comparatif des modes de fonctionnement</div></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Mode</th><th>Sens du cycle</th><th>Rôle</th><th>Grandeur clé</th><th>Exemple réel</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge badge-grn">Moteur</span></td>
+            <td>Sens horaire (P-V)</td>
+            <td>Convertit chaleur &#8594; travail</td>
+            <td>&#951; = 1 - Tc/Th</td>
+            <td>Moteur à vapeur, turbine</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-blue">Réfrigérateur</span></td>
+            <td>Sens antihoraire</td>
+            <td>Pompe chaleur de Tc vers Th</td>
+            <td>COP = Tc/(Th-Tc)</td>
+            <td>Réfrigérateur, climatiseur</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-yel">Pompe à chaleur</span></td>
+            <td>Sens antihoraire</td>
+            <td>Chauffe en exploitant Tc</td>
+            <td>COP_PAC = Th/(Th-Tc)</td>
+            <td>Chauffage résidentiel</td>
+          </tr>
+          <tr>
+            <td><span class="badge badge-red">Cycle irréversible</span></td>
+            <td>Quelconque</td>
+            <td>Cycle réel avec pertes</td>
+            <td>&#951; &lt; &#951;_Carnot</td>
+            <td>Moteur diesel, essence</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Transformation</th><th>Q échangée</th><th>W échangé</th><th>&#916;U</th><th>&#916;S</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Isotherme chaude (1&#8594;2)</td><td style="color:#ff6060">Q_h &gt; 0</td><td>W = Q_h</td><td>0</td><td>Q_h / Th</td></tr>
+          <tr><td>Adiabatique détente (2&#8594;3)</td><td>0</td><td>W = &#916;U</td><td>&lt; 0</td><td>0</td></tr>
+          <tr><td>Isotherme froide (3&#8594;4)</td><td style="color:#4fc3f7">Q_c &lt; 0</td><td>W = Q_c</td><td>0</td><td>-Q_c / Tc</td></tr>
+          <tr><td>Adiabatique compression (4&#8594;1)</td><td>0</td><td>W = &#916;U</td><td>&gt; 0</td><td>0</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 3 -->
+  <section id="s3">
+    <div class="sec-header">
+      <div class="sec-num">3</div>
+      <div><div class="sec-title">Formules essentielles</div><div class="sec-sub">Équations fondamentales avec explications pédagogiques</div></div>
+    </div>
+    <div class="formula-box">
+      <div class="label">Rendement du moteur de Carnot</div>
+      <div class="formula">eta = 1 - Tc / Th</div>
+      <div class="explain">
+        <b>eta</b> est le rendement (entre 0 et 1) | <b>Tc</b> = température source froide en Kelvin | <b>Th</b> = température source chaude en Kelvin.<br/>
+        Plus l'écart Th - Tc est grand, meilleur est le rendement. Un rendement de 100% est impossible car il faudrait Tc = 0 K (zéro absolu), inaccessible en pratique.
+      </div>
+    </div>
+    <div class="formula-box">
+      <div class="label">Travail net produit par le cycle</div>
+      <div class="formula">W_net = Q_h x eta = Q_h - Q_c</div>
+      <div class="explain">
+        <b>W_net</b> = travail mécanique produit (en Joules) | <b>Q_h</b> = chaleur absorbée à Th | <b>Q_c</b> = chaleur cédée à Tc.<br/>
+        Conservation de l'énergie : toute la chaleur absorbée est soit convertie en travail utile, soit rejetée à la source froide.
+      </div>
+    </div>
+    <div class="formula-box">
+      <div class="label">Chaleur échangée lors des isothermes (gaz parfait)</div>
+      <div class="formula">Q_h = n.R.Th.ln(V2/V1)</div>
+      <div class="explain">
+        <b>n</b> = nombre de moles | <b>R</b> = 8,314 J/(mol·K) constante des gaz parfaits | <b>ln(V2/V1)</b> = logarithme naturel du rapport des volumes.<br/>
+        Pour la source froide : Q_c = n.R.Tc.ln(V4/V3), avec Q_c négatif (cession de chaleur au milieu froid).
+      </div>
+    </div>
+    <div class="formula-box">
+      <div class="label">Loi de l'adiabatique réversible (Laplace)</div>
+      <div class="formula">P.V^gamma = cste  |  T.V^(gamma-1) = cste</div>
+      <div class="explain">
+        <b>gamma</b> = Cp/Cv rapport des capacités calorifiques (1,40 pour l'air diatomique N2/O2 ; 1,67 pour gaz monoatomique He, Ar).<br/>
+        Lors de la détente adiabatique, la pression chute rapidement. Aucune chaleur n'est échangée avec l'extérieur : Q = 0, donc &#916;U = W.
+      </div>
+    </div>
+    <div class="formula-box">
+      <div class="label">COP du réfrigérateur de Carnot</div>
+      <div class="formula">COP_refrig = Tc / (Th - Tc) = Q_c / W</div>
+      <div class="explain">
+        Le coefficient de performance mesure l'efficacité du cycle inverse. Un COP élevé signifie qu'on pompe beaucoup de chaleur pour peu de travail fourni. Le COP peut être supérieur à 1 (contrairement au rendement moteur qui est toujours inférieur à 1).
+      </div>
+    </div>
+    <div class="formula-box">
+      <div class="label">Second principe — variation d'entropie sur le cycle</div>
+      <div class="formula">dS_cycle = Q_h/Th - Q_c/Tc = 0</div>
+      <div class="explain">
+        Pour un cycle de Carnot réversible, la variation totale d'entropie est nulle : c'est la définition de la réversibilité.<br/>
+        Pour tout cycle réel (irréversible, frottements, pertes thermiques) : &#916;S_cycle &gt; 0, ce qui réduit le rendement en dessous du maximum de Carnot.
+      </div>
+    </div>
+  </section>
+
+  <!-- NATIVE BANNER AD -->
+  <div class="native-ad-wrap">
+    <div id="container-ced9d6bd01657bda6021abb1c5919291"></div>
+    <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 4 -->
+  <section id="s4">
+    <div class="sec-header">
+      <div class="sec-num">4</div>
+      <div><div class="sec-title">Comment utiliser la simulation</div><div class="sec-sub">Guide pas à pas pour exploiter SimLab efficacement</div></div>
+    </div>
+    <ul class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Ouvrir la simulation</h4>
+          <p>Clique sur <strong style="color:var(--grn)">&#128640; Lancer la Simulation</strong> en haut de cette page pour ouvrir le fichier <code>carnot_cycle.html</code> dans le même navigateur.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Régler les températures Th et Tc</h4>
+          <p>Dans l'onglet <code>&#9881;&#65039; Paramètres</code>, déplace les sliders <strong style="color:#fff">Th</strong> (source chaude) et <strong style="color:#fff">Tc</strong> (source froide). Th doit toujours être supérieur à Tc. Tous les résultats se mettent à jour instantanément.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Observer le diagramme P-V</h4>
+          <p>Le diagramme Pression-Volume affiche les 4 phases en couleurs distinctes : rouge pour l'isotherme chaude, jaune et vert pour les adiabatiques, bleu pour l'isotherme froide. L'<strong style="color:#fff">aire délimitée par le cycle</strong> représente le travail net W produit.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Lancer et mettre en pause l'animation</h4>
+          <p>Clique sur <code>&#9654; Lancer</code> pour voir un point blanc parcourir le cycle en temps réel. Utilise <code>&#9208; Pause</code> à n'importe quelle étape pour lire les valeurs instantanées dans l'onglet <code>&#128208; Mesures</code>.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>Basculer vers le diagramme T-S</h4>
+          <p>Clique sur <code>&#128260; PV / Diag</code> dans le header pour passer au diagramme Température-Entropie. Le cycle devient un <strong style="color:#fff">rectangle</strong> parfait, et l'aire représente toujours le travail net.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>Consulter les onglets Résultats et TP</h4>
+          <p>L'onglet <code>&#128202; Résultats</code> affiche eta, W, Q_h, Q_c avec cases de vérification. L'onglet <code>&#128196; TP</code> permet d'exporter un rapport TXT complet avec toutes les formules et valeurs numériques calculées.</p>
+        </div>
+      </li>
+      <li>
+        <div class="step-num">7</div>
+        <div class="step-body">
+          <h4>Interaction mobile — geste pinch</h4>
+          <p>Sur smartphone ou tablette, utilise deux doigts en les écartant ou rapprochant sur le canvas pour modifier le volume initial V1 dynamiquement et observer l'effet immédiat sur la forme du cycle.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 5 -->
+  <section id="s5">
+    <div class="sec-header">
+      <div class="sec-num">5</div>
+      <div><div class="sec-title">Démo interactive</div><div class="sec-sub">Mini simulation du cycle directement dans ce guide</div></div>
+    </div>
+    <div class="demo-wrap">
+      <div class="demo-header">
+        <h3>&#127916; Cycle de Carnot en direct</h3>
+        <div class="demo-btns">
+          <button class="demo-btn active" id="dbMoteur" onclick="setDemo('moteur')">&#9881;&#65039; Moteur</button>
+          <button class="demo-btn" id="dbFroid" onclick="setDemo('refrigerateur')">&#10052;&#65039; Réfrigérateur</button>
+          <button class="demo-btn" id="dbOpt" onclick="setDemo('optimal')">&#9889; Optimal</button>
+        </div>
+      </div>
+      <canvas id="demoCanvas"></canvas>
+      <div class="demo-info" id="demoInfo">eta = — % | W = — J | Th = — K | Tc = — K</div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 6 -->
+  <section id="s6">
+    <div class="sec-header">
+      <div class="sec-num">6</div>
+      <div><div class="sec-title">Expériences à réaliser</div><div class="sec-sub">4 exercices guidés avec paramètres précis et résultats attendus</div></div>
+    </div>
+    <div class="exp-grid">
+      <div class="exp-card">
+        <h3>&#129514; Expérience 1 — Rendement de base</h3>
+        <div class="exp-param">Th : <b>600 K</b></div>
+        <div class="exp-param">Tc : <b>300 K</b></div>
+        <div class="exp-param">P1 : <b>200 kPa</b></div>
+        <div class="exp-param">gamma : <b>1,40</b></div>
+        <p style="font-size:12px;color:var(--sub);margin-top:8px;">Calcule le rendement et vérifie que l'aire du cycle P-V représente exactement W_net.</p>
+        <div class="exp-result">&#10003; Résultat : eta = 50,0% | Q_h ≈ 2764 J | W ≈ 1382 J</div>
+      </div>
+      <div class="exp-card">
+        <h3>&#129514; Expérience 2 — Effet de gamma</h3>
+        <div class="exp-param">Th : <b>800 K</b></div>
+        <div class="exp-param">Tc : <b>300 K</b></div>
+        <div class="exp-param">gamma : <b>1,67</b> (monoatomique)</div>
+        <div class="exp-param">Comparer avec : <b>gamma = 1,40</b></div>
+        <p style="font-size:12px;color:var(--sub);margin-top:8px;">Observe comment gamma modifie la forme des adiabatiques et le rapport de volumes V2/V1.</p>
+        <div class="exp-result">&#10003; Résultat : eta = 62,5% identique — eta ne dépend pas de gamma !</div>
+      </div>
+      <div class="exp-card">
+        <h3>&#129514; Expérience 3 — Limite Tc minimal</h3>
+        <div class="exp-param">Th : <b>1000 K</b></div>
+        <div class="exp-param">Tc : <b>100 K</b></div>
+        <div class="exp-param">P1 : <b>300 kPa</b></div>
+        <p style="font-size:12px;color:var(--sub);margin-top:8px;">Réduis progressivement Tc. Observe le rendement approcher 100%, une limite théorique jamais atteinte en pratique.</p>
+        <div class="exp-result">&#10003; Résultat : eta = 90,0% | COP refrig = 0,11 | W très élevé</div>
+      </div>
+      <div class="exp-card">
+        <h3>&#129514; Expérience 4 — Mode réfrigérateur</h3>
+        <div class="exp-param">Th : <b>300 K</b></div>
+        <div class="exp-param">Tc : <b>250 K</b></div>
+        <div class="exp-param">V1 : <b>10 L</b></div>
+        <p style="font-size:12px;color:var(--sub);margin-top:8px;">Simule un réfrigérateur (cycle inverse). Calcule le COP théorique et compare à la valeur réelle d'un frigo domestique (COP ≈ 2 à 3).</p>
+        <div class="exp-result">&#10003; Résultat : eta = 16,7% | COP = 5,0 (idéal, irréalisable)</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 7 -->
+  <section id="s7">
+    <div class="sec-header">
+      <div class="sec-num">7</div>
+      <div><div class="sec-title">Quiz de vérification</div><div class="sec-sub">Teste tes connaissances sur le cycle de Carnot</div></div>
+    </div>
+
+    <div class="quiz-card" id="qcard1">
+      <div class="qnum">Question 1 / 4</div>
+      <div class="qtext">Pour un cycle de Carnot entre Th = 600 K et Tc = 300 K, quel est le rendement théorique maximal ?</div>
+      <div class="qopts" id="qopts1">
+        <div class="qopt" onclick="qAnswer(1,this,false)">A. 25 %</div>
+        <div class="qopt" onclick="qAnswer(1,this,true)">B. 50 %</div>
+        <div class="qopt" onclick="qAnswer(1,this,false)">C. 75 %</div>
+        <div class="qopt" onclick="qAnswer(1,this,false)">D. 100 %</div>
+      </div>
+      <div class="qfeedback" id="qfb1"></div>
+    </div>
+
+    <div class="quiz-card" id="qcard2">
+      <div class="qnum">Question 2 / 4</div>
+      <div class="qtext">Quelle est la nature de la transformation 2 &#8594; 3 dans le cycle de Carnot ?</div>
+      <div class="qopts" id="qopts2">
+        <div class="qopt" onclick="qAnswer(2,this,false)">A. Isotherme (T constante)</div>
+        <div class="qopt" onclick="qAnswer(2,this,false)">B. Isobare (P constante)</div>
+        <div class="qopt" onclick="qAnswer(2,this,true)">C. Adiabatique réversible (Q = 0)</div>
+        <div class="qopt" onclick="qAnswer(2,this,false)">D. Isochore (V constant)</div>
+      </div>
+      <div class="qfeedback" id="qfb2"></div>
+    </div>
+
+    <div class="quiz-card" id="qcard3">
+      <div class="qnum">Question 3 / 4</div>
+      <div class="qtext">Dans le diagramme T-S, quelle est la forme du cycle de Carnot idéal ?</div>
+      <div class="qopts" id="qopts3">
+        <div class="qopt" onclick="qAnswer(3,this,false)">A. Un cercle</div>
+        <div class="qopt" onclick="qAnswer(3,this,false)">B. Une ellipse</div>
+        <div class="qopt" onclick="qAnswer(3,this,true)">C. Un rectangle</div>
+        <div class="qopt" onclick="qAnswer(3,this,false)">D. Un triangle</div>
+      </div>
+      <div class="qfeedback" id="qfb3"></div>
+    </div>
+
+    <div class="quiz-card" id="qcard4">
+      <div class="qnum">Question 4 / 4</div>
+      <div class="qtext">Un réfrigérateur de Carnot fonctionne entre Th = 300 K et Tc = 250 K. Quel est son COP (coefficient de performance) ?</div>
+      <div class="qopts" id="qopts4">
+        <div class="qopt" onclick="qAnswer(4,this,false)">A. 0,2</div>
+        <div class="qopt" onclick="qAnswer(4,this,false)">B. 1,2</div>
+        <div class="qopt" onclick="qAnswer(4,this,true)">C. 5,0</div>
+        <div class="qopt" onclick="qAnswer(4,this,false)">D. 6,0</div>
+      </div>
+      <div class="qfeedback" id="qfb4"></div>
+    </div>
+
+    <div class="score-box" id="scoreBox">
+      <div class="score-val" id="scoreVal">0/4</div>
+      <div class="score-msg" id="scoreMsg"></div>
+      <button class="btn-retry" onclick="retryQuiz()">&#8635; Réessayer</button>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="container">
+    <p>&#9879;&#65039; SimLab — Simulations pédagogiques interactives — Niveau lycée/université Bénin</p>
+    <p style="margin-top:6px;"><a href="index.html">Accueil</a> · <a href="carnot_cycle.html">&#128640; Simulation Carnot</a></p>
+  </div>
+</footer>
+
+<button id="scrollTop" title="Remonter en haut" onclick="window.scrollTo({top:0,behavior:'smooth'})">&#8593;</button>
+
+<script>
+// PROGRESS BAR + SCROLL TOP
+window.addEventListener('scroll', function(){
+  var sc = document.documentElement.scrollTop;
+  var sh = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('prog-bar').style.width = (sc/sh*100)+'%';
+  var btn = document.getElementById('scrollTop');
+  if(sc > 300){ btn.classList.add('show'); } else { btn.classList.remove('show'); }
+});
+
+// DEMO CANVAS
+var dc = document.getElementById('demoCanvas');
+var dx = dc.getContext('2d');
+var demoMode = 'moteur';
+var demoT = 0;
+var DEMOS = {
+  moteur:        {Th:800,  Tc:300, dir:1,  label:'Mode Moteur'},
+  refrigerateur: {Th:300,  Tc:250, dir:-1, label:'Mode Réfrigérateur'},
+  optimal:       {Th:1000, Tc:100, dir:1,  label:'Rendement Optimal'}
+};
+
+function setDemo(mode){
+  demoMode = mode;
+  document.getElementById('dbMoteur').classList.toggle('active', mode==='moteur');
+  document.getElementById('dbFroid').classList.toggle('active', mode==='refrigerateur');
+  document.getElementById('dbOpt').classList.toggle('active', mode==='optimal');
+}
+
+function resizeDC(){
+  dc.width = dc.parentElement.clientWidth;
+  dc.height = 220;
+}
+
+function drawDemo(){
+  var W = dc.width, H = dc.height;
+  dx.clearRect(0,0,W,H);
+  var bg = dx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#04080f'); bg.addColorStop(1,'#060d18');
+  dx.fillStyle = bg; dx.fillRect(0,0,W,H);
+
+  dx.strokeStyle = 'rgba(0,229,255,0.04)'; dx.lineWidth = 1;
+  for(var xi=0; xi<W; xi+=30){ dx.beginPath(); dx.moveTo(xi,0); dx.lineTo(xi,H); dx.stroke(); }
+  for(var yi=0; yi<H; yi+=30){ dx.beginPath(); dx.moveTo(0,yi); dx.lineTo(W,yi); dx.stroke(); }
+
+  var cfg = DEMOS[demoMode];
+  var Th = cfg.Th, Tc = cfg.Tc, g = 1.40;
+  var P1 = 200000, V1 = 0.005;
+  var nR = P1*V1/Th;
+  var vRatio = Math.pow(Th/Tc, 1/(g-1));
+  var V2 = V1*vRatio, V3 = V2*vRatio, V4 = V1*vRatio;
+  var P2 = P1*V1/V2;
+  var P3 = P2*Math.pow(V2/V3, g);
+  var P4 = P1*Math.pow(V1/V4, g);
+
+  var mgl=48, mgr=14, mgt=18, mgb=36;
+  var pw = W-mgl-mgr, ph = H-mgt-mgb;
+  var Vmin=V1*0.82, Vmax=V3*1.08, Pmin=P3*0.82, Pmax=P1*1.12;
+  function tx(v){ return mgl+(v-Vmin)/(Vmax-Vmin)*pw; }
+  function ty(p){ return mgt+ph-(p-Pmin)/(Pmax-Pmin)*ph; }
+
+  var pts = [];
+  var N = 40;
+  function addIso(va, pa, vb){
+    for(var i=0; i<=N; i++){
+      var v = va+(vb-va)*i/N;
+      pts.push({x:tx(v), y:ty(pa*va/v)});
+    }
+  }
+  function addAd(va, pa, vb){
+    var C = pa*Math.pow(va,g);
+    for(var i=0; i<=N; i++){
+      var v = va+(vb-va)*i/N;
+      pts.push({x:tx(v), y:ty(C/Math.pow(v,g))});
+    }
+  }
+
+  if(cfg.dir === 1){
+    addIso(V1,P1,V2); addAd(V2,P2,V3); addIso(V3,P3,V4); addAd(V4,P4,V1);
+  } else {
+    addAd(V1,P1,V4); addIso(V4,P4,V3); addAd(V3,P3,V2); addIso(V2,P2,V1);
+  }
+
+  // Fill area
+  dx.beginPath(); dx.moveTo(pts[0].x, pts[0].y);
+  for(var pi=1; pi<pts.length; pi++) dx.lineTo(pts[pi].x, pts[pi].y);
+  dx.closePath();
+  dx.fillStyle = 'rgba(0,229,255,0.05)'; dx.fill();
+
+  // Draw 4 segments
+  var segCols = ['#ff6060','#ffd740','#00aaff','#00ff88'];
+  var segLen = N+1;
+  for(var s=0; s<4; s++){
+    var st = s*segLen;
+    var en = Math.min((s+1)*segLen+1, pts.length);
+    dx.beginPath(); dx.moveTo(pts[st].x, pts[st].y);
+    for(var ii=st+1; ii<en; ii++) dx.lineTo(pts[ii].x, pts[ii].y);
+    dx.strokeStyle = segCols[s]; dx.lineWidth = 2.2;
+    dx.shadowBlur = 7; dx.shadowColor = segCols[s];
+    dx.stroke(); dx.shadowBlur = 0;
+  }
+
+  // Axes
+  dx.strokeStyle = 'rgba(255,255,255,0.2)'; dx.lineWidth = 1.2;
+  dx.beginPath(); dx.moveTo(mgl,mgt); dx.lineTo(mgl,mgt+ph); dx.lineTo(mgl+pw,mgt+ph); dx.stroke();
+  dx.fillStyle = 'rgba(121,134,163,0.7)'; dx.font = '9px Outfit'; dx.textAlign = 'center';
+  dx.fillText('Volume (m3)', mgl+pw/2, H-4);
+  dx.save(); dx.translate(10,mgt+ph/2); dx.rotate(-Math.PI/2); dx.fillText('Pression (Pa)',0,0); dx.restore();
+
+  // Tick values
+  dx.fillStyle = 'rgba(121,134,163,0.6)'; dx.font = '8px JetBrains Mono'; dx.textAlign = 'right';
+  dx.fillText((P1/1000).toFixed(0)+'k', mgl-2, ty(P1)+3);
+  dx.fillText((P3/1000).toFixed(0)+'k', mgl-2, ty(P3)+3);
+  dx.textAlign = 'center';
+  dx.fillText((V1*1000).toFixed(1), tx(V1), mgt+ph+12);
+  dx.fillText((V3*1000).toFixed(1), tx(V3), mgt+ph+12);
+
+  // Animated dot
+  var prog = (demoT % 4)/4;
+  var dotIdx = Math.floor(prog * pts.length);
+  var dotPt = pts[Math.min(dotIdx, pts.length-1)];
+  dx.beginPath(); dx.arc(dotPt.x, dotPt.y, 7, 0, Math.PI*2);
+  dx.fillStyle = '#fff'; dx.shadowBlur = 14; dx.shadowColor = '#fff';
+  dx.fill(); dx.shadowBlur = 0;
+
+  // Corner labels
+  var corners = [
+    {x:tx(V1),y:ty(P1),l:'1'},{x:tx(V2),y:ty(P2),l:'2'},
+    {x:tx(V3),y:ty(P3),l:'3'},{x:tx(V4),y:ty(P4),l:'4'}
+  ];
+  corners.forEach(function(c){
+    dx.beginPath(); dx.arc(c.x,c.y,4,0,Math.PI*2);
+    dx.fillStyle='rgba(255,255,255,0.8)'; dx.fill();
+    dx.fillStyle='rgba(255,255,255,0.9)'; dx.font='bold 10px Outfit'; dx.textAlign='center';
+    dx.fillText(c.l, c.x, c.y-8);
+  });
+
+  var eta = (1 - Tc/Th)*100;
+  var Wnet = nR*Th*Math.log(V2/V1) + nR*Tc*Math.log(V4/V3);
+  document.getElementById('demoInfo').textContent =
+    cfg.label+' | eta = '+eta.toFixed(1)+'% | Th = '+Th+' K | Tc = '+Tc+' K | W = '+Wnet.toFixed(0)+' J';
+
+  demoT += 0.012;
+  requestAnimationFrame(drawDemo);
+}
+
+resizeDC();
+window.addEventListener('resize', function(){ resizeDC(); });
+drawDemo();
+
+// QUIZ
+var qScore = 0;
+var qAnswered = 0;
+var qFeedbacks = {
+  1: {
+    ok: '✅ Correct ! eta = 1 - 300/600 = 0,5 soit 50 %. La moitié de la chaleur absorbée est convertie en travail utile.',
+    ko: '❌ Incorrect. eta = 1 - Tc/Th = 1 - 300/600 = 0,5 = 50 %. Révise la formule du rendement de Carnot.'
+  },
+  2: {
+    ok: '✅ Correct ! La transformation 2 -> 3 est une détente adiabatique réversible : Q = 0, T passe de Th à Tc.',
+    ko: '❌ Incorrect. C\'est une adiabatique réversible (Q = 0). Le gaz se refroidit de Th à Tc en produisant du travail sans échange de chaleur.'
+  },
+  3: {
+    ok: '✅ Correct ! Dans le diagramme T-S, les isothermes sont horizontales (T = cste) et les adiabatiques sont verticales (S = cste) : le cycle est un rectangle.',
+    ko: '❌ Incorrect. Dans le diagramme T-S, les isothermes sont horizontales et les adiabatiques sont verticales, formant un rectangle parfait.'
+  },
+  4: {
+    ok: '✅ Correct ! COP = Tc/(Th-Tc) = 250/(300-250) = 250/50 = 5,0. Ce réfrigérateur théorique pompe 5x plus de chaleur que le travail consommé.',
+    ko: '❌ Incorrect. COP = Tc/(Th-Tc) = 250/50 = 5,0. Relis la formule du COP réfrigérateur de Carnot dans la section 3.'
+  }
+};
+
+function qAnswer(qn, el, correct){
+  var opts = document.getElementById('qopts'+qn).querySelectorAll('.qopt');
+  var fb = document.getElementById('qfb'+qn);
+  if(el.classList.contains('qdisabled')) return;
+  opts.forEach(function(o){ o.classList.add('qdisabled'); });
+  if(correct){
+    el.classList.add('correct');
+    fb.textContent = qFeedbacks[qn].ok;
+    fb.className = 'qfeedback show ok';
+    qScore++;
+  } else {
+    el.classList.add('wrong');
+    fb.textContent = qFeedbacks[qn].ko;
+    fb.className = 'qfeedback show ko';
+  }
+  qAnswered++;
+  if(qAnswered === 4){ showQScore(); }
+}
+
+function showQScore(){
+  var box = document.getElementById('scoreBox');
+  box.classList.add('show');
+  document.getElementById('scoreVal').textContent = qScore+'/4';
+  var msgs = [
+    '😞 Continue à réviser ! Relis les formules et réessaie.',
+    '🤔 Pas mal, mais quelques points à revoir.',
+    '👍 Bien ! Tu maîtrises l\'essentiel du cycle de Carnot.',
+    '🎉 Très bien ! Bonne maîtrise des concepts.',
+    '🏆 Excellent ! Parfaite maîtrise du cycle de Carnot !'
+  ];
+  document.getElementById('scoreMsg').textContent = msgs[qScore] || msgs[4];
+}
+
+function retryQuiz(){
+  qScore = 0; qAnswered = 0;
+  document.getElementById('scoreBox').classList.remove('show');
+  for(var i=1; i<=4; i++){
+    document.getElementById('qopts'+i).querySelectorAll('.qopt').forEach(function(o){
+      o.classList.remove('correct','wrong','qdisabled');
+    });
+    var fb = document.getElementById('qfb'+i);
+    fb.className = 'qfeedback'; fb.textContent = '';
+  }
+}
+</script>
+
+<script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+<a href="politique-confidentialite.html" style="display:block;text-align:center;padding:12px 0 8px;font-size:12px;color:#7986a3;">Politique de Confidentialité</a>
+</body>
+</html>

@@ -1,0 +1,2121 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulations Chimie des Solutions | Edmond A. Tinzoun Tchokpon</title>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:wght@400;700&family=Crimson+Text:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #0a4d68;
+            --secondary: #088395;
+            --accent: #05bfdb;
+            --light: #e8f4f8;
+            --dark: #001524;
+            --success: #2d6a4f;
+            --warning: #f77f00;
+            --danger: #d62828;
+            --white: #ffffff;
+            --gray-light: #f0f4f8;
+            --gray: #64748b;
+        }
+
+        body {
+            font-family: 'Karla', sans-serif;
+            background: linear-gradient(135deg, #0a4d68 0%, #001524 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(5, 191, 219, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(8, 131, 149, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 3px solid var(--accent);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .logo p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        .author-info {
+            text-align: right;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .author-info strong {
+            color: var(--primary);
+            display: block;
+            font-size: 1rem;
+        }
+
+        .author-info a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .author-info a:hover {
+            color: var(--secondary);
+        }
+
+        /* Main Content */
+        main {
+            padding: 3rem 0;
+        }
+
+        .intro {
+            background: white;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .intro h2 {
+            font-family: 'Crimson Text', serif;
+            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .intro p {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .objectives {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .objective-card {
+            background: var(--light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .objective-card:hover {
+            transform: translateX(8px);
+            box-shadow: 0 4px 15px rgba(5, 191, 219, 0.2);
+        }
+
+        .objective-card h3 {
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Simulation Cards */
+        .simulations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .sim-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 0.8s ease-out both;
+            cursor: pointer;
+        }
+
+        .sim-card:nth-child(1) { animation-delay: 0.1s; }
+        .sim-card:nth-child(2) { animation-delay: 0.2s; }
+        .sim-card:nth-child(3) { animation-delay: 0.3s; }
+        .sim-card:nth-child(4) { animation-delay: 0.4s; }
+        .sim-card:nth-child(5) { animation-delay: 0.5s; }
+        .sim-card:nth-child(6) { animation-delay: 0.6s; }
+
+        .sim-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .sim-header {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sim-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .sim-header h3 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sim-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .sim-body {
+            padding: 1.5rem;
+        }
+
+        .sim-description {
+            color: var(--gray);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .sim-button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sim-button:hover {
+            background: var(--secondary);
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(8, 131, 149, 0.3);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: scaleIn 0.4s ease-out;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-header h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.8rem;
+        }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 2rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        /* Simulation Controls */
+        .controls {
+            background: var(--gray-light);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-group label {
+            display: block;
+            color: var(--primary);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Karla', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(8, 131, 149, 0.1);
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+        }
+
+        .slider-value {
+            min-width: 80px;
+            padding: 0.5rem;
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(8, 131, 149, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--gray);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: var(--dark);
+        }
+
+        /* Visualization Areas */
+        .viz-container {
+            background: white;
+            border: 3px solid var(--accent);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            min-height: 400px;
+            position: relative;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        /* Results Display */
+        .results {
+            background: var(--light);
+            border-left: 4px solid var(--success);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+
+        .results h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-family: 'Crimson Text', serif;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-label {
+            color: var(--gray);
+            font-weight: 600;
+        }
+
+        .result-value {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Beaker Visualization */
+        .beaker {
+            width: 200px;
+            height: 300px;
+            border: 4px solid var(--dark);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+            margin: 2rem auto;
+            background: linear-gradient(to bottom, transparent 0%, rgba(5, 191, 219, 0.1) 100%);
+            overflow: hidden;
+        }
+
+        .beaker::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -5px;
+            right: -5px;
+            height: 10px;
+            background: var(--dark);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .solution {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--accent);
+            transition: all 0.6s ease;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .scale-markers {
+            position: absolute;
+            left: -40px;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+        }
+
+        .scale-marker {
+            position: absolute;
+            right: 0;
+            width: 20px;
+            height: 2px;
+            background: var(--gray);
+        }
+
+        .scale-label {
+            position: absolute;
+            right: 25px;
+            font-size: 0.8rem;
+            color: var(--gray);
+            transform: translateY(-50%);
+        }
+
+        /* pH Indicator */
+        .ph-scale {
+            height: 40px;
+            background: linear-gradient(to right, 
+                #ff0000 0%, #ff4500 7%, #ff8c00 14%, 
+                #ffd700 21%, #ffff00 28%, #adff2f 35%, 
+                #00ff00 50%, #00ced1 65%, #0000ff 85%, 
+                #8b00ff 100%);
+            border-radius: 20px;
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .ph-indicator {
+            position: absolute;
+            top: -10px;
+            width: 4px;
+            height: 60px;
+            background: var(--dark);
+            transition: left 0.5s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .ph-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        /* Titration Curve */
+        .curve-container {
+            width: 100%;
+            height: 400px;
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        #titrationCanvas {
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+        }
+
+        /* Molecular Diagram */
+        .molecule-viewer {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, var(--light) 0%, white 100%);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+
+        .molecule {
+            font-size: 3rem;
+            color: var(--primary);
+            font-family: 'Courier New', monospace;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Info Box */
+        .info-box {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-left: 4px solid var(--warning);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+
+        .info-box h4 {
+            color: var(--warning);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-box h4::before {
+            content: '💡';
+            font-size: 1.2rem;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            border-top: 3px solid var(--accent);
+        }
+
+        .footer-content {
+            text-align: center;
+            color: var(--gray);
+        }
+
+        .footer-content p {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            color: var(--secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .author-info {
+                text-align: center;
+            }
+
+            .logo h1 {
+                font-size: 1.5rem;
+            }
+
+            .simulations-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .objectives {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .modal-header {
+                padding: 1.5rem;
+            }
+
+            .modal-header h2 {
+                font-size: 1.3rem;
+            }
+
+            .modal-body {
+                padding: 1rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .beaker {
+                width: 150px;
+                height: 250px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--light);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Particle Animation */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(0) scale(0);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🧪 Simulations Chimie des Solutions</h1>
+                    <p>Plateforme Interactive pour Classes Préparatoires & Licence</p>
+                </div>
+                <div class="author-info">
+                    <strong>Edmond A. Tinzoun Tchokpon</strong>
+                    <p>Étudiant en Physique-Chimie</p>
+                    <p>Université d'Abomey-Calavi, Bénin</p>
+                    <a href="https://edmond-atinzoun.netlify.app" target="_blank">edmond-atinzoun.netlify.app</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="intro">
+                <h2>Bienvenue sur votre plateforme de simulations</h2>
+                <p>Cette plateforme a été conçue spécialement pour les étudiants en classes préparatoires et en licence de physique-chimie. Elle vous permet de visualiser et comprendre les concepts fondamentaux de la chimie des solutions à travers des simulations interactives.</p>
+                
+                <div class="objectives">
+                    <div class="objective-card">
+                        <h3>📚 Complément aux cours</h3>
+                        <p>Visualisez les concepts théoriques enseignés en cours</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3>🔬 Préparation aux TP</h3>
+                        <p>Pratiquez avant les travaux pratiques en laboratoire</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3>📊 Analyse de données</h3>
+                        <p>Apprenez à interpréter graphiques et résultats</p>
+                    </div>
+                    <div class="objective-card">
+                        <h3>✅ Réussite aux examens</h3>
+                        <p>Renforcez vos compétences pour vos évaluations</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="simulations-grid">
+                <!-- Simulation 1: Concentration et Dilution -->
+                <div class="sim-card" onclick="openModal('dilution')">
+                    <div class="sim-header">
+                        <h3>Concentration et Dilution</h3>
+                        <p>Chimie des solutions</p>
+                    </div>
+                    <div class="sim-body">
+                        <p class="sim-description">
+                            Explorez les concepts de molarité, de concentration massique et de dilution. Visualisez comment préparer une solution de concentration donnée et comprenez la relation C₁V₁ = C₂V₂.
+                        </p>
+                        <button class="sim-button">Lancer la simulation</button>
+                    </div>
+                </div>
+
+                <!-- Simulation 2: pH et Équilibres Acido-basiques -->
+                <div class="sim-card" onclick="openModal('ph')">
+                    <div class="sim-header">
+                        <h3>pH et Acides-Bases</h3>
+                        <p>Équilibres chimiques</p>
+                    </div>
+                    <div class="sim-body">
+                        <p class="sim-description">
+                            Calculez le pH de solutions acides, basiques et tampons. Visualisez l'échelle de pH et comprenez les équilibres de dissociation des acides et bases faibles.
+                        </p>
+                        <button class="sim-button">Lancer la simulation</button>
+                    </div>
+                </div>
+
+                <!-- Simulation 3: Titrage pH-métrique -->
+                <div class="sim-card" onclick="openModal('titration')">
+                    <div class="sim-header">
+                        <h3>Titrage pH-métrique</h3>
+                        <p>Analyse quantitative</p>
+                    </div>
+                    <div class="sim-body">
+                        <p class="sim-description">
+                            Réalisez un titrage acide-base virtuel. Tracez la courbe pH = f(V) et déterminez le point d'équivalence. Comprenez le choix des indicateurs colorés.
+                        </p>
+                        <button class="sim-button">Lancer la simulation</button>
+                    </div>
+                </div>
+
+                <!-- Simulation 4: Produit de Solubilité -->
+                <div class="sim-card" onclick="openModal('solubility')">
+                    <div class="sim-header">
+                        <h3>Produit de Solubilité</h3>
+                        <p>Équilibres hétérogènes</p>
+                    </div>
+                    <div class="sim-body">
+                        <p class="sim-description">
+                            Étudiez la solubilité des sels peu solubles. Calculez Ks et déterminez si un précipité se forme. Explorez l'effet d'ion commun.
+                        </p>
+                        <button class="sim-button">Lancer la simulation</button>
+                    </div>
+                </div>
+
+                <!-- Simulation 5: Solutions Tampons -->
+                <div class="sim-card" onclick="openModal('buffer')">
+                    <div class="sim-header">
+                        <h3>Solutions Tampons</h3>
+                        <p>Régulation du pH</p>
+                    </div>
+                    <div class="sim-body">
+                        <p class="sim-description">
+                            Découvrez comment les solutions tampons maintiennent un pH stable. Utilisez l'équation de Henderson-Hasselbalch et observez la capacité tampon.
+                        </p>
+                        <button class="sim-button">Lancer la simulation</button>
+                    </div>
+                </div>
+
+                <!-- Simulation 6: Conductimétrie -->
+                <div class="sim-card" onclick="openModal('conductivity')">
+                    <div class="sim-header">
+                        <h3>Conductimétrie</h3>
+                        <p>Propriétés électriques</p>
+                    </div>
+                    <div class="sim-body">
+                        <p class="sim-description">
+                            Mesurez la conductivité des solutions ioniques. Reliez conductivité et concentration. Réalisez des titrages conductimétriques.
+                        </p>
+                        <button class="sim-button">Lancer la simulation</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modals for each simulation -->
+    <div id="dilutionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Concentration et Dilution</h2>
+                <button class="close-btn" onclick="closeModal('dilution')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <h4>Objectif pédagogique</h4>
+                    <p>Comprendre les relations entre concentration, volume et quantité de matière. Maîtriser la formule de dilution C₁V₁ = C₂V₂.</p>
+                </div>
+
+                <div class="controls">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">Paramètres de la solution initiale</h3>
+                    
+                    <div class="control-group">
+                        <label>Concentration initiale C₁ (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="c1" min="0.1" max="5" step="0.1" value="2" oninput="updateDilution()">
+                            <span class="slider-value" id="c1-value">2.0 mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Volume initial V₁ (mL)</label>
+                        <div class="slider-container">
+                            <input type="range" id="v1" min="10" max="200" step="10" value="50" oninput="updateDilution()">
+                            <span class="slider-value" id="v1-value">50 mL</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Volume final V₂ (mL)</label>
+                        <div class="slider-container">
+                            <input type="range" id="v2" min="50" max="500" step="10" value="200" oninput="updateDilution()">
+                            <span class="slider-value" id="v2-value">200 mL</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="calculateDilution()">Calculer</button>
+                        <button class="btn btn-secondary" onclick="resetDilution()">Réinitialiser</button>
+                    </div>
+                </div>
+
+                <div class="viz-container">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Visualisation</h3>
+                    <div style="display: flex; justify-content: space-around; align-items: flex-end; flex-wrap: wrap; gap: 2rem;">
+                        <div style="text-align: center;">
+                            <p style="font-weight: 700; color: var(--secondary); margin-bottom: 1rem;">Solution initiale</p>
+                            <div class="beaker" id="beaker1">
+                                <div class="solution" id="solution1" style="height: 25%; background: rgba(5, 191, 219, 0.8);"></div>
+                                <div class="scale-markers">
+                                    <div class="scale-marker" style="top: 25%;"></div>
+                                    <div class="scale-label" style="top: 25%;">150mL</div>
+                                    <div class="scale-marker" style="top: 50%;"></div>
+                                    <div class="scale-label" style="top: 50%;">100mL</div>
+                                    <div class="scale-marker" style="top: 75%;"></div>
+                                    <div class="scale-label" style="top: 75%;">50mL</div>
+                                </div>
+                            </div>
+                            <p id="beaker1-label" style="margin-top: 1rem; color: var(--gray);">C₁ = 2.0 mol/L<br>V₁ = 50 mL</p>
+                        </div>
+                        <div style="font-size: 3rem; color: var(--accent); align-self: center;">→</div>
+                        <div style="text-align: center;">
+                            <p style="font-weight: 700; color: var(--secondary); margin-bottom: 1rem;">Solution finale</p>
+                            <div class="beaker" id="beaker2">
+                                <div class="solution" id="solution2" style="height: 66%; background: rgba(5, 191, 219, 0.3);"></div>
+                                <div class="scale-markers">
+                                    <div class="scale-marker" style="top: 25%;"></div>
+                                    <div class="scale-label" style="top: 25%;">150mL</div>
+                                    <div class="scale-marker" style="top: 50%;"></div>
+                                    <div class="scale-label" style="top: 50%;">100mL</div>
+                                    <div class="scale-marker" style="top: 75%;"></div>
+                                    <div class="scale-label" style="top: 75%;">50mL</div>
+                                </div>
+                            </div>
+                            <p id="beaker2-label" style="margin-top: 1rem; color: var(--gray);">C₂ = 0.5 mol/L<br>V₂ = 200 mL</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results" id="dilution-results" style="display: none;">
+                    <h3>Résultats</h3>
+                    <div class="result-item">
+                        <span class="result-label">Concentration finale (C₂)</span>
+                        <span class="result-value" id="c2-result">0.50 mol/L</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Facteur de dilution</span>
+                        <span class="result-value" id="dilution-factor">4.0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Quantité de matière (n)</span>
+                        <span class="result-value" id="moles">0.100 mol</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Volume d'eau à ajouter</span>
+                        <span class="result-value" id="water-volume">150 mL</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4>Pour les TP</h4>
+                    <p><strong>Mode opératoire :</strong> Prélever V₁ de solution mère, puis compléter avec de l'eau distillée jusqu'au trait de jauge pour obtenir V₂. Toujours verser l'acide dans l'eau, jamais l'inverse !</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- pH Modal -->
+    <div id="phModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>pH et Équilibres Acido-basiques</h2>
+                <button class="close-btn" onclick="closeModal('ph')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <h4>Objectif pédagogique</h4>
+                    <p>Calculer le pH de différentes solutions (acides forts, bases fortes, acides faibles, bases faibles). Comprendre les équilibres de dissociation.</p>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Type de solution</label>
+                        <select id="solution-type" onchange="updatePHControls()">
+                            <option value="strong-acid">Acide fort (HCl, HNO₃...)</option>
+                            <option value="strong-base">Base forte (NaOH, KOH...)</option>
+                            <option value="weak-acid">Acide faible (CH₃COOH...)</option>
+                            <option value="weak-base">Base faible (NH₃...)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Concentration (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="ph-concentration" min="0.001" max="1" step="0.001" value="0.1" oninput="updatePHSlider()">
+                            <span class="slider-value" id="ph-conc-value">0.100 mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group" id="pka-group" style="display: none;">
+                        <label>pKa de l'acide</label>
+                        <div class="slider-container">
+                            <input type="range" id="pka-value" min="1" max="14" step="0.1" value="4.75" oninput="updatePKaSlider()">
+                            <span class="slider-value" id="pka-display">4.75</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="calculatePH()">Calculer le pH</button>
+                        <button class="btn btn-secondary" onclick="resetPH()">Réinitialiser</button>
+                    </div>
+                </div>
+
+                <div class="viz-container">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Échelle de pH</h3>
+                    <div class="ph-scale">
+                        <div class="ph-indicator" id="ph-indicator" style="left: 50%;"></div>
+                    </div>
+                    <div class="ph-labels">
+                        <span>0<br>Acide</span>
+                        <span>7<br>Neutre</span>
+                        <span>14<br>Basique</span>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <div style="display: inline-block; background: var(--light); padding: 2rem; border-radius: 12px; border: 3px solid var(--accent);">
+                            <p style="color: var(--gray); font-size: 1rem; margin-bottom: 0.5rem;">pH de la solution</p>
+                            <p style="font-size: 4rem; font-weight: 700; color: var(--primary); font-family: 'Crimson Text', serif;" id="ph-display">7.0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results" id="ph-results" style="display: none;">
+                    <h3>Détails du calcul</h3>
+                    <div class="result-item">
+                        <span class="result-label">pH calculé</span>
+                        <span class="result-value" id="ph-value">7.0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">[H₃O⁺] (mol/L)</span>
+                        <span class="result-value" id="h3o-value">1.0×10⁻⁷</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">[OH⁻] (mol/L)</span>
+                        <span class="result-value" id="oh-value">1.0×10⁻⁷</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Nature de la solution</span>
+                        <span class="result-value" id="solution-nature">Neutre</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4>Rappels</h4>
+                    <p><strong>pH = -log[H₃O⁺]</strong> | <strong>pH + pOH = 14</strong> à 25°C<br>
+                    <strong>Acide fort :</strong> pH = -log(C) | <strong>Base forte :</strong> pH = 14 + log(C)<br>
+                    <strong>Acide faible :</strong> pH ≈ ½(pKa - log(C)) si C/Ka > 10³</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Titration Modal -->
+    <div id="titrationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Titrage pH-métrique</h2>
+                <button class="close-btn" onclick="closeModal('titration')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <h4>Objectif pédagogique</h4>
+                    <p>Réaliser un titrage acide-base, tracer la courbe pH = f(V), déterminer le point d'équivalence et comprendre le choix des indicateurs colorés.</p>
+                </div>
+
+                <div class="controls">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">Configuration du titrage</h3>
+                    
+                    <div class="control-group">
+                        <label>Type de titrage</label>
+                        <select id="titration-type" onchange="updateTitrationSetup()">
+                            <option value="strong-strong">Acide fort + Base forte</option>
+                            <option value="weak-strong">Acide faible + Base forte</option>
+                            <option value="strong-weak">Base faible + Acide fort</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Concentration de l'acide Ca (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="ca" min="0.01" max="0.5" step="0.01" value="0.1" oninput="updateTitrationSlider()">
+                            <span class="slider-value" id="ca-value">0.10 mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Volume de l'acide Va (mL)</label>
+                        <div class="slider-container">
+                            <input type="range" id="va" min="10" max="50" step="5" value="20" oninput="updateTitrationSlider()">
+                            <span class="slider-value" id="va-value">20 mL</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Concentration de la base Cb (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="cb" min="0.01" max="0.5" step="0.01" value="0.1" oninput="updateTitrationSlider()">
+                            <span class="slider-value" id="cb-value">0.10 mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="runTitration()">Lancer le titrage</button>
+                        <button class="btn btn-secondary" onclick="resetTitration()">Réinitialiser</button>
+                    </div>
+                </div>
+
+                <div class="viz-container">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Courbe de titrage pH = f(Vb)</h3>
+                    <div class="curve-container">
+                        <canvas id="titrationCanvas" width="800" height="400"></canvas>
+                    </div>
+                </div>
+
+                <div class="results" id="titration-results" style="display: none;">
+                    <h3>Résultats du titrage</h3>
+                    <div class="result-item">
+                        <span class="result-label">Volume équivalent (Ve)</span>
+                        <span class="result-value" id="ve-value">20.0 mL</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">pH à l'équivalence</span>
+                        <span class="result-value" id="ph-equiv">7.0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">pH à la demi-équivalence</span>
+                        <span class="result-value" id="ph-half">4.75</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Indicateur recommandé</span>
+                        <span class="result-value" id="indicator">Phénolphtaléine</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4>Zone de virage des indicateurs</h4>
+                    <p><strong>Hélianthine :</strong> 3.1 - 4.4 (rouge → jaune) | <strong>BBT :</strong> 6.0 - 7.6 (jaune → bleu)<br>
+                    <strong>Phénolphtaléine :</strong> 8.2 - 10.0 (incolore → rose) | <strong>Rouge de crésol :</strong> 7.2 - 8.8 (jaune → rouge)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Solubility Modal -->
+    <div id="solubilityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Produit de Solubilité</h2>
+                <button class="close-btn" onclick="closeModal('solubility')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <h4>Objectif pédagogique</h4>
+                    <p>Comprendre la solubilité des sels peu solubles, calculer le produit de solubilité Ks et prédire la formation de précipités.</p>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Sel peu soluble</label>
+                        <select id="salt-type" onchange="updateSolubilityData()">
+                            <option value="agcl">AgCl (Chlorure d'argent)</option>
+                            <option value="baso4">BaSO₄ (Sulfate de baryum)</option>
+                            <option value="caco3">CaCO₃ (Carbonate de calcium)</option>
+                            <option value="pbcl2">PbCl₂ (Chlorure de plomb II)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>[Cation] (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="cation-conc" min="0.0001" max="0.01" step="0.0001" value="0.001" oninput="updateSolubilitySlider()">
+                            <span class="slider-value" id="cation-value">1.0×10⁻³ mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>[Anion] (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="anion-conc" min="0.0001" max="0.01" step="0.0001" value="0.001" oninput="updateSolubilitySlider()">
+                            <span class="slider-value" id="anion-value">1.0×10⁻³ mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="calculateSolubility()">Vérifier précipitation</button>
+                        <button class="btn btn-secondary" onclick="resetSolubility()">Réinitialiser</button>
+                    </div>
+                </div>
+
+                <div class="viz-container">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">État de la solution</h3>
+                    <div style="text-align: center; padding: 2rem;">
+                        <div id="precipitation-visual" style="display: inline-block; width: 250px; height: 350px; background: linear-gradient(to bottom, rgba(200, 200, 255, 0.3), rgba(200, 200, 255, 0.5)); border: 4px solid var(--dark); border-radius: 0 0 30px 30px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: -5px; right: -5px; height: 15px; background: var(--dark); border-radius: 15px 15px 0 0;"></div>
+                            <div id="precipitate" style="position: absolute; bottom: 0; left: 0; right: 0; height: 0; background: repeating-linear-gradient(45deg, #fff, #fff 5px, #e0e0e0 5px, #e0e0e0 10px); transition: height 0.8s ease; border-radius: 0 0 26px 26px;"></div>
+                        </div>
+                        <p id="precipitation-status" style="margin-top: 1.5rem; font-size: 1.3rem; font-weight: 700; color: var(--primary);"></p>
+                    </div>
+                </div>
+
+                <div class="results" id="solubility-results" style="display: none;">
+                    <h3>Résultats</h3>
+                    <div class="result-item">
+                        <span class="result-label">Produit ionique (Q)</span>
+                        <span class="result-value" id="q-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Produit de solubilité (Ks)</span>
+                        <span class="result-value" id="ks-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Comparaison Q/Ks</span>
+                        <span class="result-value" id="q-ks-comp">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Conclusion</span>
+                        <span class="result-value" id="precipitation-conclusion">-</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4>Critère de précipitation</h4>
+                    <p><strong>Q < Ks :</strong> Pas de précipité (solution insaturée)<br>
+                    <strong>Q = Ks :</strong> Solution saturée (équilibre)<br>
+                    <strong>Q > Ks :</strong> Formation d'un précipité (solution sursaturée)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buffer Modal -->
+    <div id="bufferModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Solutions Tampons</h2>
+                <button class="close-btn" onclick="closeModal('buffer')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <h4>Objectif pédagogique</h4>
+                    <p>Comprendre le rôle des solutions tampons dans la régulation du pH. Utiliser l'équation de Henderson-Hasselbalch et observer la capacité tampon.</p>
+                </div>
+
+                <div class="controls">
+                    <h3 style="color: var(--primary); margin-bottom: 1rem;">Composition du tampon</h3>
+                    
+                    <div class="control-group">
+                        <label>Système tampon</label>
+                        <select id="buffer-system" onchange="updateBufferSystem()">
+                            <option value="acetate">CH₃COOH/CH₃COO⁻ (pKa = 4.75)</option>
+                            <option value="phosphate">H₂PO₄⁻/HPO₄²⁻ (pKa = 7.2)</option>
+                            <option value="ammonia">NH₄⁺/NH₃ (pKa = 9.25)</option>
+                            <option value="carbonate">HCO₃⁻/CO₃²⁻ (pKa = 10.3)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>[Acide] (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="buffer-acid" min="0.01" max="0.5" step="0.01" value="0.1" oninput="updateBufferSlider()">
+                            <span class="slider-value" id="buffer-acid-value">0.10 mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>[Base conjuguée] (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="buffer-base" min="0.01" max="0.5" step="0.01" value="0.1" oninput="updateBufferSlider()">
+                            <span class="slider-value" id="buffer-base-value">0.10 mol/L</span>
+                        </div>
+                    </div>
+
+                    <h3 style="color: var(--primary); margin: 1.5rem 0 1rem;">Test de capacité tampon</h3>
+                    
+                    <div class="control-group">
+                        <label>Ajouter (H₃O⁺ ou OH⁻)</label>
+                        <select id="addition-type">
+                            <option value="acid">Acide fort (H₃O⁺)</option>
+                            <option value="base">Base forte (OH⁻)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Quantité ajoutée (mmol)</label>
+                        <div class="slider-container">
+                            <input type="range" id="addition-amount" min="0" max="5" step="0.1" value="0" oninput="updateAdditionSlider()">
+                            <span class="slider-value" id="addition-value">0.0 mmol</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="calculateBuffer()">Calculer le pH</button>
+                        <button class="btn btn-secondary" onclick="resetBuffer()">Réinitialiser</button>
+                    </div>
+                </div>
+
+                <div class="viz-container">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">pH du tampon</h3>
+                    <div style="text-align: center;">
+                        <div style="display: inline-block; background: var(--light); padding: 2rem 3rem; border-radius: 12px; border: 3px solid var(--success);">
+                            <p style="color: var(--gray); font-size: 1rem; margin-bottom: 0.5rem;">pH avant ajout</p>
+                            <p style="font-size: 3rem; font-weight: 700; color: var(--primary); font-family: 'Crimson Text', serif;" id="buffer-ph-initial">7.0</p>
+                        </div>
+                        <div style="font-size: 2rem; color: var(--accent); margin: 1rem;">→</div>
+                        <div style="display: inline-block; background: var(--light); padding: 2rem 3rem; border-radius: 12px; border: 3px solid var(--success);">
+                            <p style="color: var(--gray); font-size: 1rem; margin-bottom: 0.5rem;">pH après ajout</p>
+                            <p style="font-size: 3rem; font-weight: 700; color: var(--secondary); font-family: 'Crimson Text', serif;" id="buffer-ph-final">7.0</p>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem; padding: 1.5rem; background: rgba(45, 106, 79, 0.1); border-radius: 8px;">
+                        <p style="font-size: 1.2rem; color: var(--success); font-weight: 700;" id="ph-variation">Variation de pH : 0.0</p>
+                    </div>
+                </div>
+
+                <div class="results" id="buffer-results" style="display: none;">
+                    <h3>Calcul détaillé</h3>
+                    <div class="result-item">
+                        <span class="result-label">pKa du couple</span>
+                        <span class="result-value" id="buffer-pka">4.75</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Rapport [Base]/[Acide]</span>
+                        <span class="result-value" id="buffer-ratio">1.0</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">pH (Henderson-Hasselbalch)</span>
+                        <span class="result-value" id="buffer-ph-hh">4.75</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Pouvoir tampon</span>
+                        <span class="result-value" id="buffer-capacity">Optimal</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4>Équation de Henderson-Hasselbalch</h4>
+                    <p><strong>pH = pKa + log([Base]/[Acide])</strong><br>
+                    Le pouvoir tampon est optimal quand [Base] ≈ [Acide], soit pH ≈ pKa.<br>
+                    Plage d'efficacité : pKa ± 1</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conductivity Modal -->
+    <div id="conductivityModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Conductimétrie</h2>
+                <button class="close-btn" onclick="closeModal('conductivity')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="info-box">
+                    <h4>Objectif pédagogique</h4>
+                    <p>Mesurer la conductivité des solutions ioniques et comprendre la relation entre conductivité, concentration et mobilité des ions.</p>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Type d'électrolyte</label>
+                        <select id="electrolyte-type" onchange="updateConductivityData()">
+                            <option value="nacl">NaCl (Chlorure de sodium)</option>
+                            <option value="hcl">HCl (Acide chlorhydrique)</option>
+                            <option value="naoh">NaOH (Hydroxyde de sodium)</option>
+                            <option value="ch3cooh">CH₃COOH (Acide acétique)</option>
+                            <option value="nh3">NH₃ (Ammoniac)</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Concentration (mol/L)</label>
+                        <div class="slider-container">
+                            <input type="range" id="conductivity-conc" min="0.001" max="0.5" step="0.001" value="0.1" oninput="updateConductivitySlider()">
+                            <span class="slider-value" id="conductivity-conc-value">0.100 mol/L</span>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="btn btn-primary" onclick="measureConductivity()">Mesurer la conductivité</button>
+                        <button class="btn btn-secondary" onclick="resetConductivity()">Réinitialiser</button>
+                    </div>
+                </div>
+
+                <div class="viz-container">
+                    <h3 style="color: var(--primary); margin-bottom: 1.5rem; text-align: center;">Conductimètre</h3>
+                    <div style="text-align: center; padding: 2rem;">
+                        <div style="display: inline-block; background: linear-gradient(135deg, #f0f4f8, #e8f4f8); padding: 3rem; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); border: 4px solid var(--primary);">
+                            <div style="background: var(--dark); color: var(--accent); padding: 1rem 2rem; border-radius: 10px; font-family: 'Courier New', monospace; font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);">
+                                <span id="conductivity-display">0.000</span> S/m
+                            </div>
+                            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                                <div style="width: 80px; height: 150px; background: linear-gradient(to bottom, #888, #555); border-radius: 5px; position: relative;">
+                                    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 60%; height: 20px; background: #999; border-radius: 3px;"></div>
+                                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 40%; height: 100px; background: linear-gradient(to bottom, #777, #444); border-radius: 2px;"></div>
+                                </div>
+                                <div style="width: 80px; height: 150px; background: linear-gradient(to bottom, #888, #555); border-radius: 5px; position: relative;">
+                                    <div style="position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 60%; height: 20px; background: #999; border-radius: 3px;"></div>
+                                    <div style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 40%; height: 100px; background: linear-gradient(to bottom, #777, #444); border-radius: 2px;"></div>
+                                </div>
+                            </div>
+                            <p style="margin-top: 1rem; color: var(--gray); font-size: 0.9rem;">Électrodes de platine</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results" id="conductivity-results" style="display: none;">
+                    <h3>Résultats de mesure</h3>
+                    <div class="result-item">
+                        <span class="result-label">Conductivité σ (S/m)</span>
+                        <span class="result-value" id="sigma-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Conductivité molaire Λm (S·m²/mol)</span>
+                        <span class="result-value" id="lambda-value">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Type d'électrolyte</span>
+                        <span class="result-value" id="electrolyte-strength">-</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Degré de dissociation α</span>
+                        <span class="result-value" id="dissociation-degree">-</span>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 2rem;">
+                    <h4>Formules</h4>
+                    <p><strong>σ = Λm × C</strong> (avec σ en S/m, Λm en S·m²/mol, C en mol/m³)<br>
+                    <strong>σ = Σ λᵢ × [Xᵢ]</strong> où λᵢ est la conductivité molaire ionique<br>
+                    Pour les électrolytes faibles : α = Λm / Λm⁰</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p><strong>Plateforme développée par Edmond A. Tinzoun Tchokpon</strong></p>
+                <p>Étudiant en Physique-Chimie | Université d'Abomey-Calavi, Bénin</p>
+                <div class="footer-links">
+                    <a href="https://edmond-atinzoun.netlify.app" target="_blank">Portfolio</a>
+                    <a href="mailto:edmond.tinzoun@example.com">Contact</a>
+                    <a href="#" onclick="alert('Licence MIT - Utilisation libre pour l\'éducation'); return false;">Licence</a>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--gray);">© 2026 - Tous droits réservés | Version 1.0</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Modal Management
+        function openModal(simType) {
+            const modal = document.getElementById(simType + 'Modal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Initialize simulation when opened
+            switch(simType) {
+                case 'dilution':
+                    updateDilution();
+                    break;
+                case 'ph':
+                    updatePHControls();
+                    break;
+                case 'titration':
+                    updateTitrationSetup();
+                    break;
+                case 'solubility':
+                    updateSolubilityData();
+                    break;
+                case 'buffer':
+                    updateBufferSystem();
+                    break;
+                case 'conductivity':
+                    updateConductivityData();
+                    break;
+            }
+        }
+
+        function closeModal(simType) {
+            const modal = document.getElementById(simType + 'Modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // === DILUTION SIMULATION ===
+        function updateDilution() {
+            const c1 = parseFloat(document.getElementById('c1').value);
+            const v1 = parseFloat(document.getElementById('v1').value);
+            const v2 = parseFloat(document.getElementById('v2').value);
+            
+            document.getElementById('c1-value').textContent = c1.toFixed(1) + ' mol/L';
+            document.getElementById('v1-value').textContent = v1 + ' mL';
+            document.getElementById('v2-value').textContent = v2 + ' mL';
+            
+            // Update beaker visualizations
+            const height1 = (v1 / 200) * 100;
+            const height2 = (v2 / 200) * 100;
+            
+            document.getElementById('solution1').style.height = height1 + '%';
+            document.getElementById('solution2').style.height = height2 + '%';
+            
+            // Adjust color intensity based on concentration
+            const c2 = (c1 * v1) / v2;
+            const opacity1 = Math.min(0.3 + (c1 / 5) * 0.7, 1);
+            const opacity2 = Math.min(0.3 + (c2 / 5) * 0.7, 1);
+            
+            document.getElementById('solution1').style.background = `rgba(5, 191, 219, ${opacity1})`;
+            document.getElementById('solution2').style.background = `rgba(5, 191, 219, ${opacity2})`;
+            
+            document.getElementById('beaker1-label').innerHTML = `C₁ = ${c1.toFixed(1)} mol/L<br>V₁ = ${v1} mL`;
+            document.getElementById('beaker2-label').innerHTML = `C₂ = ${c2.toFixed(2)} mol/L<br>V₂ = ${v2} mL`;
+        }
+
+        function calculateDilution() {
+            const c1 = parseFloat(document.getElementById('c1').value);
+            const v1 = parseFloat(document.getElementById('v1').value);
+            const v2 = parseFloat(document.getElementById('v2').value);
+            
+            const c2 = (c1 * v1) / v2;
+            const factor = v2 / v1;
+            const moles = c1 * (v1 / 1000);
+            const waterVolume = v2 - v1;
+            
+            document.getElementById('c2-result').textContent = c2.toFixed(3) + ' mol/L';
+            document.getElementById('dilution-factor').textContent = factor.toFixed(1);
+            document.getElementById('moles').textContent = moles.toFixed(4) + ' mol';
+            document.getElementById('water-volume').textContent = waterVolume + ' mL';
+            
+            document.getElementById('dilution-results').style.display = 'block';
+        }
+
+        function resetDilution() {
+            document.getElementById('c1').value = 2;
+            document.getElementById('v1').value = 50;
+            document.getElementById('v2').value = 200;
+            document.getElementById('dilution-results').style.display = 'none';
+            updateDilution();
+        }
+
+        // === pH SIMULATION ===
+        function updatePHControls() {
+            const type = document.getElementById('solution-type').value;
+            const pkaGroup = document.getElementById('pka-group');
+            
+            if (type === 'weak-acid' || type === 'weak-base') {
+                pkaGroup.style.display = 'block';
+            } else {
+                pkaGroup.style.display = 'none';
+            }
+        }
+
+        function updatePHSlider() {
+            const conc = parseFloat(document.getElementById('ph-concentration').value);
+            document.getElementById('ph-conc-value').textContent = conc.toFixed(3) + ' mol/L';
+        }
+
+        function updatePKaSlider() {
+            const pka = parseFloat(document.getElementById('pka-value').value);
+            document.getElementById('pka-display').textContent = pka.toFixed(2);
+        }
+
+        function calculatePH() {
+            const type = document.getElementById('solution-type').value;
+            const conc = parseFloat(document.getElementById('ph-concentration').value);
+            let ph;
+            
+            switch(type) {
+                case 'strong-acid':
+                    ph = -Math.log10(conc);
+                    break;
+                case 'strong-base':
+                    const poh = -Math.log10(conc);
+                    ph = 14 - poh;
+                    break;
+                case 'weak-acid':
+                    const pka = parseFloat(document.getElementById('pka-value').value);
+                    ph = 0.5 * (pka - Math.log10(conc));
+                    break;
+                case 'weak-base':
+                    const pkb = 14 - parseFloat(document.getElementById('pka-value').value);
+                    const pohWeak = 0.5 * (pkb - Math.log10(conc));
+                    ph = 14 - pohWeak;
+                    break;
+            }
+            
+            // Update pH display
+            document.getElementById('ph-display').textContent = ph.toFixed(2);
+            
+            // Update pH indicator position
+            const position = (ph / 14) * 100;
+            document.getElementById('ph-indicator').style.left = position + '%';
+            
+            // Calculate concentrations
+            const h3o = Math.pow(10, -ph);
+            const oh = Math.pow(10, -(14 - ph));
+            
+            document.getElementById('ph-value').textContent = ph.toFixed(2);
+            document.getElementById('h3o-value').textContent = h3o.toExponential(2);
+            document.getElementById('oh-value').textContent = oh.toExponential(2);
+            
+            let nature;
+            if (ph < 6.5) nature = 'Acide';
+            else if (ph > 7.5) nature = 'Basique';
+            else nature = 'Neutre';
+            document.getElementById('solution-nature').textContent = nature;
+            
+            document.getElementById('ph-results').style.display = 'block';
+        }
+
+        function resetPH() {
+            document.getElementById('solution-type').value = 'strong-acid';
+            document.getElementById('ph-concentration').value = 0.1;
+            document.getElementById('pka-value').value = 4.75;
+            document.getElementById('ph-results').style.display = 'none';
+            updatePHControls();
+            updatePHSlider();
+            document.getElementById('ph-display').textContent = '7.0';
+            document.getElementById('ph-indicator').style.left = '50%';
+        }
+
+        // === TITRATION SIMULATION ===
+        function updateTitrationSetup() {
+            // Initialize titration parameters
+        }
+
+        function updateTitrationSlider() {
+            const ca = parseFloat(document.getElementById('ca').value);
+            const va = parseFloat(document.getElementById('va').value);
+            const cb = parseFloat(document.getElementById('cb').value);
+            
+            document.getElementById('ca-value').textContent = ca.toFixed(2) + ' mol/L';
+            document.getElementById('va-value').textContent = va + ' mL';
+            document.getElementById('cb-value').textContent = cb.toFixed(2) + ' mol/L';
+        }
+
+        function runTitration() {
+            const ca = parseFloat(document.getElementById('ca').value);
+            const va = parseFloat(document.getElementById('va').value);
+            const cb = parseFloat(document.getElementById('cb').value);
+            const type = document.getElementById('titration-type').value;
+            
+            // Calculate equivalence volume
+            const ve = (ca * va) / cb;
+            
+            // Draw titration curve
+            const canvas = document.getElementById('titrationCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw axes
+            ctx.strokeStyle = '#001524';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(60, 350);
+            ctx.lineTo(760, 350);
+            ctx.moveTo(60, 350);
+            ctx.lineTo(60, 50);
+            ctx.stroke();
+            
+            // Labels
+            ctx.fillStyle = '#001524';
+            ctx.font = 'bold 14px Karla';
+            ctx.fillText('pH', 20, 40);
+            ctx.fillText('Volume base (mL)', 320, 385);
+            
+            // Draw pH scale
+            for (let i = 0; i <= 14; i += 2) {
+                const y = 350 - (i / 14) * 300;
+                ctx.fillText(i, 30, y + 5);
+                ctx.beginPath();
+                ctx.moveTo(55, y);
+                ctx.lineTo(60, y);
+                ctx.stroke();
+            }
+            
+            // Draw titration curve
+            ctx.strokeStyle = '#088395';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            const maxVb = ve * 2;
+            const step = 0.5;
+            
+            for (let vb = 0; vb <= maxVb; vb += step) {
+                let ph;
+                
+                if (type === 'strong-strong') {
+                    if (vb === 0) {
+                        ph = -Math.log10(ca);
+                    } else if (vb < ve) {
+                        const remainingAcid = (ca * va - cb * vb) / (va + vb);
+                        ph = -Math.log10(remainingAcid);
+                    } else if (vb === ve) {
+                        ph = 7;
+                    } else {
+                        const excessBase = (cb * vb - ca * va) / (va + vb);
+                        ph = 14 + Math.log10(excessBase);
+                    }
+                } else if (type === 'weak-strong') {
+                    const pka = 4.75;
+                    if (vb === 0) {
+                        ph = 0.5 * (pka - Math.log10(ca));
+                    } else if (vb < ve) {
+                        const ratio = vb / (ve - vb);
+                        ph = pka + Math.log10(ratio);
+                    } else if (vb === ve) {
+                        ph = 0.5 * (14 + pka - Math.log10(ca * va / (va + ve)));
+                    } else {
+                        const excessBase = (cb * vb - ca * va) / (va + vb);
+                        ph = 14 + Math.log10(excessBase);
+                    }
+                }
+                
+                const x = 60 + (vb / maxVb) * 700;
+                const y = 350 - (ph / 14) * 300;
+                
+                if (vb === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // Mark equivalence point
+            const xeq = 60 + (ve / maxVb) * 700;
+            const phEq = type === 'strong-strong' ? 7 : (type === 'weak-strong' ? 8.7 : 5.3);
+            const yeq = 350 - (phEq / 14) * 300;
+            
+            ctx.fillStyle = '#d62828';
+            ctx.beginPath();
+            ctx.arc(xeq, yeq, 6, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Update results
+            document.getElementById('ve-value').textContent = ve.toFixed(1) + ' mL';
+            document.getElementById('ph-equiv').textContent = phEq.toFixed(1);
+            document.getElementById('ph-half').textContent = type === 'weak-strong' ? '4.75' : 'N/A';
+            
+            let indicator;
+            if (phEq < 6) indicator = 'Hélianthine';
+            else if (phEq < 8) indicator = 'BBT';
+            else indicator = 'Phénolphtaléine';
+            document.getElementById('indicator').textContent = indicator;
+            
+            document.getElementById('titration-results').style.display = 'block';
+        }
+
+        function resetTitration() {
+            document.getElementById('ca').value = 0.1;
+            document.getElementById('va').value = 20;
+            document.getElementById('cb').value = 0.1;
+            document.getElementById('titration-type').value = 'strong-strong';
+            document.getElementById('titration-results').style.display = 'none';
+            
+            const canvas = document.getElementById('titrationCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            updateTitrationSlider();
+        }
+
+        // === SOLUBILITY SIMULATION ===
+        function updateSolubilityData() {
+            const salt = document.getElementById('salt-type').value;
+            // Set default Ks values
+        }
+
+        function updateSolubilitySlider() {
+            const cation = parseFloat(document.getElementById('cation-conc').value);
+            const anion = parseFloat(document.getElementById('anion-conc').value);
+            
+            document.getElementById('cation-value').textContent = cation.toExponential(1) + ' mol/L';
+            document.getElementById('anion-value').textContent = anion.toExponential(1) + ' mol/L';
+        }
+
+        function calculateSolubility() {
+            const salt = document.getElementById('salt-type').value;
+            const cation = parseFloat(document.getElementById('cation-conc').value);
+            const anion = parseFloat(document.getElementById('anion-conc').value);
+            
+            // Ks values
+            const ksValues = {
+                'agcl': 1.8e-10,
+                'baso4': 1.1e-10,
+                'caco3': 3.4e-9,
+                'pbcl2': 1.7e-5
+            };
+            
+            const ks = ksValues[salt];
+            const stoichiometry = salt === 'pbcl2' ? 2 : 1;
+            const q = stoichiometry === 2 ? cation * Math.pow(anion, 2) : cation * anion;
+            
+            document.getElementById('q-value').textContent = q.toExponential(2);
+            document.getElementById('ks-value').textContent = ks.toExponential(2);
+            
+            let precipitate = false;
+            let conclusion;
+            
+            if (q < ks) {
+                conclusion = 'Pas de précipité';
+                document.getElementById('q-ks-comp').textContent = 'Q < Ks';
+            } else if (q > ks) {
+                conclusion = 'Précipité formé';
+                document.getElementById('q-ks-comp').textContent = 'Q > Ks';
+                precipitate = true;
+            } else {
+                conclusion = 'Solution saturée';
+                document.getElementById('q-ks-comp').textContent = 'Q = Ks';
+            }
+            
+            document.getElementById('precipitation-conclusion').textContent = conclusion;
+            
+            // Visualize precipitation
+            const precipitateDiv = document.getElementById('precipitate');
+            if (precipitate) {
+                precipitateDiv.style.height = '30%';
+                document.getElementById('precipitation-status').textContent = '⚠️ Précipité formé';
+                document.getElementById('precipitation-status').style.color = '#d62828';
+            } else {
+                precipitateDiv.style.height = '0';
+                document.getElementById('precipitation-status').textContent = '✓ Solution limpide';
+                document.getElementById('precipitation-status').style.color = '#2d6a4f';
+            }
+            
+            document.getElementById('solubility-results').style.display = 'block';
+        }
+
+        function resetSolubility() {
+            document.getElementById('salt-type').value = 'agcl';
+            document.getElementById('cation-conc').value = 0.001;
+            document.getElementById('anion-conc').value = 0.001;
+            document.getElementById('solubility-results').style.display = 'none';
+            document.getElementById('precipitate').style.height = '0';
+            document.getElementById('precipitation-status').textContent = '';
+            updateSolubilitySlider();
+        }
+
+        // === BUFFER SIMULATION ===
+        function updateBufferSystem() {
+            const system = document.getElementById('buffer-system').value;
+            const pkaValues = {
+                'acetate': 4.75,
+                'phosphate': 7.2,
+                'ammonia': 9.25,
+                'carbonate': 10.3
+            };
+            
+            const pka = pkaValues[system];
+            document.getElementById('buffer-pka').textContent = pka.toFixed(2);
+        }
+
+        function updateBufferSlider() {
+            const acid = parseFloat(document.getElementById('buffer-acid').value);
+            const base = parseFloat(document.getElementById('buffer-base').value);
+            
+            document.getElementById('buffer-acid-value').textContent = acid.toFixed(2) + ' mol/L';
+            document.getElementById('buffer-base-value').textContent = base.toFixed(2) + ' mol/L';
+        }
+
+        function updateAdditionSlider() {
+            const amount = parseFloat(document.getElementById('addition-amount').value);
+            document.getElementById('addition-value').textContent = amount.toFixed(1) + ' mmol';
+        }
+
+        function calculateBuffer() {
+            const system = document.getElementById('buffer-system').value;
+            const pkaValues = {
+                'acetate': 4.75,
+                'phosphate': 7.2,
+                'ammonia': 9.25,
+                'carbonate': 10.3
+            };
+            const pka = pkaValues[system];
+            
+            let acid = parseFloat(document.getElementById('buffer-acid').value);
+            let base = parseFloat(document.getElementById('buffer-base').value);
+            
+            // Initial pH
+            const phInitial = pka + Math.log10(base / acid);
+            document.getElementById('buffer-ph-initial').textContent = phInitial.toFixed(2);
+            
+            // After addition
+            const additionType = document.getElementById('addition-type').value;
+            const amount = parseFloat(document.getElementById('addition-amount').value) / 1000; // Convert to mol
+            
+            if (additionType === 'acid') {
+                acid += amount;
+                base -= amount;
+            } else {
+                base += amount;
+                acid -= amount;
+            }
+            
+            const phFinal = pka + Math.log10(base / acid);
+            document.getElementById('buffer-ph-final').textContent = phFinal.toFixed(2);
+            
+            const variation = Math.abs(phFinal - phInitial);
+            document.getElementById('ph-variation').textContent = `Variation de pH : ${variation.toFixed(2)}`;
+            
+            // Update results
+            const ratio = base / acid;
+            document.getElementById('buffer-ratio').textContent = ratio.toFixed(2);
+            document.getElementById('buffer-ph-hh').textContent = phFinal.toFixed(2);
+            
+            let capacity;
+            if (ratio >= 0.1 && ratio <= 10) {
+                capacity = 'Optimal';
+            } else {
+                capacity = 'Faible';
+            }
+            document.getElementById('buffer-capacity').textContent = capacity;
+            
+            document.getElementById('buffer-results').style.display = 'block';
+        }
+
+        function resetBuffer() {
+            document.getElementById('buffer-system').value = 'acetate';
+            document.getElementById('buffer-acid').value = 0.1;
+            document.getElementById('buffer-base').value = 0.1;
+            document.getElementById('addition-type').value = 'acid';
+            document.getElementById('addition-amount').value = 0;
+            document.getElementById('buffer-results').style.display = 'none';
+            
+            updateBufferSystem();
+            updateBufferSlider();
+            updateAdditionSlider();
+            
+            document.getElementById('buffer-ph-initial').textContent = '7.0';
+            document.getElementById('buffer-ph-final').textContent = '7.0';
+            document.getElementById('ph-variation').textContent = 'Variation de pH : 0.0';
+        }
+
+        // === CONDUCTIVITY SIMULATION ===
+        function updateConductivityData() {
+            // Initialize conductivity data
+        }
+
+        function updateConductivitySlider() {
+            const conc = parseFloat(document.getElementById('conductivity-conc').value);
+            document.getElementById('conductivity-conc-value').textContent = conc.toFixed(3) + ' mol/L';
+        }
+
+        function measureConductivity() {
+            const type = document.getElementById('electrolyte-type').value;
+            const conc = parseFloat(document.getElementById('conductivity-conc').value);
+            
+            // Molar conductivity values (S·m²/mol) at infinite dilution
+            const lambdaValues = {
+                'nacl': 0.01265,
+                'hcl': 0.04261,
+                'naoh': 0.02479,
+                'ch3cooh': 0.00391,
+                'nh3': 0.00271
+            };
+            
+            const lambda0 = lambdaValues[type];
+            
+            // For strong electrolytes, lambda ≈ lambda0
+            // For weak electrolytes, lambda < lambda0
+            let lambda, alpha, strength;
+            
+            if (type === 'ch3cooh' || type === 'nh3') {
+                // Weak electrolyte
+                const ka = type === 'ch3cooh' ? 1.8e-5 : 1.8e-5;
+                alpha = Math.sqrt(ka / conc);
+                lambda = lambda0 * alpha;
+                strength = 'Électrolyte faible';
+            } else {
+                // Strong electrolyte
+                lambda = lambda0 * (1 - 0.1 * Math.sqrt(conc)); // Simplified Kohlrausch
+                alpha = 1;
+                strength = 'Électrolyte fort';
+            }
+            
+            const sigma = lambda * conc * 1000; // Convert to S/m
+            
+            // Update display
+            document.getElementById('conductivity-display').textContent = sigma.toFixed(3);
+            document.getElementById('sigma-value').textContent = sigma.toFixed(3) + ' S/m';
+            document.getElementById('lambda-value').textContent = (lambda * 1e4).toFixed(2) + ' S·cm²/mol';
+            document.getElementById('electrolyte-strength').textContent = strength;
+            document.getElementById('dissociation-degree').textContent = (alpha * 100).toFixed(1) + ' %';
+            
+            document.getElementById('conductivity-results').style.display = 'block';
+        }
+
+        function resetConductivity() {
+            document.getElementById('electrolyte-type').value = 'nacl';
+            document.getElementById('conductivity-conc').value = 0.1;
+            document.getElementById('conductivity-results').style.display = 'none';
+            document.getElementById('conductivity-display').textContent = '0.000';
+            updateConductivitySlider();
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Plateforme de simulations chimie chargée avec succès!');
+        });
+    </script>
+</body>
+</html>

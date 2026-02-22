@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚗️ SimLab — Guide Circuit RC</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
+<style>
+:root{
+  --bg:#0a0e1a;--s1:#111827;--s2:#1a2540;--s3:#0d1525;
+  --acc:#00e5ff;--grn:#00ff88;--red:#ff4060;--yel:#ffd740;--orn:#ff9500;
+  --txt:#e0e8f0;--txt2:#8899aa;--txt3:#4a5568;
+  --radius:12px;--shadow:0 4px 24px rgba(0,0,0,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;line-height:1.6;overflow-x:hidden;}
+
+/* ── PROGRESS BAR ── */
+#progress-bar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--acc),var(--grn));width:0%;z-index:1000;transition:width .1s;}
+
+/* ── HEADER ── */
+#header{position:fixed;top:0;left:0;right:0;z-index:999;background:rgba(10,14,26,0.97);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,229,255,0.12);padding:0 20px;}
+.hdr-inner{max-width:1100px;margin:0 auto;height:58px;display:flex;align-items:center;gap:10px;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;}
+.logo-text{font-size:15px;font-weight:800;color:var(--acc);white-space:nowrap;}
+.guide-badge{background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.25);color:var(--acc);font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;white-space:nowrap;}
+.hdr-spacer{flex:1;}
+.btn-hdr{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;border:none;font-family:'Outfit',sans-serif;transition:all .2s;white-space:nowrap;}
+.btn-back{background:rgba(0,229,255,0.08);color:var(--acc);border:1px solid rgba(0,229,255,0.2);}
+.btn-back:hover{background:rgba(0,229,255,0.18);}
+.btn-sim{background:linear-gradient(135deg,#00c968,#00ff88);color:#001a0a;}
+.btn-sim:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,255,136,0.35);}
+@media(max-width:600px){.guide-badge{display:none;}.logo-text{font-size:13px;}.btn-hdr{padding:6px 10px;font-size:11px;}}
+
+/* ── SCROLL TO TOP ── */
+#scrolltop{position:fixed;bottom:24px;right:24px;z-index:998;background:var(--s2);border:1px solid rgba(0,229,255,0.25);color:var(--acc);width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;opacity:0;pointer-events:none;transition:all .3s;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
+#scrolltop.show{opacity:1;pointer-events:all;}
+#scrolltop:hover{background:var(--acc);color:#000;}
+
+/* ── MAIN LAYOUT ── */
+main{max-width:1100px;margin:0 auto;padding:80px 20px 60px;}
+
+/* ── HERO ── */
+.hero{text-align:center;padding:60px 20px 40px;position:relative;}
+.hero::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:300px;background:radial-gradient(ellipse,rgba(0,229,255,0.06) 0%,transparent 70%);pointer-events:none;}
+.hero h1{font-size:clamp(1.8rem,5vw,3rem);font-weight:800;background:linear-gradient(135deg,#fff,var(--acc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px;}
+.hero p{font-size:clamp(.95rem,2vw,1.15rem);color:var(--txt2);max-width:600px;margin:0 auto 28px;}
+.hero-tags{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-bottom:20px;}
+.tag{background:var(--s2);border:1px solid rgba(0,229,255,0.15);color:var(--acc);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;}
+
+/* ── TOC ── */
+.toc{background:var(--s1);border:1px solid rgba(0,229,255,0.1);border-radius:var(--radius);padding:24px 28px;margin-bottom:50px;}
+.toc h2{font-size:14px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px;}
+.toc-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;text-decoration:none;color:var(--txt2);font-size:13px;font-weight:500;transition:all .2s;border:1px solid transparent;}
+.toc-item:hover{background:rgba(0,229,255,0.06);border-color:rgba(0,229,255,0.15);color:var(--acc);}
+.toc-num{width:24px;height:24px;border-radius:50%;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.2);color:var(--acc);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* ── SECTIONS ── */
+.section{margin-bottom:60px;scroll-margin-top:75px;}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;}
+.section-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--acc),#0088aa);color:#000;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.section-title{font-size:clamp(1.2rem,3vw,1.6rem);font-weight:700;color:#fff;}
+.section-divider{height:1px;background:linear-gradient(90deg,rgba(0,229,255,0.2),transparent);margin-bottom:24px;}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border-radius:var(--radius);padding:20px 22px;border:1px solid rgba(255,255,255,0.05);box-shadow:var(--shadow);margin-bottom:14px;}
+.card.bl-blue{border-left:4px solid var(--acc);}
+.card.bl-green{border-left:4px solid var(--grn);}
+.card.bl-red{border-left:4px solid var(--red);}
+.card.bl-yellow{border-left:4px solid var(--yel);}
+.card.bl-orange{border-left:4px solid var(--orn);}
+.card h3{font-size:15px;font-weight:700;margin-bottom:8px;color:#fff;}
+.card p{font-size:13.5px;color:var(--txt2);line-height:1.65;}
+
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+
+/* ── FORMULA BOX ── */
+.formula-box{background:#070d1a;border:1px solid rgba(255,215,64,0.2);border-radius:var(--radius);padding:18px 22px;margin-bottom:16px;}
+.formula-box .fname{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:10px;}
+.formula-box .fexpr{font-family:'JetBrains Mono',monospace;font-size:clamp(14px,2vw,18px);color:var(--yel);font-weight:600;margin-bottom:10px;line-height:1.4;}
+.formula-box .fdesc{font-size:12.5px;color:var(--txt2);line-height:1.6;}
+.formula-box .fvars{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.fvar{background:rgba(255,215,64,0.08);border:1px solid rgba(255,215,64,0.15);border-radius:6px;padding:3px 9px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--yel);}
+.formulas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+
+/* ── TABLE ── */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);margin-bottom:16px;}
+table{width:100%;border-collapse:collapse;background:var(--s1);}
+thead tr{background:rgba(0,229,255,0.08);border-bottom:2px solid rgba(0,229,255,0.2);}
+th{padding:12px 16px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--acc);text-align:left;}
+td{padding:11px 16px;font-size:13px;color:var(--txt2);border-bottom:1px solid rgba(255,255,255,0.04);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,229,255,0.03);}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;}
+.badge-grn{background:rgba(0,255,136,0.1);color:var(--grn);border:1px solid rgba(0,255,136,0.2);}
+.badge-red{background:rgba(255,64,96,0.1);color:var(--red);border:1px solid rgba(255,64,96,0.2);}
+.badge-yel{background:rgba(255,215,64,0.1);color:var(--yel);border:1px solid rgba(255,215,64,0.2);}
+.badge-blu{background:rgba(0,229,255,0.1);color:var(--acc);border:1px solid rgba(0,229,255,0.2);}
+
+/* ── STEPS ── */
+.steps{display:flex;flex-direction:column;gap:0;}
+.step{display:flex;gap:16px;position:relative;}
+.step:not(:last-child)::after{content:'';position:absolute;left:19px;top:44px;width:2px;height:calc(100% - 8px);background:linear-gradient(180deg,rgba(0,229,255,0.3),rgba(0,229,255,0.05));}
+.step-num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--acc),#0055aa);color:#fff;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px rgba(0,229,255,0.3);}
+.step-body{flex:1;padding-bottom:24px;}
+.step-body h4{font-size:14px;font-weight:700;color:#fff;margin-bottom:6px;padding-top:8px;}
+.step-body p{font-size:13px;color:var(--txt2);line-height:1.6;}
+.step-tip{background:rgba(0,229,255,0.05);border:1px solid rgba(0,229,255,0.12);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:12px;color:var(--acc);}
+
+/* ── DEMO CANVAS ── */
+.demo-wrap{background:var(--s1);border-radius:var(--radius);padding:20px;border:1px solid rgba(0,229,255,0.1);}
+.demo-controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.demo-btn{padding:7px 14px;border-radius:8px;border:1px solid rgba(0,229,255,0.25);background:rgba(0,229,255,0.07);color:var(--acc);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;}
+.demo-btn:hover,.demo-btn.active{background:rgba(0,229,255,0.18);border-color:rgba(0,229,255,0.45);}
+.demo-btn.active{color:#fff;}
+#demoCanvas{display:block;width:100%;border-radius:8px;background:#04080f;}
+.demo-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;}
+.demo-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--txt2);}
+.demo-leg-dot{width:24px;height:3px;border-radius:2px;}
+.demo-vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:12px;}
+.demo-val{background:var(--s2);border-radius:8px;padding:8px;text-align:center;}
+.demo-val .dv-label{font-size:9px;color:var(--txt2);margin-bottom:3px;}
+.demo-val .dv-num{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--acc);font-weight:600;}
+
+/* ── EXPÉRIENCES ── */
+.exp-card{background:var(--s1);border-radius:var(--radius);padding:22px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.05);position:relative;overflow:hidden;}
+.exp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.exp-card:nth-child(1)::before{background:linear-gradient(90deg,var(--acc),transparent);}
+.exp-card:nth-child(2)::before{background:linear-gradient(90deg,var(--yel),transparent);}
+.exp-card:nth-child(3)::before{background:linear-gradient(90deg,var(--grn),transparent);}
+.exp-card:nth-child(4)::before{background:linear-gradient(90deg,var(--orn),transparent);}
+.exp-num{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--txt2);margin-bottom:10px;}
+.exp-card h3{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;}
+.exp-card p{font-size:13px;color:var(--txt2);margin-bottom:12px;line-height:1.6;}
+.exp-params{background:var(--s2);border-radius:8px;padding:12px 14px;margin-bottom:12px;display:flex;flex-wrap:wrap;gap:10px;}
+.exp-param{display:flex;flex-direction:column;gap:2px;}
+.exp-param .ep-key{font-size:10px;color:var(--txt2);}
+.exp-param .ep-val{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--acc);font-weight:600;}
+.exp-result{background:rgba(0,255,136,0.05);border:1px solid rgba(0,255,136,0.15);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--grn);}
+.exp-result strong{color:#fff;}
+
+/* ── QUIZ ── */
+.quiz-card{background:var(--s1);border-radius:var(--radius);padding:22px;margin-bottom:14px;border:1px solid rgba(255,255,255,0.05);}
+.quiz-q{font-size:15px;font-weight:600;color:#fff;margin-bottom:14px;line-height:1.5;}
+.quiz-opts{display:flex;flex-direction:column;gap:8px;}
+.quiz-opt{padding:11px 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:var(--s2);color:var(--txt2);font-size:13px;cursor:pointer;text-align:left;font-family:'Outfit',sans-serif;transition:all .2s;width:100%;}
+.quiz-opt:hover:not(:disabled){border-color:rgba(0,229,255,0.3);color:var(--acc);background:rgba(0,229,255,0.06);}
+.quiz-opt.correct{background:rgba(0,255,136,0.1);border-color:rgba(0,255,136,0.4);color:var(--grn);}
+.quiz-opt.wrong{background:rgba(255,64,96,0.1);border-color:rgba(255,64,96,0.3);color:var(--red);}
+.quiz-feedback{margin-top:10px;padding:10px 14px;border-radius:8px;font-size:13px;display:none;}
+.quiz-feedback.show{display:block;}
+.quiz-feedback.ok{background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.2);color:var(--grn);}
+.quiz-feedback.ko{background:rgba(255,64,96,0.08);border:1px solid rgba(255,64,96,0.2);color:var(--red);}
+
+#quiz-score{background:var(--s1);border-radius:var(--radius);padding:28px;text-align:center;display:none;border:1px solid rgba(0,229,255,0.15);}
+#quiz-score h3{font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:8px;}
+#quiz-score .score-num{font-family:'JetBrains Mono',monospace;font-size:2.5rem;font-weight:700;color:var(--acc);}
+#quiz-score p{color:var(--txt2);font-size:14px;margin-top:8px;}
+#quiz-score .score-emoji{font-size:3rem;display:block;margin-bottom:10px;}
+.btn-quiz-submit{width:100%;padding:12px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--acc),#0066aa);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;margin-top:12px;transition:all .2s;}
+.btn-quiz-submit:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,229,255,0.3);}
+.btn-quiz-reset{padding:10px 22px;border-radius:8px;border:1px solid rgba(0,229,255,0.2);background:transparent;color:var(--acc);font-size:13px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;margin-top:12px;}
+.btn-quiz-reset:hover{background:rgba(0,229,255,0.1);}
+
+/* ── INFO BOX ── */
+.info-box{background:rgba(0,229,255,0.04);border:1px solid rgba(0,229,255,0.15);border-radius:10px;padding:14px 18px;margin-bottom:14px;font-size:13px;color:var(--txt2);display:flex;gap:10px;align-items:flex-start;}
+.info-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+.info-box a{color:var(--acc);}
+
+/* ── NATIVE AD ── */
+.ad-wrap{display:flex;justify-content:center;margin:32px 0;}
+
+/* ── FOOTER ── */
+footer{background:var(--s1);border-top:1px solid rgba(0,229,255,0.08);padding:28px 20px;text-align:center;margin-top:60px;}
+footer p{font-size:12px;color:var(--txt3);}
+footer a{color:var(--acc);text-decoration:none;font-size:12px;}
+footer a:hover{text-decoration:underline;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  main{padding:72px 14px 50px;}
+  .hero{padding:40px 10px 28px;}
+  .toc-list{grid-template-columns:1fr 1fr;}
+  .formulas-grid{grid-template-columns:1fr;}
+  .cards-grid{grid-template-columns:1fr;}
+  .exp-params{gap:8px;}
+  .demo-vals{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:480px){
+  .toc-list{grid-template-columns:1fr;}
+  .demo-vals{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="hdr-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-text">⚗️ SimLab</span>
+    </a>
+    <span class="guide-badge">📖 Guide Interactif</span>
+    <div class="hdr-spacer"></div>
+    <a class="btn-hdr btn-back" href="index.html">← Retour</a>
+    <a class="btn-hdr btn-sim" href="circuit-rc-simlab.html">🚀 Lancer la Simulation</a>
+  </div>
+</header>
+
+<!-- SCROLL TO TOP -->
+<div id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</div>
+
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <h1>Guide du Circuit RC</h1>
+    <p>Comprends la charge et la décharge d'un condensateur, maîtrise les formules essentielles et explore la simulation interactive.</p>
+    <div class="hero-tags">
+      <span class="tag">⚡ Électricité</span>
+      <span class="tag">📐 Physique Terminale</span>
+      <span class="tag">🎓 Niveau Lycée / BTS</span>
+      <span class="tag">🇧🇯 Programme Bénin</span>
+    </div>
+  </div>
+
+  <!-- TABLE DES MATIÈRES -->
+  <div class="toc">
+    <h2>📋 Table des matières</h2>
+    <div class="toc-list">
+      <a class="toc-item" href="#s1"><span class="toc-num">1</span>Introduction</a>
+      <a class="toc-item" href="#s2"><span class="toc-num">2</span>Types et cas</a>
+      <a class="toc-item" href="#s3"><span class="toc-num">3</span>Formules essentielles</a>
+      <a class="toc-item" href="#s4"><span class="toc-num">4</span>Utiliser la simulation</a>
+      <a class="toc-item" href="#s5"><span class="toc-num">5</span>Démo interactive</a>
+      <a class="toc-item" href="#s6"><span class="toc-num">6</span>Expériences guidées</a>
+      <a class="toc-item" href="#s7"><span class="toc-num">7</span>Quiz de vérification</a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 1 — INTRODUCTION
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <h2 class="section-title">Introduction — Qu'est-ce qu'un circuit RC ?</h2>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="info-box">
+      <span class="info-icon">💡</span>
+      <span>Un circuit RC est un circuit électrique composé d'une <strong>résistance R</strong> et d'un <strong>condensateur C</strong> branchés en série avec une source de tension E.</span>
+    </div>
+
+    <div class="cards-grid">
+      <div class="card bl-blue">
+        <h3>⚡ Le Condensateur</h3>
+        <p>Un condensateur est un composant capable de stocker de l'énergie électrique sous forme de champ électrostatique entre deux plaques conductrices séparées par un isolant (diélectrique). Sa capacité C se mesure en Farad (F).</p>
+      </div>
+      <div class="card bl-yellow">
+        <h3>🔌 La Résistance</h3>
+        <p>La résistance R limite le courant qui circule dans le circuit. Elle contrôle la vitesse à laquelle le condensateur se charge ou se décharge. Plus R est grande, plus le processus est lent. Unité : Ohm (Ω).</p>
+      </div>
+      <div class="card bl-green">
+        <h3>🔋 La Source E</h3>
+        <p>La source de tension E (générateur, pile) fournit l'énergie nécessaire à la charge du condensateur. La différence de potentiel E détermine la tension maximale que peut atteindre UC. Unité : Volt (V).</p>
+      </div>
+    </div>
+
+    <div class="card bl-orange" style="margin-top:0;">
+      <h3>🌍 Pourquoi étudier le circuit RC ?</h3>
+      <p>Le circuit RC est fondamental en physique et en électronique. Il est utilisé dans les filtres de signal, les minuteries électroniques, les flash d'appareils photo, les systèmes audio, et même dans la modélisation de certains phénomènes biologiques. Comprendre son fonctionnement est indispensable pour tout étudiant en sciences physiques ou en électronique.</p>
+    </div>
+  </section>
+
+  <!-- NATIVE AD -->
+  <div class="ad-wrap">
+    <div id="container-ced9d6bd01657bda6021abb1c5919291"></div>
+    <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 2 — TYPES ET CAS
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <h2 class="section-title">Types et cas possibles</h2>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Cas</th>
+            <th>Condition initiale</th>
+            <th>Evolution de UC</th>
+            <th>Evolution de i</th>
+            <th>Régime final</th>
+            <th>Application</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong style="color:#00e5ff">Charge</strong></td>
+            <td>UC(0) = 0 V</td>
+            <td>0 → E <span class="badge badge-grn">↑ croissant</span></td>
+            <td>E/R → 0 <span class="badge badge-red">↓ décroissant</span></td>
+            <td>UC = E, i = 0</td>
+            <td>Chargeur de batterie</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#ffd740">Décharge</strong></td>
+            <td>UC(0) = E</td>
+            <td>E → 0 <span class="badge badge-red">↓ décroissant</span></td>
+            <td>−E/R → 0 <span class="badge badge-grn">↑ croissant</span></td>
+            <td>UC = 0, i = 0</td>
+            <td>Flash photo</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#00ff88">Régime permanent</strong></td>
+            <td>t ≥ 5τ</td>
+            <td>UC ≈ E (stable)</td>
+            <td>i ≈ 0</td>
+            <td>Condensateur plein</td>
+            <td>Filtre de tension</td>
+          </tr>
+          <tr>
+            <td><strong style="color:#ff9500">Transitoire</strong></td>
+            <td>0 &lt; t &lt; 5τ</td>
+            <td>Variation exponentielle</td>
+            <td>Variation exponentielle</td>
+            <td>En cours d'évolution</td>
+            <td>Minuterie RC</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cards-grid" style="margin-top:16px;">
+      <div class="card bl-blue">
+        <h3>📍 Instant t = 0</h3>
+        <p>Au début de la charge, le condensateur se comporte comme un <strong>court-circuit</strong> : UC = 0, i = E/R (courant maximal). Au début de la décharge, UC = E, i = −E/R.</p>
+      </div>
+      <div class="card bl-green">
+        <h3>📍 Instant t = τ</h3>
+        <p>À t = τ (une constante de temps), UC atteint <strong>63,2% de E</strong> en charge ou <strong>36,8% de E</strong> en décharge. C'est le point caractéristique pour mesurer τ expérimentalement.</p>
+      </div>
+      <div class="card bl-yellow">
+        <h3>📍 Instant t = 5τ</h3>
+        <p>À t = 5τ, on considère que le régime permanent est atteint : UC ≈ 99,3% de E en charge. Le courant est pratiquement nul. Le condensateur est considéré comme <strong>pleinement chargé</strong>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 3 — FORMULES
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <h2 class="section-title">Formules essentielles</h2>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="formulas-grid">
+      <div class="formula-box">
+        <div class="fname">Constante de temps τ</div>
+        <div class="fexpr">τ = R × C</div>
+        <div class="fdesc">τ (tau) est la durée caractéristique du circuit RC. Elle détermine la rapidité de charge ou de décharge. Plus τ est grand, plus le phénomène est lent.</div>
+        <div class="fvars"><span class="fvar">τ en secondes (s)</span><span class="fvar">R en Ohms (Ω)</span><span class="fvar">C en Farads (F)</span></div>
+      </div>
+
+      <div class="formula-box">
+        <div class="fname">Tension UC — Charge</div>
+        <div class="fexpr">UC(t) = E × (1 − e^(−t/τ))</div>
+        <div class="fdesc">La tension aux bornes du condensateur croît exponentiellement depuis 0 jusqu'à E. À t=0 : UC=0. À t=τ : UC=0,632×E. À t=∞ : UC=E.</div>
+        <div class="fvars"><span class="fvar">e ≈ 2,718</span><span class="fvar">E = tension source</span></div>
+      </div>
+
+      <div class="formula-box">
+        <div class="fname">Tension UC — Décharge</div>
+        <div class="fexpr">UC(t) = E × e^(−t/τ)</div>
+        <div class="fdesc">La tension décroît exponentiellement depuis E vers 0. À t=0 : UC=E. À t=τ : UC=0,368×E. À t=5τ : UC≈0 (régime permanent).</div>
+        <div class="fvars"><span class="fvar">Condensateur préchargé à E</span></div>
+      </div>
+
+      <div class="formula-box">
+        <div class="fname">Courant i(t)</div>
+        <div class="fexpr">i(t) = (E/R) × e^(−t/τ)</div>
+        <div class="fdesc">Le courant décroît exponentiellement dès t=0. À t=0 : i=E/R (maximum). À t=τ : i=0,368×(E/R). En décharge, le courant est négatif (sens inverse).</div>
+        <div class="fvars"><span class="fvar">i en Ampères (A)</span><span class="fvar">E/R = courant initial</span></div>
+      </div>
+
+      <div class="formula-box">
+        <div class="fname">Charge électrique q</div>
+        <div class="fexpr">q(t) = C × UC(t)</div>
+        <div class="fdesc">La charge stockée dans le condensateur est proportionnelle à la tension UC. Charge maximale : q_max = C × E. Unité : Coulomb (C).</div>
+        <div class="fvars"><span class="fvar">q en Coulombs (C)</span><span class="fvar">q_max = C × E</span></div>
+      </div>
+
+      <div class="formula-box">
+        <div class="fname">Energie stockée W</div>
+        <div class="fexpr">W = ½ × C × UC²</div>
+        <div class="fdesc">L'énergie emmagasinée dans le condensateur sous forme électrostatique. Elle est maximale quand UC=E : W_max = ½×C×E². Pendant la décharge, cette énergie se dissipe en chaleur dans R.</div>
+        <div class="fvars"><span class="fvar">W en Joules (J)</span><span class="fvar">W_max = ½CE²</span></div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <span class="info-icon">⚠️</span>
+      <span><strong>Loi des mailles :</strong> À tout instant, UC + UR = E. La tension se partage entre le condensateur et la résistance. Quand UC = E, UR = 0 et le courant est nul.</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 4 — COMMENT UTILISER LA SIMULATION
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <h2 class="section-title">Comment utiliser la simulation</h2>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>🔧 Régler les paramètres du circuit</h4>
+          <p>Dans l'onglet <strong>⚙️ Paramètres</strong>, ajustez la tension E (1 à 20 V), la résistance R (1 à 100 kΩ) et la capacité C (1 à 1000 µF) avec les sliders. Chaque modification recalcule automatiquement τ = R × C.</p>
+          <div class="step-tip">💡 Commencez avec E=9V, R=10kΩ, C=100µF → τ = 1 seconde, facile à observer !</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>▶️ Lancer la simulation</h4>
+          <p>Cliquez sur <strong>▶ Lancer</strong> pour démarrer. La simulation se stoppe automatiquement à t = 10τ (régime permanent). Utilisez <strong>⏸ Pause</strong> pour figer l'image à n'importe quel instant et lire les valeurs exactes.</p>
+          <div class="step-tip">💡 Le slider Vitesse (0.1× à 5×) permet d'accélérer ou ralentir l'animation.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>📊 Lire les mesures en temps réel</h4>
+          <p>L'onglet <strong>📐 Mesures</strong> affiche UC, UR, i, q, t, t/τ, W et UC/E en pourcentage — mis à jour à chaque image. Utilisez le tooltip en survolant le graphe pour lire la valeur exacte à un instant t précis.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>🔄 Tester le mode décharge</h4>
+          <p>Cochez <strong>"Mode décharge"</strong> pour partir avec le condensateur préchargé à E. La courbe UC(t) commence en haut et descend exponentiellement vers 0. Comparez les deux modes pour bien visualiser la symétrie des lois.</p>
+          <div class="step-tip">💡 Le point τ est marqué d'un cercle doré sur le graphe : UC = 36,8%×E en décharge.</div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h4>🎨 Explorer la vue 3D</h4>
+          <p>Cliquez sur le bouton <strong>"3D"</strong> dans le header pour basculer vers une vue tridimensionnelle du circuit PCB avec composants réalistes, électrons animés et courbe 3D. Glissez pour orbiter, molette pour zoomer.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">6</div>
+        <div class="step-body">
+          <h4>📄 Exporter le rapport TP</h4>
+          <p>Dans l'onglet <strong>📄 TP</strong>, cliquez sur <strong>💾 Exporter TXT</strong> pour télécharger un rapport complet avec tous les paramètres, formules et valeurs mesurées. Utile pour rédiger votre compte rendu de TP.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 5 — DÉMO INTERACTIVE
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <h2 class="section-title">Démo interactive</h2>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="demo-wrap">
+      <div class="demo-controls">
+        <button class="demo-btn active" id="dBtn0" onclick="demoMode(0)">⚡ Charge rapide</button>
+        <button class="demo-btn" id="dBtn1" onclick="demoMode(1)">🐢 Charge lente</button>
+        <button class="demo-btn" id="dBtn2" onclick="demoMode(2)">🔋 Décharge</button>
+        <button class="demo-btn" id="dBtn3" onclick="demoMode(3)">📊 Comparaison</button>
+      </div>
+      <canvas id="demoCanvas" height="200"></canvas>
+      <div class="demo-legend">
+        <div class="demo-leg-item"><div class="demo-leg-dot" style="background:#00e5ff"></div> UC(t)</div>
+        <div class="demo-leg-item"><div class="demo-leg-dot" style="background:#ffd740"></div> UR(t)</div>
+        <div class="demo-leg-item"><div class="demo-leg-dot" style="background:#00ff88"></div> i(t) norm.</div>
+        <div class="demo-leg-item" id="dLeg3" style="display:none"><div class="demo-leg-dot" style="background:#ff9500"></div> UC décharge</div>
+      </div>
+      <div class="demo-vals">
+        <div class="demo-val"><div class="dv-label">τ (s)</div><div class="dv-num" id="dvTau">1.000</div></div>
+        <div class="demo-val"><div class="dv-label">UC (V)</div><div class="dv-num" id="dvUC">0.000</div></div>
+        <div class="demo-val"><div class="dv-label">i (mA)</div><div class="dv-num" id="dvI">0.000</div></div>
+        <div class="demo-val"><div class="dv-label">t (s)</div><div class="dv-num" id="dvT">0.000</div></div>
+        <div class="demo-val"><div class="dv-label">t/τ</div><div class="dv-num" id="dvRatio">0.000</div></div>
+        <div class="demo-val"><div class="dv-label">UC/E (%)</div><div class="dv-num" id="dvPct">0.0</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 6 — EXPÉRIENCES
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s6">
+    <div class="section-header">
+      <div class="section-num">6</div>
+      <h2 class="section-title">Expériences à réaliser</h2>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="exp-card">
+      <div class="exp-num">🔬 Expérience 1</div>
+      <h3>Mesure de la constante de temps τ</h3>
+      <p>Objectif : déterminer expérimentalement τ en repérant l'instant où UC atteint 63,2% de E pendant la charge.</p>
+      <div class="exp-params">
+        <div class="exp-param"><span class="ep-key">Tension E</span><span class="ep-val">9 V</span></div>
+        <div class="exp-param"><span class="ep-key">Résistance R</span><span class="ep-val">10 kΩ</span></div>
+        <div class="exp-param"><span class="ep-key">Capacité C</span><span class="ep-val">100 µF</span></div>
+        <div class="exp-param"><span class="ep-key">τ théorique</span><span class="ep-val">1,000 s</span></div>
+        <div class="exp-param"><span class="ep-key">UC à t=τ</span><span class="ep-val">5,688 V</span></div>
+      </div>
+      <div class="exp-result">
+        <strong>Résultat attendu :</strong> Pause la simulation quand UC ≈ 5,69 V. La valeur de t affichée dans l'onglet Mesures doit être ≈ 1,000 s. Vérifiez que t/τ ≈ 1,000.
+      </div>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-num">🔬 Expérience 2</div>
+      <h3>Influence de R sur la vitesse de charge</h3>
+      <p>Objectif : observer comment doubler R double τ et ralentit donc la charge du condensateur.</p>
+      <div class="exp-params">
+        <div class="exp-param"><span class="ep-key">Tension E</span><span class="ep-val">9 V</span></div>
+        <div class="exp-param"><span class="ep-key">R test 1</span><span class="ep-val">10 kΩ → τ=1s</span></div>
+        <div class="exp-param"><span class="ep-key">R test 2</span><span class="ep-val">20 kΩ → τ=2s</span></div>
+        <div class="exp-param"><span class="ep-key">Capacité C</span><span class="ep-val">100 µF</span></div>
+      </div>
+      <div class="exp-result">
+        <strong>Résultat attendu :</strong> Avec R=20kΩ, le condensateur met 2× plus longtemps à atteindre 63,2%×E. Le graphe est "étiré" horizontalement. Conclusion : τ est proportionnel à R.
+      </div>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-num">🔬 Expérience 3</div>
+      <h3>Vérification de la loi des mailles UC + UR = E</h3>
+      <p>Objectif : vérifier à tout instant que la somme des tensions UC et UR est égale à la tension source E.</p>
+      <div class="exp-params">
+        <div class="exp-param"><span class="ep-key">Tension E</span><span class="ep-val">12 V</span></div>
+        <div class="exp-param"><span class="ep-key">Résistance R</span><span class="ep-val">50 kΩ</span></div>
+        <div class="exp-param"><span class="ep-key">Capacité C</span><span class="ep-val">200 µF</span></div>
+        <div class="exp-param"><span class="ep-key">τ</span><span class="ep-val">10,000 s</span></div>
+      </div>
+      <div class="exp-result">
+        <strong>Résultat attendu :</strong> À n'importe quel instant t, l'onglet Résultats affiche UC+UR = 12,00 V. Le badge de vérification TP le confirme. Loi des mailles toujours vérifiée.
+      </div>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-num">🔬 Expérience 4</div>
+      <h3>Comparaison charge / décharge — symétrie temporelle</h3>
+      <p>Objectif : observer que la charge et la décharge suivent des lois symétriques avec la même constante de temps τ.</p>
+      <div class="exp-params">
+        <div class="exp-param"><span class="ep-key">Tension E</span><span class="ep-val">9 V</span></div>
+        <div class="exp-param"><span class="ep-key">Résistance R</span><span class="ep-val">10 kΩ</span></div>
+        <div class="exp-param"><span class="ep-key">Capacité C</span><span class="ep-val">100 µF</span></div>
+        <div class="exp-param"><span class="ep-key">Mode 1</span><span class="ep-val">Charge</span></div>
+        <div class="exp-param"><span class="ep-key">Mode 2</span><span class="ep-val">Décharge</span></div>
+      </div>
+      <div class="exp-result">
+        <strong>Résultat attendu :</strong> Dans les deux cas, τ = 1s. En charge UC monte de 0 à E. En décharge UC descend de E à 0. Les deux courbes sont "miroirs" l'une de l'autre par rapport à la droite UC = E/2.
+      </div>
+    </div>
+  </section>
+
+  <!-- NATIVE AD 2 -->
+  <div class="ad-wrap">
+    <div id="container-ced9d6bd01657bda6021abb1c5919291b"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       SECTION 7 — QUIZ
+  ═══════════════════════════════════════════════ -->
+  <section class="section" id="s7">
+    <div class="section-header">
+      <div class="section-num">7</div>
+      <h2 class="section-title">Quiz de vérification</h2>
+    </div>
+    <div class="section-divider"></div>
+
+    <div class="info-box">
+      <span class="info-icon">🎯</span>
+      <span>Réponds aux 4 questions pour vérifier ta compréhension du circuit RC. Chaque bonne réponse = 1 point. Score affiché à la fin !</span>
+    </div>
+
+    <!-- Q1 -->
+    <div class="quiz-card" id="q1-card">
+      <div class="quiz-q">❓ Question 1 — Quelle est la valeur de UC à t = τ lors d'une charge (avec UC(0) = 0) ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="quizAns(1,this,false)">a) UC = E (tension maximale)</button>
+        <button class="quiz-opt" onclick="quizAns(1,this,false)">b) UC = 0,5 × E (moitié de E)</button>
+        <button class="quiz-opt" onclick="quizAns(1,this,true)">c) UC ≈ 0,632 × E (63,2% de E)</button>
+        <button class="quiz-opt" onclick="quizAns(1,this,false)">d) UC = 0,368 × E (36,8% de E)</button>
+      </div>
+      <div class="quiz-feedback" id="q1-fb"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="quiz-card" id="q2-card">
+      <div class="quiz-q">❓ Question 2 — Si R = 20 kΩ et C = 500 µF, quelle est la valeur de τ ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="quizAns(2,this,false)">a) τ = 0,04 s</button>
+        <button class="quiz-opt" onclick="quizAns(2,this,false)">b) τ = 4 s</button>
+        <button class="quiz-opt" onclick="quizAns(2,this,true)">c) τ = 10 s</button>
+        <button class="quiz-opt" onclick="quizAns(2,this,false)">d) τ = 100 s</button>
+      </div>
+      <div class="quiz-feedback" id="q2-fb"></div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="quiz-card" id="q3-card">
+      <div class="quiz-q">❓ Question 3 — Quelle relation est TOUJOURS vraie dans un circuit RC série ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="quizAns(3,this,false)">a) UC = UR à tout instant</button>
+        <button class="quiz-opt" onclick="quizAns(3,this,true)">b) UC + UR = E à tout instant</button>
+        <button class="quiz-opt" onclick="quizAns(3,this,false)">c) UC × UR = E² à tout instant</button>
+        <button class="quiz-opt" onclick="quizAns(3,this,false)">d) UC − UR = 0 à tout instant</button>
+      </div>
+      <div class="quiz-feedback" id="q3-fb"></div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="quiz-card" id="q4-card">
+      <div class="quiz-q">❓ Question 4 — Quelle est l'expression de l'énergie stockée dans un condensateur de capacité C chargé à la tension UC ?</div>
+      <div class="quiz-opts">
+        <button class="quiz-opt" onclick="quizAns(4,this,false)">a) W = C × UC</button>
+        <button class="quiz-opt" onclick="quizAns(4,this,false)">b) W = C² × UC</button>
+        <button class="quiz-opt" onclick="quizAns(4,this,true)">c) W = ½ × C × UC²</button>
+        <button class="quiz-opt" onclick="quizAns(4,this,false)">d) W = 2 × C × UC²</button>
+      </div>
+      <div class="quiz-feedback" id="q4-fb"></div>
+    </div>
+
+    <div id="quiz-score">
+      <span class="score-emoji" id="scoreEmoji">🎉</span>
+      <h3 id="scoreTitle">Résultat</h3>
+      <div class="score-num" id="scoreNum">0/4</div>
+      <p id="scoreMsg">—</p>
+      <button class="btn-quiz-reset" onclick="quizReset()">🔄 Recommencer le quiz</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p style="margin-bottom:8px;">⚗️ <strong style="color:#00e5ff;">SimLab</strong> — Simulations interactives de physique</p>
+  <p>Conçu pour les étudiants de lycée et université du Bénin et d'Afrique francophone.</p>
+  <p style="margin-top:10px;"><a href="politique-confidentialite.html">Politique de Confidentialité</a></p>
+</footer>
+
+<!-- SOCIAL BAR ADSTERRA -->
+<script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+
+<script>
+'use strict';
+
+// ══ PROGRESS BAR ══════════════════════════════════════════════
+var bar = document.getElementById('progress-bar');
+var scrollBtn = document.getElementById('scrolltop');
+window.addEventListener('scroll', function() {
+  var scrolled = window.scrollY;
+  var total = document.body.scrollHeight - window.innerHeight;
+  if (total > 0) bar.style.width = (scrolled / total * 100) + '%';
+  scrollBtn.classList.toggle('show', scrolled > 300);
+});
+
+// ══ DEMO CANVAS ═══════════════════════════════════════════════
+var dc = document.getElementById('demoCanvas');
+var dctx = dc.getContext('2d');
+var dMode = 0;
+var dTime = 0;
+var dRaf = null;
+var dLastTs = null;
+var dRunning = true;
+
+var dConfigs = [
+  {E:9, R:10000, C:100e-6, label:'Charge rapide τ=1s', discharge:false},
+  {E:9, R:50000, C:200e-6, label:'Charge lente τ=10s', discharge:false},
+  {E:9, R:10000, C:100e-6, label:'Decharge τ=1s', discharge:true},
+  {E:9, R:10000, C:100e-6, label:'Comparaison charge vs decharge', discharge:false}
+];
+
+function dTau(cfg) { return cfg.R * cfg.C; }
+function dUC(cfg, t) {
+  var T = dTau(cfg);
+  if (T <= 0) return 0;
+  return cfg.discharge ? cfg.E * Math.exp(-t/T) : cfg.E * (1 - Math.exp(-t/T));
+}
+function dI(cfg, t) {
+  var T = dTau(cfg);
+  if (T <= 0 || cfg.R <= 0) return 0;
+  var base = (cfg.E / cfg.R) * Math.exp(-t/T);
+  return cfg.discharge ? -base : base;
+}
+
+function resizeDemo() {
+  dc.width = dc.offsetWidth;
+  dc.height = 200;
+}
+
+function demoMode(m) {
+  dMode = m;
+  dTime = 0;
+  dLastTs = null;
+  document.querySelectorAll('.demo-btn').forEach(function(b,i){ b.classList.toggle('active', i===m); });
+  document.getElementById('dLeg3').style.display = m===3 ? 'flex' : 'none';
+  if (!dRunning) { dRunning=true; dRaf=requestAnimationFrame(demoLoop); }
+}
+
+function demoLoop(ts) {
+  if (!dLastTs) dLastTs = ts;
+  var dt = Math.min((ts - dLastTs)/1000, 0.05) * 1.2;
+  dLastTs = ts;
+  var cfg = dConfigs[dMode];
+  var T = dTau(cfg);
+  dTime += dt;
+  if (dTime > 9 * T) { dTime = 0; dLastTs = null; }
+  drawDemo();
+  dRaf = requestAnimationFrame(demoLoop);
+}
+
+function drawDemo() {
+  var W = dc.width, H = dc.height;
+  if (!W || !H) return;
+  var cfg = dConfigs[dMode];
+  var T = dTau(cfg);
+  var tMax = Math.max(8*T, 0.001);
+  var E = cfg.E;
+
+  dctx.clearRect(0,0,W,H);
+  var bg = dctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#04080f'); bg.addColorStop(1,'#06101a');
+  dctx.fillStyle=bg; dctx.fillRect(0,0,W,H);
+
+  // Grille légère
+  dctx.strokeStyle='rgba(0,229,255,0.03)'; dctx.lineWidth=1;
+  for (var gx=0; gx<W; gx+=30){ dctx.beginPath(); dctx.moveTo(gx,0); dctx.lineTo(gx,H); dctx.stroke(); }
+  for (var gy=0; gy<H; gy+=30){ dctx.beginPath(); dctx.moveTo(0,gy); dctx.lineTo(W,gy); dctx.stroke(); }
+
+  var ax=44, aBot=H-26, aTop=12, aw=W-54, ah=aBot-aTop;
+
+  // Axes
+  dctx.strokeStyle='rgba(0,229,255,0.25)'; dctx.lineWidth=1;
+  dctx.beginPath(); dctx.moveTo(ax,aBot); dctx.lineTo(ax+aw,aBot); dctx.stroke();
+  dctx.beginPath(); dctx.moveTo(ax,aTop); dctx.lineTo(ax,aBot); dctx.stroke();
+
+  // Labels Y
+  dctx.fillStyle='rgba(0,229,255,0.45)'; dctx.font='7px JetBrains Mono'; dctx.textAlign='right';
+  for (var v=0; v<=E; v+=E/4){
+    var yg=aBot-(v/E)*ah;
+    dctx.fillText(v.toFixed(1), ax-3, yg+3);
+    dctx.strokeStyle='rgba(0,229,255,0.05)'; dctx.lineWidth=0.5;
+    dctx.beginPath(); dctx.moveTo(ax,yg); dctx.lineTo(ax+aw,yg); dctx.stroke();
+  }
+
+  // Label X et tau marks
+  dctx.textAlign='center'; dctx.fillStyle='rgba(0,229,255,0.4)'; dctx.font='7px JetBrains Mono';
+  for (var k=1; k<=8; k++){
+    var xg=ax+(k*T/tMax)*aw;
+    if(xg>ax+aw) break;
+    dctx.fillText(k+'t', xg, aBot+13);
+    dctx.strokeStyle='rgba(0,229,255,0.05)'; dctx.lineWidth=0.5;
+    dctx.beginPath(); dctx.moveTo(xg,aTop); dctx.lineTo(xg,aBot); dctx.stroke();
+  }
+
+  // Courbe UC
+  dctx.save();
+  dctx.beginPath(); dctx.rect(ax,aTop,aw,ah); dctx.clip();
+
+  dctx.beginPath(); dctx.strokeStyle='#00e5ff'; dctx.lineWidth=2;
+  dctx.shadowColor='#00e5ff'; dctx.shadowBlur=4;
+  for (var px=0; px<=aw; px+=2){
+    var tt=(px/aw)*tMax, uc2=dUC(cfg,tt), py=aBot-(uc2/E)*ah;
+    if(px===0) dctx.moveTo(ax+px,py); else dctx.lineTo(ax+px,py);
+  }
+  dctx.stroke(); dctx.shadowBlur=0;
+
+  // Courbe UR
+  dctx.beginPath(); dctx.strokeStyle='#ffd740'; dctx.lineWidth=1.5;
+  for (var px2=0; px2<=aw; px2+=2){
+    var tt2=(px2/aw)*tMax, uc3=dUC(cfg,tt2);
+    var urv=cfg.discharge?uc3:E-uc3, py2=aBot-(Math.abs(urv)/E)*ah;
+    if(px2===0) dctx.moveTo(ax+px2,py2); else dctx.lineTo(ax+px2,py2);
+  }
+  dctx.stroke();
+
+  // Courbe i norm
+  var iMax=E/cfg.R;
+  dctx.beginPath(); dctx.strokeStyle='#00ff88'; dctx.lineWidth=1.5;
+  for (var px3=0; px3<=aw; px3+=2){
+    var tt3=(px3/aw)*tMax, iv=iMax>0?Math.abs(dI(cfg,tt3))/iMax:0, py3=aBot-iv*ah;
+    if(px3===0) dctx.moveTo(ax+px3,py3); else dctx.lineTo(ax+px3,py3);
+  }
+  dctx.stroke();
+
+  // Mode comparaison : courbe décharge en orange
+  if (dMode===3){
+    var cfgD={E:9,R:10000,C:100e-6,discharge:true};
+    dctx.beginPath(); dctx.strokeStyle='#ff9500'; dctx.lineWidth=1.5; dctx.setLineDash([4,3]);
+    for (var px4=0; px4<=aw; px4+=2){
+      var tt4=(px4/aw)*tMax, uc4=dUC(cfgD,tt4), py4=aBot-(uc4/E)*ah;
+      if(px4===0) dctx.moveTo(ax+px4,py4); else dctx.lineTo(ax+px4,py4);
+    }
+    dctx.stroke(); dctx.setLineDash([]);
+  }
+
+  // Ligne temps courant
+  var txLine = ax + (dTime/tMax)*aw;
+  if (txLine >= ax && txLine <= ax+aw){
+    dctx.strokeStyle='rgba(255,255,255,0.5)'; dctx.lineWidth=1; dctx.setLineDash([3,3]);
+    dctx.beginPath(); dctx.moveTo(txLine,aTop); dctx.lineTo(txLine,aBot); dctx.stroke(); dctx.setLineDash([]);
+    // Point UC actuel
+    var ucNow=dUC(cfg,dTime), pyNow=aBot-(ucNow/E)*ah;
+    dctx.beginPath(); dctx.arc(txLine,pyNow,5,0,Math.PI*2);
+    dctx.fillStyle='#00e5ff'; dctx.fill();
+    dctx.strokeStyle='#fff'; dctx.lineWidth=1.5; dctx.stroke();
+  }
+  dctx.restore();
+
+  // Label config
+  dctx.fillStyle='rgba(255,255,255,0.45)'; dctx.font='8px Outfit'; dctx.textAlign='center';
+  dctx.fillText(cfg.label, ax+aw/2, aTop+8);
+
+  // Tau marker sur axe
+  var tauX = ax + (T/tMax)*aw;
+  if (tauX <= ax+aw){
+    dctx.strokeStyle='rgba(255,215,64,0.4)'; dctx.lineWidth=1; dctx.setLineDash([2,3]);
+    dctx.beginPath(); dctx.moveTo(tauX,aTop); dctx.lineTo(tauX,aBot); dctx.stroke(); dctx.setLineDash([]);
+    dctx.fillStyle='#ffd740'; dctx.font='8px JetBrains Mono'; dctx.textAlign='left';
+    dctx.fillText('t', tauX+3, aTop+12);
+  }
+
+  // Valeurs affichées
+  var ucNow2=dUC(cfg,dTime), iNow=dI(cfg,dTime);
+  document.getElementById('dvTau').textContent = T.toFixed(3);
+  document.getElementById('dvUC').textContent  = ucNow2.toFixed(3);
+  document.getElementById('dvI').textContent   = (Math.abs(iNow)*1000).toFixed(3);
+  document.getElementById('dvT').textContent   = dTime.toFixed(3);
+  document.getElementById('dvRatio').textContent= T>0?(dTime/T).toFixed(3):'0.000';
+  document.getElementById('dvPct').textContent  = E>0?(ucNow2/E*100).toFixed(1):'0.0';
+}
+
+window.addEventListener('resize', function(){
+  resizeDemo();
+  if (dMode!==undefined) drawDemo();
+});
+resizeDemo();
+dRaf = requestAnimationFrame(demoLoop);
+
+// ══ QUIZ ══════════════════════════════════════════════════════
+var quizAnswers = {1:null, 2:null, 3:null, 4:null};
+var quizDone = false;
+
+function quizAns(q, btn, correct) {
+  if (quizAnswers[q] !== null) return;
+  quizAnswers[q] = correct;
+  var opts = btn.parentElement.querySelectorAll('.quiz-opt');
+  opts.forEach(function(o){ o.disabled=true; });
+  var fb = document.getElementById('q'+q+'-fb');
+  fb.classList.add('show');
+  if (correct) {
+    btn.classList.add('correct');
+    fb.className='quiz-feedback show ok';
+    var msgs = {
+      1:'✅ Exactement ! À t=τ, UC=E×(1−e⁻¹) = E×0,632. C\'est le point clé pour mesurer τ expérimentalement.',
+      2:'✅ Correct ! τ = R×C = 20 000 × 500×10⁻⁶ = 10 s. Bien calculé !',
+      3:'✅ Bravo ! La loi des mailles stipule UC+UR=E à tout instant. C\'est la loi fondamentale.',
+      4:'✅ Parfait ! W=½×C×UC². L\'énergie est proportionnelle au carré de la tension.'
+    };
+    fb.textContent = msgs[q];
+  } else {
+    btn.classList.add('wrong');
+    fb.className='quiz-feedback show ko';
+    var bad = {
+      1:'❌ Non. UC=0,5E n\'a pas de signification particulière. À t=τ : UC=63,2%×E. En décharge : UC=36,8%×E.',
+      2:'❌ Attention ! τ=R×C=20 000Ω × 500×10⁻⁶F = 10 s. Pensez à convertir les unités correctement.',
+      3:'❌ Ce n\'est pas ça. La bonne relation est UC+UR=E (loi des mailles de Kirchhoff).',
+      4:'❌ Non. La bonne formule est W=½×C×UC². Le facteur ½ est essentiel !'
+    };
+    fb.textContent = bad[q];
+    // Montrer la bonne réponse
+    opts.forEach(function(o){
+      if (o.getAttribute('onclick').indexOf('true') !== -1) o.classList.add('correct');
+    });
+  }
+
+  // Vérifier si toutes les questions sont répondues
+  var allDone = quizAnswers[1]!==null && quizAnswers[2]!==null && quizAnswers[3]!==null && quizAnswers[4]!==null;
+  if (allDone) setTimeout(showScore, 600);
+}
+
+function showScore() {
+  var score = 0;
+  for (var i=1; i<=4; i++) if (quizAnswers[i]===true) score++;
+  var scoreEl = document.getElementById('quiz-score');
+  scoreEl.style.display='block';
+  document.getElementById('scoreNum').textContent = score+'/4';
+  var emojis = ['😔','🤔','👍','🎉','🏆'];
+  var msgs   = [
+    'Continue à étudier, relis les formules et la section Lois !',
+    'Pas mal, mais quelques notions à revoir. Retente ta chance !',
+    'Bien ! Tu maîtrises la moitié. Revois les formules.',
+    'Très bien ! Tu as presque tout compris. Parfait !',
+    'Excellent ! Tu maîtrises parfaitement le circuit RC !'
+  ];
+  document.getElementById('scoreEmoji').textContent = emojis[score];
+  document.getElementById('scoreTitle').textContent = score===4 ? 'Score parfait !' : score>=3 ? 'Très bien !' : score>=2 ? 'Bien !' : 'À revoir';
+  document.getElementById('scoreMsg').textContent = msgs[score];
+  scoreEl.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function quizReset() {
+  quizAnswers = {1:null, 2:null, 3:null, 4:null};
+  for (var i=1; i<=4; i++){
+    var opts = document.querySelectorAll('#q'+i+'-card .quiz-opt');
+    opts.forEach(function(o){
+      o.disabled=false;
+      o.classList.remove('correct','wrong');
+    });
+    var fb = document.getElementById('q'+i+'-fb');
+    fb.className='quiz-feedback'; fb.textContent='';
+  }
+  document.getElementById('quiz-score').style.display='none';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚗️ SimLab — Circuit RC</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hh: 48px;
+  --ph: 185px;
+  --bg: #0a0e1a;
+  --s1: #111827;
+  --s2: #1a2540;
+  --acc: #00e5ff;
+  --grn: #00ff88;
+  --red: #ff4060;
+  --yel: #ffd740;
+  --txt: #e0e8f0;
+  --txt2: #8899aa;
+}
+@media(max-width:600px){:root{--hh:44px;--ph:178px;}}
+@media(max-width:380px){:root{--hh:42px;--ph:168px;}}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;overflow:hidden;height:100vh;}
+
+/* HEADER */
+#hdr{
+  position:fixed;top:0;left:0;right:0;height:var(--hh);
+  background:rgba(10,14,26,0.95);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(0,229,255,0.15);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 12px;z-index:100;gap:8px;
+}
+#hdr a{color:var(--acc);text-decoration:none;font-size:12px;font-weight:500;white-space:nowrap;padding:4px 8px;border:1px solid rgba(0,229,255,0.3);border-radius:6px;}
+#hdr h1{font-size:13px;font-weight:600;color:#fff;flex:1;text-align:center;letter-spacing:0.5px;}
+#logo{font-size:12px;font-weight:600;color:var(--acc);white-space:nowrap;}
+@media(max-width:600px){#logo{display:none;}}
+
+/* SIM ZONE */
+#sw{
+  position:fixed;
+  top:var(--hh);bottom:var(--ph);left:0;right:0;
+  overflow:hidden;
+}
+#cv{display:block;width:100%;height:100%;}
+
+/* PANEL BAS */
+#panel{
+  position:fixed;bottom:0;left:0;right:0;height:var(--ph);
+  background:var(--s1);border-top:1px solid rgba(0,229,255,0.15);
+  display:flex;flex-direction:column;z-index:100;
+}
+
+/* ONGLETS */
+#tabs{
+  display:flex;overflow-x:auto;border-bottom:1px solid rgba(0,229,255,0.1);
+  flex-shrink:0;
+  scrollbar-width:none;
+}
+#tabs::-webkit-scrollbar{display:none;}
+.tab{
+  flex:none;padding:6px 12px;font-size:10px;font-weight:500;
+  color:var(--txt2);cursor:pointer;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:all 0.2s;
+}
+.tab.active{color:var(--acc);border-bottom-color:var(--acc);}
+
+/* CONTENT */
+#tcont{flex:1;overflow-y:auto;padding:8px 10px;scrollbar-width:thin;scrollbar-color:rgba(0,229,255,0.2) transparent;}
+.tpanel{display:none;}
+.tpanel.active{display:block;}
+
+/* SLIDERS */
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.prow label{font-size:9px;color:var(--txt2);min-width:90px;flex-shrink:0;}
+.prow input[type=range]{
+  flex:1;height:4px;appearance:none;background:rgba(0,229,255,0.15);
+  border-radius:2px;outline:none;cursor:pointer;
+}
+.prow input[type=range]::-webkit-slider-thumb{
+  appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--acc);box-shadow:0 0 8px rgba(0,229,255,0.6);cursor:pointer;
+}
+.prow span{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);min-width:50px;text-align:right;}
+
+/* BOUTONS */
+.brow{display:flex;gap:6px;margin-top:8px;}
+.btn{
+  flex:1;padding:5px 0;border:none;border-radius:6px;font-size:11px;
+  font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'Outfit',sans-serif;
+}
+.btn-g{background:rgba(0,255,136,0.15);color:var(--grn);border:1px solid rgba(0,255,136,0.3);}
+.btn-g:hover{background:rgba(0,255,136,0.25);}
+.btn-r{background:rgba(255,64,96,0.15);color:var(--red);border:1px solid rgba(255,64,96,0.3);}
+.btn-r:hover{background:rgba(255,64,96,0.25);}
+.btn-b{background:rgba(0,229,255,0.1);color:var(--acc);border:1px solid rgba(0,229,255,0.2);}
+.btn-b:hover{background:rgba(0,229,255,0.2);}
+
+/* CARDS GRILLE */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.card{background:var(--s2);border-radius:8px;padding:8px 10px;border:1px solid rgba(0,229,255,0.08);}
+.card .clabel{font-size:9px;color:var(--txt2);margin-bottom:2px;}
+.card .cval{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--acc);font-weight:600;}
+.card .cunit{font-size:8px;color:var(--txt2);}
+
+/* LOI CARDS */
+.lcard{background:var(--s2);border-radius:8px;padding:9px 10px;margin-bottom:6px;border:1px solid rgba(255,215,64,0.1);}
+.lcard .lformule{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--yel);margin-bottom:4px;font-weight:600;}
+.lcard .lexpl{font-size:9px;color:var(--txt2);line-height:1.4;}
+
+/* VERIF */
+.vcard{background:var(--s2);border-radius:8px;padding:8px 10px;margin-bottom:5px;display:flex;align-items:center;gap:8px;border:1px solid rgba(0,229,255,0.08);}
+.vcard input[type=checkbox]{accent-color:var(--grn);width:14px;height:14px;flex-shrink:0;}
+.vcard .vtxt{font-size:9px;color:var(--txt2);flex:1;}
+.vcard .vbadge{font-family:'JetBrains Mono',monospace;font-size:9px;background:rgba(0,229,255,0.12);color:var(--acc);padding:2px 6px;border-radius:4px;white-space:nowrap;}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:calc(var(--ph) + 10px);left:50%;transform:translateX(-50%);
+  background:rgba(0,229,255,0.15);border:1px solid rgba(0,229,255,0.3);
+  color:var(--acc);padding:6px 14px;border-radius:20px;font-size:11px;
+  opacity:0;transition:opacity 0.3s;pointer-events:none;z-index:200;white-space:nowrap;
+}
+#toast.show{opacity:1;}
+
+/* TOOLTIP */
+#tip{
+  position:fixed;background:rgba(10,14,26,0.92);border:1px solid rgba(0,229,255,0.3);
+  border-radius:8px;padding:6px 10px;font-size:9px;color:var(--txt);
+  pointer-events:none;z-index:150;display:none;
+  font-family:'JetBrains Mono',monospace;line-height:1.5;
+}
+
+/* CHECKBOX */
+.crow{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.crow input[type=checkbox]{accent-color:var(--acc);width:14px;height:14px;}
+.crow label{font-size:9px;color:var(--txt2);}
+
+/* TP export */
+.tpcard{background:var(--s2);border-radius:8px;padding:10px;margin-bottom:6px;font-size:9px;color:var(--txt2);line-height:1.6;border:1px solid rgba(0,229,255,0.06);}
+.tpcard h3{font-size:10px;color:var(--acc);margin-bottom:5px;}
+
+/* Section title */
+.stitle{font-size:9px;color:var(--txt2);font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;margin-top:4px;}
+
+.sep{height:1px;background:rgba(0,229,255,0.07);margin:6px 0;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hdr">
+  <a href="index.html">← Retour</a>
+  <h1>Circuit RC — Charge & Décharge</h1>
+  <button id="btn3d" onclick="switchV()" style="background:rgba(0,229,255,0.1);color:var(--acc);border:1px solid rgba(0,229,255,0.3);border-radius:6px;padding:4px 9px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;white-space:nowrap;">3D</button>
+  <span id="logo">⚗️ SimLab</span>
+</header>
+
+<!-- ZONE SIMULATION -->
+<div id="sw"><canvas id="cv"></canvas></div>
+
+<!-- TOOLTIP -->
+<div id="tip"></div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- PANEL BAS -->
+<div id="panel">
+  <div id="tabs">
+    <div class="tab active" data-t="0">⚙️ Paramètres</div>
+    <div class="tab" data-t="1">📐 Mesures</div>
+    <div class="tab" data-t="2">📚 Lois</div>
+    <div class="tab" data-t="3">📄 TP</div>
+    <div class="tab" data-t="4">📊 Résultats</div>
+  </div>
+
+  <div id="tcont">
+    <!-- ONGLET 0 : PARAMÈTRES -->
+    <div class="tpanel active" id="tp0">
+      <div class="prow">
+        <label>Tension E (V)</label>
+        <input type="range" id="slE" min="1" max="20" step="0.5" value="9">
+        <span id="lvE">9.0 V</span>
+      </div>
+      <div class="prow">
+        <label>Résistance R (kΩ)</label>
+        <input type="range" id="slR" min="1" max="100" step="1" value="10">
+        <span id="lvR">10 kΩ</span>
+      </div>
+      <div class="prow">
+        <label>Capacité C (µF)</label>
+        <input type="range" id="slC" min="1" max="1000" step="1" value="100">
+        <span id="lvC">100 µF</span>
+      </div>
+      <div class="prow">
+        <label>Vitesse ×</label>
+        <input type="range" id="slSpd" min="0.1" max="5" step="0.1" value="1">
+        <span id="lvSpd">1.0×</span>
+      </div>
+      <div class="crow">
+        <input type="checkbox" id="chkDisch">
+        <label for="chkDisch">Mode décharge (condensateur préchargé)</label>
+      </div>
+      <div class="crow">
+        <input type="checkbox" id="chkGrid" checked>
+        <label for="chkGrid">Afficher la grille</label>
+      </div>
+      <div class="brow">
+        <button class="btn btn-g" id="btnLancer">▶ Lancer</button>
+        <button class="btn btn-b" id="btnPause">⏸ Pause</button>
+        <button class="btn btn-r" id="btnReset">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- ONGLET 1 : MESURES -->
+    <div class="tpanel" id="tp1">
+      <div class="cgrid">
+        <div class="card"><div class="clabel">Tension UC (V)</div><div class="cval" id="mUC">0.00</div><div class="cunit">Volts</div></div>
+        <div class="card"><div class="clabel">Tension UR (V)</div><div class="cval" id="mUR">0.00</div><div class="cunit">Volts</div></div>
+        <div class="card"><div class="clabel">Courant i (mA)</div><div class="cval" id="mI">0.00</div><div class="cunit">milliampères</div></div>
+        <div class="card"><div class="clabel">Charge q (µC)</div><div class="cval" id="mQ">0.00</div><div class="cunit">microcoulombs</div></div>
+        <div class="card"><div class="clabel">Temps t (s)</div><div class="cval" id="mT">0.000</div><div class="cunit">secondes</div></div>
+        <div class="card"><div class="clabel">t / τ</div><div class="cval" id="mTau">0.000</div><div class="cunit">sans unité</div></div>
+        <div class="card"><div class="clabel">Énergie W (µJ)</div><div class="cval" id="mW">0.00</div><div class="cunit">microjoules</div></div>
+        <div class="card"><div class="clabel">UC / E (%)</div><div class="cval" id="mPct">0.0</div><div class="cunit">pourcent</div></div>
+      </div>
+    </div>
+
+    <!-- ONGLET 2 : LOIS -->
+    <div class="tpanel" id="tp2">
+      <div class="lcard">
+        <div class="lformule">UC(t) = E × (1 - e^(-t/τ))</div>
+        <div class="lexpl">Loi de charge : la tension aux bornes du condensateur augmente exponentiellement vers E. Le condensateur se charge progressivement à travers R.</div>
+      </div>
+      <div class="lcard">
+        <div class="lformule">UC(t) = E × e^(-t/τ)  [décharge]</div>
+        <div class="lexpl">Loi de décharge : la tension diminue exponentiellement depuis E vers 0. L'énergie stockée se dissipe dans R.</div>
+      </div>
+      <div class="lcard">
+        <div class="lformule">τ = R × C</div>
+        <div class="lexpl">Constante de temps τ (tau) : temps caractéristique du circuit. À t = τ, UC = 63,2% de E en charge (36,8% en décharge). Unité : τ en secondes si R en Ω et C en Farads.</div>
+      </div>
+      <div class="lcard">
+        <div class="lformule">i(t) = (E/R) × e^(-t/τ)</div>
+        <div class="lexpl">Le courant décroît exponentiellement. Au début (t=0), i = E/R. Quand le condensateur est chargé, le courant s'annule. En décharge : i = -(E/R)×e^(-t/τ).</div>
+      </div>
+      <div class="lcard">
+        <div class="lformule">W = ½ × C × UC²</div>
+        <div class="lexpl">Énergie stockée dans le condensateur. Elle croît pendant la charge et se dissipe dans R pendant la décharge. Unité : Joules.</div>
+      </div>
+    </div>
+
+    <!-- ONGLET 3 : TP -->
+    <div class="tpanel" id="tp3">
+      <div class="tpcard">
+        <h3>📋 Fiche de TP — Circuit RC</h3>
+        Étudier la charge et la décharge d'un condensateur dans un circuit RC série. Mesurer la constante de temps τ et vérifier les lois exponentielles.
+      </div>
+      <div class="tpcard">
+        <h3>🔬 Protocole</h3>
+        1. Régler E, R, C avec les sliders.<br>
+        2. Lancer la simulation (charge ou décharge).<br>
+        3. Observer la courbe UC(t) et repérer t = τ (UC = 63,2% E).<br>
+        4. Mesurer UC, UR, i en temps réel (onglet Mesures).<br>
+        5. Vérifier UC + UR = E à chaque instant.
+      </div>
+      <div class="tpcard">
+        <h3>📐 Formules principales</h3>
+        τ = R × C | UC = E(1-e^-t/τ) | i = (E/R)e^-t/τ | W = ½CV²
+      </div>
+      <div class="tpcard" id="tpSummary">
+        <h3>📊 Valeurs actuelles</h3>
+        <span id="tpVals">—</span>
+      </div>
+      <div class="brow">
+        <button class="btn btn-b" onclick="exportTP()">💾 Exporter TXT</button>
+      </div>
+    </div>
+
+    <!-- ONGLET 4 : RÉSULTATS -->
+    <div class="tpanel" id="tp4">
+      <div class="stitle">Paramètres du circuit</div>
+      <div class="cgrid">
+        <div class="card"><div class="clabel">τ = R×C (s)</div><div class="cval" id="rTau">—</div><div class="cunit">secondes</div></div>
+        <div class="card"><div class="clabel">I_max (mA)</div><div class="cval" id="rImax">—</div><div class="cunit">au début</div></div>
+        <div class="card"><div class="clabel">Q_max (µC)</div><div class="cval" id="rQmax">—</div><div class="cunit">charge max</div></div>
+        <div class="card"><div class="clabel">W_max (µJ)</div><div class="cval" id="rWmax">—</div><div class="cunit">énergie max</div></div>
+      </div>
+      <div class="sep"></div>
+      <div class="stitle">✅ Vérification TP</div>
+      <div class="vcard">
+        <input type="checkbox" id="v1">
+        <span class="vtxt">UC + UR = E vérifiée</span>
+        <span class="vbadge" id="vb1">—</span>
+      </div>
+      <div class="vcard">
+        <input type="checkbox" id="v2">
+        <span class="vtxt">À t = τ : UC ≈ 63.2% E en charge</span>
+        <span class="vbadge" id="vb2">—</span>
+      </div>
+      <div class="vcard">
+        <input type="checkbox" id="v3">
+        <span class="vtxt">À t = 5τ : UC ≈ 99.3% E (régime permanent)</span>
+        <span class="vbadge" id="vb3">—</span>
+      </div>
+      <div class="vcard">
+        <input type="checkbox" id="v4">
+        <span class="vtxt">Énergie W = ½CUC² vérifiée</span>
+        <span class="vbadge" id="vb4">—</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────
+const ST = {
+  running: false,
+  time: 0,
+  raf: null,
+  lastTs: null,
+  E: 9, R: 10000, C: 100e-6,
+  speed: 1,
+  discharge: false,
+  showGrid: true,
+  particles: [],
+  mx: null, my: null,
+  // courbe historique
+  history: [],
+  maxHistory: 800
+};
+
+// ─── CANVAS ──────────────────────────────────────────────────────
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+function rsz() {
+  const sw = document.getElementById('sw');
+  cv.width = sw.clientWidth;
+  cv.height = sw.clientHeight;
+  d2();
+}
+
+// ─── PHYSICS ─────────────────────────────────────────────────────
+function tau() { return ST.R * ST.C; }
+
+function UC(t) {
+  if (ST.discharge) return ST.E * Math.exp(-t / tau());
+  return ST.E * (1 - Math.exp(-t / tau()));
+}
+
+function iRC(t) {
+  if (ST.discharge) return -(ST.E / ST.R) * Math.exp(-t / tau());
+  return (ST.E / ST.R) * Math.exp(-t / tau());
+}
+
+// ─── UPDATE RESULTS ──────────────────────────────────────────────
+function uR() {
+  const t = ST.time;
+  const uc = UC(t);
+  const ur = ST.discharge ? -uc : ST.E - uc;
+  const i  = iRC(t);
+  const q  = ST.C * uc;
+  const w  = 0.5 * ST.C * uc * uc;
+  const T  = tau();
+  const qmax = ST.C * ST.E;
+  const wmax = 0.5 * ST.C * ST.E * ST.E;
+
+  // Mesures
+  document.getElementById('mUC').textContent = uc.toFixed(3);
+  document.getElementById('mUR').textContent = Math.abs(ur).toFixed(3);
+  document.getElementById('mI').textContent  = (Math.abs(i)*1000).toFixed(3);
+  document.getElementById('mQ').textContent  = (q*1e6).toFixed(3);
+  document.getElementById('mT').textContent  = t.toFixed(3);
+  document.getElementById('mTau').textContent= (t/T).toFixed(3);
+  document.getElementById('mW').textContent  = (w*1e6).toFixed(3);
+  document.getElementById('mPct').textContent= (uc/ST.E*100).toFixed(1);
+
+  // Résultats
+  document.getElementById('rTau').textContent = T.toFixed(3);
+  document.getElementById('rImax').textContent= ((ST.E/ST.R)*1000).toFixed(2);
+  document.getElementById('rQmax').textContent= (qmax*1e6).toFixed(2);
+  document.getElementById('rWmax').textContent= (wmax*1e6).toFixed(2);
+
+  // Vérif
+  const ucPlusUr = Math.abs(uc + Math.abs(ur));
+  document.getElementById('vb1').textContent = 'UC+UR=' + ucPlusUr.toFixed(2) + 'V';
+  const pctE = (uc/ST.E*100).toFixed(1);
+  document.getElementById('vb2').textContent = pctE + '%';
+  const uc5tau = ST.discharge ? ST.E*Math.exp(-5) : ST.E*(1-Math.exp(-5));
+  document.getElementById('vb3').textContent = (uc5tau/ST.E*100).toFixed(1)+'%';
+  document.getElementById('vb4').textContent = 'W='+( (w*1e6).toFixed(2) )+'µJ';
+
+  // TP summary
+  document.getElementById('tpVals').innerHTML =
+    'E = ' + ST.E + ' V | R = ' + (ST.R/1000).toFixed(1) + ' kΩ | C = ' + (ST.C*1e6).toFixed(0) + ' µF<br>' +
+    'τ = ' + T.toFixed(3) + ' s | t = ' + t.toFixed(3) + ' s | UC = ' + uc.toFixed(3) + ' V';
+}
+
+// ─── DRAWING ─────────────────────────────────────────────────────
+function d2() {
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Fond dégradé
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#04080f');
+  bg.addColorStop(1,'#060d18');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Grille
+  if (ST.showGrid) {
+    ctx.strokeStyle = 'rgba(0,229,255,0.03)';
+    ctx.lineWidth = 1;
+    const gs = 30;
+    for (let x = 0; x < W; x += gs) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y = 0; y < H; y += gs) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  }
+
+  // ──── Dessin du circuit ────
+  drawCircuit(W, H);
+
+  // ──── Zone graphe ────
+  drawGraph(W, H);
+
+  // Particules
+  tkP();
+}
+
+function drawCircuit(W, H) {
+  // Circuit occupe le tiers gauche
+  const cx = W * 0.22, cy = H * 0.50;
+  const bw = Math.min(W * 0.32, 180), bh = Math.min(H * 0.55, 150);
+  const x0 = cx - bw/2, y0 = cy - bh/2;
+  const x1 = cx + bw/2, y1 = cy + bh/2;
+
+  const t = ST.time;
+  const uc = UC(t);
+  const i  = iRC(t);
+
+  // Fil principal (rectangle)
+  ctx.strokeStyle = 'rgba(0,229,255,0.4)';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(x0, y0, bw, bh);
+
+  // ── BATTERIE (côté gauche) ──
+  const bx = x0, bmy = cy;
+  ctx.strokeStyle = 'rgba(0,229,255,0.6)';
+  ctx.lineWidth = 2;
+  // symbole batterie
+  for (let s = 0; s < 4; s++) {
+    const sy = bmy - 14 + s*9;
+    const thick = s % 2 === 0;
+    ctx.beginPath();
+    ctx.moveTo(bx - (thick?6:4), sy);
+    ctx.lineTo(bx + (thick?6:4), sy);
+    ctx.strokeStyle = thick ? 'rgba(0,255,136,0.9)' : 'rgba(0,229,255,0.5)';
+    ctx.lineWidth = thick ? 3 : 1.5;
+    ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(0,255,136,0.7)';
+  ctx.font = '7px Outfit';
+  ctx.textAlign = 'center';
+  ctx.fillText('E='+ST.E+'V', bx, bmy + 28);
+
+  // ── RÉSISTANCE (haut) ──
+  const rmx = cx, rmy = y0;
+  drawResistor(rmx, rmy);
+  ctx.fillStyle = 'rgba(255,215,64,0.7)';
+  ctx.font = '7px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText((ST.R/1000).toFixed(0)+'kΩ', rmx, rmy-10);
+
+  // ── CONDENSATEUR (côté droit) ──
+  const capx = x1, capy = cy;
+  const chargeRatio = uc / ST.E;
+  drawCapacitor(capx, capy, chargeRatio);
+  ctx.fillStyle = 'rgba(0,229,255,0.7)';
+  ctx.font = '7px JetBrains Mono';
+  ctx.textAlign = 'left';
+  ctx.fillText((ST.C*1e6).toFixed(0)+'µF', capx+10, capy);
+  ctx.fillStyle = '#fff';
+  ctx.fillText('UC='+uc.toFixed(2)+'V', capx+10, capy+12);
+
+  // ── COURANT animé ──
+  if (ST.running && Math.abs(i) > 1e-9) {
+    const frac = (ST.time * 2 * Math.abs(i) / (ST.E/ST.R)) % 1;
+    drawCurrentDot(x0, y0, x1, y1, frac, i > 0 ? '#00ff88' : '#ff4060');
+  }
+
+  // Flèche courant
+  const iDisplay = Math.abs(i) * 1000;
+  ctx.fillStyle = 'rgba(0,255,136,0.8)';
+  ctx.font = '8px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('i = ' + iDisplay.toFixed(2) + ' mA', cx, y1 + 14);
+}
+
+function drawResistor(mx, my) {
+  const w = 30, h = 8;
+  ctx.fillStyle = 'rgba(255,215,64,0.1)';
+  ctx.strokeStyle = 'rgba(255,215,64,0.6)';
+  ctx.lineWidth = 1.5;
+  ctx.fillRect(mx-w/2, my-h/2, w, h);
+  ctx.strokeRect(mx-w/2, my-h/2, w, h);
+  // zigzag
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(255,215,64,0.9)';
+  ctx.lineWidth = 1;
+  const steps = 6;
+  for (let i2 = 0; i2 <= steps; i2++) {
+    const x = mx - w/2 + (i2/steps)*w;
+    const y = my + (i2%2===0 ? -3 : 3);
+    if (i2 === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+}
+
+function drawCapacitor(cx2, cy2, ratio) {
+  const h = 24;
+  ctx.strokeStyle = 'rgba(0,229,255,0.7)';
+  ctx.lineWidth = 2;
+  // Deux plaques
+  ctx.beginPath(); ctx.moveTo(cx2, cy2-h/2); ctx.lineTo(cx2, cy2+h/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx2+7, cy2-h/2); ctx.lineTo(cx2+7, cy2+h/2); ctx.stroke();
+
+  // Charge visuelle
+  if (ratio > 0.01) {
+    const col = 'rgba(0,229,255,' + (ratio*0.6) + ')';
+    ctx.fillStyle = col;
+    ctx.fillRect(cx2+1, cy2-h/2+2, 5, (h-4)*ratio);
+  }
+  // glow
+  const glow = ctx.createRadialGradient(cx2+3,cy2,0,cx2+3,cy2,20);
+  glow.addColorStop(0,'rgba(0,229,255,'+ratio*0.3+')');
+  glow.addColorStop(1,'rgba(0,229,255,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(cx2-17, cy2-25, 44, 50);
+}
+
+function drawCurrentDot(x0, y0, x1, y1, frac, col) {
+  // Chemin : haut de x0 → x1, droite bas, retour
+  const perim = (x1-x0)*2 + (y1-y0)*2;
+  const pos = frac * perim;
+  let px, py;
+  const top = x1-x0, right = y1-y0, bot = x1-x0, left = y1-y0;
+  if (pos < top) { px = x0+pos; py = y0; }
+  else if (pos < top+right) { px = x1; py = y0+(pos-top); }
+  else if (pos < top+right+bot) { px = x1-(pos-top-right); py = y1; }
+  else { px = x0; py = y1-(pos-top-right-bot); }
+
+  ctx.beginPath();
+  ctx.arc(px, py, 4, 0, Math.PI*2);
+  ctx.fillStyle = col;
+  ctx.fill();
+  const g = ctx.createRadialGradient(px,py,0,px,py,10);
+  g.addColorStop(0, col.replace(')', ',0.5)').replace('rgb','rgba'));
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fill();
+}
+
+function drawGraph(W, H) {
+  // Zone graphe : droite 55% de la largeur
+  const gx0 = W * 0.40, gy0 = H * 0.08;
+  const gw  = W * 0.56, gh  = H * 0.82;
+
+  // Fond carte
+  ctx.fillStyle = 'rgba(17,24,39,0.6)';
+  ctx.strokeStyle = 'rgba(0,229,255,0.1)';
+  ctx.lineWidth = 1;
+  roundRect(ctx, gx0, gy0, gw, gh, 8);
+  ctx.fill(); ctx.stroke();
+
+  // Axes
+  const ax = gx0+40, ay_bot = gy0+gh-28, ay_top = gy0+12;
+  const aw = gw-50, ah = ay_bot - ay_top;
+
+  // Axe X
+  ctx.strokeStyle = 'rgba(0,229,255,0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(ax, ay_bot); ctx.lineTo(ax+aw, ay_bot); ctx.stroke();
+  // Axe Y
+  ctx.beginPath(); ctx.moveTo(ax, ay_top); ctx.lineTo(ax, ay_bot); ctx.stroke();
+
+  // Labels axes
+  ctx.fillStyle = 'rgba(0,229,255,0.6)';
+  ctx.font = '8px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('t (s)', ax+aw/2, ay_bot+18);
+  ctx.save();
+  ctx.translate(ax-28, ay_bot-ah/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('U (V)', 0, 0);
+  ctx.restore();
+
+  // Graduations Y
+  const E = ST.E;
+  for (let v = 0; v <= E; v += E/4) {
+    const yg = ay_bot - (v/E)*ah;
+    ctx.strokeStyle = 'rgba(0,229,255,0.08)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(ax, yg); ctx.lineTo(ax+aw, yg); ctx.stroke();
+    ctx.fillStyle = 'rgba(0,229,255,0.5)';
+    ctx.font = '7px JetBrains Mono';
+    ctx.textAlign = 'right';
+    ctx.fillText(v.toFixed(1), ax-4, yg+3);
+  }
+
+  // Durée affichée = 8τ
+  const T = tau();
+  const tMax = Math.max(8*T, 0.001);
+
+  // Graduations X
+  ctx.textAlign = 'center';
+  for (let k = 1; k <= 8; k++) {
+    const xg = ax + (k*T/tMax)*aw;
+    if (xg > ax+aw) break;
+    ctx.strokeStyle = 'rgba(0,229,255,0.08)';
+    ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(xg, ay_top); ctx.lineTo(xg, ay_bot); ctx.stroke();
+    ctx.fillStyle = 'rgba(0,229,255,0.4)';
+    ctx.font = '7px JetBrains Mono';
+    ctx.fillText(k+'τ', xg, ay_bot+10);
+  }
+
+  // Courbe théorique
+  ctx.beginPath();
+  ctx.strokeStyle = 'rgba(0,229,255,0.15)';
+  ctx.lineWidth = 1;
+  for (let px = 0; px <= aw; px += 2) {
+    const tt = (px/aw)*tMax;
+    const uv = ST.discharge ? E*Math.exp(-tt/T) : E*(1-Math.exp(-tt/T));
+    const py = ay_bot - (uv/E)*ah;
+    if (px === 0) ctx.moveTo(ax+px, py); else ctx.lineTo(ax+px, py);
+  }
+  ctx.stroke();
+
+  // Historique tracé
+  if (ST.history.length > 1) {
+    // UC courbe
+    ctx.beginPath();
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 2;
+    ctx.shadowColor = '#00e5ff';
+    ctx.shadowBlur = 6;
+    let first = true;
+    for (const pt of ST.history) {
+      const px = ax + (pt.t/tMax)*aw;
+      const py = ay_bot - (pt.uc/E)*ah;
+      if (px > ax+aw) break;
+      if (first) { ctx.moveTo(px, py); first=false; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // UR courbe
+    ctx.beginPath();
+    ctx.strokeStyle = '#ffd740';
+    ctx.lineWidth = 1.5;
+    first = true;
+    for (const pt of ST.history) {
+      const px = ax + (pt.t/tMax)*aw;
+      const urv = ST.discharge ? -pt.uc : E-pt.uc;
+      const py = ay_bot - (Math.abs(urv)/E)*ah;
+      if (px > ax+aw) break;
+      if (first) { ctx.moveTo(px, py); first=false; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+
+    // i courbe (normalisée)
+    ctx.beginPath();
+    ctx.strokeStyle = '#00ff88';
+    ctx.lineWidth = 1.5;
+    first = true;
+    const iMax = E/ST.R;
+    for (const pt of ST.history) {
+      const px = ax + (pt.t/tMax)*aw;
+      const iv = Math.abs(pt.i)/iMax;
+      const py = ay_bot - iv*ah;
+      if (px > ax+aw) break;
+      if (first) { ctx.moveTo(px, py); first=false; } else ctx.lineTo(px,py);
+    }
+    ctx.stroke();
+  }
+
+  // Ligne temps actuel
+  const txLine = ax + (ST.time/tMax)*aw;
+  if (txLine <= ax+aw) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(txLine, ay_top); ctx.lineTo(txLine, ay_bot); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Ligne τ
+  const tauLine = ax + (T/tMax)*aw;
+  if (tauLine <= ax+aw) {
+    ctx.strokeStyle = 'rgba(255,215,64,0.4)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2,4]);
+    ctx.beginPath(); ctx.moveTo(tauLine, ay_top); ctx.lineTo(tauLine, ay_bot); ctx.stroke();
+    ctx.setLineDash([]);
+    // Point 63.2%
+    const yTau = ST.discharge ? ay_bot-(0.368*E/E)*ah : ay_bot-(0.632*E/E)*ah;
+    ctx.beginPath(); ctx.arc(tauLine, yTau, 4, 0, Math.PI*2);
+    ctx.fillStyle = '#ffd740';
+    ctx.fill();
+    ctx.fillStyle = '#ffd740';
+    ctx.font = '8px JetBrains Mono';
+    ctx.textAlign = 'left';
+    ctx.fillText('τ', tauLine+4, yTau-4);
+  }
+
+  // Légende
+  const lx = ax+aw-85, ly = ay_top+6;
+  const legends = [['UC(t)','#00e5ff'],['UR(t)','#ffd740'],['i(t)','#00ff88']];
+  legends.forEach(function(l, idx) {
+    ctx.fillStyle = l[1];
+    ctx.fillRect(lx, ly+idx*12, 14, 2);
+    ctx.font = '8px JetBrains Mono';
+    ctx.fillText(l[0], lx+16, ly+idx*12+4);
+  });
+
+  // Titre graphe
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.font = '9px Outfit';
+  ctx.textAlign = 'center';
+  const mode = ST.discharge ? 'Décharge' : 'Charge';
+  ctx.fillText('Courbes ' + mode + ' — RC', ax+aw/2, gy0+6);
+}
+
+function roundRect(ctx2, x, y, w, h, r) {
+  ctx2.beginPath();
+  ctx2.moveTo(x+r, y);
+  ctx2.lineTo(x+w-r, y); ctx2.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx2.lineTo(x+w, y+h-r); ctx2.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx2.lineTo(x+r, y+h); ctx2.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx2.lineTo(x, y+r); ctx2.quadraticCurveTo(x,y,x+r,y);
+  ctx2.closePath();
+}
+
+// ─── PARTICLES ───────────────────────────────────────────────────
+function spP(x, y, col, n) {
+  n = n || 8;
+  for (let i2 = 0; i2 < n; i2++) {
+    ST.particles.push({
+      x:x, y:y, vx:(Math.random()-0.5)*4, vy:(Math.random()-0.5)*4,
+      life:1, col: col || '#00e5ff', size: Math.random()*3+1
+    });
+  }
+}
+
+function tkP() {
+  ST.particles = ST.particles.filter(function(p) { return p.life > 0; });
+  for (const p of ST.particles) {
+    p.x += p.vx; p.y += p.vy;
+    p.vy += 0.05;
+    p.life -= 0.03;
+    ctx.globalAlpha = p.life;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+    ctx.fillStyle = p.col;
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ─── LOOP ────────────────────────────────────────────────────────
+function lp2(ts) {
+  if (!ST.running) return;
+  if (!ST.lastTs) ST.lastTs = ts;
+  const dt = Math.min((ts - ST.lastTs)/1000, 0.05) * ST.speed;
+  ST.lastTs = ts;
+  ST.time += dt;
+
+  const uc = UC(ST.time);
+  const i2  = iRC(ST.time);
+  ST.history.push({ t: ST.time, uc: uc, i: i2 });
+  if (ST.history.length > ST.maxHistory) ST.history.shift();
+
+  uR();
+  d2();
+
+  // Stop at 10τ
+  if (ST.time > 10 * tau()) {
+    ST.running = false;
+    toast('Régime permanent atteint (t > 10τ)');
+    d2();
+    return;
+  }
+
+  ST.raf = requestAnimationFrame(lp2);
+}
+
+// ─── CONTROLS ────────────────────────────────────────────────────
+document.getElementById('btnLancer').addEventListener('click', function() {
+  if (!ST.running) {
+    ST.running = true;
+    ST.lastTs = null;
+    ST.raf = requestAnimationFrame(lp2);
+    toast('Simulation lancée');
+  }
+});
+
+document.getElementById('btnPause').addEventListener('click', function() {
+  ST.running = !ST.running;
+  if (ST.running) {
+    ST.lastTs = null;
+    ST.raf = requestAnimationFrame(lp2);
+    toast('Reprise');
+  } else {
+    if (ST.raf) cancelAnimationFrame(ST.raf);
+    toast('Pause');
+  }
+});
+
+document.getElementById('btnReset').addEventListener('click', function() {
+  ST.running = false;
+  if (ST.raf) cancelAnimationFrame(ST.raf);
+  ST.time = 0;
+  ST.history = [];
+  ST.particles = [];
+  ST.lastTs = null;
+  uR(); d2();
+  toast('Reset');
+});
+
+document.getElementById('chkDisch').addEventListener('change', function() {
+  ST.discharge = this.checked;
+  ST.time = 0; ST.history = [];
+  uR(); d2();
+});
+
+document.getElementById('chkGrid').addEventListener('change', function() {
+  ST.showGrid = this.checked;
+  d2();
+});
+
+function bindSlider(id, lvId, decimals, unit, factor, cb) {
+  const sl = document.getElementById(id);
+  const lv = document.getElementById(lvId);
+  sl.addEventListener('input', function() {
+    const v = parseFloat(this.value);
+    lv.textContent = (v*factor).toFixed(decimals) + ' ' + unit;
+    cb(v);
+    uR(); d2();
+  });
+}
+
+bindSlider('slE', 'lvE', 1, 'V', 1, function(v){ ST.E=v; ST.time=0; ST.history=[]; });
+bindSlider('slR', 'lvR', 0, 'kΩ', 1, function(v){ ST.R=v*1000; ST.time=0; ST.history=[]; });
+bindSlider('slC', 'lvC', 0, 'µF', 1, function(v){ ST.C=v*1e-6; ST.time=0; ST.history=[]; });
+bindSlider('slSpd', 'lvSpd', 1, '×', 1, function(v){ ST.speed=v; });
+
+// Tabs
+document.querySelectorAll('.tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.tpanel').forEach(function(p){ p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById('tp'+tab.dataset.t).classList.add('active');
+  });
+});
+
+// Canvas click → particles
+cv.addEventListener('click', function(e) {
+  const rect = cv.getBoundingClientRect();
+  const x = e.clientX - rect.left, y = e.clientY - rect.top;
+  spP(x, y, '#00e5ff', 12);
+  d2();
+});
+
+// Tooltip au survol
+cv.addEventListener('mousemove', function(e) {
+  const tip = document.getElementById('tip');
+  const rect = cv.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  ST.mx = mx; ST.my = my;
+
+  // Calculer valeur en ce point du graphe
+  const W = cv.width, H = cv.height;
+  const gx0 = W*0.40, gy0 = H*0.08;
+  const gw = W*0.56, gh = H*0.82;
+  const ax = gx0+40, ay_bot = gy0+gh-28, ay_top = gy0+12;
+  const aw = gw-50;
+  const tMax = Math.max(8*tau(), 0.001);
+
+  if (mx > ax && mx < ax+aw && my > ay_top && my < ay_bot) {
+    const tt = (mx-ax)/aw*tMax;
+    const uc = UC(tt);
+    const i2 = ST.discharge ? -(ST.E/ST.R)*Math.exp(-tt/tau()) : (ST.E/ST.R)*Math.exp(-tt/tau());
+    tip.style.display = 'block';
+    tip.style.left = (e.clientX+12)+'px';
+    tip.style.top = (e.clientY-30)+'px';
+    tip.innerHTML = 't = '+tt.toFixed(3)+' s<br>UC = '+uc.toFixed(3)+' V<br>i = '+(Math.abs(i2)*1000).toFixed(3)+' mA<br>t/τ = '+(tt/tau()).toFixed(2);
+  } else {
+    tip.style.display = 'none';
+  }
+});
+
+cv.addEventListener('mouseleave', function() {
+  document.getElementById('tip').style.display = 'none';
+});
+
+// Touch 2 doigts → changer R
+let lastPinchDist = null;
+cv.addEventListener('touchmove', function(e) {
+  if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.sqrt(dx*dx+dy*dy);
+    if (lastPinchDist) {
+      const delta = dist - lastPinchDist;
+      const sl = document.getElementById('slR');
+      sl.value = Math.max(1, Math.min(100, parseFloat(sl.value) + delta*0.1));
+      ST.R = parseFloat(sl.value)*1000;
+      document.getElementById('lvR').textContent = parseFloat(sl.value).toFixed(0)+' kΩ';
+      ST.time=0; ST.history=[];
+      uR(); d2();
+    }
+    lastPinchDist = dist;
+    e.preventDefault();
+  }
+}, {passive:false});
+cv.addEventListener('touchend', function(){ lastPinchDist=null; });
+
+// ─── TOAST ───────────────────────────────────────────────────────
+function toast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, 2600);
+}
+
+// ─── EXPORT ──────────────────────────────────────────────────────
+function exportTP() {
+  const T = tau();
+  const uc = UC(ST.time);
+  let txt = '=== TP Circuit RC — SimLab ===\n\n';
+  txt += 'Paramètres :\n';
+  txt += '  E = ' + ST.E + ' V\n';
+  txt += '  R = ' + (ST.R/1000).toFixed(1) + ' kΩ\n';
+  txt += '  C = ' + (ST.C*1e6).toFixed(0) + ' µF\n\n';
+  txt += 'Grandeurs calculées :\n';
+  txt += '  τ = R×C = ' + T.toFixed(4) + ' s\n';
+  txt += '  I_max = E/R = ' + ((ST.E/ST.R)*1000).toFixed(2) + ' mA\n';
+  txt += '  Q_max = C×E = ' + (ST.C*ST.E*1e6).toFixed(2) + ' µC\n';
+  txt += '  W_max = ½CE² = ' + (0.5*ST.C*ST.E*ST.E*1e6).toFixed(2) + ' µJ\n\n';
+  txt += 'État à t = ' + ST.time.toFixed(3) + ' s :\n';
+  txt += '  UC = ' + uc.toFixed(3) + ' V\n';
+  txt += '  UR = ' + Math.abs(ST.E-uc).toFixed(3) + ' V\n';
+  txt += '  i = ' + (Math.abs(iRC(ST.time))*1000).toFixed(3) + ' mA\n\n';
+  txt += 'Lois appliquées :\n';
+  txt += '  Charge  : UC(t) = E(1 - e^(-t/τ))\n';
+  txt += '  Décharge: UC(t) = E×e^(-t/τ)\n';
+  txt += '  Courant : i(t) = (E/R)×e^(-t/τ)\n\n';
+  txt += 'Vérifications :\n';
+  txt += '  UC + UR = ' + (uc + Math.abs(ST.E-uc)).toFixed(3) + ' V ≈ E ✓\n';
+  txt += '  Énergie W = ' + (0.5*ST.C*uc*uc*1e6).toFixed(3) + ' µJ\n';
+
+  const blob = new Blob([txt], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'TP_Circuit_RC.txt';
+  a.click();
+  toast('Export TXT téléchargé !');
+}
+
+// ─── INIT ────────────────────────────────────────────────────────
+window.addEventListener('resize', rsz);
+rsz();
+uR();
+d2();
+</script>
+
+<script type='text/javascript' src='//pl26527913.profitableratecpm.com/5c/8e/2e/5c8e2eebcfa5e97f9c7d66bb3d9bfcf1.js'></script>
+</body>
+</html>

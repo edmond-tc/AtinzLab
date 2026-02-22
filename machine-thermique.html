@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Machine Thermique — SimLab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hh: 48px;
+  --ph: 185px;
+  --bg: #0a0e1a;
+  --s1: #111827;
+  --s2: #1a2540;
+  --acc: #00e5ff;
+  --grn: #00ff88;
+  --red: #ff4060;
+  --yel: #ffd740;
+  --txt: #e2e8f0;
+  --txt2: #94a3b8;
+  --rad: 8px;
+}
+@media(max-width:600px){:root{--hh:44px;--ph:178px;}}
+@media(max-width:380px){:root{--hh:42px;--ph:168px;}}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;overflow:hidden;height:100vh;}
+
+/* HEADER */
+#hdr{
+  position:fixed;top:0;left:0;right:0;height:var(--hh);
+  background:rgba(17,24,39,0.95);border-bottom:1px solid rgba(0,229,255,0.2);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;z-index:100;backdrop-filter:blur(8px);gap:6px;
+}
+#hdr a{color:var(--acc);text-decoration:none;font-size:11px;font-weight:500;white-space:nowrap;padding:4px 8px;border:1px solid rgba(0,229,255,0.3);border-radius:4px;}
+#hdr a:hover{background:rgba(0,229,255,0.1);}
+#hdr-title{font-size:13px;font-weight:600;color:var(--acc);text-align:center;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#logo{font-size:12px;white-space:nowrap;color:var(--txt2);}
+#v3d-btn{background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);color:var(--acc);font-size:10px;padding:4px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;}
+#v3d-btn:hover{background:rgba(0,229,255,0.2);}
+@media(max-width:600px){#logo{display:none;}}
+
+/* SIMULATION ZONE */
+#sw{
+  position:fixed;
+  top:var(--hh);
+  bottom:var(--ph);
+  left:0;right:0;
+  overflow:hidden;
+  background:linear-gradient(160deg,#04080f 0%,#060d18 100%);
+}
+#c2d{display:block;width:100%;height:100%;}
+#c3d{display:none;width:100%;height:100%;}
+
+/* TOOLTIP */
+#tip{
+  position:fixed;background:rgba(17,24,39,0.95);border:1px solid rgba(0,229,255,0.4);
+  border-radius:6px;padding:6px 10px;font-size:10px;font-family:'JetBrains Mono',monospace;
+  color:var(--acc);pointer-events:none;display:none;z-index:200;line-height:1.6;
+}
+
+/* PANEL BAS */
+#pnl{
+  position:fixed;bottom:0;left:0;right:0;height:var(--ph);
+  background:var(--s1);border-top:1px solid rgba(0,229,255,0.15);
+  display:flex;flex-direction:column;z-index:100;
+}
+
+/* ONGLETS */
+#tabs{
+  display:flex;overflow-x:auto;border-bottom:1px solid rgba(0,229,255,0.1);
+  background:rgba(10,14,26,0.8);flex-shrink:0;
+}
+#tabs::-webkit-scrollbar{height:2px;}
+#tabs::-webkit-scrollbar-thumb{background:var(--acc);}
+.tab{
+  padding:6px 10px;font-size:10px;font-weight:500;color:var(--txt2);
+  cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
+  transition:all .2s;flex-shrink:0;
+}
+.tab:hover{color:var(--acc);}
+.tab.act{color:var(--acc);border-bottom-color:var(--acc);background:rgba(0,229,255,0.05);}
+
+/* CONTENU ONGLETS */
+#tcon{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px;}
+#tcon::-webkit-scrollbar{width:3px;}
+#tcon::-webkit-scrollbar-thumb{background:var(--acc);}
+.tpane{display:none;}
+.tpane.act{display:block;}
+
+/* SLIDERS */
+.ctrl-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.ctrl-row label{font-size:9px;color:var(--txt2);min-width:90px;flex-shrink:0;}
+.ctrl-row input[type=range]{
+  flex:1;height:4px;-webkit-appearance:none;background:rgba(0,229,255,0.2);
+  border-radius:2px;outline:none;cursor:pointer;
+}
+.ctrl-row input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--acc);box-shadow:0 0 8px var(--acc);cursor:pointer;
+}
+.ctrl-row .lv{
+  font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--acc);
+  min-width:44px;text-align:right;flex-shrink:0;
+}
+.ctrl-row input[type=checkbox]{accent-color:var(--acc);width:14px;height:14px;}
+
+/* BOUTONS */
+.btn-row{display:flex;gap:6px;margin-top:6px;}
+.btn{
+  padding:5px 12px;font-size:11px;font-weight:600;border:none;border-radius:6px;
+  cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;
+}
+.btn-go{background:var(--grn);color:#000;}
+.btn-go:hover{box-shadow:0 0 10px var(--grn);}
+.btn-pause{background:var(--yel);color:#000;}
+.btn-pause:hover{box-shadow:0 0 10px var(--yel);}
+.btn-rst{background:var(--red);color:#fff;}
+.btn-rst:hover{box-shadow:0 0 10px var(--red);}
+.btn-exp{background:var(--acc);color:#000;}
+.btn-exp:hover{box-shadow:0 0 10px var(--acc);}
+
+/* CARDS GRILLE */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.card{
+  background:var(--s2);border:1px solid rgba(0,229,255,0.1);
+  border-radius:var(--rad);padding:6px 8px;
+}
+.card .cl{font-size:9px;color:var(--txt2);margin-bottom:2px;}
+.card .cv{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--acc);font-weight:700;}
+.card .cu{font-size:8px;color:var(--txt2);}
+.card.yel .cv{color:var(--yel);}
+.card.grn .cv{color:var(--grn);}
+.card.red .cv{color:var(--red);}
+
+/* LOIS CARDS */
+.law-card{
+  background:var(--s2);border:1px solid rgba(255,215,64,0.15);
+  border-radius:var(--rad);padding:8px 10px;margin-bottom:6px;
+}
+.law-card .lf{
+  font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--yel);
+  margin-bottom:4px;font-weight:700;
+}
+.law-card .le{font-size:9px;color:var(--txt2);line-height:1.5;}
+
+/* VÉRIF */
+.verif-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.04);}
+.verif-row input[type=checkbox]{accent-color:var(--grn);}
+.verif-row label{font-size:9px;color:var(--txt2);flex:1;}
+.badge{
+  font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;
+  border-radius:3px;background:rgba(0,229,255,0.15);color:var(--acc);white-space:nowrap;
+}
+
+/* TOAST */
+#toast{
+  position:fixed;bottom:calc(var(--ph) + 10px);left:50%;transform:translateX(-50%);
+  background:rgba(0,229,255,0.15);border:1px solid var(--acc);color:var(--acc);
+  padding:6px 16px;border-radius:6px;font-size:11px;z-index:300;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+#toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hdr">
+  <a href="index.html">← Retour</a>
+  <div id="hdr-title">🔥 Machine Thermique</div>
+  <button id="v3d-btn" onclick="switchV()">3D</button>
+  <div id="logo">⚗️ SimLab</div>
+</div>
+
+<!-- ZONE SIMULATION -->
+<div id="sw">
+  <canvas id="c2d"></canvas>
+  <canvas id="c3d"></canvas>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tip"></div>
+
+<!-- PANEL BAS -->
+<div id="pnl">
+  <div id="tabs">
+    <div class="tab act" onclick="selTab(0)">⚙️ Paramètres</div>
+    <div class="tab" onclick="selTab(1)">📐 Mesures</div>
+    <div class="tab" onclick="selTab(2)">📚 Lois</div>
+    <div class="tab" onclick="selTab(3)">📄 TP</div>
+    <div class="tab" onclick="selTab(4)">📊 Résultats</div>
+  </div>
+  <div id="tcon">
+
+    <!-- ONGLET 0: PARAMÈTRES -->
+    <div class="tpane act" id="tp0">
+      <div class="ctrl-row">
+        <label>Source chaude T₁ (K)</label>
+        <input type="range" id="s-T1" min="400" max="1200" value="800" step="10">
+        <span class="lv" id="lv-T1">800 K</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Source froide T₂ (K)</label>
+        <input type="range" id="s-T2" min="200" max="500" value="300" step="10">
+        <span class="lv" id="lv-T2">300 K</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Chaleur reçue Q₁ (kJ)</label>
+        <input type="range" id="s-Q1" min="100" max="2000" value="1000" step="10">
+        <span class="lv" id="lv-Q1">1000 kJ</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Cycle Carnot idéal</label>
+        <input type="checkbox" id="ck-carnot" checked>
+        <span style="font-size:9px;color:var(--txt2);flex:1;">Activer le mode Carnot</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Rendement réel η (%)</label>
+        <input type="range" id="s-eta" min="1" max="99" value="35" step="1">
+        <span class="lv" id="lv-eta">35 %</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Vitesse animation</label>
+        <input type="range" id="s-spd" min="0.5" max="3" value="1" step="0.1">
+        <span class="lv" id="lv-spd">1.0×</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-go" onclick="doStart()">▶ Lancer</button>
+        <button class="btn btn-pause" onclick="doPause()">⏸ Pause</button>
+        <button class="btn btn-rst" onclick="doReset()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- ONGLET 1: MESURES -->
+    <div class="tpane" id="tp1">
+      <div class="card-grid">
+        <div class="card yel"><div class="cl">T₁ Source chaude</div><div class="cv" id="m-T1">800</div><div class="cu">K</div></div>
+        <div class="card" style="--acc:#ff6b6b"><div class="cl">T₂ Source froide</div><div class="cv" id="m-T2" style="color:#ff6b6b">300</div><div class="cu">K</div></div>
+        <div class="card yel"><div class="cl">Q₁ Chaleur reçue</div><div class="cv" id="m-Q1">1000</div><div class="cu">kJ</div></div>
+        <div class="card red"><div class="cl">Q₂ Chaleur cédée</div><div class="cv" id="m-Q2">—</div><div class="cu">kJ</div></div>
+        <div class="card grn"><div class="cl">W Travail produit</div><div class="cv" id="m-W">—</div><div class="cu">kJ</div></div>
+        <div class="card"><div class="cl">η Rendement réel</div><div class="cv" id="m-eta">—</div><div class="cu">%</div></div>
+        <div class="card yel"><div class="cl">η_Carnot max</div><div class="cv" id="m-carnot">—</div><div class="cu">%</div></div>
+        <div class="card grn"><div class="cl">Puissance cycle</div><div class="cv" id="m-pow">—</div><div class="cu">kW</div></div>
+      </div>
+    </div>
+
+    <!-- ONGLET 2: LOIS -->
+    <div class="tpane" id="tp2">
+      <div class="law-card">
+        <div class="lf">η = W / Q₁ = 1 - Q₂/Q₁</div>
+        <div class="le">Le rendement η d'une machine thermique est le rapport du travail produit W à la chaleur reçue Q₁ de la source chaude. On a toujours η &lt; 1.</div>
+      </div>
+      <div class="law-card">
+        <div class="lf">η_Carnot = 1 - T₂/T₁</div>
+        <div class="le">Le théorème de Carnot donne le rendement maximum atteignable entre deux sources aux températures T₁ (chaude) et T₂ (froide). Aucune machine réelle ne peut dépasser ce rendement théorique.</div>
+      </div>
+      <div class="law-card">
+        <div class="lf">W = Q₁ - Q₂ &nbsp;(1er principe)</div>
+        <div class="le">Conservation de l'énergie : le travail produit est la différence entre la chaleur reçue et la chaleur rejetée. Q₁ = W + Q₂.</div>
+      </div>
+      <div class="law-card">
+        <div class="lf">ΔS_univers = Q₂/T₂ - Q₁/T₁ ≥ 0</div>
+        <div class="le">Second principe : la variation d'entropie de l'univers est nulle pour un cycle réversible (Carnot) et strictement positive pour tout cycle irréversible (machine réelle).</div>
+      </div>
+    </div>
+
+    <!-- ONGLET 3: TP -->
+    <div class="tpane" id="tp3">
+      <div style="font-size:9px;color:var(--txt2);line-height:1.7;margin-bottom:8px;">
+        <b style="color:var(--acc)">Objectif :</b> Étudier les échanges énergétiques d'une machine thermique ditherme et vérifier le théorème de Carnot.<br>
+        <b style="color:var(--acc)">Rappel :</b> η = W/Q₁ &nbsp;|&nbsp; η_Carnot = 1 − T₂/T₁ &nbsp;|&nbsp; η ≤ η_Carnot<br>
+        <b style="color:var(--acc)">Démarche :</b> Fixer T₁ et T₂, varier Q₁, relever W, Q₂, calculer η et comparer à η_Carnot.
+      </div>
+      <div id="tp-summary" style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--yel);background:var(--s2);border-radius:6px;padding:8px;line-height:1.8;"></div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn btn-exp" onclick="exportTP()">⬇ Exporter TXT</button>
+      </div>
+    </div>
+
+    <!-- ONGLET 4: RÉSULTATS -->
+    <div class="tpane" id="tp4">
+      <div class="card-grid" style="margin-bottom:8px;">
+        <div class="card grn"><div class="cl">Travail utile W</div><div class="cv" id="r-W">—</div><div class="cu">kJ</div></div>
+        <div class="card"><div class="cl">η réel</div><div class="cv" id="r-eta">—</div><div class="cu">%</div></div>
+        <div class="card yel"><div class="cl">η Carnot</div><div class="cv" id="r-carnot">—</div><div class="cu">%</div></div>
+        <div class="card red"><div class="cl">Q₂ rejeté</div><div class="cv" id="r-Q2">—</div><div class="cu">kJ</div></div>
+        <div class="card"><div class="cl">ΔS univers</div><div class="cv" id="r-dS">—</div><div class="cu">kJ/K</div></div>
+        <div class="card"><div class="cl">Irréversibilité</div><div class="cv" id="r-irrev">—</div><div class="cu">%</div></div>
+      </div>
+      <div style="font-size:9px;font-weight:600;color:var(--txt2);margin-bottom:6px;">✅ Vérification TP</div>
+      <div class="verif-row"><input type="checkbox" id="vf1"><label for="vf1">η &lt; η_Carnot (2e principe vérifié)</label><span class="badge" id="vb1">—</span></div>
+      <div class="verif-row"><input type="checkbox" id="vf2"><label for="vf2">W = Q₁ - Q₂ (1er principe)</label><span class="badge" id="vb2">—</span></div>
+      <div class="verif-row"><input type="checkbox" id="vf3"><label for="vf3">ΔS_univ ≥ 0 (irréversibilité)</label><span class="badge" id="vb3">—</span></div>
+      <div class="verif-row"><input type="checkbox" id="vf4"><label for="vf4">η_Carnot = 1 - T₂/T₁</label><span class="badge" id="vb4">—</span></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===================== STATE =====================
+const ST = {
+  running: false,
+  time: 0,
+  view: '2d',
+  T1: 800, T2: 300, Q1: 1000,
+  etaReal: 0.35,
+  carnotMode: true,
+  speed: 1,
+  particles: [],
+  mx: null, my: null,
+  raf: null,
+  phase: 0,
+  cycleT: 0,
+  cycleCount: 0
+};
+
+const c2 = document.getElementById('c2d');
+const ctx = c2.getContext('2d');
+
+// ===================== RESIZE =====================
+function rsz() {
+  const sw = document.getElementById('sw');
+  c2.width = sw.clientWidth;
+  c2.height = sw.clientHeight;
+  d2();
+}
+
+// ===================== SLIDERS =====================
+function bindSlider(id, lvId, dec, cb) {
+  const el = document.getElementById(id);
+  const lv = document.getElementById(lvId);
+  if (!el) return;
+  el.addEventListener('input', function() {
+    const v = parseFloat(this.value);
+    lv.textContent = v.toFixed(dec) + (lvId==='lv-T1'||lvId==='lv-T2' ? ' K' : lvId==='lv-eta' ? ' %' : lvId==='lv-spd' ? '×' : lvId==='lv-Q1' ? ' kJ' : '');
+    if (cb) cb(v);
+    uR();
+    if (!ST.running) d2();
+  });
+}
+
+bindSlider('s-T1','lv-T1',0,v=>{ST.T1=v;});
+bindSlider('s-T2','lv-T2',0,v=>{ST.T2=v;});
+bindSlider('s-Q1','lv-Q1',0,v=>{ST.Q1=v;});
+bindSlider('s-eta','lv-eta',0,v=>{ST.etaReal=v/100;});
+bindSlider('s-spd','lv-spd',1,v=>{ST.speed=v;});
+
+document.getElementById('ck-carnot').addEventListener('change', function() {
+  ST.carnotMode = this.checked;
+  document.getElementById('s-eta').disabled = this.checked;
+  uR();
+  if (!ST.running) d2();
+});
+
+// ===================== CALCULS =====================
+function calcCarnot() { return 1 - ST.T2 / ST.T1; }
+function calcEta() { return ST.carnotMode ? calcCarnot() : ST.etaReal; }
+function calcW() { return ST.Q1 * calcEta(); }
+function calcQ2() { return ST.Q1 - calcW(); }
+function calcDeltaS() { return calcQ2()/ST.T2 - ST.Q1/ST.T1; }
+
+// ===================== UPDATE DISPLAY =====================
+function uR() {
+  const ec = calcCarnot(), er = calcEta();
+  const W = calcW(), Q2 = calcQ2(), dS = calcDeltaS();
+  const pow = W / 2.5; // kW (cycle arbitraire 2.5s)
+  const irrev = ec > 0 ? ((ec - er) / ec * 100) : 0;
+
+  // Mesures
+  setText('m-T1', ST.T1.toFixed(0));
+  setText('m-T2', ST.T2.toFixed(0));
+  setText('m-Q1', ST.Q1.toFixed(0));
+  setText('m-Q2', Q2.toFixed(1));
+  setText('m-W', W.toFixed(1));
+  setText('m-eta', (er*100).toFixed(1));
+  setText('m-carnot', (ec*100).toFixed(1));
+  setText('m-pow', pow.toFixed(1));
+
+  // Résultats
+  setText('r-W', W.toFixed(1));
+  setText('r-eta', (er*100).toFixed(1));
+  setText('r-carnot', (ec*100).toFixed(1));
+  setText('r-Q2', Q2.toFixed(1));
+  setText('r-dS', dS.toFixed(3));
+  setText('r-irrev', irrev.toFixed(1));
+
+  // Badges vérif
+  const ok1 = er <= ec + 0.001;
+  const ok2 = Math.abs(W + Q2 - ST.Q1) < 0.1;
+  const ok3 = dS >= -0.001;
+  const ec2 = (1 - ST.T2/ST.T1);
+  const ok4 = Math.abs(ec2 - ec) < 0.001;
+
+  setBadge('vb1', ok1 ? `η=${(er*100).toFixed(1)}% ≤ ${(ec*100).toFixed(1)}%` : 'VIOLATION', ok1);
+  setBadge('vb2', `${W.toFixed(0)}=${ST.Q1}-${Q2.toFixed(0)}`, ok2);
+  setBadge('vb3', `ΔS=${dS.toFixed(3)}`, ok3);
+  setBadge('vb4', `${(ec*100).toFixed(1)}%`, ok4);
+
+  setCheck('vf1', ok1);
+  setCheck('vf2', ok2);
+  setCheck('vf3', ok3);
+  setCheck('vf4', ok4);
+
+  // TP summary
+  document.getElementById('tp-summary').innerHTML =
+    `T₁ = ${ST.T1} K    T₂ = ${ST.T2} K\n` +
+    `Q₁ = ${ST.Q1} kJ\n` +
+    `η_Carnot = 1 - ${ST.T2}/${ST.T1} = ${(ec*100).toFixed(2)} %\n` +
+    `η_réel   = ${(er*100).toFixed(2)} %\n` +
+    `W = η × Q₁ = ${W.toFixed(2)} kJ\n` +
+    `Q₂ = Q₁ - W = ${Q2.toFixed(2)} kJ\n` +
+    `ΔS_univ = ${dS.toFixed(4)} kJ/K`;
+}
+
+function setText(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = v;
+}
+function setBadge(id, txt, ok) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = txt;
+  el.style.background = ok ? 'rgba(0,255,136,0.15)' : 'rgba(255,64,96,0.2)';
+  el.style.color = ok ? 'var(--grn)' : 'var(--red)';
+}
+function setCheck(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.checked = v;
+}
+
+// ===================== DRAW 2D =====================
+function d2() {
+  const W = c2.width, H = c2.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Fond
+  const grd = ctx.createLinearGradient(0,0,W,H);
+  grd.addColorStop(0,'#04080f');
+  grd.addColorStop(1,'#060d18');
+  ctx.fillStyle = grd;
+  ctx.fillRect(0,0,W,H);
+
+  // Grille
+  ctx.strokeStyle = 'rgba(0,229,255,0.03)';
+  ctx.lineWidth = 1;
+  for (let x=0;x<W;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+  for (let y=0;y<H;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+
+  const cx = W/2, cy = H/2;
+  const ec = calcCarnot(), er = calcEta();
+  const Wv = calcW(), Q2v = calcQ2();
+
+  // ---- SCHEMA MACHINE THERMIQUE ----
+  const srcH = Math.min(H*0.22, 80);
+  const srcW = Math.min(W*0.35, 140);
+  const engR = Math.min(W*0.1, 50);
+  const yT1 = H * 0.18;
+  const yT2 = H * 0.82;
+  const yEng = cy;
+
+  // Source chaude (haut)
+  drawSource(cx, yT1, srcW, srcH, '#ff6030', `T₁ = ${ST.T1} K`, 'SOURCE CHAUDE', ST.time);
+
+  // Source froide (bas)
+  drawSource(cx, yT2, srcW, srcH, '#3080ff', `T₂ = ${ST.T2} K`, 'SOURCE FROIDE', ST.time);
+
+  // Moteur (milieu)
+  drawEngine(cx, yEng, engR, ST.time, er);
+
+  // Flèches de flux énergétique animées
+  const t = ST.time;
+  const flowQ1 = (ST.Q1 / 2000);
+  const flowW = (Wv / 2000);
+  const flowQ2 = (Q2v / 2000);
+
+  // Q1: Source chaude → Moteur
+  drawFlowArrow(cx, yT1 + srcH/2, cx, yEng - engR, '#ff9030', `Q₁=${ST.Q1.toFixed(0)} kJ`, t, 1.0, flowQ1);
+
+  // W: Moteur → Droite
+  const wxEnd = cx + engR + Math.min(W*0.2, 100);
+  drawFlowArrow(cx + engR, yEng, wxEnd, yEng, '#00ff88', `W=${Wv.toFixed(0)} kJ`, t, 0.8, flowW);
+  // Symbole générateur
+  drawGenerator(wxEnd + 18, yEng, 18, t);
+
+  // Q2: Moteur → Source froide
+  drawFlowArrow(cx, yEng + engR, cx, yT2 - srcH/2, '#3080ff', `Q₂=${Q2v.toFixed(0)} kJ`, t, 1.0, flowQ2);
+
+  // Rendement affiché
+  const etaPct = (er*100).toFixed(1);
+  const cPct = (ec*100).toFixed(1);
+  ctx.font = 'bold 13px Outfit';
+  ctx.fillStyle = 'rgba(255,215,64,0.9)';
+  ctx.textAlign = 'left';
+  ctx.fillText(`η = ${etaPct}%`, 12, H - 36);
+  ctx.fillStyle = 'rgba(0,229,255,0.7)';
+  ctx.fillText(`η_Carnot = ${cPct}%`, 12, H - 20);
+
+  // Particules
+  tkP();
+
+  requestIdleCallback ? null : null;
+}
+
+function drawSource(x, y, sw, sh, color, label, title, t) {
+  ctx.save();
+  // Corps
+  const rg = ctx.createLinearGradient(x-sw/2, y-sh/2, x+sw/2, y+sh/2);
+  rg.addColorStop(0, color + '33');
+  rg.addColorStop(1, color + '11');
+  ctx.fillStyle = rg;
+  ctx.strokeStyle = color + 'aa';
+  ctx.lineWidth = 2;
+  roundRect(ctx, x-sw/2, y-sh/2, sw, sh, 10);
+  ctx.fill();
+  ctx.stroke();
+
+  // Animation thermique (oscillation)
+  const off = Math.sin(t * 2 + (y > 100 ? 0 : Math.PI)) * 3;
+  ctx.fillStyle = color + 'cc';
+  ctx.font = 'bold 11px Outfit';
+  ctx.textAlign = 'center';
+  ctx.fillText(title, x, y - 4 + off);
+  ctx.fillStyle = '#ffffff99';
+  ctx.font = '10px JetBrains Mono';
+  ctx.fillText(label, x, y + 12 + off);
+  ctx.restore();
+}
+
+function drawEngine(x, y, r, t, eta) {
+  ctx.save();
+  // Glow
+  const g = ctx.createRadialGradient(x,y,0,x,y,r*2.5);
+  g.addColorStop(0, 'rgba(0,255,136,0.15)');
+  g.addColorStop(1, 'transparent');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x,y,r*2.5,0,Math.PI*2);
+  ctx.fill();
+
+  // Cercle moteur
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI*2);
+  const eg = ctx.createRadialGradient(x,y,0,x,y,r);
+  eg.addColorStop(0, '#1a3020');
+  eg.addColorStop(1, '#0a1810');
+  ctx.fillStyle = eg;
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,255,136,0.8)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Roue dentée animée
+  const ang = t * 1.5;
+  const teeth = 8;
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(ang);
+  ctx.strokeStyle = 'rgba(0,255,136,0.5)';
+  ctx.lineWidth = 1.5;
+  for (let i = 0; i < teeth; i++) {
+    const a = (i / teeth) * Math.PI * 2;
+    const r1 = r * 0.55, r2 = r * 0.72;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(a)*r1, Math.sin(a)*r1);
+    ctx.lineTo(Math.cos(a)*r2, Math.sin(a)*r2);
+    ctx.stroke();
+  }
+  // Cercle interne
+  ctx.beginPath();
+  ctx.arc(0, 0, r*0.4, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(0,229,255,0.6)';
+  ctx.stroke();
+  ctx.restore();
+
+  // Label
+  ctx.fillStyle = 'rgba(0,255,136,0.9)';
+  ctx.font = 'bold 10px Outfit';
+  ctx.textAlign = 'center';
+  ctx.fillText('MOTEUR', x, y + r + 14);
+  ctx.restore();
+}
+
+function drawFlowArrow(x1, y1, x2, y2, color, label, t, w, intensity) {
+  const n = 5;
+  const dx = x2 - x1, dy = y2 - y1;
+  const len = Math.sqrt(dx*dx+dy*dy);
+  const ux = dx/len, uy = dy/len;
+  const pw = Math.max(2, intensity * 14 + 2);
+
+  ctx.save();
+  ctx.strokeStyle = color + 'cc';
+  ctx.lineWidth = pw;
+  ctx.lineCap = 'round';
+
+  // Ligne de fond
+  ctx.globalAlpha = 0.3;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+
+  // Particules animées sur la flèche
+  ctx.globalAlpha = 1;
+  for (let i = 0; i < n; i++) {
+    const phase = ((t * w + i / n) % 1);
+    const px = x1 + dx * phase;
+    const py = y1 + dy * phase;
+    ctx.beginPath();
+    ctx.arc(px, py, pw/2 + 1, 0, Math.PI*2);
+    const pg = ctx.createRadialGradient(px,py,0,px,py,pw);
+    pg.addColorStop(0, color);
+    pg.addColorStop(1, color + '00');
+    ctx.fillStyle = pg;
+    ctx.fill();
+  }
+
+  // Flèche tête
+  const ax = x2 - ux*14, ay = y2 - uy*14;
+  const nx = -uy, ny = ux;
+  ctx.globalAlpha = 0.9;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(ax + nx*6, ay + ny*6);
+  ctx.lineTo(ax - nx*6, ay - ny*6);
+  ctx.closePath();
+  ctx.fill();
+
+  // Label
+  const mx = (x1+x2)/2 + ny*16, my = (y1+y2)/2 + nx*(-16);
+  ctx.font = 'bold 9px JetBrains Mono';
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 6;
+  ctx.fillText(label, mx, my);
+  ctx.shadowBlur = 0;
+  ctx.restore();
+}
+
+function drawGenerator(x, y, r, t) {
+  ctx.save();
+  const g = ctx.createRadialGradient(x,y,0,x,y,r*1.5);
+  g.addColorStop(0,'rgba(0,255,136,0.2)');
+  g.addColorStop(1,'transparent');
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(x,y,r*1.5,0,Math.PI*2);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(0,255,136,0.7)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x,y,r,0,Math.PI*2);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(0,255,136,0.9)';
+  ctx.font = 'bold 12px JetBrains Mono';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('G', x, y);
+  ctx.fillStyle = 'rgba(0,255,136,0.6)';
+  ctx.font = '8px Outfit';
+  ctx.fillText('GÉN.', x, y+r+10);
+  ctx.restore();
+}
+
+function roundRect(c, x, y, w, h, r) {
+  c.beginPath();
+  c.moveTo(x+r,y);
+  c.lineTo(x+w-r,y);
+  c.quadraticCurveTo(x+w,y,x+w,y+r);
+  c.lineTo(x+w,y+h-r);
+  c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  c.lineTo(x+r,y+h);
+  c.quadraticCurveTo(x,y+h,x,y+h-r);
+  c.lineTo(x,y+r);
+  c.quadraticCurveTo(x,y,x+r,y);
+  c.closePath();
+}
+
+// ===================== PARTICULES =====================
+function spP(x, y, col, n) {
+  col = col || '#00e5ff';
+  n = n || 8;
+  for (let i = 0; i < n; i++) {
+    const a = Math.random()*Math.PI*2;
+    const s = Math.random()*2+1;
+    ST.particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,col});
+  }
+}
+function tkP() {
+  ST.particles = ST.particles.filter(p=>p.life>0);
+  for (const p of ST.particles) {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.05;
+    p.life -= 0.02;
+    ctx.save();
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle = p.col;
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,3*p.life,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+// ===================== LOOP =====================
+function lp2() {
+  if (!ST.running) return;
+  ST.time += 0.016 * ST.speed;
+  ST.cycleT += 0.016 * ST.speed;
+  if (ST.cycleT > 2.5) {
+    ST.cycleT = 0;
+    ST.cycleCount++;
+    spP(c2.width/2, c2.height/2, '#00ff88', 12);
+  }
+  d2();
+  ST.raf = requestAnimationFrame(lp2);
+}
+
+// ===================== CONTROLES =====================
+function doStart() {
+  if (ST.view === '3d') {
+    ST.speed = parseFloat(document.getElementById('s-spd').value) || 1;
+    toast('Animation 3D en cours');
+    return;
+  }
+  if (!ST.running) {
+    ST.running = true;
+    toast('Simulation lancée');
+    lp2();
+  }
+}
+function doPause() {
+  if (ST.view === '3d') {
+    ST.speed = ST.speed > 0 ? 0 : parseFloat(document.getElementById('s-spd').value) || 1;
+    toast(ST.speed > 0 ? 'Reprise 3D' : 'Pause 3D');
+    return;
+  }
+  ST.running = !ST.running;
+  if (ST.running) lp2();
+  toast(ST.running ? 'Reprise' : 'Pause');
+}
+function doReset() {
+  ST.running = false;
+  if (ST.raf) cancelAnimationFrame(ST.raf);
+  ST.time = 0;
+  ST.cycleT = 0;
+  ST.cycleCount = 0;
+  ST.particles = [];
+  if (ST.view === '2d') d2();
+  if (threeNS.time3 !== undefined) threeNS.time3 = 0;
+  toast('Réinitialisé');
+}
+
+// ===================== ONGLETS =====================
+function selTab(i) {
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('act',j===i));
+  document.querySelectorAll('.tpane').forEach((t,j)=>t.classList.toggle('act',j===i));
+}
+
+// ===================== TOOLTIP =====================
+c2.addEventListener('mousemove', function(e) {
+  const rect = c2.getBoundingClientRect();
+  const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  ST.mx = mx; ST.my = my;
+  const W = c2.width, H = c2.height;
+  const cy = H/2;
+  const engR = Math.min(W*0.1, 50);
+  const dx = mx - W/2, dy = my - cy;
+  const inEng = Math.sqrt(dx*dx+dy*dy) < engR;
+  const tip = document.getElementById('tip');
+  if (inEng) {
+    const ec = calcCarnot(), er = calcEta();
+    tip.style.display = 'block';
+    tip.style.left = (e.clientX + 12) + 'px';
+    tip.style.top = (e.clientY - 30) + 'px';
+    tip.innerHTML = `η = ${(er*100).toFixed(2)}%<br>η_Carnot = ${(ec*100).toFixed(2)}%<br>W = ${calcW().toFixed(1)} kJ<br>Q₂ = ${calcQ2().toFixed(1)} kJ`;
+  } else {
+    tip.style.display = 'none';
+  }
+});
+c2.addEventListener('mouseleave', ()=>{document.getElementById('tip').style.display='none';});
+c2.addEventListener('click', function(e) {
+  const rect = c2.getBoundingClientRect();
+  spP(e.clientX - rect.left, e.clientY - rect.top, '#00e5ff', 10);
+  if (!ST.running) d2();
+});
+
+// Touch
+let ptch = null;
+c2.addEventListener('touchstart', function(e) {
+  if (e.touches.length === 1) {
+    const t = e.touches[0];
+    const rect = c2.getBoundingClientRect();
+    spP(t.clientX-rect.left, t.clientY-rect.top, '#00e5ff', 10);
+  } else if (e.touches.length === 2) {
+    ptch = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+  e.preventDefault();
+},{passive:false});
+c2.addEventListener('touchmove', function(e) {
+  if (e.touches.length === 2 && ptch !== null) {
+    const d = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    const ratio = d / ptch;
+    const el = document.getElementById('s-T1');
+    const nv = Math.min(1200, Math.max(400, ST.T1 * ratio));
+    el.value = nv;
+    ST.T1 = nv;
+    document.getElementById('lv-T1').textContent = nv.toFixed(0) + ' K';
+    ptch = d;
+    uR();
+    if (!ST.running) d2();
+  }
+  e.preventDefault();
+},{passive:false});
+
+// ===================== EXPORT TP =====================
+function exportTP() {
+  const ec = calcCarnot(), er = calcEta();
+  const W = calcW(), Q2v = calcQ2(), dS = calcDeltaS();
+  const txt = [
+    '==========================================',
+    '   RAPPORT TP — MACHINE THERMIQUE',
+    '   SimLab — ' + new Date().toLocaleString(),
+    '==========================================',
+    '',
+    'PARAMÈTRES',
+    `  T₁ (source chaude)  = ${ST.T1} K`,
+    `  T₂ (source froide)  = ${ST.T2} K`,
+    `  Q₁ (chaleur reçue)  = ${ST.Q1} kJ`,
+    `  Mode                = ${ST.carnotMode ? 'Carnot (idéal)' : 'Réel'}`,
+    '',
+    'RÉSULTATS',
+    `  η_Carnot = 1 - T₂/T₁ = 1 - ${ST.T2}/${ST.T1} = ${(ec*100).toFixed(2)} %`,
+    `  η_réel               = ${(er*100).toFixed(2)} %`,
+    `  W = η × Q₁           = ${W.toFixed(2)} kJ`,
+    `  Q₂ = Q₁ - W          = ${Q2v.toFixed(2)} kJ`,
+    `  ΔS_univers           = ${dS.toFixed(4)} kJ/K`,
+    '',
+    'VÉRIFICATIONS',
+    `  η ≤ η_Carnot ? ${er <= ec+0.001 ? 'OUI ✓' : 'NON ✗'}`,
+    `  W = Q₁ - Q₂ ? ${Math.abs(W+Q2v-ST.Q1)<0.1 ? 'OUI ✓' : 'NON ✗'}`,
+    `  ΔS_univ ≥ 0 ? ${dS >= -0.001 ? 'OUI ✓' : 'NON ✗'}`,
+    '',
+    'LOIS UTILISÉES',
+    '  η = W/Q₁ = 1 - Q₂/Q₁',
+    '  η_Carnot = 1 - T₂/T₁',
+    '  ΔS = Q₂/T₂ - Q₁/T₁ ≥ 0',
+    '==========================================',
+  ].join('\n');
+  const blob = new Blob([txt], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'TP_Machine_Thermique.txt';
+  a.click();
+  toast('Export TXT téléchargé');
+}
+
+// ===================== TOAST =====================
+function toast(m) {
+  const el = document.getElementById('toast');
+  el.textContent = m;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2600);
+}
+
+// ===================== 3D COMPLET =====================
+var THREE_LOADED = false;
+var threeNS = {};
+
+function switchV() {
+  if (ST.view === '2d') {
+    ST.view = '3d';
+    document.getElementById('v3d-btn').textContent = '2D';
+    document.getElementById('c2d').style.display = 'none';
+    document.getElementById('c3d').style.display = 'block';
+    ST.running = false;
+    if (ST.raf) cancelAnimationFrame(ST.raf);
+    i3D();
+  } else {
+    ST.view = '2d';
+    document.getElementById('v3d-btn').textContent = '3D';
+    document.getElementById('c2d').style.display = 'block';
+    document.getElementById('c3d').style.display = 'none';
+    if (threeNS.rafId) cancelAnimationFrame(threeNS.rafId);
+    d2();
+  }
+}
+
+function i3D() {
+  if (THREE_LOADED) {
+    bld3();
+    return;
+  }
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  s.onload = function() {
+    THREE_LOADED = true;
+    toast('Scène 3D chargée');
+    bld3();
+  };
+  s.onerror = function() { toast('Erreur chargement Three.js'); };
+  document.head.appendChild(s);
+}
+
+function bld3() {
+  var T = window.THREE;
+  var sw = document.getElementById('sw');
+  var W = sw.clientWidth, H = sw.clientHeight;
+  var canvas3 = document.getElementById('c3d');
+
+  // Nettoyer ancienne scène
+  if (threeNS.renderer) {
+    threeNS.renderer.dispose();
+  }
+  threeNS = {};
+
+  // Renderer
+  var renderer = new T.WebGLRenderer({canvas: canvas3, antialias: true, alpha: true});
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x04080f, 1);
+  renderer.shadowMap.enabled = true;
+  threeNS.renderer = renderer;
+
+  // Scène
+  var scene = new T.Scene();
+  scene.fog = new T.FogExp2(0x04080f, 0.04);
+  threeNS.scene = scene;
+
+  // Caméra
+  var camera = new T.PerspectiveCamera(55, W/H, 0.1, 200);
+  camera.position.set(0, 8, 18);
+  camera.lookAt(0, 0, 0);
+  threeNS.camera = camera;
+
+  // Lumières
+  var ambL = new T.AmbientLight(0x112233, 1.2);
+  scene.add(ambL);
+
+  var hotL = new T.PointLight(0xff6030, 3, 20);
+  hotL.position.set(0, 6, 0);
+  scene.add(hotL);
+  threeNS.hotL = hotL;
+
+  var coldL = new T.PointLight(0x3080ff, 2, 20);
+  coldL.position.set(0, -6, 0);
+  scene.add(coldL);
+  threeNS.coldL = coldL;
+
+  var engL = new T.PointLight(0x00ff88, 2, 12);
+  engL.position.set(0, 0, 0);
+  scene.add(engL);
+
+  // Grille de fond
+  var gridH = new T.GridHelper(40, 40, 0x00e5ff11, 0x00e5ff08);
+  gridH.position.y = -8;
+  scene.add(gridH);
+
+  // ---- SOURCE CHAUDE (haut) ----
+  var hotGeo = new T.SphereGeometry(2.2, 32, 32);
+  var hotMat = new T.MeshStandardMaterial({
+    color: 0xff4020,
+    emissive: 0xff2000,
+    emissiveIntensity: 0.8,
+    roughness: 0.3,
+    metalness: 0.2
+  });
+  var hotSphere = new T.Mesh(hotGeo, hotMat);
+  hotSphere.position.set(0, 7, 0);
+  scene.add(hotSphere);
+  threeNS.hotSphere = hotSphere;
+
+  // Glow sphère chaude
+  var hotGlowGeo = new T.SphereGeometry(2.8, 16, 16);
+  var hotGlowMat = new T.MeshBasicMaterial({color:0xff4020, transparent:true, opacity:0.12, side:T.BackSide});
+  var hotGlow = new T.Mesh(hotGlowGeo, hotGlowMat);
+  hotSphere.add(hotGlow);
+
+  // Label T1 (plan)
+  threeNS.hotLabel = makeLabel3D(scene, T, 'T\u2081', 0, 9.8, 0, '#ff9050');
+
+  // ---- SOURCE FROIDE (bas) ----
+  var coldGeo = new T.SphereGeometry(2.2, 32, 32);
+  var coldMat = new T.MeshStandardMaterial({
+    color: 0x2060cc,
+    emissive: 0x0030aa,
+    emissiveIntensity: 0.6,
+    roughness: 0.4,
+    metalness: 0.3
+  });
+  var coldSphere = new T.Mesh(coldGeo, coldMat);
+  coldSphere.position.set(0, -7, 0);
+  scene.add(coldSphere);
+  threeNS.coldSphere = coldSphere;
+
+  var coldGlowGeo = new T.SphereGeometry(2.8, 16, 16);
+  var coldGlowMat = new T.MeshBasicMaterial({color:0x2060cc, transparent:true, opacity:0.12, side:T.BackSide});
+  coldSphere.add(new T.Mesh(coldGlowGeo, coldGlowMat));
+
+  threeNS.coldLabel = makeLabel3D(scene, T, 'T\u2082', 0, -9.8, 0, '#4080ff');
+
+  // ---- MOTEUR (centre) ----
+  // Corps cylindrique
+  var engGeo = new T.CylinderGeometry(1.8, 1.8, 3, 32);
+  var engMat = new T.MeshStandardMaterial({
+    color: 0x1a3020,
+    emissive: 0x003310,
+    emissiveIntensity: 0.4,
+    roughness: 0.5,
+    metalness: 0.8
+  });
+  var engMesh = new T.Mesh(engGeo, engMat);
+  scene.add(engMesh);
+  threeNS.engMesh = engMesh;
+
+  // Anneau moteur
+  var ringGeo = new T.TorusGeometry(1.9, 0.12, 16, 60);
+  var ringMat = new T.MeshStandardMaterial({color:0x00ff88, emissive:0x00cc44, emissiveIntensity:1.0});
+  var ring1 = new T.Mesh(ringGeo, ringMat);
+  ring1.position.y = 1.2;
+  ring1.rotation.x = Math.PI/2;
+  scene.add(ring1);
+  var ring2 = new T.Mesh(ringGeo, ringMat);
+  ring2.position.y = -1.2;
+  ring2.rotation.x = Math.PI/2;
+  scene.add(ring2);
+  threeNS.ring1 = ring1;
+  threeNS.ring2 = ring2;
+
+  // Piston
+  var pistGeo = new T.CylinderGeometry(0.5, 0.5, 1.2, 16);
+  var pistMat = new T.MeshStandardMaterial({color:0x00e5ff, emissive:0x006688, emissiveIntensity:0.5, metalness:0.9, roughness:0.2});
+  var piston = new T.Mesh(pistGeo, pistMat);
+  piston.position.set(2.5, 0, 0);
+  scene.add(piston);
+  threeNS.piston = piston;
+
+  // Bielle
+  var bielleGeo = new T.CylinderGeometry(0.1, 0.1, 2.5, 8);
+  var bielleMat = new T.MeshStandardMaterial({color:0x8899aa, metalness:0.8});
+  var bielle = new T.Mesh(bielleGeo, bielleMat);
+  bielle.position.set(1.5, 0, 0);
+  bielle.rotation.z = Math.PI/2;
+  scene.add(bielle);
+  threeNS.bielle = bielle;
+
+  // Vilebrequin (sphère excentrée)
+  var vileGeo = new T.SphereGeometry(0.25, 12, 12);
+  var vileMat = new T.MeshStandardMaterial({color:0xffd740, emissive:0xcc8800, emissiveIntensity:0.5, metalness:0.7});
+  var vile = new T.Mesh(vileGeo, vileMat);
+  scene.add(vile);
+  threeNS.vile = vile;
+
+  // Axe de rotation
+  var axeGeo = new T.CylinderGeometry(0.08, 0.08, 3.2, 8);
+  var axeMat = new T.MeshStandardMaterial({color:0x556677, metalness:0.9});
+  var axe = new T.Mesh(axeGeo, axeMat);
+  axe.rotation.z = Math.PI/2;
+  scene.add(axe);
+
+  // Générateur (droite)
+  var genGeo = new T.CylinderGeometry(0.9, 0.9, 2, 16);
+  var genMat = new T.MeshStandardMaterial({color:0x0a2010, emissive:0x003311, emissiveIntensity:0.5, metalness:0.7, roughness:0.4});
+  var genMesh = new T.Mesh(genGeo, genMat);
+  genMesh.position.set(5.5, 0, 0);
+  genMesh.rotation.z = Math.PI/2;
+  scene.add(genMesh);
+
+  var genRingGeo = new T.TorusGeometry(0.95, 0.08, 8, 24);
+  var genRingMat = new T.MeshStandardMaterial({color:0x00ff88, emissive:0x00cc44, emissiveIntensity:1});
+  var genRing = new T.Mesh(genRingGeo, genRingMat);
+  genRing.position.set(5.5, 0, 0);
+  scene.add(genRing);
+  threeNS.genRing = genRing;
+
+  // Connexion moteur-générateur (arbre)
+  var shaftGeo = new T.CylinderGeometry(0.12, 0.12, 2, 8);
+  var shaftMat = new T.MeshStandardMaterial({color:0x778899, metalness:0.9});
+  var shaft = new T.Mesh(shaftGeo, shaftMat);
+  shaft.position.set(3.8, 0, 0);
+  shaft.rotation.z = Math.PI/2;
+  scene.add(shaft);
+
+  // ---- FLUX ÉNERGÉTIQUES (particules) ----
+  threeNS.flowParticles = [];
+  // Q1: hot -> moteur (descend)
+  threeNS.flowQ1 = createFlowSystem(T, scene, 40, 0xff6030);
+  // Q2: moteur -> cold (descend)
+  threeNS.flowQ2 = createFlowSystem(T, scene, 30, 0x4080ff);
+  // W: moteur -> generateur (droite)
+  threeNS.flowW = createFlowSystem(T, scene, 25, 0x00ff88);
+
+  // ---- ORBITE CAMERA ----
+  threeNS.orb = {theta: 0.3, phi: Math.PI/3, r: 18, dragging: false, lastX: 0, lastY: 0};
+  setup3ctl(canvas3);
+
+  threeNS.time3 = 0;
+  s3l();
+  onRsz3();
+}
+
+function makeLabel3D(scene, T, text, x, y, z, color) {
+  // Sphère indicatrice colorée (labels canvas 3D non natifs en Three r128 sans extras)
+  var geo = new T.SphereGeometry(0.15, 8, 8);
+  var mat = new T.MeshBasicMaterial({color: parseInt(color.replace('#','0x'))});
+  var m = new T.Mesh(geo, mat);
+  m.position.set(x, y, z);
+  scene.add(m);
+  return m;
+}
+
+function createFlowSystem(T, scene, count, hexColor) {
+  var geo = new T.BufferGeometry();
+  var positions = new Float32Array(count * 3);
+  geo.setAttribute('position', new T.BufferAttribute(positions, 3));
+  var mat = new T.PointsMaterial({color: hexColor, size: 0.18, transparent: true, opacity: 0.85, depthWrite: false});
+  var pts = new T.Points(geo, mat);
+  scene.add(pts);
+  var particles = [];
+  for (var i = 0; i < count; i++) {
+    particles.push({t: Math.random(), active: true});
+  }
+  return {pts: pts, particles: particles, geo: geo, count: count};
+}
+
+function updateFlow(flow, x1, y1, z1, x2, y2, z2, speed) {
+  var pos = flow.geo.attributes.position.array;
+  for (var i = 0; i < flow.count; i++) {
+    var p = flow.particles[i];
+    p.t += speed * 0.008;
+    if (p.t > 1) p.t -= 1;
+    var t = p.t;
+    // Légère dispersion latérale
+    var jx = (Math.sin(i * 1.7 + p.t * 6) * 0.2);
+    var jz = (Math.cos(i * 2.3 + p.t * 5) * 0.2);
+    pos[i*3]   = x1 + (x2-x1)*t + jx;
+    pos[i*3+1] = y1 + (y2-y1)*t;
+    pos[i*3+2] = z1 + (z2-z1)*t + jz;
+  }
+  flow.geo.attributes.position.needsUpdate = true;
+}
+
+function s3l() {
+  if (ST.view !== '3d') return;
+  threeNS.rafId = requestAnimationFrame(s3l);
+  r3();
+}
+
+function r3() {
+  var T = window.THREE;
+  if (!T || !threeNS.renderer) return;
+  threeNS.time3 = (threeNS.time3 || 0) + 0.016 * ST.speed;
+  var t = threeNS.time3;
+  var ec = calcCarnot(), er = calcEta();
+  var Q2v = calcQ2(), Wv = calcW();
+
+  // Pulsation source chaude
+  var hp = 1 + 0.06 * Math.sin(t * 3);
+  threeNS.hotSphere.scale.set(hp, hp, hp);
+  threeNS.hotL.intensity = 2.5 + 1.5 * Math.sin(t * 2.5);
+  threeNS.hotL.color.setHSL(0.06 - er * 0.05, 1, 0.5);
+
+  // Pulsation source froide
+  var cp = 1 + 0.04 * Math.sin(t * 2.5 + 1);
+  threeNS.coldSphere.scale.set(cp, cp, cp);
+  threeNS.coldL.intensity = 1.5 + Q2v / ST.Q1 * 2;
+
+  // Animation piston/bielle/vilebrequin
+  var crank = t * 2.5 * (1 + er);
+  var piston_x = 2.5 + Math.cos(crank) * 0.9;
+  threeNS.piston.position.x = piston_x;
+  var bx = (piston_x + 0.6) / 2;
+  threeNS.bielle.position.x = bx;
+  threeNS.bielle.rotation.z = Math.atan2(0, piston_x - 0.6);
+  threeNS.vile.position.set(Math.cos(crank) * 0.9, Math.sin(crank) * 0.9, 0);
+
+  // Rotation anneaux moteur
+  threeNS.ring1.rotation.y = t * 1.5;
+  threeNS.ring2.rotation.y = -t * 1.5;
+  threeNS.genRing.rotation.x = t * 2;
+
+  // Moteur glow
+  threeNS.engMesh.material.emissiveIntensity = 0.3 + 0.2 * Math.sin(t * 3);
+
+  // Flux Q1 (chaud vers moteur) - intensité selon Q1
+  var spd1 = 0.5 + (ST.Q1 / 2000) * 1.5;
+  updateFlow(threeNS.flowQ1, 0, 5.0, 0, 0, 1.5, 0, spd1);
+  threeNS.flowQ1.pts.material.opacity = 0.5 + 0.4 * Math.abs(Math.sin(t * 2));
+  threeNS.flowQ1.pts.material.size = 0.15 + (ST.Q1/2000) * 0.2;
+
+  // Flux Q2 (moteur vers froid)
+  var spd2 = 0.4 + (Q2v / 2000) * 1.2;
+  updateFlow(threeNS.flowQ2, 0, -1.5, 0, 0, -5.0, 0, spd2);
+  threeNS.flowQ2.pts.material.opacity = 0.5 + 0.35 * Math.abs(Math.sin(t * 2.2));
+  threeNS.flowQ2.pts.material.size = 0.13 + (Q2v/2000) * 0.18;
+
+  // Flux W (moteur vers générateur)
+  var spdW = 0.5 + (Wv / 2000) * 2.0;
+  updateFlow(threeNS.flowW, 1.8, 0, 0, 4.8, 0, 0, spdW);
+  threeNS.flowW.pts.material.opacity = 0.6 + 0.35 * Math.abs(Math.sin(t * 3));
+  threeNS.flowW.pts.material.size = 0.12 + (Wv/2000) * 0.2;
+
+  // Caméra orbitale
+  orbC();
+
+  threeNS.renderer.render(threeNS.scene, threeNS.camera);
+}
+
+function orbC() {
+  if (!threeNS.orb) return;
+  var orb = threeNS.orb;
+  var x = orb.r * Math.sin(orb.phi) * Math.sin(orb.theta);
+  var y = orb.r * Math.cos(orb.phi);
+  var z = orb.r * Math.sin(orb.phi) * Math.cos(orb.theta);
+  threeNS.camera.position.set(x, y, z);
+  threeNS.camera.lookAt(0, 0, 0);
+}
+
+function setup3ctl(canvas) {
+  var orb = threeNS.orb;
+  canvas.addEventListener('mousedown', function(e) {
+    orb.dragging = true;
+    orb.lastX = e.clientX;
+    orb.lastY = e.clientY;
+  });
+  window.addEventListener('mouseup', function() { orb.dragging = false; });
+  window.addEventListener('mousemove', function(e) {
+    if (!orb.dragging) return;
+    var dx = e.clientX - orb.lastX;
+    var dy = e.clientY - orb.lastY;
+    orb.theta -= dx * 0.008;
+    orb.phi = Math.max(0.15, Math.min(Math.PI - 0.15, orb.phi + dy * 0.008));
+    orb.lastX = e.clientX;
+    orb.lastY = e.clientY;
+  });
+  canvas.addEventListener('wheel', function(e) {
+    orb.r = Math.max(8, Math.min(40, orb.r + e.deltaY * 0.03));
+    e.preventDefault();
+  }, {passive: false});
+  // Touch
+  var tStart = null;
+  canvas.addEventListener('touchstart', function(e) {
+    if (e.touches.length === 1) {
+      orb.dragging = true;
+      orb.lastX = e.touches[0].clientX;
+      orb.lastY = e.touches[0].clientY;
+    } else if (e.touches.length === 2) {
+      orb.dragging = false;
+      tStart = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+    }
+    e.preventDefault();
+  }, {passive: false});
+  canvas.addEventListener('touchmove', function(e) {
+    if (e.touches.length === 1 && orb.dragging) {
+      var dx = e.touches[0].clientX - orb.lastX;
+      var dy = e.touches[0].clientY - orb.lastY;
+      orb.theta -= dx * 0.01;
+      orb.phi = Math.max(0.15, Math.min(Math.PI - 0.15, orb.phi + dy * 0.01));
+      orb.lastX = e.touches[0].clientX;
+      orb.lastY = e.touches[0].clientY;
+    } else if (e.touches.length === 2 && tStart) {
+      var d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+      orb.r = Math.max(8, Math.min(40, orb.r * (tStart / d)));
+      tStart = d;
+    }
+    e.preventDefault();
+  }, {passive: false});
+  canvas.addEventListener('touchend', function() { orb.dragging = false; tStart = null; });
+}
+
+function onRsz3() {
+  if (!threeNS.renderer) return;
+  var sw = document.getElementById('sw');
+  var W = sw.clientWidth, H = sw.clientHeight;
+  threeNS.renderer.setSize(W, H);
+  threeNS.camera.aspect = W / H;
+  threeNS.camera.updateProjectionMatrix();
+}
+
+// ===================== INIT =====================
+window.addEventListener('resize', function() { rsz(); onRsz3(); });
+rsz();
+uR();
+d2();
+</script>
+
+<!-- ADSTERRA -->
+<script type='text/javascript' src='//pl26527913.profitableratecpm.com/5c/8e/2e/5c8e2eebcfa5e97f9c7d66bb3d9bfcf1.js'></script>
+</body>
+</html>

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
+<title>TP Collisions — Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080f;--panel:#0e1120;--card:#131729;--border:#1e2540;
+  --a1:#ff6b35;--a2:#00e5ff;--a3:#69ff47;--a4:#ffd166;--a5:#c77dff;
+  --text:#dde4f5;--muted:#5a6a8a;
+  --fd:'Syne',sans-serif;--fm:'JetBrains Mono',monospace;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--fm);min-height:100vh;overflow-x:hidden;font-size:14px}
+
+header{background:linear-gradient(135deg,#0f0a1e,#150e28);border-bottom:1px solid var(--border);padding:1rem 1.5rem;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.8rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+.logo{font-family:var(--fd);font-weight:800;font-size:1.1rem;color:var(--a1);letter-spacing:-.02em}
+.logo span{color:var(--a2)}
+.hinfo{font-size:.65rem;color:var(--muted);text-align:right;line-height:1.6}
+.hinfo strong{color:var(--a3)}
+.hinfo a{color:var(--a2);text-decoration:none}
+
+.tabs{display:flex;background:var(--panel);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:1rem 1rem 0}
+.tab{flex:1;padding:.7rem .4rem;text-align:center;cursor:pointer;font-family:var(--fd);font-size:.7rem;font-weight:700;letter-spacing:.04em;color:var(--muted);transition:all .25s;border:none;background:none;text-transform:uppercase}
+.tab.active{background:var(--a1);color:#fff}
+.tab:hover:not(.active){color:var(--text);background:var(--border)}
+
+.workspace{display:grid;grid-template-columns:1fr 290px;gap:1px;background:var(--border);margin:1rem;border-radius:8px;overflow:hidden}
+@media(max-width:768px){.workspace{grid-template-columns:1fr}}
+
+.sim-area{background:var(--card);display:flex;flex-direction:column;align-items:center;padding:1.5rem 1rem}
+.sim-title{font-family:var(--fd);font-size:.8rem;font-weight:700;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:1rem;align-self:flex-start}
+canvas{display:block;border-radius:6px;background:#060912;border:1px solid var(--border);touch-action:none;max-width:100%}
+
+.graph-wrap{margin-top:1rem;width:100%}
+.graph-label{font-size:.6rem;color:var(--muted);margin-bottom:.4rem;letter-spacing:.1em;text-transform:uppercase}
+
+.side-panel{background:var(--panel);padding:1.2rem;display:flex;flex-direction:column;gap:1.1rem;overflow-y:auto;max-height:80vh}
+@media(max-width:768px){.side-panel{max-height:none}}
+
+.psec{border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.phead{background:var(--border);padding:.5rem .8rem;font-family:var(--fd);font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.pbody{padding:.8rem}
+
+.cr{display:flex;flex-direction:column;gap:.25rem;margin-bottom:.75rem}
+.cr:last-child{margin-bottom:0}
+.cl{font-size:.62rem;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.cl .val{font-weight:700}
+.cu{font-size:.55rem;color:var(--muted)}
+input[type=range]{width:100%;accent-color:var(--a1);cursor:pointer;height:20px}
+
+.btn-row{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+.btn{flex:1;min-width:65px;padding:.55rem .4rem;border:none;border-radius:4px;font-family:var(--fm);font-size:.65rem;font-weight:700;cursor:pointer;letter-spacing:.05em;transition:all .2s;text-transform:uppercase}
+.bp{background:var(--a1);color:#fff}.bp:hover{opacity:.85}
+.bn{background:var(--border);color:var(--text)}.bn:hover{background:#2a3060}
+.bs{background:var(--a3);color:#000}
+.bd{background:#ff4060;color:#fff}.bd:hover{opacity:.85}
+.b2{background:var(--a2);color:#000}
+
+/* VELOCITY SLIDERS */
+.vel-block{display:flex;align-items:center;gap:.6rem;margin-bottom:.6rem}
+.vel-ball{width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:.6rem;font-weight:800;color:#fff}
+.vel-col{flex:1}
+
+/* MEASURE GRID */
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.mbox{background:var(--bg);border:1px solid var(--border);border-radius:4px;padding:.55rem;text-align:center}
+.mval{font-family:var(--fd);font-size:1rem;font-weight:700;line-height:1}
+.mlbl{font-size:.53rem;color:var(--muted);margin-top:.18rem;letter-spacing:.08em;text-transform:uppercase}
+.munt{font-size:.57rem;color:var(--a4)}
+
+/* CONSERVATION BARS */
+.cbar-wrap{display:flex;flex-direction:column;gap:.5rem}
+.cbar-row{display:flex;align-items:center;gap:.5rem}
+.cbar-lbl{font-size:.58rem;color:var(--muted);width:26px;text-align:right;flex-shrink:0;line-height:1.3}
+.cbar-track{flex:1;height:10px;background:var(--bg);border-radius:5px;overflow:visible;position:relative}
+.cbar-before{position:absolute;top:0;left:0;height:100%;border-radius:5px;transition:width .15s}
+.cbar-after{position:absolute;top:0;left:0;height:100%;border-radius:5px;opacity:.5;transition:width .15s;border:1px dashed rgba(255,255,255,.3)}
+.cbar-val{font-size:.55rem;width:56px;text-align:right;color:var(--muted);flex-shrink:0}
+
+/* TABLE */
+.tptable{width:100%;border-collapse:collapse;font-size:.58rem}
+.tptable th{background:var(--border);color:var(--muted);padding:.4rem .45rem;text-align:left;letter-spacing:.06em;font-weight:700}
+.tptable td{padding:.32rem .45rem;border-bottom:1px solid var(--border);color:var(--text)}
+.tptable tr:hover td{background:#1a2040}
+.vc{color:var(--a2)!important}
+
+/* FORMULA */
+.formula{background:var(--bg);border-left:3px solid var(--a4);padding:.7rem .8rem;border-radius:0 4px 4px 0;font-size:.65rem;color:var(--a4);line-height:1.9}
+.formula .eq{font-size:.88rem;color:var(--text);display:block;text-align:center;margin:.25rem 0}
+
+.ibox{background:rgba(255,107,53,.05);border:1px solid rgba(255,107,53,.25);border-radius:6px;padding:.8rem;font-size:.62rem;color:var(--muted);line-height:1.7}
+.ibox strong{color:var(--a1)}
+
+.status-bar{background:var(--panel);border-top:1px solid var(--border);padding:.5rem 1.5rem;display:flex;align-items:center;gap:1rem;font-size:.6rem;color:var(--muted);flex-wrap:wrap}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sdot.run{background:var(--a3);box-shadow:0 0 6px var(--a3)}
+.sdot.pause{background:var(--a4);box-shadow:0 0 6px var(--a4)}
+.sdot.stop{background:var(--a1);box-shadow:0 0 6px var(--a1)}
+
+footer{text-align:center;padding:1.5rem;font-size:.6rem;color:var(--muted);border-top:1px solid var(--border);line-height:1.8}
+footer a{color:var(--a2);text-decoration:none}
+
+/* TYPE SELECTOR */
+.type-sel{display:flex;gap:.4rem;margin-bottom:.8rem}
+.type-btn{flex:1;padding:.45rem .3rem;border:1px solid var(--border);border-radius:4px;font-family:var(--fd);font-size:.6rem;font-weight:700;cursor:pointer;background:var(--bg);color:var(--muted);transition:all .2s;text-align:center;letter-spacing:.04em}
+.type-btn.active{border-color:var(--a1);background:rgba(255,107,53,.12);color:var(--a1)}
+
+/* RESULT BANNER */
+.result-banner{background:rgba(105,255,71,.06);border:1px solid rgba(105,255,71,.3);border-radius:6px;padding:.7rem .9rem;font-size:.65rem;color:var(--a3);line-height:1.8;display:none}
+.result-banner.show{display:block}
+.result-banner.violated{background:rgba(255,64,96,.06);border-color:rgba(255,64,96,.3);color:#ff4060}
+
+/* COEFF e */
+.e-display{text-align:center;margin:.4rem 0}
+.e-val{font-family:var(--fd);font-size:1.8rem;font-weight:800}
+.e-lbl{font-size:.6rem;color:var(--muted);letter-spacing:.1em}
+
+@media(max-width:480px){
+  .workspace{margin:.5rem}.side-panel{padding:.8rem}
+  .logo{font-size:.95rem}.tabs{margin:.5rem .5rem 0}
+  .mval{font-size:.9rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Phy<span>Sim</span> · Collisions</div>
+    <div style="font-size:.58rem;color:var(--muted);margin-top:.2rem">Simulateur TP Réaliste · Physique-Chimie</div>
+  </div>
+  <div class="hinfo">
+    <strong>Edmond Atinzoun TCHOKPON</strong><br>
+    Université d'Abomey-Calavi · CPGE &amp; Licence PC<br>
+    <a href="https://edmond-atinzoun.netlify.app">edmond-atinzoun.netlify.app</a>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab active" onclick="setMode('1d')" id="tab-1d">⬅ Collision 1D</button>
+  <button class="tab" onclick="setMode('2d')" id="tab-2d">↗ Collision 2D</button>
+  <button class="tab" onclick="setMode('balistique')" id="tab-balistique">💥 Pendule Balistique</button>
+</div>
+
+<div class="workspace">
+  <!-- SIMULATION -->
+  <div class="sim-area">
+    <div class="sim-title" id="sim-title">🔬 TP4 — Choc 1D : Élastique / Inélastique</div>
+    <canvas id="mainCanvas" width="520" height="300"></canvas>
+
+    <!-- GRAPHE p(t) et Ec(t) -->
+    <div class="graph-wrap">
+      <div class="graph-label">📈 Quantité de mouvement p(t) &nbsp;|&nbsp;
+        <span style="color:var(--a1)">━</span> p₁ &nbsp;
+        <span style="color:var(--a2)">━</span> p₂ &nbsp;
+        <span style="color:var(--a3)">━</span> p_total</div>
+      <canvas id="graphCanvas" height="85"></canvas>
+    </div>
+    <div class="graph-wrap">
+      <div class="graph-label">⚡ Énergie cinétique Ec(t) &nbsp;|&nbsp;
+        <span style="color:var(--a4)">━</span> Ec_total</div>
+      <canvas id="ecCanvas" height="85"></canvas>
+    </div>
+  </div>
+
+  <!-- PANNEAU CONTRÔLE -->
+  <div class="side-panel">
+
+    <!-- TYPE DE CHOC -->
+    <div class="psec">
+      <div class="phead">💥 Type de Choc</div>
+      <div class="pbody">
+        <div class="type-sel">
+          <div class="type-btn active" id="type-elastique" onclick="setChoc('elastique')">Élastique<br><span style="font-size:.55rem;font-weight:400">e = 1</span></div>
+          <div class="type-btn" id="type-partiellement" onclick="setChoc('partiel')">Partiel<br><span style="font-size:.55rem;font-weight:400">0 &lt; e &lt; 1</span></div>
+          <div class="type-btn" id="type-inelastique" onclick="setChoc('inelastique')">Parfait.<br><span style="font-size:.55rem;font-weight:400">e = 0</span></div>
+        </div>
+        <div class="cr" id="ctrl-e" style="display:none">
+          <label class="cl">Coeff. restitution e <span class="val" id="val-e">0.60</span></label>
+          <input type="range" id="sl-e" min="0.01" max="0.99" step="0.01" value="0.60" oninput="document.getElementById('val-e').textContent=parseFloat(this.value).toFixed(2);e_rest=parseFloat(this.value)">
+        </div>
+        <div class="e-display">
+          <div class="e-val" id="e-display-val" style="color:var(--a1)">e = 1.00</div>
+          <div class="e-lbl">COEFFICIENT DE RESTITUTION</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PARAMÈTRES OBJETS -->
+    <div class="psec">
+      <div class="phead">⚙️ Paramètres</div>
+      <div class="pbody">
+        <!-- Objet 1 -->
+        <div style="font-size:.6rem;color:var(--a1);font-family:var(--fd);font-weight:700;margin-bottom:.4rem">OBJET 1 (orange)</div>
+        <div class="vel-block">
+          <div class="vel-ball" style="background:var(--a1)">m₁</div>
+          <div class="vel-col">
+            <div class="cr">
+              <label class="cl">Masse m₁ <span class="val" id="val-m1">2.0</span> <span class="cu">kg</span></label>
+              <input type="range" id="sl-m1" min="0.1" max="10" step="0.1" value="2.0" oninput="updateP('m1',this.value)">
+            </div>
+            <div class="cr">
+              <label class="cl">Vitesse v₁ <span class="val" id="val-v1">3.0</span> <span class="cu">m/s</span></label>
+              <input type="range" id="sl-v1" min="-10" max="10" step="0.1" value="3.0" oninput="updateP('v1',this.value)">
+            </div>
+          </div>
+        </div>
+        <!-- Objet 2 -->
+        <div style="font-size:.6rem;color:var(--a2);font-family:var(--fd);font-weight:700;margin-bottom:.4rem;margin-top:.4rem">OBJET 2 (cyan)</div>
+        <div class="vel-block">
+          <div class="vel-ball" style="background:var(--a2);color:#000">m₂</div>
+          <div class="vel-col">
+            <div class="cr">
+              <label class="cl">Masse m₂ <span class="val" id="val-m2">1.0</span> <span class="cu">kg</span></label>
+              <input type="range" id="sl-m2" min="0.1" max="10" step="0.1" value="1.0" oninput="updateP('m2',this.value)">
+            </div>
+            <div class="cr">
+              <label class="cl">Vitesse v₂ <span class="val" id="val-v2">0.0</span> <span class="cu">m/s</span></label>
+              <input type="range" id="sl-v2" min="-10" max="10" step="0.1" value="0.0" oninput="updateP('v2',this.value)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTRÔLE -->
+    <div class="psec">
+      <div class="phead">▶ Contrôle</div>
+      <div class="pbody">
+        <div class="btn-row">
+          <button class="btn bp" id="btn-play" onclick="togglePlay()">▶ LANCER</button>
+          <button class="btn bn" onclick="resetSim()">↺ RESET</button>
+        </div>
+        <div class="btn-row">
+          <button class="btn bs" onclick="recordMeasure()">📋 MESURE</button>
+          <button class="btn bd" onclick="clearTable()">🗑 EFFACER</button>
+        </div>
+        <div class="cr" style="margin-top:.6rem">
+          <label class="cl">Vitesse simulation <span class="val" id="val-speed">1.0</span>×</label>
+          <input type="range" id="sl-speed" min="0.1" max="3" step="0.1" value="1.0" oninput="document.getElementById('val-speed').textContent=parseFloat(this.value).toFixed(1);simSpeed=parseFloat(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <!-- MESURES AVANT / APRÈS -->
+    <div class="psec">
+      <div class="phead">📏 Mesures Avant / Après Choc</div>
+      <div class="pbody">
+        <div style="font-size:.58rem;color:var(--muted);margin-bottom:.4rem">AVANT CHOC</div>
+        <div class="mgrid" style="margin-bottom:.7rem">
+          <div class="mbox">
+            <div class="mval" id="m-v1i" style="color:var(--a1)">3.00</div>
+            <div class="mlbl">v₁ initial</div><div class="munt">m/s</div>
+          </div>
+          <div class="mbox">
+            <div class="mval" id="m-v2i" style="color:var(--a2)">0.00</div>
+            <div class="mlbl">v₂ initial</div><div class="munt">m/s</div>
+          </div>
+          <div class="mbox">
+            <div class="mval" id="m-pi" style="color:var(--a3)">—</div>
+            <div class="mlbl">p total</div><div class="munt">kg·m/s</div>
+          </div>
+          <div class="mbox">
+            <div class="mval" id="m-eci" style="color:var(--a4)">—</div>
+            <div class="mlbl">Ec total</div><div class="munt">J</div>
+          </div>
+        </div>
+        <div style="font-size:.58rem;color:var(--muted);margin-bottom:.4rem">APRÈS CHOC</div>
+        <div class="mgrid">
+          <div class="mbox">
+            <div class="mval" id="m-v1f" style="color:var(--a1)">—</div>
+            <div class="mlbl">v₁ final</div><div class="munt">m/s</div>
+          </div>
+          <div class="mbox">
+            <div class="mval" id="m-v2f" style="color:var(--a2)">—</div>
+            <div class="mlbl">v₂ final</div><div class="munt">m/s</div>
+          </div>
+          <div class="mbox">
+            <div class="mval" id="m-pf" style="color:var(--a3)">—</div>
+            <div class="mlbl">p total</div><div class="munt">kg·m/s</div>
+          </div>
+          <div class="mbox">
+            <div class="mval" id="m-ecf" style="color:var(--a4)">—</div>
+            <div class="mlbl">Ec total</div><div class="munt">J</div>
+          </div>
+        </div>
+
+        <!-- Barre de conservation -->
+        <div style="margin-top:.8rem">
+          <div class="cl" style="margin-bottom:.4rem">Conservation des grandeurs</div>
+          <div class="cbar-wrap">
+            <div class="cbar-row">
+              <span class="cbar-lbl" style="color:var(--a3)">p</span>
+              <div class="cbar-track">
+                <div class="cbar-before" id="bar-pi" style="background:var(--a3);width:100%"></div>
+                <div class="cbar-after" id="bar-pf" style="background:var(--a3);width:100%"></div>
+              </div>
+              <span class="cbar-val" id="lbl-p">—</span>
+            </div>
+            <div class="cbar-row">
+              <span class="cbar-lbl" style="color:var(--a4)">Ec</span>
+              <div class="cbar-track">
+                <div class="cbar-before" id="bar-eci-b" style="background:var(--a4);width:100%"></div>
+                <div class="cbar-after" id="bar-ecf-b" style="background:var(--a4);width:100%"></div>
+              </div>
+              <span class="cbar-val" id="lbl-ec">—</span>
+            </div>
+          </div>
+        </div>
+        <!-- Banner résultat -->
+        <div class="result-banner" id="result-banner"></div>
+      </div>
+    </div>
+
+    <!-- FORMULES -->
+    <div class="psec">
+      <div class="phead">📐 Formules Clés</div>
+      <div class="pbody">
+        <div class="formula" id="formula-box">
+          <strong>Conservation quantité de mouvement :</strong>
+          <span class="eq">m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'</span>
+          <strong>Choc élastique (e=1) :</strong>
+          <span class="eq">v₁' = (m₁−m₂)v₁ + 2m₂v₂ / (m₁+m₂)</span>
+          <span class="eq">v₂' = (m₂−m₁)v₂ + 2m₁v₁ / (m₁+m₂)</span>
+          <strong>Coeff. de restitution :</strong>
+          <span class="eq">e = −(v₁'−v₂') / (v₁−v₂)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLEAU TP -->
+    <div class="psec">
+      <div class="phead">📊 Tableau de Mesures TP</div>
+      <div class="pbody" style="overflow-x:auto">
+        <table class="tptable" id="tp-table">
+          <thead>
+            <tr>
+              <th>#</th><th>m₁</th><th>m₂</th>
+              <th>v₁</th><th>v₂</th>
+              <th>v₁'</th><th>v₂'</th>
+              <th>Δp%</th><th>ΔEc%</th>
+            </tr>
+          </thead>
+          <tbody id="tp-body"></tbody>
+        </table>
+        <div style="font-size:.55rem;color:var(--muted);margin-top:.4rem">Lance la sim → attends le choc → clique <strong style="color:var(--a3)">MESURE</strong></div>
+      </div>
+    </div>
+
+    <!-- GUIDE TP -->
+    <div class="psec">
+      <div class="phead">💡 Guide TP</div>
+      <div class="pbody">
+        <div class="ibox" id="guide-box">
+          <strong>Objectif TP4 — Chocs 1D :</strong><br>
+          1. Choc élastique (e=1) : vérifie p et Ec conservés<br>
+          2. Varie m₁/m₂ : observe transfert d'énergie<br>
+          3. Cas m₁=m₂ : que se passe-t-il ?<br>
+          4. Choc inélastique : p conservé, Ec perdue<br><br>
+          <strong>⚠ Loi fondamentale :</strong> p toujours conservé !<br>
+          <strong>Question :</strong> Quelle énergie est perdue dans le choc parfait ?
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="status-bar">
+  <div class="sdot stop" id="sdot"></div>
+  <span id="stxt">Simulation arrêtée — Appuyer sur LANCER</span>
+  <span style="margin-left:auto;color:var(--border)">|</span>
+  <span>Mode : <strong style="color:var(--a1)" id="smode">Collision 1D</strong></span>
+  <span id="schoc-disp">Choc : <strong style="color:var(--a3)">Élastique</strong></span>
+</div>
+
+<footer>
+  Simulateur TP Collisions — <strong>Edmond Atinzoun TCHOKPON</strong><br>
+  Université d'Abomey-Calavi · Classes Préparatoires &amp; Licence Physique-Chimie<br>
+  <a href="https://edmond-atinzoun.netlify.app">edmond-atinzoun.netlify.app</a>
+</footer>
+
+<script>
+// ═══════════════════════════════════════
+// SIMULATION ENGINE — COLLISIONS
+// ═══════════════════════════════════════
+const MC=document.getElementById('mainCanvas');
+const ctx=MC.getContext('2d');
+const GC=document.getElementById('graphCanvas');
+const gctx=GC.getContext('2d');
+const EC=document.getElementById('ecCanvas');
+const ectx=EC.getContext('2d');
+
+function resizeAll(){
+  const w=Math.min(MC.parentElement.clientWidth-32,520);
+  const h=Math.round(w*300/520);
+  MC.width=w;MC.height=h;
+  GC.width=w;GC.height=85;
+  EC.width=w;EC.height=85;
+}
+resizeAll();
+window.addEventListener('resize',()=>{resizeAll();drawFrame();});
+
+// ─── STATE ────────────────────────────
+let mode='1d';
+let choc='elastique';
+let e_rest=1.0;
+let running=false,collided=false;
+let simSpeed=1.0,t=0;
+let measureCount=0;
+
+// Objets
+const B={
+  m1:2.0,v1:3.0,x1:0,r1:0,
+  m2:1.0,v2:0.0,x2:0,r2:0,
+  // Après choc
+  v1f:null,v2f:null
+};
+// Pendule balistique
+const BAL={
+  mball:.5,vball:10,
+  mpendule:2.0,
+  theta:0,omega:0,
+  x_ball:0,vb:10,
+  phase:'approach',// approach | collision | swing
+  L:0.5
+};
+// 2D
+const O2={
+  m1:2.0,v1x:4.0,v1y:0,
+  m2:1.0,v2x:0,v2y:0,
+  x1:0,y1:0,x2:0,y2:0,
+  v1xf:null,v1yf:null,v2xf:null,v2yf:null,
+  alpha:30,// angle de déviation en °
+  collided:false,
+  phase:'approach'
+};
+
+// History
+let hist=[];// {t,p1,p2,pt,ec}
+const maxH=600;
+
+// ─── INIT POSITIONS ──────────────────
+function initPos(){
+  if(mode==='1d'){
+    const W=MC.width;
+    const scale=W/20;
+    B.r1=Math.max(14,B.m1*6);
+    B.r2=Math.max(14,B.m2*6);
+    B.x1=W*.15;
+    B.x2=W*.70;
+    B.v1f=null;B.v2f=null;collided=false;
+  } else if(mode==='2d'){
+    const W=MC.width,H=MC.height;
+    O2.x1=W*.12;O2.y1=H/2;
+    O2.x2=W*.62;O2.y2=H/2-parseFloat(O2.m1>O2.m2?12:8);// légèrement décalé
+    O2.v1xf=null;O2.collided=false;O2.phase='approach';
+  } else {
+    BAL.x_ball=MC.width*.08;BAL.vb=BAL.vball;
+    BAL.theta=0;BAL.omega=0;BAL.phase='approach';
+  }
+  hist=[];t=0;
+  collided=false;
+  updateBeforeMeasures();
+}
+
+function updateP(n,v){
+  v=parseFloat(v);
+  const ids={m1:'val-m1',v1:'val-v1',m2:'val-m2',v2:'val-v2'};
+  const fmt={m1:1,v1:1,m2:1,v2:1};
+  if(n==='m1')B.m1=O2.m1=v;
+  if(n==='v1'){B.v1=v;O2.v1x=v;O2.v1y=0;}
+  if(n==='m2')B.m2=O2.m2=v;
+  if(n==='v2'){B.v2=v;O2.v2x=v;O2.v2y=0;}
+  document.getElementById(ids[n]).textContent=v.toFixed(fmt[n]);
+  resetSim(false);
+}
+
+function updateBeforeMeasures(){
+  const pi=B.m1*B.v1+B.m2*B.v2;
+  const eci=.5*B.m1*B.v1*B.v1+.5*B.m2*B.v2*B.v2;
+  document.getElementById('m-v1i').textContent=B.v1.toFixed(2);
+  document.getElementById('m-v2i').textContent=B.v2.toFixed(2);
+  document.getElementById('m-pi').textContent=pi.toFixed(3);
+  document.getElementById('m-eci').textContent=eci.toFixed(3);
+}
+
+// ─── CHOC PHYSICS ────────────────────
+function computeCollision1D(m1,v1,m2,v2,e){
+  // v1' = [(m1-e*m2)*v1 + (1+e)*m2*v2]/(m1+m2)
+  // v2' = [(m2-e*m1)*v2 + (1+e)*m1*v1]/(m1+m2)
+  const v1f=((m1-e*m2)*v1+(1+e)*m2*v2)/(m1+m2);
+  const v2f=((m2-e*m1)*v2+(1+e)*m1*v1)/(m1+m2);
+  return{v1f,v2f};
+}
+
+function applyCollision1D(){
+  const{v1f,v2f}=computeCollision1D(B.m1,B.v1,B.m2,B.v2,e_rest);
+  B.v1=v1f;B.v2=v2f;
+  B.v1f=v1f;B.v2f=v2f;
+  collided=true;
+  updateAfterMeasures(v1f,v2f);
+  showResultBanner();
+}
+
+function applyCollision2D(){
+  // Choc 2D : conservation p, avec déviation angle alpha
+  const alpha=O2.alpha*Math.PI/180;
+  const m1=O2.m1,m2=O2.m2,v1=O2.v1x;
+  // Conservation approchée (choc rasant)
+  const v1f=v1*(m1-m2)/(m1+m2);
+  const v2f=2*m1*v1/(m1+m2);
+  O2.v1xf=v1f*Math.cos(alpha);O2.v1yf=-v1f*Math.sin(alpha);
+  O2.v2xf=v2f*Math.cos(-alpha*.3);O2.v2yf=v2f*Math.sin(-alpha*.3);
+  O2.v1x=O2.v1xf;O2.v1y=O2.v1yf;
+  O2.v2x=O2.v2xf;O2.v2y=O2.v2yf;
+  O2.collided=true;O2.phase='after';
+}
+
+function applyCollisionBal(){
+  // Conservation p : mball*vball = (mball+mpendule)*V
+  const V=BAL.mball*BAL.vball/(BAL.mball+BAL.mpendule);
+  // Énergie cinétique → Ep pendule : ½(m)V² = mgL(1-cosθ_max)
+  const g=9.81;
+  const theta_max=Math.acos(1-V*V/(2*g*BAL.L));
+  BAL.omega=V/BAL.L;
+  BAL.phase='swing';
+}
+
+function updateAfterMeasures(v1f,v2f){
+  const pf=B.m1*v1f+B.m2*v2f;
+  const ecf=.5*B.m1*v1f*v1f+.5*B.m2*v2f*v2f;
+  const pi=B.m1*parseFloat(document.getElementById('sl-v1').value)+B.m2*parseFloat(document.getElementById('sl-v2').value);
+  const eci=.5*B.m1*Math.pow(parseFloat(document.getElementById('sl-v1').value),2)+.5*B.m2*Math.pow(parseFloat(document.getElementById('sl-v2').value),2);
+  document.getElementById('m-v1f').textContent=v1f.toFixed(2);
+  document.getElementById('m-v2f').textContent=v2f.toFixed(2);
+  document.getElementById('m-pf').textContent=pf.toFixed(3);
+  document.getElementById('m-ecf').textContent=ecf.toFixed(3);
+  // Barres
+  const maxP=Math.max(Math.abs(pi),Math.abs(pf),.001);
+  const maxE=Math.max(eci,ecf,.001);
+  document.getElementById('bar-pi').style.width=(Math.abs(pi)/maxP*100)+'%';
+  document.getElementById('bar-pf').style.width=(Math.abs(pf)/maxP*100)+'%';
+  document.getElementById('bar-eci-b').style.width=(eci/maxE*100)+'%';
+  document.getElementById('bar-ecf-b').style.width=(ecf/maxE*100)+'%';
+  const dp=Math.abs((pf-pi)/Math.max(Math.abs(pi),.001)*100);
+  const dec=Math.abs((ecf-eci)/Math.max(eci,.001)*100);
+  document.getElementById('lbl-p').textContent=dp.toFixed(1)+'%';
+  document.getElementById('lbl-ec').textContent=dec.toFixed(1)+'%';
+}
+
+function showResultBanner(){
+  const v1i=parseFloat(document.getElementById('sl-v1').value);
+  const v2i=parseFloat(document.getElementById('sl-v2').value);
+  const pi=B.m1*v1i+B.m2*v2i;
+  const eci=.5*B.m1*v1i*v1i+.5*B.m2*v2i*v2i;
+  const pf=B.m1*B.v1f+B.m2*B.v2f;
+  const ecf=.5*B.m1*B.v1f*B.v1f+.5*B.m2*B.v2f*B.v2f;
+  const dp=Math.abs(pf-pi);
+  const dec=eci-ecf;
+  const banner=document.getElementById('result-banner');
+  banner.className='result-banner show';
+  banner.innerHTML=`✅ <strong>Choc effectué !</strong><br>
+    p conservé : ${pi.toFixed(3)} → ${pf.toFixed(3)} kg·m/s (Δ=${dp.toFixed(4)})<br>
+    Ec : ${eci.toFixed(3)} → ${ecf.toFixed(3)} J (perdue : ${Math.max(0,dec).toFixed(3)} J)<br>
+    e_mesuré = ${Math.abs(B.v2f-B.v1f)/Math.max(Math.abs(v1i-v2i),.001)<1.01?Math.abs(B.v2f-B.v1f)/Math.max(Math.abs(v1i-v2i),.001).toFixed(3):'1.000'}`;
+}
+
+// ─── STEP ────────────────────────────
+const DT=0.010;
+function step1D(dt){
+  B.x1+=B.v1*dt;B.x2+=B.v2*dt;
+  const W=MC.width;
+  B.r1=Math.max(14,B.m1*5.5);B.r2=Math.max(14,B.m2*5.5);
+  // Collision
+  if(!collided&&B.x2-B.x1<=B.r1+B.r2){
+    applyCollision1D();
+  }
+  // Rebond murs
+  if(B.x1-B.r1<0){B.x1=B.r1;B.v1=Math.abs(B.v1);}
+  if(B.x1+B.r1>W){B.x1=W-B.r1;B.v1=-Math.abs(B.v1);}
+  if(B.x2-B.r2<0){B.x2=B.r2;B.v2=Math.abs(B.v2);}
+  if(B.x2+B.r2>W){B.x2=W-B.r2;B.v2=-Math.abs(B.v2);}
+}
+
+function step2D(dt){
+  if(O2.phase==='approach'){
+    O2.x1+=O2.v1x*dt;O2.y1+=O2.v1y*dt;
+    O2.x2+=O2.v2x*dt;O2.y2+=O2.v2y*dt;
+    const dx=O2.x2-O2.x1,dy=O2.y2-O2.y1;
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    const r=Math.max(14,O2.m1*5)+Math.max(14,O2.m2*5);
+    if(dist<=r)applyCollision2D();
+  } else {
+    O2.x1+=O2.v1x*dt;O2.y1+=O2.v1y*dt;
+    O2.x2+=O2.v2x*dt;O2.y2+=O2.v2y*dt;
+    // Bounds
+    const W=MC.width,H=MC.height;
+    if(O2.x1<0||O2.x1>W)O2.v1x*=-1;
+    if(O2.y1<0||O2.y1>H)O2.v1y*=-1;
+    if(O2.x2<0||O2.x2>W)O2.v2x*=-1;
+    if(O2.y2<0||O2.y2>H)O2.v2y*=-1;
+  }
+}
+
+function stepBal(dt){
+  if(BAL.phase==='approach'){
+    BAL.x_ball+=BAL.vb*dt;
+    const W=MC.width;
+    const cx=W*.55;
+    if(BAL.x_ball>=cx-20){applyCollisionBal();}
+  } else if(BAL.phase==='swing'){
+    const g=9.81;
+    const alpha_ddot=-(g/BAL.L)*Math.sin(BAL.theta);
+    BAL.omega+=alpha_ddot*dt;
+    BAL.theta+=BAL.omega*dt;
+  }
+}
+
+// History
+function recordHistory(){
+  let p1,p2,pt,ec;
+  if(mode==='1d'){
+    p1=B.m1*B.v1;p2=B.m2*B.v2;pt=p1+p2;
+    ec=.5*B.m1*B.v1*B.v1+.5*B.m2*B.v2*B.v2;
+  } else if(mode==='2d'){
+    p1=O2.m1*Math.sqrt(O2.v1x*O2.v1x+O2.v1y*O2.v1y);
+    p2=O2.m2*Math.sqrt(O2.v2x*O2.v2x+O2.v2y*O2.v2y);
+    pt=O2.m1*O2.v1x+O2.m2*O2.v2x;
+    ec=.5*O2.m1*(O2.v1x*O2.v1x+O2.v1y*O2.v1y)+.5*O2.m2*(O2.v2x*O2.v2x+O2.v2y*O2.v2y);
+  } else {
+    p1=BAL.mball*BAL.vb;p2=0;pt=p1;
+    ec=.5*BAL.mball*BAL.vb*BAL.vb;
+  }
+  if(hist.length>maxH)hist.shift();
+  hist.push({t,p1,p2,pt,ec});
+}
+
+// ─── ANIMATE ─────────────────────────
+let raf,lastTS=null;
+function animate(ts){
+  if(!running)return;
+  raf=requestAnimationFrame(animate);
+  if(!lastTS){lastTS=ts;return;}
+  let el=Math.min((ts-lastTS)/1000,.05);lastTS=ts;
+  const steps=6,dts=el*simSpeed/steps;
+  for(let i=0;i<steps;i++){
+    if(mode==='1d')step1D(dts);
+    else if(mode==='2d')step2D(dts);
+    else stepBal(dts);
+    t+=dts;
+  }
+  recordHistory();
+  updateLiveHUD();
+  drawFrame();
+}
+
+function updateLiveHUD(){
+  if(mode==='1d'){
+    document.getElementById('m-v1f').textContent=B.v1f!==null?B.v1f.toFixed(2):'—';
+    document.getElementById('m-v2f').textContent=B.v2f!==null?B.v2f.toFixed(2):'—';
+  }
+}
+
+// ─── DRAWING ─────────────────────────
+function drawFrame(){
+  if(mode==='1d')draw1D();
+  else if(mode==='2d')draw2D();
+  else drawBal();
+  drawGraph();
+  drawEcGraph();
+}
+
+function gridBg(c,W,H){
+  c.strokeStyle='#0d1020';c.lineWidth=1;
+  for(let x=0;x<W;x+=40){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke();}
+  for(let y=0;y<H;y+=40){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+}
+
+function draw1D(){
+  const W=MC.width,H=MC.height;
+  ctx.clearRect(0,0,W,H);gridBg(ctx,W,H);
+  const cy=H/2;
+  // Rail
+  ctx.save();
+  ctx.strokeStyle='#2a3560';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(0,cy+Math.max(14,B.m1*5.5)+4);ctx.lineTo(W,cy+Math.max(14,B.m2*5.5)+4);ctx.stroke();
+  // Rail texture
+  for(let x=0;x<W;x+=20){
+    ctx.strokeStyle='#1a2540';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(x,cy+Math.max(14,B.m1*5.5)+4);ctx.lineTo(x+8,cy+Math.max(14,B.m1*5.5)+10);ctx.stroke();
+  }ctx.restore();
+
+  // Velocité indicators
+  ctx.save();
+  // v1
+  if(Math.abs(B.v1)>.1){
+    const len=Math.min(B.v1*8,60);
+    ctx.strokeStyle='rgba(255,107,53,.7)';ctx.fillStyle='rgba(255,107,53,.7)';
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(B.x1,cy-B.r1-8);ctx.lineTo(B.x1+len,cy-B.r1-8);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(B.x1+len,cy-B.r1-8);
+    ctx.lineTo(B.x1+len-(len>0?6:-6),cy-B.r1-12);ctx.lineTo(B.x1+len-(len>0?6:-6),cy-B.r1-4);
+    ctx.closePath();ctx.fill();
+    ctx.font=`${Math.max(9,W*.018)}px JetBrains Mono`;
+    ctx.fillText(`v₁=${B.v1.toFixed(1)}`,B.x1-10,cy-B.r1-18);
+  }
+  // v2
+  if(Math.abs(B.v2)>.1){
+    const len=Math.min(B.v2*8,60);
+    ctx.strokeStyle='rgba(0,229,255,.7)';ctx.fillStyle='rgba(0,229,255,.7)';
+    ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(B.x2,cy-B.r2-8);ctx.lineTo(B.x2+len,cy-B.r2-8);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(B.x2+len,cy-B.r2-8);
+    ctx.lineTo(B.x2+len-(len>0?6:-6),cy-B.r2-12);ctx.lineTo(B.x2+len-(len>0?6:-6),cy-B.r2-4);
+    ctx.closePath();ctx.fill();
+    ctx.font=`${Math.max(9,W*.018)}px JetBrains Mono`;
+    ctx.fillText(`v₂=${B.v2.toFixed(1)}`,B.x2-10,cy-B.r2-18);
+  }
+  ctx.restore();
+
+  // Ball 1
+  const g1=ctx.createRadialGradient(B.x1-B.r1*.3,cy-B.r1*.3,B.r1*.1,B.x1,cy,B.r1);
+  g1.addColorStop(0,'#ff9060');g1.addColorStop(1,'#8a2800');
+  ctx.fillStyle=g1;
+  ctx.beginPath();ctx.arc(B.x1,cy,B.r1,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle=collided?'#fff':'rgba(255,150,100,.4)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.5)';ctx.beginPath();ctx.arc(B.x1-B.r1*.3,cy-B.r1*.35,B.r1*.22,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle='#fff';ctx.font=`bold ${Math.max(9,W*.02)}px Syne`;ctx.textAlign='center';
+  ctx.fillText('m₁',B.x1,cy+4);
+
+  // Ball 2
+  const g2=ctx.createRadialGradient(B.x2-B.r2*.3,cy-B.r2*.3,B.r2*.1,B.x2,cy,B.r2);
+  g2.addColorStop(0,'#60f0ff');g2.addColorStop(1,'#005060');
+  ctx.fillStyle=g2;
+  ctx.beginPath();ctx.arc(B.x2,cy,B.r2,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle=collided?'#fff':'rgba(100,220,255,.4)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.beginPath();ctx.arc(B.x2-B.r2*.3,cy-B.r2*.35,B.r2*.22,0,2*Math.PI);ctx.fill();
+  ctx.fillStyle='#000';ctx.fillText('m₂',B.x2,cy+4);ctx.textAlign='left';
+
+  // Collision flash
+  if(collided&&t<.2+hist[0]?.t){
+    ctx.save();ctx.globalAlpha=.3;
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc((B.x1+B.x2)/2,cy,30,0,2*Math.PI);ctx.fill();
+    ctx.restore();
+  }
+  // Overlay info
+  ctx.save();
+  ctx.fillStyle='rgba(255,107,53,.85)';ctx.font=`${Math.max(9,W*.019)}px JetBrains Mono`;
+  ctx.fillText(`p₁=${(B.m1*B.v1).toFixed(2)} kg·m/s`,8,16);
+  ctx.fillStyle='rgba(0,229,255,.85)';ctx.fillText(`p₂=${(B.m2*B.v2).toFixed(2)} kg·m/s`,8,30);
+  ctx.fillStyle='rgba(105,255,71,.9)';
+  ctx.fillText(`p_total=${(B.m1*B.v1+B.m2*B.v2).toFixed(2)} kg·m/s`,8,44);
+  if(collided){ctx.fillStyle='#ffd166';ctx.font=`bold ${Math.max(10,W*.022)}px Syne`;ctx.fillText('💥 CHOC !',W-90,20);}
+  ctx.restore();
+
+  // Masse labels sous les balles
+  ctx.save();ctx.fillStyle='rgba(200,200,220,.6)';ctx.font=`${Math.max(9,W*.018)}px JetBrains Mono`;ctx.textAlign='center';
+  ctx.fillText(`${B.m1.toFixed(1)} kg`,B.x1,cy+B.r1+14);
+  ctx.fillText(`${B.m2.toFixed(1)} kg`,B.x2,cy+B.r2+14);ctx.textAlign='left';ctx.restore();
+}
+
+function draw2D(){
+  const W=MC.width,H=MC.height;
+  ctx.clearRect(0,0,W,H);gridBg(ctx,W,H);
+  const r1=Math.max(14,O2.m1*5.5),r2=Math.max(14,O2.m2*5.5);
+  // Trajectoires
+  ctx.save();ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(255,107,53,.3)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,O2.y1);ctx.lineTo(W,O2.y1);ctx.stroke();ctx.restore();
+  // vel arrows
+  const drawVel=(x,y,vx,vy,col,lbl)=>{
+    const l=Math.sqrt(vx*vx+vy*vy);if(l<.05)return;
+    const sc=20;arrow2d(x,y,x+vx*sc,y+vy*sc,col);
+    ctx.fillStyle=col;ctx.font=`${Math.max(9,W*.018)}px JetBrains Mono`;ctx.fillText(lbl,x+vx*sc/2+6,y+vy*sc/2-6);
+  };
+  drawVel(O2.x1,O2.y1,O2.v1x,O2.v1y,'rgba(255,107,53,.8)','v₁');
+  drawVel(O2.x2,O2.y2,O2.v2x,O2.v2y,'rgba(0,229,255,.8)','v₂');
+  // Ball 1
+  const g1=ctx.createRadialGradient(O2.x1-r1*.3,O2.y1-r1*.3,r1*.1,O2.x1,O2.y1,r1);
+  g1.addColorStop(0,'#ff9060');g1.addColorStop(1,'#8a2800');
+  ctx.fillStyle=g1;ctx.beginPath();ctx.arc(O2.x1,O2.y1,r1,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='rgba(255,150,100,.5)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#fff';ctx.font=`bold ${Math.max(9,W*.02)}px Syne`;ctx.textAlign='center';ctx.fillText('m₁',O2.x1,O2.y1+4);
+  // Ball 2
+  const g2=ctx.createRadialGradient(O2.x2-r2*.3,O2.y2-r2*.3,r2*.1,O2.x2,O2.y2,r2);
+  g2.addColorStop(0,'#60f0ff');g2.addColorStop(1,'#005060');
+  ctx.fillStyle=g2;ctx.beginPath();ctx.arc(O2.x2,O2.y2,r2,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='rgba(100,220,255,.5)';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#000';ctx.fillText('m₂',O2.x2,O2.y2+4);ctx.textAlign='left';
+  if(O2.collided){ctx.fillStyle='#ffd166';ctx.font=`bold ${Math.max(11,W*.024)}px Syne`;ctx.fillText('💥 CHOC 2D !',W/2-40,30);}
+  // Info
+  ctx.save();ctx.fillStyle='rgba(105,255,71,.85)';ctx.font=`${Math.max(9,W*.019)}px JetBrains Mono`;
+  ctx.fillText(`p_x = ${(O2.m1*O2.v1x+O2.m2*O2.v2x).toFixed(2)}`,8,16);
+  ctx.fillText(`p_y = ${(O2.m1*O2.v1y+O2.m2*O2.v2y).toFixed(2)}`,8,30);ctx.restore();
+}
+
+function arrow2d(x1,y1,x2,y2,col){
+  const dx=x2-x1,dy=y2-y1,l=Math.sqrt(dx*dx+dy*dy);if(l<4)return;
+  ctx.save();ctx.strokeStyle=col;ctx.fillStyle=col;ctx.lineWidth=2;
+  ctx.shadowColor=col;ctx.shadowBlur=4;
+  ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  const a=Math.atan2(dy,dx),s=7;
+  ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-s*Math.cos(a-.4),y2-s*Math.sin(a-.4));ctx.lineTo(x2-s*Math.cos(a+.4),y2-s*Math.sin(a+.4));ctx.closePath();ctx.fill();
+  ctx.restore();
+}
+
+function drawBal(){
+  const W=MC.width,H=MC.height;
+  ctx.clearRect(0,0,W,H);gridBg(ctx,W,H);
+  // Structure pendule
+  const pivotX=W*.55,pivotY=30;
+  const L=Math.min(H*.55,BAL.L*300);
+  const bpx=pivotX+Math.sin(BAL.theta)*L;
+  const bpy=pivotY+Math.cos(BAL.theta)*L;
+  // Plafond
+  ctx.fillStyle='#1a2540';ctx.fillRect(pivotX-50,pivotY-4,100,4);
+  for(let i=0;i<5;i++){ctx.strokeStyle='#2a3560';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pivotX-40+i*20,pivotY-4);ctx.lineTo(pivotX-50+i*20,pivotY-12);ctx.stroke();}
+  // Fil
+  ctx.strokeStyle='#7090c0';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pivotX,pivotY);ctx.lineTo(bpx,bpy);ctx.stroke();
+  // Bloc pendule
+  const bs=24;
+  ctx.fillStyle='#253060';ctx.strokeStyle='rgba(100,140,255,.5)';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.roundRect?ctx.roundRect(bpx-bs/2,bpy-bs/2,bs,bs,3):ctx.rect(bpx-bs/2,bpy-bs/2,bs,bs);
+  ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(200,220,255,.7)';ctx.font=`bold ${Math.max(9,W*.02)}px Syne`;ctx.textAlign='center';
+  ctx.fillText('M',bpx,bpy+4);ctx.textAlign='left';
+  // Angle
+  if(Math.abs(BAL.theta)>.01){
+    ctx.save();ctx.strokeStyle='rgba(255,209,102,.5)';ctx.lineWidth=1.2;
+    ctx.beginPath();ctx.arc(pivotX,pivotY,40,Math.PI/2-Math.abs(BAL.theta),Math.PI/2,BAL.theta<0);ctx.stroke();
+    ctx.fillStyle='rgba(255,209,102,.8)';ctx.font=`${Math.max(9,W*.018)}px JetBrains Mono`;
+    ctx.fillText((BAL.theta*180/Math.PI).toFixed(1)+'°',pivotX+44,pivotY+18);ctx.restore();
+  }
+  // Balle projectile
+  if(BAL.phase==='approach'){
+    const cy=H/2;
+    const bg=ctx.createRadialGradient(BAL.x_ball-8,cy-8,2,BAL.x_ball,cy,14);
+    bg.addColorStop(0,'#ffb060');bg.addColorStop(1,'#7a3000');
+    ctx.fillStyle=bg;ctx.beginPath();ctx.arc(BAL.x_ball,cy,14,0,2*Math.PI);ctx.fill();
+    ctx.strokeStyle='rgba(255,150,80,.5)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${Math.max(9,W*.02)}px Syne`;ctx.textAlign='center';ctx.fillText('m',BAL.x_ball,cy+4);ctx.textAlign='left';
+    // vitesse
+    ctx.strokeStyle='rgba(255,107,53,.8)';ctx.fillStyle='rgba(255,107,53,.8)';ctx.lineWidth=2;
+    const vl=BAL.vb*6;ctx.beginPath();ctx.moveTo(BAL.x_ball+14,cy);ctx.lineTo(BAL.x_ball+14+vl,cy);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(BAL.x_ball+14+vl,cy);ctx.lineTo(BAL.x_ball+14+vl-6,cy-5);ctx.lineTo(BAL.x_ball+14+vl-6,cy+5);ctx.closePath();ctx.fill();
+  }
+  // Infos
+  ctx.save();
+  ctx.fillStyle='rgba(255,107,53,.85)';ctx.font=`${Math.max(9,W*.019)}px JetBrains Mono`;
+  ctx.fillText(`m_balle = ${BAL.mball.toFixed(1)} kg`,8,16);
+  ctx.fillText(`v_balle = ${BAL.vball.toFixed(1)} m/s`,8,30);
+  ctx.fillStyle='rgba(0,229,255,.85)';ctx.fillText(`M_pendule = ${BAL.mpendule.toFixed(1)} kg`,8,44);
+  if(BAL.phase==='swing'){
+    const g=9.81;
+    const hmax=BAL.L*(1-Math.cos(BAL.theta));
+    ctx.fillStyle='rgba(105,255,71,.85)';
+    ctx.fillText(`θ = ${(BAL.theta*180/Math.PI).toFixed(1)}°`,8,58);
+    ctx.fillText(`h_max ≈ ${(BAL.L*(1-Math.cos(Math.asin(BAL.mball*BAL.vball/(BAL.mball+BAL.mpendule)/Math.sqrt(2*g*BAL.L))))).toFixed(3)} m`,8,72);
+  }
+  ctx.restore();
+}
+
+function drawGraph(){
+  const W=GC.width,H=GC.height;
+  gctx.clearRect(0,0,W,H);
+  gctx.strokeStyle='#0d1020';gctx.lineWidth=1;
+  [.25,.5,.75].forEach(f=>{const y=H*f;gctx.beginPath();gctx.moveTo(0,y);gctx.lineTo(W,y);gctx.stroke();});
+  gctx.strokeStyle='#1e2540';gctx.lineWidth=1;gctx.beginPath();gctx.moveTo(0,H/2);gctx.lineTo(W,H/2);gctx.stroke();
+  if(hist.length<2)return;
+  let mp=0;hist.forEach(h=>{const v=Math.max(Math.abs(h.p1),Math.abs(h.p2),Math.abs(h.pt));if(v>mp)mp=v;});if(mp<.01)mp=1;
+  const drawLine=(col,key)=>{
+    gctx.strokeStyle=col;gctx.lineWidth=1.5;gctx.beginPath();
+    hist.forEach((h,i)=>{const px=i/hist.length*W,py=H/2-h[key]/mp*H/2*.85;i===0?gctx.moveTo(px,py):gctx.lineTo(px,py);});
+    gctx.stroke();
+  };
+  drawLine('rgba(255,107,53,.7)','p1');
+  drawLine('rgba(0,229,255,.7)','p2');
+  gctx.strokeStyle='var(--a3)';gctx.lineWidth=2;gctx.shadowColor='#69ff47';gctx.shadowBlur=4;
+  drawLine('rgba(105,255,71,.9)','pt');gctx.shadowBlur=0;
+}
+
+function drawEcGraph(){
+  const W=EC.width,H=EC.height;
+  ectx.clearRect(0,0,W,H);
+  ectx.strokeStyle='#0d1020';ectx.lineWidth=1;
+  [.25,.5,.75].forEach(f=>{const y=H*f;ectx.beginPath();ectx.moveTo(0,y);ectx.lineTo(W,y);ectx.stroke();});
+  if(hist.length<2)return;
+  let me=0;hist.forEach(h=>{if(h.ec>me)me=h.ec;});if(me<.01)me=1;
+  ectx.strokeStyle='rgba(255,209,102,.85)';ectx.lineWidth=1.8;ectx.shadowColor='#ffd166';ectx.shadowBlur=4;
+  ectx.beginPath();
+  hist.forEach((h,i)=>{const px=i/hist.length*W,py=H-h.ec/me*H*.85;i===0?ectx.moveTo(px,py):ectx.lineTo(px,py);});
+  ectx.stroke();ectx.shadowBlur=0;
+}
+
+// ─── UI ──────────────────────────────
+function togglePlay(){running?stopSim():startSim();}
+
+function startSim(){
+  running=true;lastTS=null;
+  document.getElementById('btn-play').textContent='⏸ PAUSE';
+  document.getElementById('sdot').className='sdot run';
+  document.getElementById('stxt').textContent='Simulation en cours…';
+  raf=requestAnimationFrame(animate);
+}
+
+function stopSim(){
+  running=false;cancelAnimationFrame(raf);
+  document.getElementById('btn-play').textContent='▶ LANCER';
+  document.getElementById('sdot').className='sdot pause';
+  document.getElementById('stxt').textContent='Simulation en pause';
+}
+
+function resetSim(stopIt=true){
+  if(stopIt)stopSim();
+  initPos();
+  document.getElementById('m-v1f').textContent='—';
+  document.getElementById('m-v2f').textContent='—';
+  document.getElementById('m-pf').textContent='—';
+  document.getElementById('m-ecf').textContent='—';
+  document.getElementById('result-banner').className='result-banner';
+  drawFrame();
+}
+
+function setMode(m){
+  mode=m;
+  ['1d','2d','balistique'].forEach(id=>{document.getElementById('tab-'+id).classList.toggle('active',id===m);});
+  const titles={'1d':'🔬 TP4 — Choc 1D : Élastique / Inélastique','2d':'🔬 TP5 — Choc 2D : Collision Oblique','balistique':'🔬 TP6 — Pendule Balistique'};
+  document.getElementById('sim-title').textContent=titles[m];
+  document.getElementById('smode').textContent=titles[m].replace('🔬 ','');
+  const formulas={
+    '1d':`<strong>Conservation quantité de mouvement :</strong><span class="eq">m₁v₁ + m₂v₂ = m₁v₁' + m₂v₂'</span><strong>Coeff. de restitution :</strong><span class="eq">e = −(v₁'−v₂') / (v₁−v₂)</span><strong>Élastique (e=1) :</strong><span class="eq">v₁' = [(m₁−m₂)v₁+2m₂v₂]/(m₁+m₂)</span>`,
+    '2d':`<strong>Conservation vecteurs :</strong><span class="eq">m₁v⃗₁ + m₂v⃗₂ = m₁v⃗₁' + m₂v⃗₂'</span><strong>Composantes :</strong><span class="eq">Σpₓ = cst &nbsp;&amp;&amp;&nbsp; Σpᵧ = cst</span>`,
+    'balistique':`<strong>Pendule balistique :</strong><span class="eq">mv₀ = (m+M)V</span><span class="eq">V = mv₀/(m+M)</span><strong>Hauteur max :</strong><span class="eq">h = V²/(2g)</span>`
+  };
+  document.getElementById('formula-box').innerHTML=formulas[m];
+  const guides={
+    '1d':`<strong>Objectif TP4 :</strong><br>1. Choc élastique : vérifie p et Ec conservés<br>2. m₁=m₂ : les balles échangent leurs vitesses !<br>3. Inélastique : p conservé, Ec diminue<br>4. Calcule e expérimental`,
+    '2d':`<strong>Objectif TP5 :</strong><br>1. Vérifie conservation pₓ et pᵧ séparément<br>2. Observe la déviation angulaire<br>3. Varie le rapport m₁/m₂<br>4. m₁>>m₂ : m₂ repart presque vite`,
+    'balistique':`<strong>Objectif TP6 :</strong><br>1. Mesure θ_max après le choc<br>2. Calcule V = √(2gL(1-cosθ))<br>3. Remonte à v₀ = (m+M)V/m<br>4. Comparer avec v₀ initial`
+  };
+  document.getElementById('guide-box').innerHTML=guides[m];
+
+  // Pendule balistique : changer contrôles
+  if(m==='balistique'){
+    document.getElementById('sl-m1').min='.1';document.getElementById('sl-m1').max='5';
+    document.getElementById('sl-v1').min='1';document.getElementById('sl-v1').max='30';
+    B.m1=BAL.mball;B.v1=BAL.vball;
+    B.m2=BAL.mpendule;B.v2=0;
+  }
+  measureCount=0;document.getElementById('tp-body').innerHTML='';
+  resetSim(false);
+}
+
+function setChoc(type){
+  choc=type;
+  ['elastique','partiellement','inelastique'].forEach(id=>{document.getElementById('type-'+id).classList.toggle('active',id===type);});
+  if(type==='elastique'){e_rest=1.0;document.getElementById('ctrl-e').style.display='none';document.getElementById('e-display-val').textContent='e = 1.00';document.getElementById('schoc-disp').innerHTML='Choc : <strong style="color:var(--a3)">Élastique</strong>';}
+  else if(type==='inelastique'){e_rest=0.0;document.getElementById('ctrl-e').style.display='none';document.getElementById('e-display-val').textContent='e = 0.00';document.getElementById('schoc-disp').innerHTML='Choc : <strong style="color:var(--a1)">Parfait. Inélastique</strong>';}
+  else{e_rest=parseFloat(document.getElementById('sl-e').value);document.getElementById('ctrl-e').style.display='block';document.getElementById('e-display-val').textContent=`e = ${e_rest.toFixed(2)}`;document.getElementById('schoc-disp').innerHTML='Choc : <strong style="color:var(--a4)">Partiellement élastique</strong>';}
+  // sl-e oninput update display
+  document.getElementById('sl-e').oninput=function(){
+    e_rest=parseFloat(this.value);
+    document.getElementById('val-e').textContent=e_rest.toFixed(2);
+    document.getElementById('e-display-val').textContent=`e = ${e_rest.toFixed(2)}`;
+  };
+  resetSim(false);
+}
+
+function recordMeasure(){
+  measureCount++;
+  const v1i=parseFloat(document.getElementById('sl-v1').value);
+  const v2i=parseFloat(document.getElementById('sl-v2').value);
+  const m1=B.m1,m2=B.m2;
+  const pi_val=m1*v1i+m2*v2i;
+  const eci_val=.5*m1*v1i*v1i+.5*m2*v2i*v2i;
+  let v1f=B.v1f,v2f=B.v2f;
+  if(v1f===null){const res=computeCollision1D(m1,v1i,m2,v2i,e_rest);v1f=res.v1f;v2f=res.v2f;}
+  const pf=m1*v1f+m2*v2f;
+  const ecf=.5*m1*v1f*v1f+.5*m2*v2f*v2f;
+  const dp=Math.abs(pf-pi_val)/Math.max(Math.abs(pi_val),.001)*100;
+  const dec=Math.abs(ecf-eci_val)/Math.max(eci_val,.001)*100;
+  const tb=document.getElementById('tp-body');
+  const tr=document.createElement('tr');
+  const dpc=dp<1?'var(--a3)':'var(--a1)';
+  const decc=dec<1?'var(--a3)':(dec<50?'var(--a4)':'var(--a1)');
+  tr.innerHTML=`<td>${measureCount}</td><td class="vc">${m1.toFixed(1)}</td><td class="vc">${m2.toFixed(1)}</td><td>${v1i.toFixed(1)}</td><td>${v2i.toFixed(1)}</td><td style="color:var(--a1)">${v1f.toFixed(2)}</td><td style="color:var(--a2)">${v2f.toFixed(2)}</td><td style="color:${dpc}">${dp.toFixed(1)}%</td><td style="color:${decc}">${dec.toFixed(1)}%</td>`;
+  tb.appendChild(tr);
+  tr.style.background='rgba(255,107,53,.08)';
+  setTimeout(()=>tr.style.background='',800);
+  tb.scrollTop=tb.scrollHeight;
+}
+
+function clearTable(){measureCount=0;document.getElementById('tp-body').innerHTML='';}
+
+// Init
+initPos();drawFrame();
+</script>
+</body>
+</html>

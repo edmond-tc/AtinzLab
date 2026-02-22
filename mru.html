@@ -10,6 +10,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Three.js r128 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+@media (max-width: 600px) {
+    html, body {
+        overflow-y: scroll !important; /* Force l'apparition de la barre de défilement */
+        height: auto !important;
+        position: relative !important;
+    }
+
+    #app {
+        height: 70vh !important; /* 3/4 de l'écran pour la simulation */
+        width: 100vw !important;
+    }
+
+    #ctrl-panel {
+        height: 30vh !important; /* 1/4 pour les paramètres */
+        position: relative !important;
+        display: block !important;
+        background: #071e35 !important; /* Ta couleur sombre */
+    }
+}
     <style>
         /* ===== VARIABLES ===== */
         * {
@@ -52,14 +72,7 @@
         }
 
         html, body {
-            height: 100%;
-            background: var(--bg);
-            color: var(--text);
-            font-family: var(--font);
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
-            touch-action: pan-y pinch-zoom;
+            ;
         }
 
         /* ===== HEADER ===== */

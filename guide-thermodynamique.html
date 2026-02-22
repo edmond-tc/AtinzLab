@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SimLab – Guide Interactif Thermodynamique</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════════ */
+:root {
+  --bg: #0a0e1a;
+  --surface: #111827;
+  --surface2: #1a2540;
+  --surface3: #1e2d4d;
+  --cyan: #00e5ff;
+  --cyan2: #00b8d4;
+  --yellow: #ffd740;
+  --green: #00e676;
+  --orange: #ff9800;
+  --red: #ff4444;
+  --blue: #448aff;
+  --purple: #ce93d8;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --border: #1e3a5f;
+  --radius: 12px;
+  --font: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--font); line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════
+   PROGRESS BAR
+═══════════════════════════════════════════ */
+#progress-bar {
+  position: fixed; top: 0; left: 0; z-index: 999;
+  height: 3px; width: 0%;
+  background: linear-gradient(90deg, var(--cyan), var(--yellow), var(--green));
+  transition: width .1s linear;
+  box-shadow: 0 0 10px var(--cyan);
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════ */
+#header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  height: 60px; background: rgba(10,14,26,0.96); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 20px; gap: 12px;
+}
+.logo-area { display: flex; align-items: center; gap: 8px; }
+.logo { font-size: 16px; font-weight: 700; color: var(--cyan); white-space: nowrap; text-decoration: none; }
+.badge {
+  background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3);
+  color: var(--cyan); font-size: 11px; padding: 3px 9px; border-radius: 20px;
+  font-weight: 500; white-space: nowrap;
+}
+.header-spacer { flex: 1; }
+.btn-header {
+  padding: 8px 14px; border-radius: 8px; font-family: var(--font);
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all .2s;
+  white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 5px;
+}
+.btn-launch {
+  background: var(--green); color: #000; border: none;
+}
+.btn-launch:hover { background: #00ff88; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,230,118,.3); }
+.btn-back {
+  background: var(--surface2); color: var(--text2); border: 1px solid var(--border);
+}
+.btn-back:hover { border-color: var(--cyan); color: var(--cyan); }
+
+/* ═══════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════ */
+.page-wrap {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 0;
+  padding-top: 60px;
+  min-height: 100vh;
+}
+@media (max-width: 900px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  #sidebar { display: none; }
+}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR / TOC
+═══════════════════════════════════════════ */
+#sidebar {
+  position: sticky; top: 60px; height: calc(100vh - 60px);
+  background: var(--surface); border-right: 1px solid var(--border);
+  padding: 28px 16px; overflow-y: auto;
+}
+#sidebar h3 {
+  font-size: 10px; font-weight: 700; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 2px; margin-bottom: 18px;
+}
+.toc-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  transition: all .2s; text-decoration: none; color: var(--text2);
+  font-size: 13px; margin-bottom: 3px;
+}
+.toc-item:hover { background: var(--surface2); color: var(--text); }
+.toc-item.active { background: rgba(0,229,255,.1); color: var(--cyan); }
+.toc-num {
+  min-width: 22px; height: 22px; border-radius: 50%;
+  background: var(--surface3); color: var(--cyan);
+  font-size: 10px; font-weight: 700; font-family: var(--mono);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.toc-item.active .toc-num { background: var(--cyan); color: #000; }
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════════ */
+main { padding: 48px 40px 80px; max-width: 900px; }
+@media (max-width: 600px) { main { padding: 28px 16px 80px; } }
+
+/* ═══════════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════════ */
+.section {
+  margin-bottom: 72px;
+  scroll-margin-top: 80px;
+}
+.section-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 28px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.section-num {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 14px; font-weight: 700; color: #000;
+  flex-shrink: 0;
+}
+.section-title { font-size: 22px; font-weight: 700; color: var(--text); }
+.section-sub { font-size: 13px; color: var(--text2); margin-top: 2px; }
+
+p { color: var(--text2); font-size: 15px; margin-bottom: 14px; line-height: 1.75; }
+p strong { color: var(--text); }
+
+/* ═══════════════════════════════════════════
+   CARDS
+═══════════════════════════════════════════ */
+.card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px; margin-bottom: 16px;
+}
+.card.border-cyan  { border-left: 3px solid var(--cyan); }
+.card.border-orange{ border-left: 3px solid var(--orange); }
+.card.border-green { border-left: 3px solid var(--green); }
+.card.border-red   { border-left: 3px solid var(--red); }
+.card.border-yellow{ border-left: 3px solid var(--yellow); }
+.card.border-blue  { border-left: 3px solid var(--blue); }
+.card.border-purple{ border-left: 3px solid var(--purple); }
+.card h4 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.card p { margin-bottom: 0; font-size: 14px; }
+
+/* ═══════════════════════════════════════════
+   TABLE
+═══════════════════════════════════════════ */
+.table-wrap { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+thead tr { background: var(--surface3); }
+thead th {
+  padding: 12px 16px; text-align: left; font-size: 12px;
+  font-weight: 600; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px;
+}
+tbody tr { border-top: 1px solid var(--border); transition: background .15s; }
+tbody tr:hover { background: rgba(0,229,255,0.03); }
+tbody td { padding: 12px 16px; font-size: 13px; color: var(--text2); }
+tbody td:first-child { color: var(--text); font-weight: 600; }
+.tag {
+  display: inline-block; padding: 2px 8px; border-radius: 4px;
+  font-size: 11px; font-weight: 600; font-family: var(--mono);
+}
+.tag-cyan   { background: rgba(0,229,255,.12); color: var(--cyan); }
+.tag-orange { background: rgba(255,152,0,.12);  color: var(--orange); }
+.tag-green  { background: rgba(0,230,118,.12);  color: var(--green); }
+.tag-red    { background: rgba(255,68,68,.12);   color: var(--red); }
+.tag-yellow { background: rgba(255,215,64,.12);  color: var(--yellow); }
+
+/* ═══════════════════════════════════════════
+   FORMULA BOXES
+═══════════════════════════════════════════ */
+.formula-section { margin-bottom: 20px; }
+.formula-box {
+  background: rgba(17,24,39,0.9); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px 20px; margin-bottom: 12px;
+}
+.formula-box .label {
+  font-size: 12px; color: var(--text2); text-transform: uppercase;
+  letter-spacing: 1px; margin-bottom: 8px; font-weight: 600;
+}
+.formula-box .formula {
+  font-family: var(--mono); font-size: 18px; color: var(--yellow);
+  font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px;
+}
+.formula-box .explain {
+  font-size: 12px; color: var(--text2); line-height: 1.6; margin: 0;
+}
+.formula-box .vars {
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: 8px;
+}
+.var-pill {
+  background: var(--surface3); border-radius: 6px; padding: 3px 10px;
+  font-family: var(--mono); font-size: 11px; color: var(--cyan);
+}
+
+/* ═══════════════════════════════════════════
+   NUMBERED STEPS
+═══════════════════════════════════════════ */
+.steps { display: flex; flex-direction: column; gap: 16px; }
+.step {
+  display: flex; gap: 16px; align-items: flex-start;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px;
+  transition: border-color .2s;
+}
+.step:hover { border-color: rgba(0,229,255,.3); }
+.step-num {
+  min-width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--cyan), #0088aa);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 15px; font-weight: 700; color: #000;
+  flex-shrink: 0;
+}
+.step-content h4 { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 5px; }
+.step-content p { font-size: 13px; color: var(--text2); margin: 0; }
+.step-badge {
+  margin-left: auto; flex-shrink: 0;
+  background: rgba(0,229,255,.1); border: 1px solid rgba(0,229,255,.2);
+  color: var(--cyan); font-size: 10px; padding: 2px 8px; border-radius: 4px;
+  font-weight: 600; height: fit-content; margin-top: 2px;
+}
+
+/* ═══════════════════════════════════════════
+   DEMO CANVAS
+═══════════════════════════════════════════ */
+#demo-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+#demo-controls {
+  display: flex; flex-wrap: wrap; gap: 8px; padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.demo-btn {
+  padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text2); font-family: var(--font);
+  font-size: 12px; font-weight: 500; cursor: pointer; transition: all .2s;
+}
+.demo-btn.active, .demo-btn:hover {
+  background: rgba(0,229,255,.12); border-color: var(--cyan); color: var(--cyan);
+}
+#demoCanvas { display: block; width: 100%; max-width: 100%; }
+#demo-info {
+  padding: 12px 16px; font-size: 12px; color: var(--text2);
+  border-top: 1px solid var(--border); font-family: var(--mono);
+}
+
+/* ═══════════════════════════════════════════
+   EXPERIMENTS
+═══════════════════════════════════════════ */
+.exp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 16px; }
+@media (max-width: 600px) { .exp-grid { grid-template-columns: 1fr; } }
+.exp-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); overflow: hidden;
+}
+.exp-header {
+  padding: 14px 16px; display: flex; align-items: center; gap: 10px;
+}
+.exp-num {
+  width: 30px; height: 30px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: 13px; font-weight: 700; color: #000; flex-shrink: 0;
+}
+.exp-card h4 { font-size: 14px; font-weight: 600; color: var(--text); }
+.exp-body { padding: 0 16px 16px; }
+.exp-body p { font-size: 12px; margin-bottom: 8px; }
+.exp-params {
+  background: var(--surface2); border-radius: 8px; padding: 10px 12px;
+  margin-bottom: 10px;
+}
+.exp-params .param { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.exp-params .param:last-child { margin-bottom: 0; }
+.exp-params .p-key { font-size: 11px; color: var(--text2); }
+.exp-params .p-val { font-family: var(--mono); font-size: 12px; color: var(--cyan); font-weight: 500; }
+.exp-result {
+  background: rgba(0,230,118,0.06); border: 1px solid rgba(0,230,118,0.2);
+  border-radius: 8px; padding: 8px 12px;
+}
+.exp-result .r-label { font-size: 10px; color: var(--green); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.exp-result .r-val { font-family: var(--mono); font-size: 12px; color: var(--text); margin-top: 3px; }
+
+/* ═══════════════════════════════════════════
+   QUIZ
+═══════════════════════════════════════════ */
+.quiz-wrap { display: flex; flex-direction: column; gap: 24px; }
+.quiz-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 20px;
+  transition: border-color .3s;
+}
+.quiz-card.answered-correct { border-color: var(--green); }
+.quiz-card.answered-wrong   { border-color: var(--red); }
+.quiz-q {
+  font-size: 15px; font-weight: 600; color: var(--text);
+  margin-bottom: 14px; display: flex; gap: 10px; align-items: flex-start;
+}
+.quiz-qnum {
+  background: var(--surface3); color: var(--cyan);
+  font-family: var(--mono); font-size: 12px; font-weight: 700;
+  width: 26px; height: 26px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  padding: 11px 16px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text2); font-family: var(--font);
+  font-size: 13px; cursor: pointer; transition: all .2s; text-align: left; width: 100%;
+}
+.quiz-opt:hover:not(:disabled) { border-color: var(--cyan); color: var(--text); }
+.quiz-opt.correct { background: rgba(0,230,118,.12); border-color: var(--green); color: var(--green); }
+.quiz-opt.wrong   { background: rgba(255,68,68,.1);   border-color: var(--red);   color: var(--red); }
+.quiz-opt:disabled { cursor: default; }
+.quiz-feedback {
+  margin-top: 12px; font-size: 13px; padding: 10px 14px;
+  border-radius: 8px; display: none; line-height: 1.5;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.ok { background: rgba(0,230,118,.08); color: var(--green); border: 1px solid rgba(0,230,118,.2); }
+.quiz-feedback.ko { background: rgba(255,68,68,.08);  color: var(--red);   border: 1px solid rgba(255,68,68,.2); }
+
+#score-box {
+  display: none; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 30px; text-align: center;
+}
+#score-box.show { display: block; }
+#score-box .score-emoji { font-size: 48px; margin-bottom: 12px; }
+#score-box .score-val { font-size: 36px; font-weight: 800; font-family: var(--mono); color: var(--cyan); }
+#score-box .score-msg { font-size: 16px; color: var(--text2); margin-top: 8px; }
+#score-box .score-sub { font-size: 13px; color: var(--text2); margin-top: 6px; }
+
+/* ═══════════════════════════════════════════
+   SCROLL TO TOP
+═══════════════════════════════════════════ */
+#scroll-top {
+  position: fixed; bottom: 28px; right: 20px; z-index: 90;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text2); font-size: 18px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: all .3s;
+}
+#scroll-top.visible { opacity: 1; pointer-events: all; }
+#scroll-top:hover { background: var(--cyan); color: #000; border-color: var(--cyan); }
+
+/* ═══════════════════════════════════════════
+   MISC UTILITIES
+═══════════════════════════════════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+.info-box {
+  background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 10px; padding: 14px 18px; margin-bottom: 16px;
+}
+.info-box .ib-icon { font-size: 18px; margin-right: 6px; }
+.info-box p { color: var(--text); font-size: 14px; margin: 0; }
+.warn-box {
+  background: rgba(255,152,0,0.06); border: 1px solid rgba(255,152,0,0.25);
+  border-radius: 10px; padding: 14px 18px; margin-bottom: 16px;
+}
+.warn-box p { color: var(--orange); font-size: 14px; margin: 0; }
+.divider { height: 1px; background: var(--border); margin: 32px 0; }
+.highlight { color: var(--cyan); font-weight: 600; }
+.highlight-y { color: var(--yellow); font-weight: 600; }
+.highlight-g { color: var(--green); font-weight: 600; }
+kbd {
+  background: var(--surface3); border: 1px solid var(--border);
+  border-radius: 5px; padding: 2px 7px; font-family: var(--mono);
+  font-size: 12px; color: var(--cyan);
+}
+.native-ad { margin: 32px 0; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar"></div>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="logo-area">
+    <a href="https://atinzlab.pages.dev" class="logo">⚗️ SimLab</a>
+    <span class="badge">📖 Guide Interactif</span>
+  </div>
+  <div class="header-spacer"></div>
+  <a href="thermodynamics-sim.html" class="btn-header btn-launch">🚀 Lancer la Simulation</a>
+  <a href="index.html" class="btn-header btn-back">← Retour</a>
+</header>
+
+<!-- LAYOUT -->
+<div class="page-wrap">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <h3>Table des matières</h3>
+    <a class="toc-item active" href="#s1"><span class="toc-num">1</span>Introduction</a>
+    <a class="toc-item" href="#s2"><span class="toc-num">2</span>Types de processus</a>
+    <a class="toc-item" href="#s3"><span class="toc-num">3</span>Formules essentielles</a>
+    <a class="toc-item" href="#s4"><span class="toc-num">4</span>Utiliser la simulation</a>
+    <a class="toc-item" href="#s5"><span class="toc-num">5</span>Démo interactive</a>
+    <a class="toc-item" href="#s6"><span class="toc-num">6</span>Expériences guidées</a>
+    <a class="toc-item" href="#s7"><span class="toc-num">7</span>Quiz</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- ══════════════════════════════════════
+         SECTION 1 — INTRODUCTION
+    ══════════════════════════════════════ -->
+    <section class="section" id="s1">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <div>
+          <div class="section-title">Introduction à la Thermodynamique</div>
+          <div class="section-sub">Définition, contexte et importance</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p><span class="ib-icon">🌡️</span><strong>La thermodynamique</strong> est la branche de la physique qui étudie les échanges d'énergie sous forme de chaleur et de travail entre les systèmes macroscopiques.</p>
+      </div>
+
+      <p>La <strong>thermodynamique des gaz parfaits</strong> est l'un des piliers fondamentaux de la physique moderne. Elle nous permet de comprendre comment un gaz se comporte lorsqu'on fait varier sa <span class="highlight">pression (P)</span>, son <span class="highlight">volume (V)</span> et sa <span class="highlight">température (T)</span>.</p>
+
+      <p>Un <strong>gaz parfait</strong> est un modèle théorique dans lequel les molécules sont assimilées à des sphères dures sans interactions entre elles (sauf lors des chocs). Ce modèle, très proche de la réalité pour les gaz dilués à haute température, permet d'établir des lois précises et universelles.</p>
+
+      <div class="grid-2">
+        <div class="card border-cyan">
+          <h4>🔬 Modèle microscopique</h4>
+          <p>Les molécules sont en <strong>agitation thermique permanente</strong>. La température est une mesure directe de l'énergie cinétique moyenne des molécules. Plus T augmente, plus les molécules se déplacent vite.</p>
+        </div>
+        <div class="card border-yellow">
+          <h4>📐 Grandeurs macroscopiques</h4>
+          <p>À l'échelle macroscopique, on mesure <strong>Pression (Pa)</strong>, <strong>Volume (m³)</strong> et <strong>Température (K)</strong>. Ces grandeurs sont reliées par les lois des gaz parfaits.</p>
+        </div>
+      </div>
+
+      <div class="card border-green">
+        <h4>🎯 Que modélise cette simulation ?</h4>
+        <p>La simulation modélise des <strong>particules ponctuelles</strong> dans un conteneur 2D. Les particules s'entrechoquent élastiquement et rebondissent sur les parois. On peut observer en temps réel comment la pression, la température et le volume se comportent selon le processus thermodynamique choisi.</p>
+      </div>
+
+      <div class="warn-box">
+        <p>⚠️ <strong>Attention :</strong> Dans la simulation, les unités sont normalisées pour la visualisation. Les valeurs numériques affichées sont représentatives mais ne correspondent pas directement aux SI. Utilisez les formules théoriques pour les calculs exacts.</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SECTION 2 — TYPES
+    ══════════════════════════════════════ -->
+    <section class="section" id="s2">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <div>
+          <div class="section-title">Les processus thermodynamiques</div>
+          <div class="section-sub">Tableau comparatif des 4 transformations principales</div>
+        </div>
+      </div>
+
+      <p>Il existe quatre grandes transformations thermodynamiques pour un gaz parfait. Chaque transformation conserve une grandeur constante. Le tableau ci-dessous les compare de façon synthétique.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Processus</th>
+              <th>Constante</th>
+              <th>Loi</th>
+              <th>Chaleur Q</th>
+              <th>Travail W</th>
+              <th>Symbole</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Isotherme</td>
+              <td>Température T</td>
+              <td><span class="tag tag-cyan">P₁V₁ = P₂V₂</span></td>
+              <td>Q = W (Q≠0)</td>
+              <td>W = NkT·ln(V₁/V₂)</td>
+              <td><span class="tag tag-cyan">T = cst</span></td>
+            </tr>
+            <tr>
+              <td>Isobare</td>
+              <td>Pression P</td>
+              <td><span class="tag tag-orange">V/T = cst</span></td>
+              <td>Q = nCₚΔT</td>
+              <td>W = PΔV</td>
+              <td><span class="tag tag-orange">P = cst</span></td>
+            </tr>
+            <tr>
+              <td>Isochore</td>
+              <td>Volume V</td>
+              <td><span class="tag tag-green">P/T = cst</span></td>
+              <td>Q = nCᵥΔT</td>
+              <td>W = 0</td>
+              <td><span class="tag tag-green">V = cst</span></td>
+            </tr>
+            <tr>
+              <td>Adiabatique</td>
+              <td>Entropie S</td>
+              <td><span class="tag tag-red">PVᵞ = cst</span></td>
+              <td>Q = 0</td>
+              <td>W = ΔU</td>
+              <td><span class="tag tag-red">Q = 0</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="grid-2" style="margin-top: 20px;">
+        <div class="card border-cyan">
+          <h4>🌊 Isotherme — Boyle-Mariotte</h4>
+          <p>Compression ou détente à <strong>T constante</strong>. Le gaz échange de la chaleur avec l'extérieur. Exemple : compression lente dans un cylindre immergé dans un bain thermostaté.</p>
+        </div>
+        <div class="card border-orange">
+          <h4>🔥 Isobare — Gay-Lussac</h4>
+          <p>Chauffage à <strong>pression constante</strong>. Le gaz se dilate librement. Exemple : ballon de baudruche chauffé au soleil (la pression interne = pression atmosphérique).</p>
+        </div>
+        <div class="card border-green">
+          <h4>🥫 Isochore — Amonton</h4>
+          <p>Chauffage dans un <strong>volume fixe</strong>. La pression augmente. Exemple : chauffer un autocuiseur hermétiquement fermé sans soupape de sécurité.</p>
+        </div>
+        <div class="card border-red">
+          <h4>⚡ Adiabatique — Poisson</h4>
+          <p>Sans échange de chaleur. La compression chauffe le gaz, la détente le refroidit. Exemple : air dans une pompe à vélo comprimé rapidement (la pompe chauffe !).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- NATIVE AD (milieu du contenu) -->
+    <div class="native-ad">
+      <div style="display: flex; justify-content: center; margin: 20px 0;">
+        <div id="container-ced9d6bd01657bda6021abb1c5919291"></div>
+        <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         SECTION 3 — FORMULES
+    ══════════════════════════════════════ -->
+    <section class="section" id="s3">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <div>
+          <div class="section-title">Formules essentielles</div>
+          <div class="section-sub">Les équations fondamentales avec explication pédagogique</div>
+        </div>
+      </div>
+
+      <p>Voici les formules clés de la thermodynamique des gaz parfaits. Maîtrise ces équations pour réussir tes exercices et comprendre les résultats de la simulation.</p>
+
+      <!-- LOI GENERALE -->
+      <div class="formula-box">
+        <div class="label">Loi générale des gaz parfaits</div>
+        <div class="formula">PV = nRT = NkT</div>
+        <p class="explain">Cette loi fondamentale relie les trois grandeurs d'état d'un gaz parfait. Elle permet de calculer n'importe quelle grandeur si les deux autres sont connues. C'est la combinaison des lois de Boyle-Mariotte, Gay-Lussac et Charles.</p>
+        <div class="vars">
+          <span class="var-pill">P = pression (Pa)</span>
+          <span class="var-pill">V = volume (m³)</span>
+          <span class="var-pill">n = quantité (mol)</span>
+          <span class="var-pill">R = 8,314 J/mol·K</span>
+          <span class="var-pill">N = nb molécules</span>
+          <span class="var-pill">k = 1,38×10⁻²³ J/K</span>
+          <span class="var-pill">T = température (K)</span>
+        </div>
+      </div>
+
+      <!-- ISOTHERME -->
+      <div class="formula-box">
+        <div class="label">Loi de Boyle-Mariotte — Isotherme (T = cst)</div>
+        <div class="formula">P₁V₁ = P₂V₂</div>
+        <p class="explain">À température constante, la pression et le volume d'un gaz parfait sont inversement proportionnels. Si on double le volume, la pression est divisée par 2. Cette loi est vérifiée pour des compressions/détentes lentes.</p>
+        <div class="vars">
+          <span class="var-pill">P₁, P₂ = pressions initiale/finale (Pa)</span>
+          <span class="var-pill">V₁, V₂ = volumes initial/final (m³)</span>
+        </div>
+      </div>
+
+      <!-- ISOBARE -->
+      <div class="formula-box">
+        <div class="label">Loi de Charles — Isobare (P = cst)</div>
+        <div class="formula">V₁/T₁ = V₂/T₂</div>
+        <p class="explain">À pression constante, le volume est proportionnel à la température absolue (en Kelvin !). Important : on utilise toujours la température en Kelvin, jamais en Celsius pour ces calculs.</p>
+        <div class="vars">
+          <span class="var-pill">T₁, T₂ = températures en Kelvin (K)</span>
+          <span class="var-pill">T(K) = T(°C) + 273,15</span>
+        </div>
+      </div>
+
+      <!-- ISOCHORE -->
+      <div class="formula-box">
+        <div class="label">Loi d'Amonton — Isochore (V = cst)</div>
+        <div class="formula">P₁/T₁ = P₂/T₂</div>
+        <p class="explain">À volume constant, la pression est proportionnelle à la température absolue. Doubler la température absolue double la pression. Principe utilisé dans les capteurs de pression à volume constant.</p>
+        <div class="vars">
+          <span class="var-pill">P₁, P₂ = pressions (Pa)</span>
+          <span class="var-pill">T₁, T₂ = températures (K)</span>
+        </div>
+      </div>
+
+      <!-- ADIABATIQUE -->
+      <div class="formula-box">
+        <div class="label">Loi de Laplace — Adiabatique (Q = 0)</div>
+        <div class="formula">PV^γ = cst  |  TV^(γ-1) = cst</div>
+        <p class="explain">Lors d'une transformation adiabatique, le gaz ne reçoit ni ne cède de chaleur. γ (gamma) est le rapport des capacités thermiques. La compression adiabatique provoque un échauffement — c'est pourquoi une pompe à vélo chauffe !</p>
+        <div class="vars">
+          <span class="var-pill">γ = Cₚ/Cᵥ (indice adiabatique)</span>
+          <span class="var-pill">Monoatomique : γ = 5/3 ≈ 1,67</span>
+          <span class="var-pill">Diatomique : γ = 7/5 = 1,40</span>
+          <span class="var-pill">Polyatomique : γ = 4/3 ≈ 1,33</span>
+        </div>
+      </div>
+
+      <!-- ENERGIE CINETIQUE -->
+      <div class="formula-box">
+        <div class="label">Énergie cinétique moyenne des molécules</div>
+        <div class="formula">〈Ec〉 = (3/2) × k × T</div>
+        <p class="explain">La température est une mesure directe de l'énergie cinétique de translation des molécules. Cette relation fondamentale relie le microscopique (énergie d'une molécule) au macroscopique (température). Plus T est élevée, plus les molécules vont vite.</p>
+        <div class="vars">
+          <span class="var-pill">〈Ec〉 = énergie cinétique moy. (J)</span>
+          <span class="var-pill">k = 1,38×10⁻²³ J/K</span>
+          <span class="var-pill">T = température (K)</span>
+        </div>
+      </div>
+
+      <!-- VITESSE -->
+      <div class="formula-box">
+        <div class="label">Vitesse quadratique moyenne (v_rms)</div>
+        <div class="formula">v_rms = √(3kT/m) = √(3RT/M)</div>
+        <p class="explain">La vitesse quadratique moyenne est la racine carrée de la moyenne des carrés des vitesses. Pour l'azote N₂ à 300 K, v_rms ≈ 517 m/s — les molécules de l'air autour de toi se déplacent à plus de 500 m/s !</p>
+        <div class="vars">
+          <span class="var-pill">m = masse d'une molécule (kg)</span>
+          <span class="var-pill">M = masse molaire (kg/mol)</span>
+          <span class="var-pill">R = 8,314 J/mol·K</span>
+        </div>
+      </div>
+
+      <!-- ENERGIE INTERNE -->
+      <div class="formula-box">
+        <div class="label">Énergie interne & 1er principe</div>
+        <div class="formula">U = (f/2)NkT  |  ΔU = Q + W</div>
+        <p class="explain">f est le nombre de degrés de liberté (3 pour monoatomique, 5 pour diatomique). Le 1er principe stipule que la variation d'énergie interne est égale à la somme de la chaleur reçue Q et du travail reçu W. L'énergie se conserve.</p>
+        <div class="vars">
+          <span class="var-pill">f = degrés de liberté</span>
+          <span class="var-pill">Mono : f=3 → U=(3/2)NkT</span>
+          <span class="var-pill">Diato : f=5 → U=(5/2)NkT</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SECTION 4 — COMMENT UTILISER
+    ══════════════════════════════════════ -->
+    <section class="section" id="s4">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <div>
+          <div class="section-title">Comment utiliser la simulation</div>
+          <div class="section-sub">Guide étape par étape pour bien démarrer</div>
+        </div>
+      </div>
+
+      <div class="info-box">
+        <p><span class="ib-icon">💡</span>Suis ces étapes dans l'ordre pour obtenir les meilleurs résultats et comprendre ce que tu observes dans la simulation.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Choisir le type de gaz</h4>
+            <p>Dans le panneau <kbd>⚙️ Paramètres</kbd>, sélectionne le type de gaz : <span class="highlight">monoatomique</span> (Ar, He — γ=5/3), <span class="highlight">diatomique</span> (N₂, O₂ — γ=7/5) ou <span class="highlight">polyatomique</span> (CO₂ — γ=4/3). Ce choix affecte l'énergie interne et les transformations adiabatiques.</p>
+          </div>
+          <div class="step-badge">ÉTAPE 1</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>Régler la température initiale</h4>
+            <p>Utilise le slider <kbd>Température (K)</kbd> pour définir la température de départ. Commence par <strong>300 K</strong> (température ambiante). Le thermomètre sur le canvas visualise la valeur choisie. La vitesse des particules est directement proportionnelle à √T.</p>
+          </div>
+          <div class="step-badge">ÉTAPE 2</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Choisir le nombre de particules</h4>
+            <p>Le slider <kbd>Particules</kbd> va de 20 à 300. Pour commencer, utilise <strong>100 particules</strong>. Plus il y en a, meilleure est la statistique, mais la simulation est plus lente. Sur mobile, 60–80 particules est optimal.</p>
+          </div>
+          <div class="step-badge">ÉTAPE 3</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h4>Sélectionner le processus thermodynamique</h4>
+            <p>Dans le menu déroulant, choisis le processus : <span class="highlight">Isotherme</span>, <span class="highlight">Isobare</span>, <span class="highlight">Isochore</span> ou <span class="highlight">Adiabatique</span>. Chaque processus change la façon dont le moteur physique gère les vitesses et le volume.</p>
+          </div>
+          <div class="step-badge">ÉTAPE 4</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h4>Lancer et observer</h4>
+            <p>Appuie sur le bouton <span class="highlight-g">▶ Lancer</span> vert. Le panneau de résultats apparaît à droite avec toutes les mesures en temps réel. Observe la <strong>couleur des particules</strong> (bleue = lente, rouge = rapide) et les <strong>flèches de vitesse</strong>. Le diagramme P-V se trace en haut à gauche.</p>
+          </div>
+          <div class="step-badge">ÉTAPE 5</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h4>Modifier les paramètres en temps réel</h4>
+            <p>Pendant la simulation, tu peux changer la température (→ les vitesses s'ajustent immédiatement), comprimer le volume avec le slider <kbd>Volume</kbd> ou utiliser le geste <kbd>pinch</kbd> sur mobile (2 doigts). Observe comment P, T, V évoluent selon la loi choisie.</p>
+          </div>
+          <div class="step-badge">ÉTAPE 6</div>
+        </div>
+
+        <div class="step">
+          <div class="step-num">7</div>
+          <div class="step-content">
+            <h4>Exporter le rapport TP</h4>
+            <p>Dans l'onglet <kbd>📄 Rapport TP</kbd>, entre ton nom et clique sur <span class="highlight">Télécharger Rapport TP</span>. Un fichier SVG est généré avec toutes les formules, les calculs numériques, et la vérification de la loi PV = NkT avec le pourcentage d'erreur.</p>
+          </div>
+          <div class="step-badge">ÉTAPE 7</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SECTION 5 — DÉMO INTERACTIVE
+    ══════════════════════════════════════ -->
+    <section class="section" id="s5">
+      <div class="section-header">
+        <div class="section-num">05</div>
+        <div>
+          <div class="section-title">Démo interactive</div>
+          <div class="section-sub">Visualise les 4 processus en temps réel</div>
+        </div>
+      </div>
+
+      <p>Cette mini-simulation illustre graphiquement comment les grandeurs P, V et T évoluent selon le processus thermodynamique. Clique sur un processus pour voir la transformation en action.</p>
+
+      <div id="demo-wrap">
+        <div id="demo-controls">
+          <button class="demo-btn active" onclick="setDemo('iso_T')">🌊 Isotherme</button>
+          <button class="demo-btn" onclick="setDemo('iso_P')">🔥 Isobare</button>
+          <button class="demo-btn" onclick="setDemo('iso_V')">🥫 Isochore</button>
+          <button class="demo-btn" onclick="setDemo('adiab')">⚡ Adiabatique</button>
+          <button class="demo-btn" onclick="toggleDemoPause()" id="demo-pause-btn">⏸ Pause</button>
+        </div>
+        <canvas id="demoCanvas" width="800" height="320"></canvas>
+        <div id="demo-info">Chargement...</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SECTION 6 — EXPÉRIENCES
+    ══════════════════════════════════════ -->
+    <section class="section" id="s6">
+      <div class="section-header">
+        <div class="section-num">06</div>
+        <div>
+          <div class="section-title">Expériences à réaliser</div>
+          <div class="section-sub">4 expériences guidées avec paramètres précis</div>
+        </div>
+      </div>
+
+      <p>Réalise ces quatre expériences dans la simulation pour vérifier les lois thermodynamiques par toi-même. Note tes résultats et compare avec les valeurs attendues.</p>
+
+      <div class="exp-grid">
+        <!-- EXP 1 -->
+        <div class="exp-card">
+          <div class="exp-header">
+            <div class="exp-num" style="background: var(--cyan); color:#000;">1</div>
+            <h4>Vérification de Boyle-Mariotte</h4>
+          </div>
+          <div class="exp-body">
+            <p>Vérifie que P×V = constante à température fixe en comprimant le gaz.</p>
+            <div class="exp-params">
+              <div class="param"><span class="p-key">Processus</span><span class="p-val">Isotherme</span></div>
+              <div class="param"><span class="p-key">Température</span><span class="p-val">300 K</span></div>
+              <div class="param"><span class="p-key">Particules</span><span class="p-val">100</span></div>
+              <div class="param"><span class="p-key">Volume initial</span><span class="p-val">1,00 (max)</span></div>
+              <div class="param"><span class="p-key">Volume final</span><span class="p-val">0,50 (slider)</span></div>
+              <div class="param"><span class="p-key">Gaz</span><span class="p-val">Monoatomique</span></div>
+            </div>
+            <div class="exp-result">
+              <div class="r-label">📊 Résultat attendu</div>
+              <div class="r-val">P₂ ≈ 2 × P₁ lorsque V₂ = V₁/2<br>P₁V₁ = P₂V₂ ± 5% (erreur sim.)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXP 2 -->
+        <div class="exp-card">
+          <div class="exp-header">
+            <div class="exp-num" style="background: var(--orange); color:#000;">2</div>
+            <h4>Chauffage Isobare</h4>
+          </div>
+          <div class="exp-body">
+            <p>Observe la dilatation du gaz à pression constante en augmentant T.</p>
+            <div class="exp-params">
+              <div class="param"><span class="p-key">Processus</span><span class="p-val">Isobare</span></div>
+              <div class="param"><span class="p-key">Température initiale</span><span class="p-val">300 K</span></div>
+              <div class="param"><span class="p-key">Température finale</span><span class="p-val">600 K</span></div>
+              <div class="param"><span class="p-key">Particules</span><span class="p-val">80</span></div>
+              <div class="param"><span class="p-key">Volume</span><span class="p-val">Libre</span></div>
+            </div>
+            <div class="exp-result">
+              <div class="r-label">📊 Résultat attendu</div>
+              <div class="r-val">Les particules s'agitent 2× plus vite<br>v_rms(600K) ≈ √2 × v_rms(300K)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXP 3 -->
+        <div class="exp-card">
+          <div class="exp-header">
+            <div class="exp-num" style="background: var(--green); color:#000;">3</div>
+            <h4>Loi d'Amonton (Isochore)</h4>
+          </div>
+          <div class="exp-body">
+            <p>Vérifie que P/T = constante en chauffant à volume fixe.</p>
+            <div class="exp-params">
+              <div class="param"><span class="p-key">Processus</span><span class="p-val">Isochore</span></div>
+              <div class="param"><span class="p-key">T initiale</span><span class="p-val">200 K</span></div>
+              <div class="param"><span class="p-key">T finale</span><span class="p-val">600 K</span></div>
+              <div class="param"><span class="p-key">Particules</span><span class="p-val">120</span></div>
+              <div class="param"><span class="p-key">Volume</span><span class="p-val">Fixe (0,80)</span></div>
+            </div>
+            <div class="exp-result">
+              <div class="r-label">📊 Résultat attendu</div>
+              <div class="r-val">P₂/P₁ = T₂/T₁ = 3 (× 3)<br>Collisions/s au mur augmentent × 3</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EXP 4 -->
+        <div class="exp-card">
+          <div class="exp-header">
+            <div class="exp-num" style="background: var(--red); color:#fff;">4</div>
+            <h4>Compression Adiabatique</h4>
+          </div>
+          <div class="exp-body">
+            <p>Observe l'échauffement lors d'une compression rapide sans échange thermique.</p>
+            <div class="exp-params">
+              <div class="param"><span class="p-key">Processus</span><span class="p-val">Adiabatique</span></div>
+              <div class="param"><span class="p-key">Température initiale</span><span class="p-val">300 K</span></div>
+              <div class="param"><span class="p-key">Gaz</span><span class="p-val">Diatomique γ=7/5</span></div>
+              <div class="param"><span class="p-key">Volume initial</span><span class="p-val">1,00</span></div>
+              <div class="param"><span class="p-key">Volume final</span><span class="p-val">0,40 (lentement)</span></div>
+            </div>
+            <div class="exp-result">
+              <div class="r-label">📊 Résultat attendu</div>
+              <div class="r-val">T₂ = T₁×(V₁/V₂)^(γ-1) ≈ 410 K<br>P et T augmentent simultanément</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════
+         SECTION 7 — QUIZ
+    ══════════════════════════════════════ -->
+    <section class="section" id="s7">
+      <div class="section-header">
+        <div class="section-num">07</div>
+        <div>
+          <div class="section-title">Quiz de thermodynamique</div>
+          <div class="section-sub">4 questions pour tester ta compréhension</div>
+        </div>
+      </div>
+
+      <p>Teste tes connaissances ! Clique sur la bonne réponse. Un feedback immédiat t'indique si tu as bon ou faux, avec l'explication pédagogique complète.</p>
+
+      <div class="quiz-wrap">
+
+        <!-- Q1 -->
+        <div class="quiz-card" id="qc1">
+          <div class="quiz-q"><span class="quiz-qnum">Q1</span>Dans une transformation isotherme, si on double le volume d'un gaz parfait, que se passe-t-il à la pression ?</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(1, this, false)" data-q="1">Elle double</button>
+            <button class="quiz-opt" onclick="answer(1, this, true)"  data-q="1">Elle est divisée par 2</button>
+            <button class="quiz-opt" onclick="answer(1, this, false)" data-q="1">Elle reste constante</button>
+            <button class="quiz-opt" onclick="answer(1, this, false)" data-q="1">Elle augmente de 50%</button>
+          </div>
+          <div class="quiz-feedback" id="fb1"></div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="quiz-card" id="qc2">
+          <div class="quiz-q"><span class="quiz-qnum">Q2</span>Quelle est la valeur de la constante de Boltzmann k utilisée dans la loi PV = NkT ?</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(2, this, false)" data-q="2">k = 8,314 J/mol·K</button>
+            <button class="quiz-opt" onclick="answer(2, this, false)" data-q="2">k = 6,022×10²³ J/K</button>
+            <button class="quiz-opt" onclick="answer(2, this, true)"  data-q="2">k = 1,38×10⁻²³ J/K</button>
+            <button class="quiz-opt" onclick="answer(2, this, false)" data-q="2">k = 3,14×10⁻³ J/K</button>
+          </div>
+          <div class="quiz-feedback" id="fb2"></div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="quiz-card" id="qc3">
+          <div class="quiz-q"><span class="quiz-qnum">Q3</span>Dans une compression adiabatique, la température d'un gaz :</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(3, this, false)" data-q="3">Reste constante car Q = 0</button>
+            <button class="quiz-opt" onclick="answer(3, this, false)" data-q="3">Diminue car le volume diminue</button>
+            <button class="quiz-opt" onclick="answer(3, this, true)"  data-q="3">Augmente car ΔU = W et W > 0</button>
+            <button class="quiz-opt" onclick="answer(3, this, false)" data-q="3">Est indépendante du volume</button>
+          </div>
+          <div class="quiz-feedback" id="fb3"></div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="quiz-card" id="qc4">
+          <div class="quiz-q"><span class="quiz-qnum">Q4</span>Pour un gaz diatomique parfait (N₂), quelle est la valeur de l'indice adiabatique γ = Cₚ/Cᵥ ?</div>
+          <div class="quiz-options">
+            <button class="quiz-opt" onclick="answer(4, this, false)" data-q="4">γ = 5/3 ≈ 1,67</button>
+            <button class="quiz-opt" onclick="answer(4, this, true)"  data-q="4">γ = 7/5 = 1,40</button>
+            <button class="quiz-opt" onclick="answer(4, this, false)" data-q="4">γ = 4/3 ≈ 1,33</button>
+            <button class="quiz-opt" onclick="answer(4, this, false)" data-q="4">γ = 1,00</button>
+          </div>
+          <div class="quiz-feedback" id="fb4"></div>
+        </div>
+
+      </div>
+
+      <!-- SCORE BOX -->
+      <div id="score-box" style="margin-top: 24px;">
+        <div class="score-emoji" id="score-emoji">🎉</div>
+        <div class="score-val" id="score-val">0/4</div>
+        <div class="score-msg" id="score-msg">Calculer le score...</div>
+        <div class="score-sub" id="score-sub"></div>
+        <button onclick="resetQuiz()" style="margin-top:18px;padding:10px 24px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:var(--font);font-size:13px;cursor:pointer;">↺ Recommencer</button>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Retour en haut">↑</button>
+
+<script>
+/* ═══════════════════════════════════════════
+   PROGRESS BAR & SCROLL
+═══════════════════════════════════════════ */
+window.addEventListener('scroll', () => {
+  const doc = document.documentElement;
+  const pct = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight)) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  // scroll to top button
+  document.getElementById('scroll-top').classList.toggle('visible', doc.scrollTop > 300);
+  // active TOC
+  const sections = ['s1','s2','s3','s4','s5','s6','s7'];
+  let current = sections[0];
+  for (const id of sections) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top <= 100) current = id;
+  }
+  document.querySelectorAll('.toc-item').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#'+current);
+  });
+});
+
+/* ═══════════════════════════════════════════
+   DEMO CANVAS
+═══════════════════════════════════════════ */
+const demoCanvas = document.getElementById('demoCanvas');
+const dc = demoCanvas.getContext('2d');
+let demoMode = 'iso_T';
+let demoParticles = [];
+let demoRunning = true;
+let demoFrame = 0;
+let demoPaused = false;
+let demoAnimId;
+
+const DEMO_COLORS = {
+  iso_T: '#00e5ff', iso_P: '#ff9800', iso_V: '#00e676', adiab: '#ff4444'
+};
+const DEMO_NAMES = {
+  iso_T: 'Isotherme (T = cst)', iso_P: 'Isobare (P = cst)',
+  iso_V: 'Isochore (V = cst)', adiab: 'Adiabatique (Q = 0)'
+};
+
+function resizeDemo() {
+  demoCanvas.width = demoCanvas.offsetWidth;
+  demoCanvas.height = Math.min(320, Math.max(200, demoCanvas.offsetWidth * 0.4));
+}
+
+function initDemoParticles() {
+  demoParticles = [];
+  const N = 50;
+  const cw = demoCanvas.width, ch = demoCanvas.height;
+  const boxW = cw * 0.45, boxH = ch * 0.8;
+  const bx = (cw/2 - boxW)/2, by = (ch - boxH)/2;
+  const spd = 1.5;
+  for (let i = 0; i < N; i++) {
+    const a = Math.random() * Math.PI * 2;
+    demoParticles.push({
+      x: bx + 6 + Math.random()*(boxW-12),
+      y: by + 6 + Math.random()*(boxH-12),
+      vx: Math.cos(a)*spd*(0.5+Math.random()),
+      vy: Math.sin(a)*spd*(0.5+Math.random()),
+      r: 4
+    });
+  }
+}
+
+function getDemoBox() {
+  const cw = demoCanvas.width, ch = demoCanvas.height;
+  // Animated volume for iso_T and adiab
+  let vfrac = 1;
+  if (demoMode === 'iso_T' || demoMode === 'adiab') {
+    vfrac = 0.65 + 0.35 * Math.sin(demoFrame * 0.012);
+  }
+  const maxW = cw * 0.45, maxH = ch * 0.8;
+  const bW = maxW * vfrac, bH = maxH * (demoMode === 'iso_P' ? vfrac : 1);
+  const bx = (cw/2 - maxW)/2 + (maxW - bW)/2;
+  const by = (ch - bH)/2;
+  return { x: bx, y: by, w: bW, h: bH, vfrac };
+}
+
+function demoUpdate() {
+  const box = getDemoBox();
+  const proc = demoMode;
+  for (let p of demoParticles) {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x - p.r < box.x) { p.x = box.x + p.r; p.vx = Math.abs(p.vx); }
+    else if (p.x + p.r > box.x + box.w) { p.x = box.x + box.w - p.r; p.vx = -Math.abs(p.vx); }
+    if (p.y - p.r < box.y) { p.y = box.y + p.r; p.vy = Math.abs(p.vy); }
+    else if (p.y + p.r > box.y + box.h) { p.y = box.y + box.h - p.r; p.vy = -Math.abs(p.vy); }
+  }
+  // Adiabatic: compress → speed up
+  if (proc === 'adiab') {
+    const gamma = 7/5;
+    const prevV = (0.65 + 0.35 * Math.sin((demoFrame-1) * 0.012));
+    const curV  = (0.65 + 0.35 * Math.sin(demoFrame * 0.012));
+    if (Math.abs(curV - prevV) > 0.0001) {
+      const factor = Math.pow(prevV/curV, (gamma-1)/2);
+      for (let p of demoParticles) { p.vx *= factor; p.vy *= factor; }
+    }
+  }
+  demoFrame++;
+}
+
+function demoDraw() {
+  const cw = demoCanvas.width, ch = demoCanvas.height;
+  dc.clearRect(0, 0, cw, ch);
+  dc.fillStyle = '#0a0e1a'; dc.fillRect(0, 0, cw, ch);
+
+  // Grid
+  dc.strokeStyle = 'rgba(30,58,95,0.3)'; dc.lineWidth = 1;
+  for (let x = 0; x < cw; x += 30) { dc.beginPath(); dc.moveTo(x,0); dc.lineTo(x,ch); dc.stroke(); }
+  for (let y = 0; y < ch; y += 30) { dc.beginPath(); dc.moveTo(0,y); dc.lineTo(cw,y); dc.stroke(); }
+
+  const box = getDemoBox();
+  const col = DEMO_COLORS[demoMode];
+
+  // Container glow
+  dc.save();
+  dc.shadowColor = col; dc.shadowBlur = 12;
+  dc.strokeStyle = col; dc.lineWidth = 2;
+  dc.strokeRect(box.x, box.y, box.w, box.h);
+  dc.restore();
+  dc.fillStyle = col.replace('ff','15'); dc.fillRect(box.x, box.y, box.w, box.h);
+
+  // Particles
+  for (let p of demoParticles) {
+    const v = Math.sqrt(p.vx*p.vx + p.vy*p.vy);
+    const r = Math.min(v/3, 1);
+    const R = Math.round(r*255), G = Math.round((1-r)*200), B = 255;
+    dc.beginPath(); dc.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    dc.fillStyle = `rgba(${R},${G},${B},0.85)`; dc.fill();
+  }
+
+  // P-V diagram on right half
+  const gx = cw * 0.55, gy = 10, gw = cw * 0.42, gh = ch - 20;
+  dc.fillStyle = '#111827'; dc.fillRect(gx, gy, gw, gh);
+  dc.strokeStyle = '#1e3a5f'; dc.lineWidth = 1; dc.strokeRect(gx, gy, gw, gh);
+
+  const pad = 28;
+  dc.fillStyle = '#94a3b8'; dc.font = '10px JetBrains Mono, monospace'; dc.textAlign = 'center';
+  dc.fillText('V →', gx + gw/2, gy+gh-5);
+  dc.save(); dc.translate(gx+12, gy+gh/2); dc.rotate(-Math.PI/2);
+  dc.fillText('P ↑', 0, 0); dc.restore();
+  dc.textAlign = 'left';
+
+  // Axes
+  dc.strokeStyle = '#1e3a5f'; dc.lineWidth = 1;
+  dc.beginPath(); dc.moveTo(gx+pad, gy+pad); dc.lineTo(gx+pad, gy+gh-pad); dc.lineTo(gx+gw-pad, gy+gh-pad); dc.stroke();
+
+  // Curve based on mode
+  const cx0 = gx+pad, cy0 = gy+gh-pad;
+  const axW = gw-2*pad, axH = gh-2*pad;
+  dc.strokeStyle = col; dc.lineWidth = 2;
+  dc.beginPath();
+  const steps = 60;
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    const V = 0.3 + t * 0.7;
+    let P;
+    if (demoMode === 'iso_T') P = 0.5 / V;
+    else if (demoMode === 'iso_P') P = 0.5;
+    else if (demoMode === 'iso_V') P = 0.3 + t * 0.7;
+    else { const gamma = 7/5; P = 0.15 * Math.pow(0.7/V, gamma); }
+    const px = cx0 + V * axW;
+    const py = cy0 - Math.min(Math.max(P, 0), 1) * axH;
+    i === 0 ? dc.moveTo(px, py) : dc.lineTo(px, py);
+  }
+  dc.stroke();
+
+  // Current point on curve
+  const vf = box.vfrac;
+  let curP;
+  if (demoMode === 'iso_T') curP = 0.5/vf;
+  else if (demoMode === 'iso_P') curP = 0.5;
+  else if (demoMode === 'iso_V') curP = 0.5;
+  else curP = 0.15 * Math.pow(0.7/vf, 7/5);
+  const cpx = cx0 + vf * axW;
+  const cpy = cy0 - Math.min(Math.max(curP, 0), 1) * axH;
+  dc.beginPath(); dc.arc(cpx, cpy, 5, 0, Math.PI*2);
+  dc.fillStyle = col; dc.fill();
+
+  // Mode label
+  dc.fillStyle = col; dc.font = '11px Outfit, sans-serif'; dc.textAlign = 'center';
+  dc.fillText(DEMO_NAMES[demoMode], gx + gw/2, gy+17);
+  dc.textAlign = 'left';
+
+  // Legend
+  dc.fillStyle = '#94a3b8'; dc.font = '9px JetBrains Mono, monospace';
+  const avgV = Math.sqrt(demoParticles.reduce((s,p)=>s+p.vx*p.vx+p.vy*p.vy,0)/demoParticles.length);
+  dc.fillText(`v_moy: ${(avgV*1000).toFixed(0)} m/s`, box.x, box.y+box.h+14);
+
+  // Update info
+  const infoMap = {
+    iso_T: `🌊 Isotherme — T constante. P et V varient de façon inverse. Boyle-Mariotte : P₁V₁ = P₂V₂ | v_moy ~ ${(avgV*1000).toFixed(0)} m/s`,
+    iso_P: `🔥 Isobare — P constante. V et T varient proportionnellement. V/T = cst | v_moy ~ ${(avgV*1000).toFixed(0)} m/s`,
+    iso_V: `🥫 Isochore — V constant. P et T varient proportionnellement. P/T = cst | Collisions mur augmentent avec T`,
+    adiab: `⚡ Adiabatique — Q=0. Compression → les particules s'accélèrent ! PVᵞ = cst, γ=7/5 | v_moy ~ ${(avgV*1000).toFixed(0)} m/s`
+  };
+  document.getElementById('demo-info').textContent = infoMap[demoMode];
+}
+
+function demoLoop() {
+  if (!demoPaused) { demoUpdate(); demoDraw(); }
+  demoAnimId = requestAnimationFrame(demoLoop);
+}
+
+function setDemo(mode) {
+  demoMode = mode;
+  document.querySelectorAll('.demo-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes({ iso_T:'Isotherme', iso_P:'Isobare', iso_V:'Isochore', adiab:'Adiabatique' }[mode]));
+  });
+  initDemoParticles();
+}
+
+function toggleDemoPause() {
+  demoPaused = !demoPaused;
+  document.getElementById('demo-pause-btn').textContent = demoPaused ? '▶ Reprendre' : '⏸ Pause';
+}
+
+/* ═══════════════════════════════════════════
+   QUIZ
+═══════════════════════════════════════════ */
+let quizScore = 0, quizAnswered = 0;
+const TOTAL_Q = 4;
+const feedbacks = {
+  1: {
+    ok: '✅ Correct ! Selon Boyle-Mariotte (isotherme) : P₁V₁ = P₂V₂. Si V double, P est divisée par 2. C\'est la loi d\'inversement proportionnel.',
+    ko: '❌ Non. En isotherme, P₁V₁ = P₂V₂. Si V₂ = 2V₁, alors P₂ = P₁V₁/V₂ = P₁/2. La pression est divisée par 2.'
+  },
+  2: {
+    ok: '✅ Exact ! k = 1,38×10⁻²³ J/K est la constante de Boltzmann. Ne pas confondre avec R = 8,314 J/mol·K (constante des gaz parfaits molaire) : R = N_A × k.',
+    ko: '❌ Incorrect. La constante de Boltzmann est k = 1,38×10⁻²³ J/K. R = 8,314 J/mol·K est la constante molaire. On a R = N_A × k où N_A = 6,022×10²³ mol⁻¹.'
+  },
+  3: {
+    ok: '✅ Parfait ! En adiabatique, Q=0 donc ΔU = W. Lors d\'une compression, le travail W est positif (on fournit du travail au gaz), donc ΔU > 0, donc T augmente. Exemple : pompe à vélo.',
+    ko: '❌ Faux. En adiabatique, Q=0 et ΔU = W. Une compression fournit du travail au gaz (W>0), donc ΔU>0, donc la température augmente. Ce n\'est PAS une transformation isotherme !'
+  },
+  4: {
+    ok: '✅ Bravo ! Pour un gaz diatomique (f=5 degrés de liberté) : γ = Cₚ/Cᵥ = (f+2)/f = 7/5 = 1,40. Monoatomique (f=3) : γ=5/3. Polyatomique (f=6) : γ=4/3.',
+    ko: '❌ Non. Pour un gaz diatomique (N₂, O₂, H₂) : f = 5 degrés de liberté, donc γ = Cₚ/Cᵥ = (f+2)/f = 7/5 = 1,40. Monoatomique : γ=5/3. Polyatomique : γ≈4/3.'
+  }
+};
+
+function answer(qNum, btn, isCorrect) {
+  const card = document.getElementById('qc' + qNum);
+  const fb = document.getElementById('fb' + qNum);
+  const opts = card.querySelectorAll('.quiz-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o === btn) o.classList.add(isCorrect ? 'correct' : 'wrong');
+  });
+  fb.textContent = feedbacks[qNum][isCorrect ? 'ok' : 'ko'];
+  fb.className = 'quiz-feedback show ' + (isCorrect ? 'ok' : 'ko');
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+  if (isCorrect) quizScore++;
+  quizAnswered++;
+  if (quizAnswered === TOTAL_Q) showScore();
+}
+
+function showScore() {
+  const sb = document.getElementById('score-box');
+  sb.classList.add('show');
+  document.getElementById('score-val').textContent = quizScore + '/4';
+  const msgs = [
+    { emoji:'😢', msg:'Continue à réviser !', sub:'Relis les sections Formules et Types de processus.' },
+    { emoji:'🤔', msg:'Pas mal, continue !', sub:'Tu as quelques lacunes. Relis la section Formules.' },
+    { emoji:'😊', msg:'Bien joué !', sub:'Tu maîtrises l\'essentiel. Lance la simulation pour approfondir !' },
+    { emoji:'🏆', msg:'Excellent ! Presque parfait !', sub:'Lance la simulation et réalise les 4 expériences guidées !' },
+    { emoji:'🎉', msg:'Score parfait ! Bravo !', sub:'Tu es prêt(e) pour la simulation complète et le rapport TP !' }
+  ];
+  const m = msgs[quizScore];
+  document.getElementById('score-emoji').textContent = m.emoji;
+  document.getElementById('score-msg').textContent = m.msg;
+  document.getElementById('score-sub').textContent = m.sub;
+  sb.scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+function resetQuiz() {
+  quizScore = 0; quizAnswered = 0;
+  for (let i = 1; i <= 4; i++) {
+    const card = document.getElementById('qc'+i);
+    card.className = 'quiz-card';
+    card.querySelectorAll('.quiz-opt').forEach(o => { o.disabled=false; o.className='quiz-opt'; });
+    const fb = document.getElementById('fb'+i);
+    fb.className='quiz-feedback'; fb.textContent='';
+  }
+  document.getElementById('score-box').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  resizeDemo();
+  initDemoParticles();
+  demoLoop();
+});
+window.addEventListener('resize', () => {
+  resizeDemo();
+  initDemoParticles();
+});
+</script>
+
+<!-- Adsterra Social Bar -->
+<script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+
+<!-- Politique de confidentialité -->
+<a href="politique-confidentialite.html" style="display: block; text-align: center; padding: 12px; font-size: 12px; color: #94a3b8; text-decoration: none; background: #111827; border-top: 1px solid #1e3a5f;">Politique de Confidentialité</a>
+
+</body>
+</html>

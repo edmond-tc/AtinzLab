@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ElectroLab — Laboratoire Virtuel</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#1a1a1a; --bg2:#222; --bg3:#2a2a2a; --bg4:#333;
+  --panel:#252525; --panel2:#2d2d2d;
+  --border:#3a3a3a; --border2:#444;
+  --text:#e8e8e8; --text2:#aaa; --text3:#666;
+  --accent:#00d4ff; --accent2:#ff6b35; --accent3:#39ff14;
+  --red:#ff3355; --yellow:#ffcc00; --green:#39ff14;
+  --orange:#ff8c00; --purple:#bf7fff; --pink:#ff69b4;
+  --wood:#8B6914; --wood2:#A0784A; --wood3:#6B4F20;
+  --bb:#e8e0d0; --bb2:#d4ccc0; --bb3:#c0b8a8;
+  --metal:#888; --metal2:#aaa; --metal3:#666;
+  --glow-b:0 0 10px rgba(0,212,255,0.4);
+  --glow-g:0 0 10px rgba(57,255,20,0.4);
+  --glow-r:0 0 10px rgba(255,51,85,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;touch-action:none;}
+
+/* ─── LAYOUT ─── */
+#app{display:flex;flex-direction:column;height:100vh;width:100vw;}
+
+/* ─── TOPBAR ─── */
+#topbar{
+  height:48px;min-height:48px;
+  background:linear-gradient(90deg,#0d0d0d,#1a1a1a);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;padding:0 10px;
+  z-index:200;flex-shrink:0;
+}
+.tb-logo{font-family:'Orbitron',monospace;font-size:15px;font-weight:900;color:var(--accent);white-space:nowrap;text-shadow:var(--glow-b);}
+.tb-logo span{color:var(--accent2);}
+.tb-sep{width:1px;height:28px;background:var(--border);flex-shrink:0;}
+.tb-actions{display:flex;gap:4px;align-items:center;}
+.tb-btn{
+  padding:5px 10px;border-radius:6px;border:1px solid var(--border);
+  background:var(--bg3);color:var(--text2);font-size:11px;font-family:'Inter',sans-serif;
+  cursor:pointer;transition:all .15s;white-space:nowrap;display:flex;align-items:center;gap:5px;
+}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent);}
+.tb-btn.active{background:rgba(0,212,255,0.12);border-color:var(--accent);color:var(--accent);}
+.tb-btn.danger{border-color:var(--red);color:var(--red);}
+.tb-btn.success{border-color:var(--green);color:var(--green);}
+.tb-spacer{flex:1;}
+.power-led{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:var(--glow-g);animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.simulation-status{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border-radius:4px;background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.2);color:var(--green);}
+.simulation-status.off{background:rgba(255,51,85,.08);border-color:rgba(255,51,85,.2);color:var(--red);}
+
+/* ─── MAIN AREA ─── */
+#main{display:flex;flex:1;overflow:hidden;}
+
+/* ─── LEFT PANEL (component drawer) ─── */
+#drawer{
+  width:200px;min-width:200px;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow:hidden;transition:width .25s;
+  z-index:100;
+}
+#drawer.collapsed{width:44px;min-width:44px;}
+.drawer-toggle{
+  height:40px;display:flex;align-items:center;justify-content:center;
+  border-bottom:1px solid var(--border);cursor:pointer;
+  font-size:16px;color:var(--text2);transition:color .2s;flex-shrink:0;
+}
+.drawer-toggle:hover{color:var(--accent);}
+.drawer-scroll{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--border) transparent;padding-bottom:20px;}
+.drawer-scroll::-webkit-scrollbar{width:3px;}
+.drawer-scroll::-webkit-scrollbar-thumb{background:var(--border);}
+.cat-title{
+  font-size:9px;letter-spacing:2px;text-transform:uppercase;
+  color:var(--text3);padding:10px 10px 4px;
+  font-weight:600;white-space:nowrap;overflow:hidden;
+}
+#drawer.collapsed .cat-title{display:none;}
+#drawer.collapsed .comp-label{display:none;}
+
+/* Component items */
+.comp-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 8px;margin:2px 6px;border-radius:7px;
+  cursor:grab;transition:all .15s;
+  border:1px solid transparent;
+}
+.comp-item:hover{background:var(--bg3);border-color:var(--border);}
+.comp-item:active{cursor:grabbing;}
+.comp-icon{
+  width:28px;height:28px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:6px;font-size:15px;
+}
+.comp-label{font-size:11px;color:var(--text2);white-space:nowrap;}
+.comp-item.dragging{opacity:.5;}
+
+/* ─── WORKSPACE ─── */
+#workspace{
+  flex:1;position:relative;overflow:hidden;
+  background:#1e1e1e;
+}
+
+/* Surface switcher */
+#surface-switcher{
+  position:absolute;top:8px;left:50%;transform:translateX(-50%);
+  display:flex;gap:3px;background:rgba(0,0,0,.6);
+  border:1px solid var(--border);border-radius:20px;padding:3px;
+  z-index:50;
+}
+.surf-btn{
+  padding:4px 12px;border-radius:16px;border:none;
+  background:none;color:var(--text2);font-size:11px;cursor:pointer;
+  transition:all .2s;font-family:'Inter',sans-serif;font-weight:500;
+}
+.surf-btn.active{background:var(--accent);color:#000;font-weight:600;}
+
+/* ─── BREADBOARD ─── */
+#bb-surface{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+#bb-wrap{
+  background:linear-gradient(180deg,#3a3020 0%,#2a2010 100%);
+  border-radius:12px;padding:12px;
+  box-shadow:0 8px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05);
+  position:relative;
+  transform-origin:center;
+}
+#bb-inner{
+  background:var(--bb);
+  border-radius:8px;
+  padding:8px;
+  position:relative;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.3);
+}
+/* Power rails */
+.bb-rail{display:flex;gap:3px;padding:3px 0;align-items:center;}
+.bb-rail-label{font-family:'JetBrains Mono',monospace;font-size:8px;width:10px;text-align:center;font-weight:700;}
+.bb-rail.red .bb-rail-label{color:#cc0000;}
+.bb-rail.blue .bb-rail-label{color:#0044cc;}
+.bb-hole{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(0,0,0,.7);
+  border:1px solid rgba(0,0,0,.5);
+  cursor:pointer;transition:all .1s;position:relative;
+}
+.bb-hole:hover{background:rgba(255,200,0,.4);}
+.bb-hole.connected{background:#4a8;border-color:#2a6;}
+.bb-hole.powered-pos{background:rgba(255,0,0,.3);border-color:#c00;}
+.bb-hole.powered-neg{background:rgba(0,0,255,.2);border-color:#00c;}
+.bb-divider{height:16px;background:var(--bb3);margin:2px 0;border-radius:2px;display:flex;align-items:center;padding:0 6px;}
+.bb-divider span{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--bb3);letter-spacing:1px;}
+.bb-main-area{display:flex;gap:4px;}
+.bb-col-labels{display:flex;gap:3px;padding:2px 0;margin-left:14px;}
+.bb-col-label{width:7px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:6px;color:var(--text3);}
+.bb-row{display:flex;align-items:center;gap:3px;margin:1px 0;}
+.bb-row-label{width:10px;text-align:right;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--text3);}
+.bb-gap{width:12px;}
+
+/* ─── FREE TABLE ─── */
+#table-surface{
+  position:absolute;inset:0;
+  background:
+    linear-gradient(rgba(60,40,20,.3) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(60,40,20,.3) 1px,transparent 1px),
+    linear-gradient(135deg,#2a2010 0%,#1a1408 100%);
+  background-size:40px 40px,40px 40px,100% 100%;
+  overflow:hidden;display:none;
+}
+
+/* ─── CANVAS (wires) ─── */
+#wire-canvas{position:absolute;inset:0;pointer-events:none;z-index:30;}
+
+/* ─── PLACED COMPONENTS ─── */
+.placed-comp{
+  position:absolute;cursor:move;z-index:40;
+  display:flex;flex-direction:column;align-items:center;
+  touch-action:none;
+}
+.placed-comp .comp-body{position:relative;}
+.placed-comp.selected .comp-body::after{
+  content:'';position:absolute;inset:-4px;
+  border:2px dashed var(--accent);border-radius:6px;
+  animation:sel-dash .5s linear infinite;
+}
+@keyframes sel-dash{to{stroke-dashoffset:-20px;}}
+.placed-comp .comp-val{
+  font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--accent);background:rgba(0,0,0,.7);
+  padding:1px 5px;border-radius:3px;margin-top:2px;
+  white-space:nowrap;
+}
+.terminal{
+  width:10px;height:10px;border-radius:50%;
+  background:#888;border:2px solid #aaa;
+  cursor:crosshair;position:absolute;
+  transition:all .15s;z-index:50;
+}
+.terminal:hover{background:var(--yellow);border-color:var(--yellow);transform:scale(1.4);box-shadow:0 0 8px var(--yellow);}
+.terminal.connected{background:var(--accent);border-color:var(--accent);}
+
+/* ─── INSTRUMENTS PANEL ─── */
+#instruments{
+  width:240px;min-width:240px;
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  overflow-y:auto;scrollbar-width:thin;
+  scrollbar-color:var(--border) transparent;
+}
+#instruments::-webkit-scrollbar{width:3px;}
+#instruments::-webkit-scrollbar-thumb{background:var(--border);}
+.inst-section-title{
+  font-family:'Orbitron',monospace;font-size:9px;
+  letter-spacing:2px;color:var(--text3);
+  padding:10px 12px 4px;text-transform:uppercase;
+}
+
+/* Multimeter */
+.multimeter-inst{
+  margin:6px 8px;
+  background:linear-gradient(180deg,#1a1a1a,#111);
+  border:2px solid #333;border-radius:10px;
+  padding:8px;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+.mm-brand2{text-align:center;font-family:'Orbitron',monospace;font-size:7px;letter-spacing:3px;color:#444;margin-bottom:4px;}
+.mm-screen2{
+  background:#001500;border:1.5px solid #0a3a0a;
+  border-radius:6px;padding:8px;text-align:center;margin-bottom:6px;
+}
+.mm-reading{font-family:'JetBrains Mono',monospace;font-size:22px;color:#00ff44;text-shadow:0 0 8px #00ff44;letter-spacing:2px;}
+.mm-unit2{font-family:'JetBrains Mono',monospace;font-size:9px;color:#006622;display:block;margin-top:1px;}
+.mm-mode-row{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;}
+.mm-mode-btn{
+  padding:3px 7px;border-radius:4px;border:1px solid #333;
+  background:none;color:#666;font-size:9px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;transition:all .15s;
+}
+.mm-mode-btn.active{border-color:var(--green);color:var(--green);background:rgba(57,255,20,.08);}
+.mm-probes{display:flex;justify-content:center;gap:8px;margin-top:6px;}
+.probe-jack{width:12px;height:12px;border-radius:50%;border:2px solid #555;cursor:pointer;}
+.probe-jack.com{background:#222;}
+.probe-jack.vma{background:#110000;border-color:#880000;}
+
+/* Oscilloscope */
+.osc-inst{margin:6px 8px;background:#0a0a0a;border:2px solid #1a3a1a;border-radius:10px;overflow:hidden;}
+.osc-inst-top{background:#111;padding:5px 8px;display:flex;align-items:center;justify-content:space-between;}
+.osc-brand{font-family:'Orbitron',monospace;font-size:7px;color:#2a5a2a;letter-spacing:2px;}
+.osc-screen{background:#010e01;position:relative;overflow:hidden;}
+.osc-screen canvas{display:block;width:100%;}
+.osc-screen::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 19px,rgba(0,255,50,.04) 19px,rgba(0,255,50,.04) 20px),
+             repeating-linear-gradient(90deg,transparent,transparent 19px,rgba(0,255,50,.04) 19px,rgba(0,255,50,.04) 20px);
+  pointer-events:none;z-index:1;
+}
+.osc-ctrl{background:#111;padding:5px 8px;display:flex;gap:4px;flex-wrap:wrap;}
+.osc-ctrl-btn{padding:3px 8px;border:1px solid #1a3a1a;border-radius:3px;background:none;color:#2a7a2a;font-size:9px;cursor:pointer;font-family:'JetBrains Mono',monospace;}
+.osc-ctrl-btn.active{background:rgba(0,255,50,.08);color:#00ff44;}
+
+/* Function generator */
+.fgen-inst{
+  margin:6px 8px;
+  background:linear-gradient(180deg,#120a00,#0a0600);
+  border:2px solid #3a2a00;border-radius:10px;padding:8px;
+}
+.fgen-brand{font-family:'Orbitron',monospace;font-size:7px;color:#5a4a00;letter-spacing:2px;text-align:center;margin-bottom:5px;}
+.fgen-display{background:#0a0800;border:1px solid #2a2000;border-radius:5px;padding:6px;text-align:center;margin-bottom:6px;}
+.fgen-freq{font-family:'JetBrains Mono',monospace;font-size:18px;color:#ffaa00;text-shadow:0 0 8px #ffaa00;}
+.fgen-unit{font-family:'JetBrains Mono',monospace;font-size:9px;color:#554400;}
+.fgen-knobs{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.fgen-knob{display:flex;flex-direction:column;gap:2px;}
+.fgen-knob-label{font-size:9px;color:#554400;font-family:'JetBrains Mono',monospace;}
+.fgen-slider{-webkit-appearance:none;height:3px;border-radius:3px;background:#2a2000;outline:none;width:100%;}
+.fgen-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#ffaa00;cursor:pointer;box-shadow:0 0 6px #ffaa00;}
+.fgen-wave-row{display:flex;gap:3px;margin-top:5px;}
+.fgen-wave-btn{flex:1;padding:4px;border:1px solid #3a2a00;background:none;color:#554400;font-size:10px;cursor:pointer;border-radius:3px;font-family:'JetBrains Mono',monospace;transition:all .15s;}
+.fgen-wave-btn.active{border-color:#ffaa00;color:#ffaa00;background:rgba(255,170,0,.08);}
+
+/* Power supply */
+.psu-inst{
+  margin:6px 8px;
+  background:linear-gradient(180deg,#0a0a14,#060610);
+  border:2px solid #1a1a3a;border-radius:10px;padding:8px;
+}
+.psu-brand{font-family:'Orbitron',monospace;font-size:7px;color:#2a2a5a;letter-spacing:2px;text-align:center;margin-bottom:5px;}
+.psu-channels{display:flex;flex-direction:column;gap:6px;}
+.psu-channel{background:#080808;border:1px solid #1a1a1a;border-radius:6px;padding:6px;}
+.psu-ch-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;}
+.psu-ch-label{font-family:'JetBrains Mono',monospace;font-size:8px;color:#4a4a8a;font-weight:700;}
+.psu-output-toggle{width:28px;height:16px;border-radius:8px;background:#1a1a1a;border:1px solid #333;position:relative;cursor:pointer;transition:all .2s;}
+.psu-output-toggle.on{background:rgba(57,255,20,.15);border-color:var(--green);}
+.psu-output-toggle::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#555;top:1px;left:1px;transition:all .2s;}
+.psu-output-toggle.on::after{left:13px;background:var(--green);box-shadow:var(--glow-g);}
+.psu-display{font-family:'JetBrains Mono',monospace;font-size:14px;color:#4488ff;text-shadow:0 0 6px #4488ff;text-align:center;}
+.psu-sub{font-family:'JetBrains Mono',monospace;font-size:9px;color:#2244aa;text-align:center;}
+.psu-slider{-webkit-appearance:none;height:3px;border-radius:3px;background:#1a1a3a;outline:none;width:100%;margin-top:4px;}
+.psu-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:#4488ff;cursor:pointer;box-shadow:0 0 6px #4488ff;}
+.psu-terminals{display:flex;gap:6px;justify-content:center;margin-top:5px;}
+.psu-terminal{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.psu-jack{width:10px;height:10px;border-radius:50%;border:2px solid #555;}
+.psu-jack.pos{background:#110000;border-color:#cc0000;}
+.psu-jack.neg{background:#000011;border-color:#0000cc;}
+.psu-jack.gnd{background:#111;border-color:#555;}
+.psu-jack-label{font-size:7px;color:#555;font-family:'JetBrains Mono',monospace;}
+
+/* ─── COMPONENT SVG RENDERS ─── */
+.svg-comp{display:block;}
+
+/* ─── CONTEXT MENU ─── */
+#ctx-menu{
+  position:fixed;display:none;
+  background:var(--panel2);border:1px solid var(--border2);
+  border-radius:8px;padding:4px;z-index:500;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);min-width:140px;
+}
+#ctx-menu.show{display:block;}
+.ctx-item{
+  padding:7px 12px;border-radius:5px;font-size:12px;
+  color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:all .15s;
+}
+.ctx-item:hover{background:var(--bg3);color:var(--text);}
+.ctx-item.danger{color:var(--red);}
+.ctx-item.danger:hover{background:rgba(255,51,85,.1);}
+.ctx-sep{height:1px;background:var(--border);margin:3px 0;}
+
+/* ─── VALUE EDITOR POPUP ─── */
+#val-editor{
+  position:fixed;display:none;
+  background:var(--panel2);border:1px solid var(--border2);
+  border-radius:10px;padding:14px;z-index:600;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);min-width:200px;
+}
+#val-editor.show{display:block;}
+#val-editor h4{font-size:12px;color:var(--accent);margin-bottom:10px;font-family:'JetBrains Mono',monospace;}
+#val-editor input{
+  width:100%;padding:7px 10px;background:var(--bg3);
+  border:1px solid var(--border);border-radius:6px;
+  color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;
+  outline:none;margin-bottom:8px;
+}
+#val-editor input:focus{border-color:var(--accent);}
+.val-presets{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.val-preset{padding:3px 8px;border-radius:4px;border:1px solid var(--border);background:var(--bg3);color:var(--text3);font-size:10px;cursor:pointer;font-family:'JetBrains Mono',monospace;transition:all .15s;}
+.val-preset:hover{border-color:var(--accent);color:var(--accent);}
+.val-actions{display:flex;gap:6px;}
+.val-ok{flex:1;padding:7px;background:var(--accent);color:#000;border:none;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px;}
+.val-cancel{padding:7px 12px;background:none;border:1px solid var(--border);color:var(--text2);border-radius:6px;cursor:pointer;font-size:12px;}
+
+/* ─── TOAST ─── */
+#toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:rgba(0,0,0,.85);border:1px solid var(--border);
+  color:var(--text);padding:8px 18px;border-radius:20px;
+  font-size:12px;z-index:1000;opacity:0;transition:all .25s;pointer-events:none;
+  backdrop-filter:blur(10px);
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ─── WIRE TOOLTIP ─── */
+.wire-tooltip{position:absolute;background:rgba(0,0,0,.8);color:var(--yellow);font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:3px;pointer-events:none;z-index:200;}
+
+/* ─── SCROLLBAR STYLES ─── */
+#instruments::-webkit-scrollbar{width:3px;}
+#instruments::-webkit-scrollbar-thumb{background:#333;}
+
+/* ─── MOBILE BOTTOM BAR ─── */
+#mobile-bar{
+  display:none;
+  height:52px;background:var(--panel);
+  border-top:1px solid var(--border);
+  align-items:center;justify-content:space-around;
+  padding:0 8px;flex-shrink:0;
+}
+@media(max-width:768px){
+  #drawer{display:none;}
+  #instruments{display:none;}
+  #mobile-bar{display:flex;}
+  .topbar-title-full{display:none;}
+  #workspace{flex:1;}
+}
+.mb-btn{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  background:none;border:none;color:var(--text2);cursor:pointer;
+  font-size:9px;font-family:'Inter',sans-serif;padding:4px 8px;
+  border-radius:6px;transition:all .15s;
+}
+.mb-btn:hover,.mb-btn.active{color:var(--accent);}
+.mb-btn .mb-icon{font-size:20px;}
+
+/* ─── MODALS ─── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:700;display:none;align-items:flex-end;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.show{display:flex;}
+.modal-sheet{
+  background:var(--panel);border-radius:16px 16px 0 0;
+  width:100%;max-height:80vh;overflow-y:auto;
+  padding:16px;
+}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.modal-title{font-family:'Orbitron',monospace;font-size:14px;color:var(--accent);margin-bottom:12px;}
+.comp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.comp-grid-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:10px 6px;border:1px solid var(--border);border-radius:8px;
+  background:var(--bg3);cursor:pointer;transition:all .2s;
+}
+.comp-grid-item:hover,.comp-grid-item:active{border-color:var(--accent);background:rgba(0,212,255,.08);}
+.comp-grid-icon{font-size:24px;}
+.comp-grid-label{font-size:10px;color:var(--text2);text-align:center;}
+
+/* ─── HELP ─── */
+.help-modal{background:var(--panel);border-radius:16px;padding:20px;max-width:500px;margin:auto;max-height:80vh;overflow-y:auto;}
+.help-row{display:flex;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.help-key{font-family:'JetBrains Mono',monospace;background:var(--bg3);border:1px solid var(--border);padding:2px 8px;border-radius:4px;font-size:11px;color:var(--accent);}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="tb-logo">Electro<span>Lab</span></div>
+  <div class="tb-sep"></div>
+  <div class="tb-actions">
+    <button class="tb-btn" onclick="clearAll()" title="Tout effacer">🗑 Vider</button>
+    <button class="tb-btn" onclick="autoWireMode()" id="wireBtn" title="Mode fil">🔌 Fil</button>
+    <button class="tb-btn" onclick="rotateSelected()" title="Tourner">↻ Rotate</button>
+    <button class="tb-btn" onclick="deleteSelected()" title="Supprimer composant sélectionné">✕ Suppr.</button>
+  </div>
+  <div class="tb-spacer"></div>
+  <div class="simulation-status off" id="simStatus">⏹ ARRÊTÉE</div>
+  <button class="tb-btn success" onclick="toggleSimulation()" id="simBtn" style="margin-left:6px;">▶ Simuler</button>
+  <div class="power-led" style="margin-left:8px;"></div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- LEFT DRAWER -->
+  <div id="drawer">
+    <div class="drawer-toggle" onclick="toggleDrawer()" title="Réduire">◀</div>
+    <div class="drawer-scroll">
+
+      <div class="cat-title">⚡ Sources</div>
+      <div class="comp-item" draggable="true" data-type="battery9v" ondragstart="startDrag(event)" onclick="addCompMobile('battery9v')">
+        <div class="comp-icon" style="background:rgba(68,170,255,.15)">🔋</div>
+        <span class="comp-label">Batterie 9V</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="battery12v" ondragstart="startDrag(event)" onclick="addCompMobile('battery12v')">
+        <div class="comp-icon" style="background:rgba(68,170,255,.15)">🔋</div>
+        <span class="comp-label">Batterie 12V</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="vac" ondragstart="startDrag(event)" onclick="addCompMobile('vac')">
+        <div class="comp-icon" style="background:rgba(255,107,53,.15)">〜</div>
+        <span class="comp-label">Source AC</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="gnd" ondragstart="startDrag(event)" onclick="addCompMobile('gnd')">
+        <div class="comp-icon" style="background:rgba(100,100,100,.15)">⏚</div>
+        <span class="comp-label">Masse (GND)</span>
+      </div>
+
+      <div class="cat-title">🟫 Passifs</div>
+      <div class="comp-item" draggable="true" data-type="resistor" ondragstart="startDrag(event)" onclick="addCompMobile('resistor')">
+        <div class="comp-icon" style="background:rgba(200,160,32,.15)">⬛</div>
+        <span class="comp-label">Résistance</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="capacitor" ondragstart="startDrag(event)" onclick="addCompMobile('capacitor')">
+        <div class="comp-icon" style="background:rgba(34,68,170,.15)">🔲</div>
+        <span class="comp-label">Condensateur</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="inductor" ondragstart="startDrag(event)" onclick="addCompMobile('inductor')">
+        <div class="comp-icon" style="background:rgba(140,68,200,.15)">〰</div>
+        <span class="comp-label">Bobine</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="pot" ondragstart="startDrag(event)" onclick="addCompMobile('pot')">
+        <div class="comp-icon" style="background:rgba(200,160,32,.15)">🎛</div>
+        <span class="comp-label">Potentiomètre</span>
+      </div>
+
+      <div class="cat-title">💡 Semi-conducteurs</div>
+      <div class="comp-item" draggable="true" data-type="led_red" ondragstart="startDrag(event)" onclick="addCompMobile('led_red')">
+        <div class="comp-icon" style="background:rgba(255,0,0,.15)">🔴</div>
+        <span class="comp-label">LED Rouge</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="led_green" ondragstart="startDrag(event)" onclick="addCompMobile('led_green')">
+        <div class="comp-icon" style="background:rgba(0,200,0,.15)">🟢</div>
+        <span class="comp-label">LED Verte</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="led_blue" ondragstart="startDrag(event)" onclick="addCompMobile('led_blue')">
+        <div class="comp-icon" style="background:rgba(0,100,255,.15)">🔵</div>
+        <span class="comp-label">LED Bleue</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="diode" ondragstart="startDrag(event)" onclick="addCompMobile('diode')">
+        <div class="comp-icon" style="background:rgba(200,100,0,.15)">▷|</div>
+        <span class="comp-label">Diode 1N4007</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="zener" ondragstart="startDrag(event)" onclick="addCompMobile('zener')">
+        <div class="comp-icon" style="background:rgba(200,100,0,.15)">⚡|</div>
+        <span class="comp-label">Diode Zener</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="npn" ondragstart="startDrag(event)" onclick="addCompMobile('npn')">
+        <div class="comp-icon" style="background:rgba(100,0,200,.15)">🔺</div>
+        <span class="comp-label">NPN (BC547)</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="pnp" ondragstart="startDrag(event)" onclick="addCompMobile('pnp')">
+        <div class="comp-icon" style="background:rgba(100,0,200,.15)">🔻</div>
+        <span class="comp-label">PNP (BC557)</span>
+      </div>
+
+      <div class="cat-title">🔀 Commutation</div>
+      <div class="comp-item" draggable="true" data-type="switch" ondragstart="startDrag(event)" onclick="addCompMobile('switch')">
+        <div class="comp-icon" style="background:rgba(100,200,100,.15)">🔘</div>
+        <span class="comp-label">Interrupteur</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="pushbtn" ondragstart="startDrag(event)" onclick="addCompMobile('pushbtn')">
+        <div class="comp-icon" style="background:rgba(100,200,100,.15)">⏺</div>
+        <span class="comp-label">Bouton poussoir</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="relay" ondragstart="startDrag(event)" onclick="addCompMobile('relay')">
+        <div class="comp-icon" style="background:rgba(150,100,50,.15)">🔲</div>
+        <span class="comp-label">Relais</span>
+      </div>
+
+      <div class="cat-title">📏 Mesure</div>
+      <div class="comp-item" draggable="true" data-type="voltmeter" ondragstart="startDrag(event)" onclick="addCompMobile('voltmeter')">
+        <div class="comp-icon" style="background:rgba(200,50,50,.15)">🔴V</div>
+        <span class="comp-label">Voltmètre</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="ammeter" ondragstart="startDrag(event)" onclick="addCompMobile('ammeter')">
+        <div class="comp-icon" style="background:rgba(50,200,50,.15)">🟢A</div>
+        <span class="comp-label">Ampèremètre</span>
+      </div>
+
+      <div class="cat-title">🔌 Divers</div>
+      <div class="comp-item" draggable="true" data-type="lamp" ondragstart="startDrag(event)" onclick="addCompMobile('lamp')">
+        <div class="comp-icon" style="background:rgba(255,220,0,.15)">💡</div>
+        <span class="comp-label">Lampe</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="motor" ondragstart="startDrag(event)" onclick="addCompMobile('motor')">
+        <div class="comp-icon" style="background:rgba(100,150,200,.15)">⚙️</div>
+        <span class="comp-label">Moteur DC</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="fuse" ondragstart="startDrag(event)" onclick="addCompMobile('fuse')">
+        <div class="comp-icon" style="background:rgba(200,200,100,.15)">⚡</div>
+        <span class="comp-label">Fusible</span>
+      </div>
+      <div class="comp-item" draggable="true" data-type="speaker" ondragstart="startDrag(event)" onclick="addCompMobile('speaker')">
+        <div class="comp-icon" style="background:rgba(150,100,200,.15)">🔊</div>
+        <span class="comp-label">Haut-parleur</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div id="workspace"
+    ondragover="event.preventDefault()"
+    ondrop="dropComp(event)"
+    onmousedown="wsMouseDown(event)"
+    onmousemove="wsMouseMove(event)"
+    onmouseup="wsMouseUp(event)"
+    ontouchstart="wsTouchStart(event)"
+    ontouchmove="wsTouchMove(event)"
+    ontouchend="wsTouchEnd(event)"
+    oncontextmenu="return false;">
+
+    <div id="surface-switcher">
+      <button class="surf-btn active" onclick="setSurface('bb')">🧩 Breadboard</button>
+      <button class="surf-btn" onclick="setSurface('table')">🔬 Table libre</button>
+    </div>
+
+    <!-- Breadboard surface -->
+    <div id="bb-surface"></div>
+
+    <!-- Free table surface -->
+    <div id="table-surface"></div>
+
+    <!-- Wire canvas -->
+    <canvas id="wire-canvas"></canvas>
+
+    <!-- Placed components container -->
+    <div id="comp-layer"></div>
+  </div>
+
+  <!-- RIGHT INSTRUMENTS -->
+  <div id="instruments">
+    <div class="inst-section-title">📡 Oscilloscope</div>
+    <div class="osc-inst">
+      <div class="osc-inst-top">
+        <span class="osc-brand">RIGOL · DS1054Z</span>
+        <div style="display:flex;gap:4px;">
+          <div style="width:6px;height:6px;border-radius:50%;background:#00ff44;box-shadow:var(--glow-g);"></div>
+        </div>
+      </div>
+      <div class="osc-screen">
+        <canvas id="osc-main" width="220" height="120"></canvas>
+      </div>
+      <div class="osc-ctrl">
+        <button class="osc-ctrl-btn active" id="oscCh1" onclick="toggleOscCh(1)">CH1</button>
+        <button class="osc-ctrl-btn active" id="oscCh2" onclick="toggleOscCh(2)">CH2</button>
+        <button class="osc-ctrl-btn">AUTO</button>
+        <button class="osc-ctrl-btn" onclick="runOsc()">RUN</button>
+      </div>
+    </div>
+
+    <div class="inst-section-title">📟 Multimètre</div>
+    <div class="multimeter-inst">
+      <div class="mm-brand2">FLUKE · 115</div>
+      <div class="mm-screen2">
+        <span class="mm-unit2" id="mmUnit">TENSION / VOLTAGE</span>
+        <div class="mm-reading" id="mmReading">0.000</div>
+        <span class="mm-unit2" id="mmUnitBot">V DC</span>
+      </div>
+      <div class="mm-mode-row">
+        <button class="mm-mode-btn active" onclick="setMmMode('V DC',this)">V⎓</button>
+        <button class="mm-mode-btn" onclick="setMmMode('V AC',this)">V〜</button>
+        <button class="mm-mode-btn" onclick="setMmMode('A DC',this)">A⎓</button>
+        <button class="mm-mode-btn" onclick="setMmMode('Ω',this)">Ω</button>
+        <button class="mm-mode-btn" onclick="setMmMode('Hz',this)">Hz</button>
+        <button class="mm-mode-btn" onclick="setMmMode('🔈',this)">🔈</button>
+      </div>
+      <div class="mm-probes">
+        <div class="probe-jack com" title="COM"></div>
+        <div class="probe-jack vma" title="VΩmA"></div>
+      </div>
+    </div>
+
+    <div class="inst-section-title">〜 Générateur de fonctions</div>
+    <div class="fgen-inst">
+      <div class="fgen-brand">GWINSTEK · SFG-2110</div>
+      <div class="fgen-display">
+        <div class="fgen-freq" id="fgenFreqDisp">1000</div>
+        <div class="fgen-unit">Hz · Amp: <span id="fgenAmpDisp">5.0</span>V</div>
+      </div>
+      <div class="fgen-knobs">
+        <div class="fgen-knob">
+          <div class="fgen-knob-label">FREQ (Hz)</div>
+          <input type="range" class="fgen-slider" min="1" max="100000" value="1000" oninput="updateFgen(this,'freq')">
+        </div>
+        <div class="fgen-knob">
+          <div class="fgen-knob-label">AMP (V)</div>
+          <input type="range" class="fgen-slider" min="0.1" max="20" step="0.1" value="5" oninput="updateFgen(this,'amp')">
+        </div>
+      </div>
+      <div class="fgen-wave-row">
+        <button class="fgen-wave-btn active" onclick="setFgenWave('sin',this)">∿</button>
+        <button class="fgen-wave-btn" onclick="setFgenWave('sq',this)">⊓</button>
+        <button class="fgen-wave-btn" onclick="setFgenWave('tri',this)">/\</button>
+        <button class="fgen-wave-btn" onclick="setFgenWave('saw',this)">⊿</button>
+      </div>
+    </div>
+
+    <div class="inst-section-title">🔌 Alimentation (PSU)</div>
+    <div class="psu-inst">
+      <div class="psu-brand">RIGOL · DP832</div>
+      <div class="psu-channels">
+        <div class="psu-channel">
+          <div class="psu-ch-header">
+            <span class="psu-ch-label">CH1</span>
+            <div class="psu-output-toggle" id="psuCh1" onclick="togglePsu(1)"></div>
+          </div>
+          <div class="psu-display" id="psuV1">12.00 V</div>
+          <div class="psu-sub" id="psuI1">0.500 A</div>
+          <input type="range" class="psu-slider" min="0" max="30" step="0.1" value="12" oninput="updatePsu(this,1,'V')">
+          <div class="psu-terminals">
+            <div class="psu-terminal"><div class="psu-jack pos"></div><div class="psu-jack-label">+</div></div>
+            <div class="psu-terminal"><div class="psu-jack gnd"></div><div class="psu-jack-label">GND</div></div>
+            <div class="psu-terminal"><div class="psu-jack neg"></div><div class="psu-jack-label">−</div></div>
+          </div>
+        </div>
+        <div class="psu-channel">
+          <div class="psu-ch-header">
+            <span class="psu-ch-label">CH2</span>
+            <div class="psu-output-toggle" id="psuCh2" onclick="togglePsu(2)"></div>
+          </div>
+          <div class="psu-display" id="psuV2">5.00 V</div>
+          <div class="psu-sub" id="psuI2">0.200 A</div>
+          <input type="range" class="psu-slider" min="0" max="15" step="0.1" value="5" oninput="updatePsu(this,2,'V')">
+          <div class="psu-terminals">
+            <div class="psu-terminal"><div class="psu-jack pos"></div><div class="psu-jack-label">+</div></div>
+            <div class="psu-terminal"><div class="psu-jack gnd"></div><div class="psu-jack-label">GND</div></div>
+            <div class="psu-terminal"><div class="psu-jack neg"></div><div class="psu-jack-label">−</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="padding:12px 8px 8px;">
+      <div class="inst-section-title" style="padding-left:4px;">📊 Analyse rapide</div>
+      <div style="background:var(--bg3);border-radius:8px;padding:8px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8;" id="analyzeBox">
+        Placez des composants<br>et lancez la simulation<br>pour voir les résultats.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MOBILE BOTTOM BAR -->
+<div id="mobile-bar">
+  <button class="mb-btn" onclick="showMobileModal('comps')"><span class="mb-icon">🧩</span>Composants</button>
+  <button class="mb-btn" onclick="showMobileModal('instruments')"><span class="mb-icon">📡</span>Instruments</button>
+  <button class="mb-btn" id="wireModBtn" onclick="autoWireMode()"><span class="mb-icon">🔌</span>Fil</button>
+  <button class="mb-btn" onclick="toggleSimulation()"><span class="mb-icon">▶</span>Simuler</button>
+  <button class="mb-btn" onclick="showMobileModal('menu')"><span class="mb-icon">⋯</span>Menu</button>
+</div>
+
+<!-- MOBILE MODALS -->
+<div class="modal-overlay" id="mobileModal" onclick="closeMobileModal(event)">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-handle"></div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx-item" onclick="ctxEdit()">✏️ Modifier valeur</div>
+  <div class="ctx-item" onclick="ctxRotate()">↻ Tourner 90°</div>
+  <div class="ctx-item" onclick="ctxDuplicate()">📋 Dupliquer</div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item danger" onclick="ctxDelete()">🗑 Supprimer</div>
+</div>
+
+<!-- VALUE EDITOR -->
+<div id="val-editor">
+  <h4 id="valEditorTitle">Modifier la valeur</h4>
+  <input type="text" id="valInput" placeholder="ex: 1k, 100n, 4.7m">
+  <div class="val-presets" id="valPresets"></div>
+  <div class="val-actions">
+    <button class="val-cancel" onclick="closeValEditor()">Annuler</button>
+    <button class="val-ok" onclick="confirmValEditor()">✓ OK</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════
+let components = [];
+let wires = [];
+let selectedComp = null;
+let dragType = null;
+let dragging = null;
+let dragOffX=0, dragOffY=0;
+let wireMode = false;
+let wireStart = null;
+let simRunning = false;
+let surface = 'bb';
+let ctxTarget = null;
+let valEditorTarget = null;
+let oscCh1=true, oscCh2=true;
+let fgenWave='sin', fgenFreq=1000, fgenAmp=5;
+let animFrame = null;
+let touchMoved = false;
+let drawerOpen = true;
+
+// ══════════════════════════════════════════════════
+//  COMPONENT DEFINITIONS
+// ══════════════════════════════════════════════════
+const COMP_DEFS = {
+  resistor:{label:'R',unit:'Ω',default:'1kΩ',presets:['100Ω','470Ω','1kΩ','4.7kΩ','10kΩ','47kΩ','100kΩ'],
+    w:60,h:28, color:'#c8a020',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      // body
+      const grad=ctx.createLinearGradient(0,0,0,h);
+      grad.addColorStop(0,'#d4b030');grad.addColorStop(.5,'#b89020');grad.addColorStop(1,'#a07010');
+      ctx.fillStyle=grad; roundRect(ctx,-w/2+12,-h/2,w-24,h,3);ctx.fill();
+      ctx.strokeStyle='#8a6010';ctx.lineWidth=1;roundRect(ctx,-w/2+12,-h/2,w-24,h,3);ctx.stroke();
+      // leads
+      ctx.strokeStyle='#ccc';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(-w/2,-0);ctx.lineTo(-w/2+12,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(w/2-12,0);ctx.lineTo(w/2,0);ctx.stroke();
+      // bands (color code)
+      const bands=['#a07000','#d09000','#804000','#c8a000'];
+      bands.forEach((c,i)=>{ctx.fillStyle=c;ctx.fillRect(-w/2+16+i*8,-h/2,5,h);});
+      // glow if active
+      if(active){ctx.shadowColor='rgba(255,200,0,.5)';ctx.shadowBlur=8;}
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'A'},{x:w/2,y:0,id:'B'}]
+  },
+  capacitor:{label:'C',unit:'F',default:'100µF',presets:['100pF','1nF','10nF','100nF','1µF','10µF','100µF','1000µF'],
+    w:36,h:48,color:'#2244aa',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle='#4488ff';ctx.lineWidth=3;
+      ctx.beginPath();ctx.moveTo(-6,-h/2+8);ctx.lineTo(-6,h/2-8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(6,-h/2+8);ctx.lineTo(6,h/2-8);ctx.stroke();
+      ctx.strokeStyle='#aaa';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(0,-h/2+8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,h/2-8);ctx.lineTo(0,h/2);ctx.stroke();
+      if(active){ctx.shadowColor='rgba(68,136,255,.5)';ctx.shadowBlur=10;}
+    },
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'+'},{x:0,y:h/2,id:'-'}]
+  },
+  inductor:{label:'L',unit:'H',default:'100mH',presets:['1mH','10mH','100mH','1H'],
+    w:70,h:26,color:'#8844cc',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle='#aaa';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(-w/2+10,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(w/2-10,0);ctx.lineTo(w/2,0);ctx.stroke();
+      ctx.strokeStyle='#bb88ff';ctx.lineWidth=2.5;
+      for(let i=0;i<4;i++){
+        ctx.beginPath();ctx.arc(-w/2+16+i*10,0,6,Math.PI,0,false);ctx.stroke();
+      }
+      if(active){ctx.shadowColor='rgba(136,68,255,.5)';ctx.shadowBlur=8;}
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'A'},{x:w/2,y:0,id:'B'}]
+  },
+  battery9v:{label:'E',unit:'V',default:'9V',presets:['3V','5V','9V','12V'],
+    w:44,h:70,color:'#334488',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      // battery body
+      const grad=ctx.createLinearGradient(-w/2,0,w/2,0);
+      grad.addColorStop(0,'#222244');grad.addColorStop(.5,'#334488');grad.addColorStop(1,'#222244');
+      ctx.fillStyle=grad;roundRect(ctx,-w/2+4,-h/2+8,w-8,h-16,4);ctx.fill();
+      ctx.strokeStyle='#4466aa';ctx.lineWidth=1;roundRect(ctx,-w/2+4,-h/2+8,w-8,h-16,4);ctx.stroke();
+      // top cap
+      ctx.fillStyle='#aaa';roundRect(ctx,-8,-h/2,16,10,2);ctx.fill();
+      // cells
+      for(let i=0;i<5;i++){
+        ctx.fillStyle=i%2?'#223366':'#667';
+        ctx.fillRect(-w/2+6,-h/2+12+i*9,w-12,7);
+      }
+      // + - labels
+      ctx.fillStyle='#ff4444';ctx.font='bold 10px JetBrains Mono';ctx.textAlign='center';ctx.fillText('+',0,-h/2-8);
+      ctx.fillStyle='#4444ff';ctx.fillText('−',0,h/2+12);
+      // leads
+      ctx.strokeStyle='#888';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(0,-h/2-8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(0,h/2+8);ctx.stroke();
+      if(active){ctx.shadowColor='rgba(68,100,255,.5)';ctx.shadowBlur=12;}
+    },
+    terminals:(w,h)=>[{x:0,y:-h/2-8,id:'+'},{x:0,y:h/2+8,id:'-'}]
+  },
+  battery12v:{label:'E',unit:'V',default:'12V',presets:['9V','12V','15V','24V'],
+    w:44,h:70,color:'#883300',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      const grad=ctx.createLinearGradient(-w/2,0,w/2,0);
+      grad.addColorStop(0,'#442200');grad.addColorStop(.5,'#883300');grad.addColorStop(1,'#442200');
+      ctx.fillStyle=grad;roundRect(ctx,-w/2+4,-h/2+8,w-8,h-16,4);ctx.fill();
+      ctx.strokeStyle='#cc6600';ctx.lineWidth=1;roundRect(ctx,-w/2+4,-h/2+8,w-8,h-16,4);ctx.stroke();
+      ctx.fillStyle='#888';roundRect(ctx,-8,-h/2,16,10,2);ctx.fill();
+      for(let i=0;i<5;i++){ctx.fillStyle=i%2?'#662200':'#995500';ctx.fillRect(-w/2+6,-h/2+12+i*9,w-12,7);}
+      ctx.fillStyle='#ff4444';ctx.font='bold 10px JetBrains Mono';ctx.textAlign='center';ctx.fillText('+',0,-h/2-8);
+      ctx.fillStyle='#4444ff';ctx.fillText('−',0,h/2+12);
+      ctx.strokeStyle='#888';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(0,-h/2-8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,h/2);ctx.lineTo(0,h/2+8);ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:0,y:-h/2-8,id:'+'},{x:0,y:h/2+8,id:'-'}]
+  },
+  vac:{label:'V∼',unit:'Vpp',default:'5Vpp',presets:['1Vpp','5Vpp','10Vpp','24Vpp'],
+    w:50,h:50,color:'#aa4400',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle='#cc6600';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(0,0,18,0,2*Math.PI);ctx.stroke();
+      ctx.strokeStyle='#ff8844';ctx.lineWidth=1.5;
+      ctx.beginPath();
+      for(let x=-12;x<=12;x+=1){ctx.lineTo(x,-Math.sin(x*Math.PI/12)*8);}
+      ctx.stroke();
+      ctx.strokeStyle='#888';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,-18);ctx.lineTo(0,-h/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,18);ctx.lineTo(0,h/2);ctx.stroke();
+      if(active){ctx.shadowColor='rgba(255,136,68,.5)';ctx.shadowBlur=10;}
+    },
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'+'},{x:0,y:h/2,id:'-'}]
+  },
+  gnd:{label:'GND',unit:'',default:'',presets:[],
+    w:30,h:30,color:'#555',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle='#888';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(0,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(12,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-8,6);ctx.lineTo(8,6);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-4,12);ctx.lineTo(4,12);ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'A'}]
+  },
+  led_red:{label:'LED',unit:'',default:'2V 20mA',presets:['1.8V','2V','2.2V'],
+    w:36,h:36,color:'#cc0000',
+    draw:(ctx,w,h,val,rotation,active)=>{drawLED(ctx,w,h,'#ff2200','#ff6644',active);},
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'A'},{x:0,y:h/2,id:'K'}]
+  },
+  led_green:{label:'LED',unit:'',default:'2.1V 20mA',presets:[],
+    w:36,h:36,color:'#00aa00',
+    draw:(ctx,w,h,val,rotation,active)=>{drawLED(ctx,w,h,'#00cc00','#44ff44',active);},
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'A'},{x:0,y:h/2,id:'K'}]
+  },
+  led_blue:{label:'LED',unit:'',default:'3.2V 20mA',presets:[],
+    w:36,h:36,color:'#0044cc',
+    draw:(ctx,w,h,val,rotation,active)=>{drawLED(ctx,w,h,'#0055ee','#4488ff',active);},
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'A'},{x:0,y:h/2,id:'K'}]
+  },
+  diode:{label:'D',unit:'',default:'1N4007',presets:['1N4001','1N4007','1N5408'],
+    w:50,h:28,color:'#cc6600',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle='#aaa';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(-10,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(w/2,0);ctx.stroke();
+      ctx.fillStyle='#cc6600';ctx.strokeStyle='#ff8800';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-10,-10);ctx.lineTo(-10,10);ctx.lineTo(10,0);ctx.closePath();
+      ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.moveTo(10,-10);ctx.lineTo(10,10);ctx.stroke();
+      if(active){ctx.shadowColor='rgba(255,136,0,.6)';ctx.shadowBlur=10;}
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'A'},{x:w/2,y:0,id:'K'}]
+  },
+  zener:{label:'Z',unit:'V',default:'5.1V',presets:['3.3V','5.1V','6.2V','9.1V','12V'],
+    w:50,h:28,color:'#cc6600',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle='#aaa';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(-10,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(10,0);ctx.lineTo(w/2,0);ctx.stroke();
+      ctx.fillStyle='#884400';ctx.strokeStyle='#cc6600';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-10,-10);ctx.lineTo(-10,10);ctx.lineTo(10,0);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.beginPath();ctx.moveTo(8,-10);ctx.lineTo(10,-10);ctx.lineTo(10,10);ctx.lineTo(12,10);ctx.stroke();
+      if(active){ctx.shadowColor='rgba(204,102,0,.6)';ctx.shadowBlur=10;}
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'A'},{x:w/2,y:0,id:'K'}]
+  },
+  npn:{label:'Q',unit:'',default:'BC547',presets:['BC547','2N2222','BC337'],
+    w:50,h:60,color:'#663399',
+    draw:(ctx,w,h,val,rotation,active)=>{drawTransistor(ctx,w,h,'npn',active);},
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'B'},{x:10,y:-h/2,id:'C'},{x:10,y:h/2,id:'E'}]
+  },
+  pnp:{label:'Q',unit:'',default:'BC557',presets:['BC557','2N2907'],
+    w:50,h:60,color:'#993366',
+    draw:(ctx,w,h,val,rotation,active)=>{drawTransistor(ctx,w,h,'pnp',active);},
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'B'},{x:10,y:-h/2,id:'E'},{x:10,y:h/2,id:'C'}]
+  },
+  switch:{label:'K',unit:'',default:'Ouvert',presets:['Ouvert','Fermé'],
+    w:50,h:24,color:'#226622',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      const closed = val==='Fermé';
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(-12,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(w/2,0);ctx.stroke();
+      // contacts
+      ctx.fillStyle='#666';ctx.beginPath();ctx.arc(-12,0,4,0,2*Math.PI);ctx.fill();
+      ctx.beginPath();ctx.arc(12,0,4,0,2*Math.PI);ctx.fill();
+      // lever
+      ctx.strokeStyle=closed?'#44ff44':'#ff8844';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(-12,0);
+      if(closed)ctx.lineTo(12,0); else ctx.lineTo(8,-14);
+      ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'A'},{x:w/2,y:0,id:'B'}],
+    clickable:true, onClick:(comp)=>{comp.value=comp.value==='Fermé'?'Ouvert':'Fermé';}
+  },
+  pushbtn:{label:'BP',unit:'',default:'Relâché',presets:['Relâché','Appuyé'],
+    w:40,h:40,color:'#226622',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      const pressed=val==='Appuyé';
+      ctx.fillStyle=pressed?'#44ff44':'#335533';
+      ctx.beginPath();ctx.arc(0,0,12,0,2*Math.PI);ctx.fill();
+      ctx.strokeStyle='#88ff88';ctx.lineWidth=1.5;ctx.stroke();
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-20,0);ctx.lineTo(-14,0);
+      ctx.moveTo(14,0);ctx.lineTo(20,0);ctx.stroke();
+      if(!pressed){ctx.beginPath();ctx.moveTo(-14,-6);ctx.lineTo(14,-6);ctx.strokeStyle='#aaa';ctx.stroke();}
+      if(active||pressed){ctx.shadowColor='rgba(68,255,68,.5)';ctx.shadowBlur=10;}
+    },
+    terminals:(w,h)=>[{x:-20,y:0,id:'A'},{x:20,y:0,id:'B'}],
+    clickable:true, onClick:(comp)=>{comp.value='Appuyé';setTimeout(()=>{comp.value='Relâché';redrawAll();},200);}
+  },
+  relay:{label:'RLY',unit:'',default:'5V',presets:['5V','12V'],
+    w:56,h:42,color:'#885522',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.fillStyle='#2a1a0a';ctx.strokeStyle='#aa7744';ctx.lineWidth=1.5;
+      roundRect(ctx,-w/2,-h/2,w,h,4);ctx.fill();ctx.stroke();
+      // coil symbol
+      ctx.strokeStyle='#cc9944';ctx.lineWidth=1.5;
+      for(let i=0;i<4;i++)ctx.beginPath(),ctx.arc(-18+i*6,0,4,Math.PI,0,false),ctx.stroke();
+      // contact
+      ctx.strokeStyle=active?'#44ff44':'#888';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(8,-12);ctx.lineTo(8,active?12:-4);ctx.stroke();
+      ctx.beginPath();ctx.arc(8,12,3,0,2*Math.PI);ctx.fillStyle='#888';ctx.fill();
+    },
+    terminals:(w,h)=>[{x:-w/2,y:-8,id:'+'},{x:-w/2,y:8,id:'-'},{x:w/2,y:-12,id:'NC'},{x:w/2,y:12,id:'NO'}]
+  },
+  voltmeter:{label:'V',unit:'V',default:'0V',presets:[],
+    w:48,h:48,color:'#cc2222',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.fillStyle='#fff8ee';ctx.strokeStyle='#aa3300';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(0,0,18,0,2*Math.PI);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#cc2222';ctx.font='bold 13px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillText('V',0,5);
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(0,-18);ctx.lineTo(0,-h/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,18);ctx.lineTo(0,h/2);ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'+'},{x:0,y:h/2,id:'-'}]
+  },
+  ammeter:{label:'A',unit:'A',default:'0A',presets:[],
+    w:48,h:48,color:'#22aa22',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.fillStyle='#e8ffe8';ctx.strokeStyle='#008800';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(0,0,18,0,2*Math.PI);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#009900';ctx.font='bold 12px JetBrains Mono';ctx.textAlign='center';
+      ctx.fillText('A',0,5);
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-w/2,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(18,0);ctx.lineTo(w/2,0);ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'+'},{x:w/2,y:0,id:'-'}]
+  },
+  lamp:{label:'Lamp',unit:'W',default:'60W',presets:['5W','25W','60W','100W'],
+    w:40,h:56,color:'#aaaa00',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle=active?'#ffee44':'#888';ctx.lineWidth=2;
+      if(active){ctx.shadowColor='rgba(255,220,0,.7)';ctx.shadowBlur=20;ctx.fillStyle='rgba(255,220,0,.15)';ctx.beginPath();ctx.arc(0,0,22,0,2*Math.PI);ctx.fill();}
+      ctx.beginPath();ctx.arc(0,-4,14,0,2*Math.PI);ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(-8,8);ctx.bezierCurveTo(-8,4,-5,2,-2,0);
+      ctx.bezierCurveTo(2,-2,5,2,2,0);
+      ctx.bezierCurveTo(-1,-2,0,-6,0,-10);
+      ctx.stroke();
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-6,10);ctx.lineTo(-6,15);ctx.lineTo(6,15);ctx.lineTo(6,10);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,15);ctx.lineTo(0,h/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(0,-18);ctx.lineTo(0,-h/2);ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:0,y:-h/2,id:'+'},{x:0,y:h/2,id:'-'}]
+  },
+  motor:{label:'M',unit:'RPM',default:'DC Motor',presets:[],
+    w:50,h:50,color:'#224488',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      const ang=active?(Date.now()/200%360)*Math.PI/180:0;
+      ctx.fillStyle='#1a2a4a';ctx.strokeStyle='#4466aa';ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(0,0,18,0,2*Math.PI);ctx.fill();ctx.stroke();
+      ctx.strokeStyle=active?'#44aaff':'#446688';ctx.lineWidth=1.5;
+      for(let i=0;i<3;i++){
+        const a=ang+i*2*Math.PI/3;
+        ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*14,Math.sin(a)*14);ctx.stroke();
+      }
+      ctx.fillStyle='#4466aa';ctx.font='bold 10px JetBrains Mono';ctx.textAlign='center';ctx.fillText('M',0,4);
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-18,0);ctx.lineTo(-w/2,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(18,0);ctx.lineTo(w/2,0);ctx.stroke();
+      if(active){ctx.shadowColor='rgba(68,170,255,.5)';ctx.shadowBlur=12;}
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'+'},{x:w/2,y:0,id:'-'}]
+  },
+  fuse:{label:'F',unit:'A',default:'1A',presets:['100mA','500mA','1A','2A','5A','10A'],
+    w:50,h:22,color:'#aaaa44',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.strokeStyle='#aaa';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(-16,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(16,0);ctx.lineTo(w/2,0);ctx.stroke();
+      ctx.fillStyle='#c8c890';ctx.strokeStyle='#888';ctx.lineWidth=1;
+      roundRect(ctx,-16,-8,32,16,3);ctx.fill();ctx.stroke();
+      ctx.strokeStyle=active?'#ffff44':'#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-12,0);ctx.lineTo(12,0);ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'A'},{x:w/2,y:0,id:'B'}]
+  },
+  pot:{label:'P',unit:'Ω',default:'10kΩ',presets:['1kΩ','5kΩ','10kΩ','50kΩ','100kΩ'],
+    w:60,h:40,color:'#c8a020',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      const grad=ctx.createLinearGradient(0,-h/2,0,h/2);
+      grad.addColorStop(0,'#d4b030');grad.addColorStop(1,'#a07010');
+      ctx.fillStyle=grad;roundRect(ctx,-w/2+8,-h/2+4,w-16,h-8,3);ctx.fill();
+      ctx.strokeStyle='#8a6010';ctx.lineWidth=1;roundRect(ctx,-w/2+8,-h/2+4,w-16,h-8,3);ctx.stroke();
+      const bands=['#a07000','#d09000','#804000'];
+      bands.forEach((c,i)=>{ctx.fillStyle=c;ctx.fillRect(-w/2+12+i*8,-h/2+4,5,h-8);});
+      // wiper arrow
+      ctx.strokeStyle='#ffcc00';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(0,h/2+2);ctx.lineTo(0,h/2+10);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-5,h/2+6);ctx.lineTo(0,h/2+2);ctx.lineTo(5,h/2+6);ctx.stroke();
+      ctx.strokeStyle='#aaa';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(-w/2+8,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(w/2-8,0);ctx.lineTo(w/2,0);ctx.stroke();
+    },
+    terminals:(w,h)=>[{x:-w/2,y:0,id:'A'},{x:w/2,y:0,id:'B'},{x:0,y:h/2+10,id:'W'}]
+  },
+  speaker:{label:'HP',unit:'Ω',default:'8Ω',presets:['4Ω','8Ω','16Ω'],
+    w:46,h:50,color:'#664488',
+    draw:(ctx,w,h,val,rotation,active)=>{
+      ctx.fillStyle='#2a1a3a';ctx.strokeStyle='#8855aa';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.arc(0,0,16,0,2*Math.PI);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#664488';ctx.beginPath();ctx.arc(0,0,8,0,2*Math.PI);ctx.fill();
+      ctx.strokeStyle='#aa88cc';ctx.lineWidth=1;
+      for(let r=10;r<=20;r+=3){ctx.beginPath();ctx.arc(0,0,r,0,2*Math.PI);ctx.stroke();}
+      ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+      ctx.beginPath();ctx.moveTo(-18,8);ctx.lineTo(-18,20);ctx.lineTo(18,20);ctx.lineTo(18,8);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(-8,20);ctx.lineTo(-8,h/2);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(8,20);ctx.lineTo(8,h/2);ctx.stroke();
+      if(active){ctx.shadowColor='rgba(150,80,200,.5)';ctx.shadowBlur=12;}
+    },
+    terminals:(w,h)=>[{x:-8,y:h/2,id:'+'},{x:8,y:h/2,id:'-'}]
+  }
+};
+
+function drawLED(ctx,w,h,colA,colB,active){
+  ctx.strokeStyle='#aaa';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(0,-h/2);ctx.lineTo(0,-12);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,12);ctx.lineTo(0,h/2);ctx.stroke();
+  ctx.fillStyle=active?colB:colA;ctx.strokeStyle=active?colB:colA;ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(-10,-12);ctx.lineTo(-10,12);ctx.lineTo(10,0);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.moveTo(10,-12);ctx.lineTo(10,12);ctx.stroke();
+  if(active){
+    ctx.shadowColor=colB;ctx.shadowBlur=20;
+    ctx.fillStyle=colB+'44';ctx.beginPath();ctx.arc(0,0,20,0,2*Math.PI);ctx.fill();
+  }
+}
+
+function drawTransistor(ctx,w,h,type,active){
+  ctx.strokeStyle='#aa66dd';ctx.lineWidth=2;
+  // base line
+  ctx.beginPath();ctx.moveTo(-w/2,0);ctx.lineTo(-8,0);ctx.stroke();
+  // vertical bar
+  ctx.beginPath();ctx.moveTo(-8,-18);ctx.lineTo(-8,18);ctx.stroke();
+  // collector
+  ctx.beginPath();ctx.moveTo(-8,-12);ctx.lineTo(10,-h/2+4);ctx.stroke();
+  // emitter
+  ctx.beginPath();ctx.moveTo(-8,12);ctx.lineTo(10,h/2-4);ctx.stroke();
+  // emitter arrow
+  if(type==='npn'){
+    ctx.beginPath();ctx.moveTo(8,h/2-8);ctx.lineTo(10,h/2-4);ctx.lineTo(6,h/2-4);ctx.fillStyle='#aa66dd';ctx.fill();
+  } else {
+    ctx.beginPath();ctx.moveTo(2,-h/2+10);ctx.lineTo(6,-h/2+8);ctx.lineTo(8,-h/2+12);ctx.fillStyle='#aa66dd';ctx.fill();
+  }
+  ctx.strokeStyle='#888';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(10,-h/2+4);ctx.lineTo(10,-h/2);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(10,h/2-4);ctx.lineTo(10,h/2);ctx.stroke();
+  if(active){ctx.shadowColor='rgba(170,100,220,.5)';ctx.shadowBlur=10;}
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r);ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h);ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r);ctx.arcTo(x,y,x+r,y,r);ctx.closePath();
+}
+
+// ══════════════════════════════════════════════════
+//  BREADBOARD
+// ══════════════════════════════════════════════════
+function buildBreadboard(){
+  const bb = document.getElementById('bb-surface');
+  const cols = 30, rows = 10;
+
+  let html = '<div id="bb-wrap"><div id="bb-inner">';
+
+  // Column labels
+  html += '<div style="display:flex;gap:3px;margin-left:24px;margin-bottom:2px;">';
+  for(let c=1;c<=cols;c++) html += `<div class="bb-col-label">${c}</div>`;
+  html += '</div>';
+
+  // Top power rail
+  html += '<div class="bb-rail red"><span class="bb-rail-label" style="color:#cc0000">+</span>';
+  for(let c=0;c<cols;c++) html += `<div class="bb-hole" data-rail="top-pos" data-col="${c}" onclick="holeClick(this)"></div>`;
+  html += '</div>';
+  html += '<div class="bb-rail blue"><span class="bb-rail-label" style="color:#0044cc">−</span>';
+  for(let c=0;c<cols;c++) html += `<div class="bb-hole" data-rail="top-neg" data-col="${c}" onclick="holeClick(this)"></div>`;
+  html += '</div>';
+
+  // Divider
+  html += '<div class="bb-divider" style="margin:4px 0;"><span style="color:#a09070;font-size:7px;letter-spacing:4px;">DIP AREA</span></div>';
+
+  // Main area
+  const letters = 'ABCDE';
+  for(const L of letters){
+    html += `<div class="bb-row"><span class="bb-row-label">${L}</span>`;
+    for(let c=1;c<=cols;c++){
+      html += `<div class="bb-hole" data-row="${L}" data-col="${c}" onclick="holeClick(this)"></div>`;
+    }
+    html += '</div>';
+  }
+
+  // Center gap
+  html += '<div style="height:12px;display:flex;align-items:center;margin-left:14px;"><div style="flex:1;border-top:2px dashed #b8a888;"></div></div>';
+
+  const letters2 = 'FGHIJ';
+  for(const L of letters2){
+    html += `<div class="bb-row"><span class="bb-row-label">${L}</span>`;
+    for(let c=1;c<=cols;c++){
+      html += `<div class="bb-hole" data-row="${L}" data-col="${c}" onclick="holeClick(this)"></div>`;
+    }
+    html += '</div>';
+  }
+
+  // Divider
+  html += '<div class="bb-divider" style="margin:4px 0;"></div>';
+
+  // Bottom power rail
+  html += '<div class="bb-rail red"><span class="bb-rail-label" style="color:#cc0000">+</span>';
+  for(let c=0;c<cols;c++) html += `<div class="bb-hole" data-rail="bot-pos" data-col="${c}" onclick="holeClick(this)"></div>`;
+  html += '</div>';
+  html += '<div class="bb-rail blue"><span class="bb-rail-label" style="color:#0044cc">−</span>';
+  for(let c=0;c<cols;c++) html += `<div class="bb-hole" data-rail="bot-neg" data-col="${c}" onclick="holeClick(this)"></div>`;
+  html += '</div>';
+
+  html += '</div></div>'; // bb-inner, bb-wrap
+  bb.innerHTML = html;
+}
+
+function holeClick(el){
+  if(!wireMode) return;
+  const id = el.dataset.row ? `${el.dataset.row}${el.dataset.col}` : `${el.dataset.rail}-${el.dataset.col}`;
+  const rect = el.getBoundingClientRect();
+  const ws = document.getElementById('workspace').getBoundingClientRect();
+  const x = rect.left - ws.left + rect.width/2;
+  const y = rect.top - ws.top + rect.height/2;
+
+  if(!wireStart){
+    wireStart = {x, y, el, id};
+    el.style.background='rgba(255,200,0,.6)';
+    showToast('🔌 Cliquez sur le point d\'arrivée');
+  } else {
+    if(wireStart.id !== id){
+      addWire(wireStart.x, wireStart.y, x, y, '#ff4444');
+      wireStart.el.style.background='';
+      wireStart = null;
+      el.classList.add('connected');
+      showToast('✅ Fil connecté');
+    }
+    wireStart = null;
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  COMPONENT PLACEMENT
+// ══════════════════════════════════════════════════
+function startDrag(e){
+  dragType = e.currentTarget.dataset.type;
+  e.dataTransfer.setData('type', dragType);
+  e.dataTransfer.effectAllowed = 'copy';
+}
+
+function dropComp(e){
+  e.preventDefault();
+  const type = e.dataTransfer.getData('type') || dragType;
+  if(!type) return;
+  const ws = document.getElementById('workspace').getBoundingClientRect();
+  const x = e.clientX - ws.left;
+  const y = e.clientY - ws.top;
+  createComponent(type, x, y);
+  dragType = null;
+}
+
+function addCompMobile(type){
+  const ws = document.getElementById('workspace').getBoundingClientRect();
+  const x = ws.width/2 + (Math.random()-0.5)*80;
+  const y = ws.height/2 + (Math.random()-0.5)*80;
+  createComponent(type, x, y);
+  closeMobileModal();
+  showToast(`✅ ${COMP_DEFS[type]?.label||type} ajouté`);
+}
+
+let compIdCounter = 0;
+function createComponent(type, x, y){
+  const def = COMP_DEFS[type];
+  if(!def){showToast('❌ Composant inconnu');return;}
+  const id = ++compIdCounter;
+  const comp = {
+    id, type, x, y,
+    value: def.default,
+    rotation: 0,
+    active: false
+  };
+  components.push(comp);
+  renderComponent(comp);
+  showToast(`➕ ${def.label} ajouté`);
+  return comp;
+}
+
+function renderComponent(comp){
+  const def = COMP_DEFS[comp.type];
+  if(!def) return;
+  const layer = document.getElementById('comp-layer');
+
+  // Remove old element if re-rendering
+  const old = document.getElementById(`comp-${comp.id}`);
+  if(old) old.remove();
+
+  const el = document.createElement('div');
+  el.className = 'placed-comp';
+  el.id = `comp-${comp.id}`;
+  el.style.left = (comp.x - def.w/2) + 'px';
+  el.style.top  = (comp.y - def.h/2) + 'px';
+  el.style.width  = def.w + 'px';
+  el.style.height = def.h + 'px';
+
+  // Canvas
+  const canvas = document.createElement('canvas');
+  canvas.width = def.w * 2;
+  canvas.height = def.h * 2;
+  canvas.style.width = def.w + 'px';
+  canvas.style.height = def.h + 'px';
+  canvas.className = 'comp-body';
+
+  const ctx = canvas.getContext('2d');
+  ctx.scale(2,2);
+  ctx.save();
+  ctx.translate(def.w/2, def.h/2);
+  ctx.rotate(comp.rotation * Math.PI/180);
+  def.draw(ctx, def.w, def.h, comp.value, comp.rotation, comp.active);
+  ctx.restore();
+
+  // Value label
+  const lbl = document.createElement('div');
+  lbl.className = 'comp-val';
+  lbl.textContent = comp.value ? `${def.label}=${comp.value}` : def.label;
+
+  el.appendChild(canvas);
+  if(comp.value !== undefined) el.appendChild(lbl);
+
+  // Terminals
+  def.terminals(def.w, def.h).forEach(t => {
+    const term = document.createElement('div');
+    term.className = 'terminal';
+    term.style.left = (t.x + def.w/2 - 5) + 'px';
+    term.style.top  = (t.y + def.h/2 - 5) + 'px';
+    term.dataset.termId = t.id;
+    term.dataset.compId = comp.id;
+    term.title = t.id;
+    term.addEventListener('mousedown', e=>{e.stopPropagation();terminalMouseDown(e,comp,t);});
+    term.addEventListener('touchstart', e=>{e.stopPropagation();terminalTouchStart(e,comp,t);},{passive:false});
+    el.appendChild(term);
+  });
+
+  // Events
+  el.addEventListener('mousedown', e=>compMouseDown(e, comp));
+  el.addEventListener('touchstart', e=>compTouchStart(e, comp),{passive:false});
+  el.addEventListener('contextmenu', e=>{e.preventDefault();showCtxMenu(e,comp);});
+  el.addEventListener('dblclick', ()=>openValEditor(comp));
+  if(def.clickable){
+    canvas.addEventListener('click',()=>{def.onClick(comp);renderComponent(comp);updateSimulation();});
+  }
+
+  layer.appendChild(el);
+}
+
+function redrawAll(){
+  components.forEach(c=>{
+    const def = COMP_DEFS[c.type];
+    const el = document.getElementById(`comp-${c.id}`);
+    if(!el || !def) return;
+    const canvas = el.querySelector('canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.save();ctx.scale(2,2);
+    ctx.translate(def.w/2,def.h/2);
+    ctx.rotate(c.rotation*Math.PI/180);
+    def.draw(ctx,def.w,def.h,c.value,c.rotation,c.active);
+    ctx.restore();
+    const lbl = el.querySelector('.comp-val');
+    if(lbl) lbl.textContent = c.value ? `${def.label}=${c.value}` : def.label;
+  });
+  drawAllWires();
+}
+
+// ══════════════════════════════════════════════════
+//  DRAG & DROP (mouse)
+// ══════════════════════════════════════════════════
+function compMouseDown(e, comp){
+  if(wireMode) return;
+  if(e.button !== 0) return;
+  e.preventDefault(); e.stopPropagation();
+  selectComp(comp);
+  dragging = comp;
+  dragOffX = e.clientX - comp.x;
+  dragOffY = e.clientY - comp.y;
+}
+
+function wsMouseDown(e){
+  if(e.button !== 0) return;
+  if(!dragging) deselectAll();
+  closeCtxMenu();
+}
+
+function wsMouseMove(e){
+  if(!dragging) return;
+  const ws = document.getElementById('workspace').getBoundingClientRect();
+  const nx = e.clientX - dragOffX;
+  const ny = e.clientY - dragOffY;
+  moveComp(dragging, nx, ny);
+}
+
+function wsMouseUp(e){
+  dragging = null;
+}
+
+// ══════════════════════════════════════════════════
+//  TOUCH DRAG
+// ══════════════════════════════════════════════════
+let touchComp = null, touchOffX=0, touchOffY=0, lastTouchX=0, lastTouchY=0;
+
+function compTouchStart(e, comp){
+  if(wireMode) return;
+  e.preventDefault();
+  selectComp(comp);
+  touchComp = comp;
+  const t = e.touches[0];
+  touchOffX = t.clientX - comp.x;
+  touchOffY = t.clientY - comp.y;
+  lastTouchX = t.clientX;
+  lastTouchY = t.clientY;
+  touchMoved = false;
+}
+
+function wsTouchStart(e){
+  if(!touchComp) {deselectAll(); closeCtxMenu();}
+}
+
+function wsTouchMove(e){
+  if(!touchComp) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  touchMoved = Math.abs(t.clientX-lastTouchX)>4 || Math.abs(t.clientY-lastTouchY)>4;
+  if(touchMoved){
+    const nx = t.clientX - touchOffX;
+    const ny = t.clientY - touchOffY;
+    moveComp(touchComp, nx, ny);
+  }
+}
+
+function wsTouchEnd(e){
+  if(touchComp && !touchMoved){
+    // tap = show context
+  }
+  touchComp = null;
+}
+
+function moveComp(comp, x, y){
+  comp.x = x; comp.y = y;
+  const el = document.getElementById(`comp-${comp.id}`);
+  if(!el) return;
+  const def = COMP_DEFS[comp.type];
+  el.style.left = (x - def.w/2) + 'px';
+  el.style.top  = (y - def.h/2) + 'px';
+  drawAllWires();
+}
+
+// ══════════════════════════════════════════════════
+//  TERMINAL WIRE DRAWING
+// ══════════════════════════════════════════════════
+let termWireStart = null;
+
+function terminalMouseDown(e, comp, terminal){
+  if(!wireMode) return;
+  e.preventDefault();
+  const ws = document.getElementById('workspace').getBoundingClientRect();
+  const def = COMP_DEFS[comp.type];
+  const x = comp.x + terminal.x;
+  const y = comp.y + terminal.y;
+  startTermWire(x, y, comp.id, terminal.id);
+}
+
+function terminalTouchStart(e, comp, terminal){
+  if(!wireMode) return;
+  e.preventDefault();
+  const def = COMP_DEFS[comp.type];
+  const x = comp.x + terminal.x;
+  const y = comp.y + terminal.y;
+  startTermWire(x, y, comp.id, terminal.id);
+}
+
+function startTermWire(x, y, compId, termId){
+  if(!termWireStart){
+    termWireStart = {x, y, compId, termId};
+    showToast('🔌 Cliquez sur un autre terminal');
+  } else {
+    if(termWireStart.compId !== compId || termWireStart.termId !== termId){
+      addWire(termWireStart.x, termWireStart.y, x, y, getWireColor());
+      termWireStart = null;
+      showToast('✅ Fil connecté !');
+    }
+  }
+}
+
+let wireColorIndex = 0;
+const wireColors = ['#ff4444','#4488ff','#44ff44','#ffaa00','#ff44ff','#44ffff','#ffffff'];
+function getWireColor(){ return wireColors[wireColorIndex++ % wireColors.length]; }
+
+// ══════════════════════════════════════════════════
+//  WIRES
+// ══════════════════════════════════════════════════
+function addWire(x1,y1,x2,y2,color='#ff4444'){
+  wires.push({x1,y1,x2,y2,color,id:++compIdCounter});
+  drawAllWires();
+}
+
+function drawAllWires(){
+  const canvas = document.getElementById('wire-canvas');
+  const ws = document.getElementById('workspace');
+  canvas.width = ws.offsetWidth;
+  canvas.height = ws.offsetHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  wires.forEach(w=>{
+    ctx.beginPath();
+    ctx.strokeStyle = w.color;
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = w.color;
+    ctx.shadowBlur = 4;
+    // Routing: go right then down (Manhattan routing)
+    ctx.moveTo(w.x1, w.y1);
+    const mx = (w.x1+w.x2)/2;
+    ctx.lineTo(mx, w.y1);
+    ctx.lineTo(mx, w.y2);
+    ctx.lineTo(w.x2, w.y2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    // Dots at ends
+    [w.x1,w.y1,w.x2,w.y2].forEach((_,i,a)=>{
+      if(i%2===0){ctx.beginPath();ctx.arc(a[i],a[i+1],3,0,2*Math.PI);ctx.fillStyle=w.color;ctx.fill();}
+    });
+  });
+
+  // Draw temp wire if in wire mode
+  if(termWireStart){
+    // Animate temp wire
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  SELECTION
+// ══════════════════════════════════════════════════
+function selectComp(comp){
+  deselectAll();
+  selectedComp = comp;
+  const el = document.getElementById(`comp-${comp.id}`);
+  if(el) el.classList.add('selected');
+}
+
+function deselectAll(){
+  selectedComp = null;
+  document.querySelectorAll('.placed-comp.selected').forEach(e=>e.classList.remove('selected'));
+}
+
+function deleteSelected(){
+  if(!selectedComp){showToast('⚠️ Sélectionnez d\'abord un composant');return;}
+  removeComp(selectedComp.id);
+}
+
+function removeComp(id){
+  components = components.filter(c=>c.id!==id);
+  const el = document.getElementById(`comp-${id}`);
+  if(el) el.remove();
+  selectedComp = null;
+  showToast('🗑 Composant supprimé');
+}
+
+function rotateSelected(){
+  if(!selectedComp){showToast('⚠️ Sélectionnez d\'abord un composant');return;}
+  selectedComp.rotation = (selectedComp.rotation + 90) % 360;
+  renderComponent(selectedComp);
+}
+
+// ══════════════════════════════════════════════════
+//  WIRE MODE
+// ══════════════════════════════════════════════════
+function autoWireMode(){
+  wireMode = !wireMode;
+  const btn = document.getElementById('wireBtn');
+  const mbBtn = document.getElementById('wireModBtn');
+  if(wireMode){
+    btn?.classList.add('active');
+    mbBtn?.classList.add('active');
+    document.getElementById('workspace').style.cursor='crosshair';
+    showToast('🔌 Mode fil actif — cliquez sur les terminaux');
+  } else {
+    btn?.classList.remove('active');
+    mbBtn?.classList.remove('active');
+    document.getElementById('workspace').style.cursor='default';
+    termWireStart = null;
+    showToast('✋ Mode sélection');
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  SIMULATION
+// ══════════════════════════════════════════════════
+function toggleSimulation(){
+  simRunning = !simRunning;
+  const btn = document.getElementById('simBtn');
+  const status = document.getElementById('simStatus');
+  if(simRunning){
+    btn.textContent='⏹ Arrêter';
+    btn.className='tb-btn danger';
+    status.textContent='▶ EN COURS';
+    status.className='simulation-status';
+    runSimulation();
+    showToast('▶ Simulation démarrée');
+  } else {
+    btn.textContent='▶ Simuler';
+    btn.className='tb-btn success';
+    status.textContent='⏹ ARRÊTÉE';
+    status.className='simulation-status off';
+    if(animFrame) cancelAnimationFrame(animFrame);
+    components.forEach(c=>c.active=false);
+    redrawAll();
+    showToast('⏹ Simulation arrêtée');
+  }
+}
+
+function runSimulation(){
+  // Find power sources
+  const batteries = components.filter(c=>c.type.startsWith('battery')||c.type==='vac');
+  
+  // Simple simulation: activate all components if any source present
+  if(batteries.length > 0){
+    components.forEach(c=>{
+      c.active = (c.type !== 'switch' || c.value === 'Fermé') &&
+                 (c.type !== 'pushbtn' || c.value === 'Appuyé') &&
+                 c.type !== 'gnd';
+    });
+    
+    // Calculate values
+    updateSimValues();
+  }
+  
+  redrawAll();
+  drawOscilloscope();
+  updateAnalysis();
+  
+  if(simRunning) animFrame = requestAnimationFrame(runSimulation);
+}
+
+function updateSimulation(){
+  if(simRunning) return;
+}
+
+function updateSimValues(){
+  let totalV = 0, totalR = 0;
+  components.forEach(c=>{
+    const v = parseFloat(c.value);
+    if(c.type.startsWith('battery')) totalV += (isNaN(v)?9:v);
+    if(c.type==='resistor'){
+      const val = c.value||'1k';
+      totalR += parseVal(val);
+    }
+  });
+  
+  const I = totalR > 0 ? totalV/totalR : 0;
+  
+  // Update multimeter based on mode
+  updateMultimeter(totalV, I, totalR);
+}
+
+function parseVal(s){
+  if(!s) return 1000;
+  s = String(s).toLowerCase().replace(/[^\d.kmµnp]/g,'');
+  const num = parseFloat(s)||1;
+  if(s.includes('k')) return num*1000;
+  if(s.includes('m')) return num*0.001;
+  if(s.includes('µ')||s.includes('u')) return num*1e-6;
+  if(s.includes('n')) return num*1e-9;
+  if(s.includes('p')) return num*1e-12;
+  return num;
+}
+
+let mmMode = 'V DC';
+function setMmMode(mode, btn){
+  mmMode = mode;
+  document.querySelectorAll('.mm-mode-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mmUnitBot').textContent = mode;
+}
+
+function updateMultimeter(V, I, R){
+  const el = document.getElementById('mmReading');
+  let val = 0;
+  switch(mmMode){
+    case 'V DC': val=V; break;
+    case 'V AC': val=V/Math.sqrt(2); break;
+    case 'A DC': val=I*1000; break;
+    case 'Ω': val=R; break;
+    case 'Hz': val=fgenFreq; break;
+    default: val=0;
+  }
+  el.textContent = Math.abs(val) > 9999 ? val.toExponential(2) : val.toFixed(3);
+  document.getElementById('mmUnit').textContent = mmMode==='A DC'?'COURANT':'TENSION';
+  document.getElementById('mmUnitBot').textContent = mmMode==='A DC'?'mA':mmMode;
+}
+
+function updateAnalysis(){
+  const batteries = components.filter(c=>c.type.startsWith('battery')||c.type==='vac');
+  const resistors = components.filter(c=>c.type==='resistor');
+  const leds = components.filter(c=>c.type.startsWith('led'));
+  const caps = components.filter(c=>c.type==='capacitor');
+  
+  let totalV = 0, totalR = 0;
+  batteries.forEach(c=>{const v=parseFloat(c.value)||9; totalV+=v;});
+  resistors.forEach(c=>{totalR+=parseVal(c.value||'1k');});
+  
+  const I = totalR>0?totalV/totalR:0;
+  const P = totalV*I;
+
+  let html = `<span style="color:#00ff44">V total : ${totalV.toFixed(2)} V</span>\n`;
+  html += `<span style="color:#44aaff">R total : ${totalR>999?(totalR/1000).toFixed(2)+'kΩ':totalR.toFixed(0)+'Ω'}</span>\n`;
+  html += `<span style="color:#ffcc00">I : ${(I*1000).toFixed(3)} mA</span>\n`;
+  html += `<span style="color:#ff8844">P : ${(P*1000).toFixed(2)} mW</span>\n`;
+  if(leds.length>0) html += `<span style="color:#ff88ff">LED : ${leds.length} active${leds.length>1?'s':''}</span>\n`;
+
+  document.getElementById('analyzeBox').innerHTML = html;
+}
+
+// ══════════════════════════════════════════════════
+//  OSCILLOSCOPE
+// ══════════════════════════════════════════════════
+let oscCh1Active=true, oscCh2Active=true;
+let oscT = 0;
+
+function toggleOscCh(ch){
+  if(ch===1){oscCh1Active=!oscCh1Active;document.getElementById('oscCh1').classList.toggle('active',oscCh1Active);}
+  else{oscCh2Active=!oscCh2Active;document.getElementById('oscCh2').classList.toggle('active',oscCh2Active);}
+}
+
+function runOsc(){drawOscilloscope();}
+
+function drawOscilloscope(){
+  const canvas = document.getElementById('osc-main');
+  const W=canvas.width, H=canvas.height;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#010e01';ctx.fillRect(0,0,W,H);
+
+  // grid
+  ctx.strokeStyle='rgba(0,255,50,.07)';ctx.lineWidth=.5;
+  for(let i=0;i<=10;i++){ctx.beginPath();ctx.moveTo(i*W/10,0);ctx.lineTo(i*W/10,H);ctx.stroke();}
+  for(let i=0;i<=8;i++){ctx.beginPath();ctx.moveTo(0,i*H/8);ctx.lineTo(W,i*H/8);ctx.stroke();}
+  ctx.strokeStyle='rgba(0,255,50,.2)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+
+  if(!simRunning){
+    ctx.fillStyle='rgba(0,255,50,.3)';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillText('STANDBY',W/2,H/2+4);
+    return;
+  }
+
+  const t = Date.now()/1000;
+  const f = fgenFreq, A=fgenAmp;
+  const w = 2*Math.PI*f;
+  const tSpan = 3/f;
+
+  // Find source voltage
+  let srcV = 9;
+  const batt = components.find(c=>c.type.startsWith('battery'));
+  if(batt) srcV = parseFloat(batt.value)||9;
+
+  // CH1 - source voltage
+  if(oscCh1Active){
+    ctx.beginPath();ctx.strokeStyle='#00d4ff';ctx.lineWidth=1.5;ctx.shadowColor='#00d4ff';ctx.shadowBlur=4;
+    for(let px=0;px<W;px++){
+      const time = px/W*tSpan + t;
+      let v;
+      if(fgenWave==='sin') v=srcV*Math.sin(w*time);
+      else if(fgenWave==='sq') v=srcV*Math.sign(Math.sin(w*time));
+      else if(fgenWave==='tri') v=srcV*(2/Math.PI)*Math.asin(Math.sin(w*time));
+      else v=srcV*(1-2*((time*f)%1));
+      const y=H/2-v/srcV*(H/2-6);
+      if(px===0)ctx.moveTo(px,y);else ctx.lineTo(px,y);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+  }
+
+  // CH2 - current (shifted)
+  if(oscCh2Active){
+    const hasR = components.some(c=>c.type==='resistor');
+    const phi = hasR ? 0 : Math.PI/4;
+    ctx.beginPath();ctx.strokeStyle='#ff6b35';ctx.lineWidth=1.5;ctx.shadowColor='#ff6b35';ctx.shadowBlur=4;
+    for(let px=0;px<W;px++){
+      const time=px/W*tSpan+t;
+      let v;
+      if(fgenWave==='sin') v=srcV*0.4*Math.sin(w*time-phi);
+      else if(fgenWave==='sq') v=srcV*0.4*Math.sign(Math.sin(w*time-phi));
+      else v=srcV*0.4*(2/Math.PI)*Math.asin(Math.sin(w*time-phi));
+      const y=H/2-v/srcV*(H/2-6);
+      if(px===0)ctx.moveTo(px,y);else ctx.lineTo(px,y);
+    }
+    ctx.stroke();ctx.shadowBlur=0;
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  FUNCTION GENERATOR
+// ══════════════════════════════════════════════════
+function updateFgen(el, param){
+  if(param==='freq'){fgenFreq=parseInt(el.value);document.getElementById('fgenFreqDisp').textContent=fgenFreq;}
+  else{fgenAmp=parseFloat(el.value);document.getElementById('fgenAmpDisp').textContent=fgenAmp.toFixed(1);}
+}
+function setFgenWave(w,btn){
+  fgenWave=w;
+  document.querySelectorAll('.fgen-wave-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════
+//  PSU
+// ══════════════════════════════════════════════════
+function togglePsu(ch){
+  const el=document.getElementById(`psuCh${ch}`);
+  el.classList.toggle('on');
+  showToast(`PSU CH${ch}: ${el.classList.contains('on')?'ON 🟢':'OFF 🔴'}`);
+}
+function updatePsu(el,ch,param){
+  const v=parseFloat(el.value);
+  if(param==='V'){
+    document.getElementById(`psuV${ch}`).textContent=v.toFixed(2)+' V';
+    document.getElementById(`psuI${ch}`).textContent=(v/24).toFixed(3)+' A';
+  }
+}
+
+// ══════════════════════════════════════════════════
+//  CONTEXT MENU
+// ══════════════════════════════════════════════════
+function showCtxMenu(e, comp){
+  ctxTarget = comp;
+  selectComp(comp);
+  const menu = document.getElementById('ctx-menu');
+  menu.style.left = Math.min(e.clientX, window.innerWidth-160)+'px';
+  menu.style.top  = Math.min(e.clientY, window.innerHeight-160)+'px';
+  menu.classList.add('show');
+  e.preventDefault();
+}
+function closeCtxMenu(){document.getElementById('ctx-menu').classList.remove('show');ctxTarget=null;}
+function ctxEdit(){if(ctxTarget)openValEditor(ctxTarget);closeCtxMenu();}
+function ctxRotate(){if(ctxTarget){ctxTarget.rotation=(ctxTarget.rotation+90)%360;renderComponent(ctxTarget);}closeCtxMenu();}
+function ctxDuplicate(){
+  if(!ctxTarget)return;
+  const nc=createComponent(ctxTarget.type,ctxTarget.x+30,ctxTarget.y+30);
+  if(nc)nc.value=ctxTarget.value,renderComponent(nc);
+  closeCtxMenu();
+}
+function ctxDelete(){if(ctxTarget)removeComp(ctxTarget.id);closeCtxMenu();}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('#ctx-menu'))closeCtxMenu();
+  if(!e.target.closest('#val-editor'))closeValEditor();
+});
+
+// ══════════════════════════════════════════════════
+//  VALUE EDITOR
+// ══════════════════════════════════════════════════
+function openValEditor(comp){
+  const def=COMP_DEFS[comp.type];
+  if(!def||!def.presets) return;
+  valEditorTarget=comp;
+  const editor=document.getElementById('val-editor');
+  const ws=document.getElementById('workspace').getBoundingClientRect();
+  editor.style.left=Math.min(comp.x+ws.left,window.innerWidth-220)+'px';
+  editor.style.top=Math.min(comp.y+ws.top,window.innerHeight-200)+'px';
+  document.getElementById('valEditorTitle').textContent=`Modifier ${def.label}`;
+  document.getElementById('valInput').value=comp.value||'';
+  const presets=document.getElementById('valPresets');
+  presets.innerHTML=def.presets.map(p=>`<button class="val-preset" onclick="setPreset('${p}')">${p}</button>`).join('');
+  editor.classList.add('show');
+  document.getElementById('valInput').focus();
+  document.getElementById('valInput').select();
+}
+function setPreset(v){document.getElementById('valInput').value=v;}
+function closeValEditor(){document.getElementById('val-editor').classList.remove('show');valEditorTarget=null;}
+function confirmValEditor(){
+  if(!valEditorTarget)return;
+  valEditorTarget.value=document.getElementById('valInput').value;
+  renderComponent(valEditorTarget);
+  closeValEditor();
+  showToast('✅ Valeur mise à jour');
+}
+document.getElementById('valInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')confirmValEditor();if(e.key==='Escape')closeValEditor();});
+
+// ══════════════════════════════════════════════════
+//  SURFACE SWITCHER
+// ══════════════════════════════════════════════════
+function setSurface(s){
+  surface=s;
+  document.querySelectorAll('.surf-btn').forEach(b=>b.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  document.getElementById('bb-surface').style.display= s==='bb'?'flex':'none';
+  document.getElementById('table-surface').style.display= s==='table'?'block':'none';
+}
+
+// ══════════════════════════════════════════════════
+//  DRAWER TOGGLE
+// ══════════════════════════════════════════════════
+function toggleDrawer(){
+  const d=document.getElementById('drawer');
+  drawerOpen=!drawerOpen;
+  d.classList.toggle('collapsed',!drawerOpen);
+  d.querySelector('.drawer-toggle').textContent=drawerOpen?'◀':'▶';
+}
+
+// ══════════════════════════════════════════════════
+//  CLEAR ALL
+// ══════════════════════════════════════════════════
+function clearAll(){
+  if(components.length===0&&wires.length===0){showToast('ℹ️ Labo déjà vide');return;}
+  if(!confirm('Tout effacer ?')) return;
+  components=[];wires=[];selectedComp=null;
+  document.getElementById('comp-layer').innerHTML='';
+  drawAllWires();
+  document.getElementById('analyzeBox').textContent='Placez des composants\net lancez la simulation\npour voir les résultats.';
+  showToast('🗑 Labo vidé');
+}
+
+// ══════════════════════════════════════════════════
+//  MOBILE MODAL
+// ══════════════════════════════════════════════════
+function showMobileModal(type){
+  const modal=document.getElementById('mobileModal');
+  const content=document.getElementById('modalContent');
+  
+  if(type==='comps'){
+    const groups = [
+      {title:'⚡ Sources',items:['battery9v','battery12v','vac','gnd']},
+      {title:'🟫 Passifs',items:['resistor','capacitor','inductor','pot']},
+      {title:'💡 Semi-conducteurs',items:['led_red','led_green','led_blue','diode','zener','npn','pnp']},
+      {title:'🔀 Commutation',items:['switch','pushbtn','relay']},
+      {title:'📏 Mesure',items:['voltmeter','ammeter']},
+      {title:'🔌 Divers',items:['lamp','motor','fuse','speaker']}
+    ];
+    const icons={battery9v:'🔋',battery12v:'🔋',vac:'〜',gnd:'⏚',resistor:'⬛',capacitor:'🔲',inductor:'〰',pot:'🎛',led_red:'🔴',led_green:'🟢',led_blue:'🔵',diode:'▷|',zener:'⚡|',npn:'🔺',pnp:'🔻',switch:'🔘',pushbtn:'⏺',relay:'🔲',voltmeter:'🔴V',ammeter:'🟢A',lamp:'💡',motor:'⚙️',fuse:'⚡',speaker:'🔊'};
+    
+    let html='<div class="modal-title">🧩 Composants</div>';
+    groups.forEach(g=>{
+      html+=`<div style="font-size:10px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin:10px 0 5px">${g.title}</div>`;
+      html+=`<div class="comp-grid">`;
+      g.items.forEach(t=>{
+        const def=COMP_DEFS[t];
+        html+=`<div class="comp-grid-item" onclick="addCompMobile('${t}')"><div class="comp-grid-icon">${icons[t]||'⬜'}</div><div class="comp-grid-label">${def?.label||t}</div></div>`;
+      });
+      html+=`</div>`;
+    });
+    content.innerHTML=html;
+    
+  } else if(type==='instruments'){
+    content.innerHTML = `
+      <div class="modal-title">📡 Instruments</div>
+      <div style="font-size:12px;color:var(--text2);line-height:1.8;">
+        Sur mobile, les instruments sont accessibles dans la vue paysage.<br><br>
+        <strong style="color:var(--accent)">Instruments disponibles :</strong><br>
+        📡 Oscilloscope RIGOL DS1054Z<br>
+        📟 Multimètre Fluke 115<br>
+        〜 Générateur GwINSTEK SFG-2110<br>
+        🔌 Alimentation RIGOL DP832
+      </div>`;
+  } else if(type==='menu'){
+    content.innerHTML = `
+      <div class="modal-title">⋯ Menu</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button class="tb-btn" style="justify-content:flex-start;padding:12px;" onclick="closeMobileModal();clearAll()">🗑 Vider le labo</button>
+        <button class="tb-btn" style="justify-content:flex-start;padding:12px;" onclick="closeMobileModal();rotateSelected()">↻ Tourner composant</button>
+        <button class="tb-btn" style="justify-content:flex-start;padding:12px;" onclick="closeMobileModal();deleteSelected()">✕ Supprimer composant</button>
+        <button class="tb-btn" style="justify-content:flex-start;padding:12px;" onclick="closeMobileModal();setSurface(surface==='bb'?'table':'bb');document.querySelectorAll('.surf-btn').forEach((b,i)=>b.classList.toggle('active',i===(surface==='table'?1:0)))">🔄 Changer surface</button>
+      </div>`;
+  }
+  
+  modal.classList.add('show');
+}
+
+function closeMobileModal(e){
+  if(!e||e.target===document.getElementById('mobileModal'))
+    document.getElementById('mobileModal').classList.remove('show');
+}
+
+// ══════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════
+let toastTimer=null;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ══════════════════════════════════════════════════
+//  KEYBOARD SHORTCUTS
+// ══════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.key==='Delete'||e.key==='Backspace') deleteSelected();
+  if(e.key==='r'||e.key==='R') rotateSelected();
+  if(e.key==='w'||e.key==='W') autoWireMode();
+  if(e.key==='Escape'){wireMode=false;termWireStart=null;deselectAll();closeCtxMenu();closeValEditor();document.getElementById('workspace').style.cursor='default';document.getElementById('wireBtn')?.classList.remove('active');}
+  if(e.key==='s'&&(e.ctrlKey||e.metaKey)){e.preventDefault();toggleSimulation();}
+});
+
+// ══════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════
+function init(){
+  buildBreadboard();
+
+  // Resize wire canvas
+  const resizeCanvas=()=>{
+    const ws=document.getElementById('workspace');
+    const c=document.getElementById('wire-canvas');
+    c.width=ws.offsetWidth;
+    c.height=ws.offsetHeight;
+    drawAllWires();
+  };
+  window.addEventListener('resize',resizeCanvas);
+  setTimeout(resizeCanvas,100);
+
+  // Oscilloscope loop
+  setInterval(()=>{
+    if(document.getElementById('osc-main')) drawOscilloscope();
+  },50);
+
+  // Welcome toast
+  setTimeout(()=>showToast('🔬 Bienvenue dans ElectroLab — Glissez des composants !'),500);
+}
+
+init();
+</script>
+</body>
+</html>

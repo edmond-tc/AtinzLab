@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>SimLab — Chute Libre · Mouvement de chute verticale</title>
-    <!-- Google AdSense UNIQUEMENT (pas de Adsterra) -->
+    <title>SimLab — Plan incliné avec frottement · Simulation interactive</title>
+    <!-- Google AdSense (Code d'activation prioritaire) -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
     <!-- Polices : Outfit + JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,43 +12,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <!-- Three.js r128 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-@media (max-width: 768px) {
-    /* 1. On autorise le défilement pour ne pas bloquer l'élève */
-    html, body {
-        overflow-y: auto !important;
-        height: auto !important;
-    }
-
-    /* 2. La simulation prend les 3/4 du haut (Ultra-Large) */
-    #app {
-        height: 70vh !important; /* Environ 70-75% de l'écran mobile */
-        width: 100% !important;
-        position: relative !important;
-        z-index: 5;
-    }
-
-    /* 3. Les paramètres sont minimisés au 1/4 restant */
-    #ctrl-panel {
-        position: relative !important;
-        width: 100% !important;
-        min-height: 25vh !important; /* Le quart restant */
-        padding: 5px !important;
-        background: var(--bg2);
-        border-top: 2px solid var(--accent); /* Petite ligne de séparation pour le style */
-    }
-
-    /* 4. On réduit la taille des éléments internes pour que ça rentre */
-    .params-grid, .results-panel, .controls {
-        transform: scale(0.9); /* Réduit légèrement la taille des boutons */
-        transform-origin: top center;
-        gap: 8px !important;
-    }
-
-    .sim-btn {
-        padding: 8px !important; /* Boutons plus compacts */
-        font-size: 14px !important;
-    }
-}
     <style>
         /* ===== VARIABLES ===== */
         * {
@@ -321,7 +284,7 @@
             top: 80px;
             right: 12px;
             z-index: 10;
-            width: 220px;
+            width: 240px;
             background: rgba(17, 24, 39, 0.96);
             border: 1px solid var(--border);
             border-radius: var(--radius);
@@ -800,7 +763,7 @@
         <a id="btn-back" href="index.html">← <span id="txt-back">Retour</span></a>
         <div id="hlogo">⚗️ SimLab <span>atinzlab.pages.dev</span></div>
         <div id="hsep"></div>
-        <div id="sim-title">Chute Libre · Mouvement de chute verticale</div>
+        <div id="sim-title">Plan incliné avec frottement</div>
         <div id="view-toggle">
             <button class="view-btn active" data-view="2d">2D</button>
             <button class="view-btn" data-view="3d">3D</button>
@@ -821,30 +784,30 @@
                 <span id="sim-label">Temps</span>
             </div>
             <div id="view-info">Orbite · Scroll zoom · Shift pan</div>
-            <div id="mode-badge">🪶 Chute Libre</div>
+            <div id="mode-badge">📐 Plan incliné</div>
             
             <!-- Panel résultats (décalé vers le haut) -->
             <div id="results-panel">
                 <h3>📊 <span id="txt-res-title">Résultats</span></h3>
                 <div class="result-row">
-                    <span class="result-label" id="rl-y">Hauteur y</span>
-                    <span class="result-value" id="res-y">10.00 m</span>
+                    <span class="result-label" id="rl-s">Distance s</span>
+                    <span class="result-value" id="res-s">0.00 m</span>
                 </div>
                 <div class="result-row">
                     <span class="result-label" id="rl-v">Vitesse v</span>
                     <span class="result-value" id="res-v">0.00 m/s</span>
                 </div>
                 <div class="result-row">
-                    <span class="result-label" id="rl-a">Accélération g</span>
-                    <span class="result-value" id="res-a">9.81 m/s²</span>
+                    <span class="result-label" id="rl-a">Accélération a</span>
+                    <span class="result-value" id="res-a">0.00 m/s²</span>
+                </div>
+                <div class="result-row">
+                    <span class="result-label" id="rl-f">Force //</span>
+                    <span class="result-value" id="res-f">0.00 N</span>
                 </div>
                 <div class="result-row">
                     <span class="result-label" id="rl-t">Temps</span>
                     <span class="result-value" id="res-t">0.00 s</span>
-                </div>
-                <div class="result-row">
-                    <span class="result-label">Distance</span>
-                    <span class="result-value" id="res-dist">0.00 m</span>
                 </div>
             </div>
             
@@ -856,11 +819,19 @@
                 </div>
                 <div class="vleg-row">
                     <div class="vleg-line" style="background:#ff8c00"></div>
-                    <span class="vleg-label" id="vl-a">Vecteur accélération (g)</span>
+                    <span class="vleg-label" id="vl-a">Vecteur accélération</span>
+                </div>
+                <div class="vleg-row">
+                    <div class="vleg-line" style="background:#ff4444"></div>
+                    <span class="vleg-label" id="vl-fp">Force parallèle</span>
                 </div>
                 <div class="vleg-row">
                     <div class="vleg-line" style="background:#c084fc"></div>
-                    <span class="vleg-label" id="vl-t">Trajectoire</span>
+                    <span class="vleg-label" id="vl-ff">Force frottement</span>
+                </div>
+                <div class="vleg-row">
+                    <div class="vleg-line" style="background:#ffd740"></div>
+                    <span class="vleg-label" id="vl-n">Réaction normale</span>
                 </div>
             </div>
             
@@ -899,17 +870,24 @@
                 <div class="params-grid">
                     <div class="param-card">
                         <div class="param-label">
-                            <span id="lbl-h0">Hauteur initiale h₀</span>
-                            <span id="val-h0">10.0 m</span>
+                            <span id="lbl-angle">Angle θ</span>
+                            <span id="val-angle">30°</span>
                         </div>
-                        <input type="range" class="param-slider" id="sl-h0" min="2" max="20" value="10.0" step="0.5">
+                        <input type="range" class="param-slider" id="sl-angle" min="0" max="60" value="30" step="1">
                     </div>
                     <div class="param-card">
                         <div class="param-label">
-                            <span id="lbl-v0">Vitesse initiale v₀</span>
-                            <span id="val-v0">0.0 m/s</span>
+                            <span id="lbl-mass">Masse m</span>
+                            <span id="val-mass">2.0 kg</span>
                         </div>
-                        <input type="range" class="param-slider" id="sl-v0" min="-5" max="5" value="0.0" step="0.5">
+                        <input type="range" class="param-slider" id="sl-mass" min="0.5" max="10" value="2.0" step="0.5">
+                    </div>
+                    <div class="param-card">
+                        <div class="param-label">
+                            <span id="lbl-mu">Coeff. frottement μ</span>
+                            <span id="val-mu">0.3</span>
+                        </div>
+                        <input type="range" class="param-slider" id="sl-mu" min="0" max="1" value="0.3" step="0.05">
                     </div>
                     <div class="param-card">
                         <div class="param-label">
@@ -917,6 +895,13 @@
                             <span id="val-g">9.81 m/s²</span>
                         </div>
                         <input type="range" class="param-slider" id="sl-g" min="1" max="20" value="9.81" step="0.1">
+                    </div>
+                    <div class="param-card">
+                        <div class="param-label">
+                            <span id="lbl-v0">Vitesse initiale v₀</span>
+                            <span id="val-v0">0.0 m/s</span>
+                        </div>
+                        <input type="range" class="param-slider" id="sl-v0" min="-3" max="3" value="0.0" step="0.5">
                     </div>
                     <div class="param-card">
                         <div class="param-label">
@@ -933,8 +918,8 @@
                 <div class="mesures-grid">
                     <div class="mesure-card">
                         <div class="mesure-icon">📏</div>
-                        <div class="mesure-name" id="ml-y">Hauteur y</div>
-                        <div class="mesure-val" id="mv-y">10.00</div>
+                        <div class="mesure-name" id="ml-s">Distance</div>
+                        <div class="mesure-val" id="mv-s">0.00</div>
                         <div class="mesure-unit">m</div>
                     </div>
                     <div class="mesure-card">
@@ -945,27 +930,27 @@
                     </div>
                     <div class="mesure-card">
                         <div class="mesure-icon">📈</div>
-                        <div class="mesure-name" id="ml-a">Accélération g</div>
-                        <div class="mesure-val" id="mv-a">9.81</div>
+                        <div class="mesure-name" id="ml-a">Accélération</div>
+                        <div class="mesure-val" id="mv-a">0.00</div>
                         <div class="mesure-unit">m/s²</div>
                     </div>
                     <div class="mesure-card">
-                        <div class="mesure-icon">⏱️</div>
-                        <div class="mesure-name" id="ml-t">Temps</div>
-                        <div class="mesure-val" id="mv-t">0.00</div>
-                        <div class="mesure-unit">s</div>
+                        <div class="mesure-icon">⬇️</div>
+                        <div class="mesure-name" id="ml-fp">Force //</div>
+                        <div class="mesure-val" id="mv-fp">9.81</div>
+                        <div class="mesure-unit">N</div>
                     </div>
                     <div class="mesure-card">
-                        <div class="mesure-icon">📊</div>
-                        <div class="mesure-name" id="ml-ek">Énergie cinétique</div>
-                        <div class="mesure-val" id="mv-ek">0.00</div>
-                        <div class="mesure-unit">J</div>
+                        <div class="mesure-icon">↔️</div>
+                        <div class="mesure-name" id="ml-ff">Frottement</div>
+                        <div class="mesure-val" id="mv-ff">5.09</div>
+                        <div class="mesure-unit">N</div>
                     </div>
                     <div class="mesure-card">
-                        <div class="mesure-icon">📊</div>
-                        <div class="mesure-name" id="ml-ep">Énergie potentielle</div>
-                        <div class="mesure-val" id="mv-ep">98.10</div>
-                        <div class="mesure-unit">J</div>
+                        <div class="mesure-icon">⬆️</div>
+                        <div class="mesure-name" id="ml-n">Normale</div>
+                        <div class="mesure-val" id="mv-n">16.97</div>
+                        <div class="mesure-unit">N</div>
                     </div>
                 </div>
             </div>
@@ -973,30 +958,50 @@
             <!-- ===== LOIS ===== -->
             <div class="tab-pane" id="tab-lois">
                 <div class="lois-container">
-                    <div class="loi-card open" id="loi-chute">
+                    <div class="loi-card open" id="loi-plan">
                         <div class="loi-header" onclick="toggleLoi(this)">
-                            <h4>🪶 Chute Libre — Mouvement vertical sous gravité</h4>
-                            <span class="loi-tag">a = g</span>
+                            <h4>📐 Plan incliné avec frottement</h4>
+                            <span class="loi-tag">ΣF = m·a</span>
                             <span class="loi-chevron">▼</span>
                         </div>
                         <div class="loi-body">
-                            <div class="formula-box">y(t) = h₀ + v₀·t - ½·g·t²</div>
-                            <div class="formula-box">v(t) = v₀ - g·t</div>
-                            <div class="formula-box">v² = v₀² - 2·g·(y - h₀)</div>
-                            <div class="formula-box">Temps de chute : t = (v₀ + √(v₀² + 2gh₀)) / g</div>
+                            <div class="formula-box">Poids : P = m·g</div>
+                            <div class="formula-box">Force parallèle : F∥ = m·g·sin(θ)</div>
+                            <div class="formula-box">Force normale : N = m·g·cos(θ)</div>
+                            <div class="formula-box">Frottement : f = μ·N (si mouvement) ou f ≤ μ·N (statique)</div>
+                            <div class="formula-box">Force nette : F<sub>nette</sub> = F∥ - f</div>
+                            <div class="formula-box">Accélération : a = g·(sin(θ) - μ·cos(θ))</div>
                             <p class="loi-desc">
-                                La chute libre est un cas particulier du MRUA avec <strong>accélération constante g = 9,81 m/s²</strong> 
-                                dirigée vers le bas. En l'absence de frottements, tous les corps tombent avec la même accélération.
+                                <strong>Explication :</strong> Sur un plan incliné, le poids se décompose en deux composantes :
+                                une parallèle au plan (qui fait glisser l'objet) et une perpendiculaire (compensée par la réaction normale).
+                                Le frottement s'oppose toujours au mouvement.
                             </p>
                             <div class="loi-variables">
-                                <p><b>y(t)</b> — hauteur à l'instant t (m)</p>
-                                <p><b>h₀</b> — hauteur initiale (m)</p>
-                                <p><b>v₀</b> — vitesse initiale (m/s) (positive vers le haut)</p>
+                                <p><b>θ</b> — angle d'inclinaison (°)</p>
+                                <p><b>m</b> — masse (kg)</p>
                                 <p><b>g</b> — accélération de pesanteur (9,81 m/s²)</p>
-                                <p><b>t</b> — temps (s)</p>
+                                <p><b>μ</b> — coefficient de frottement (sans unité)</p>
+                                <p><b>N</b> — force normale (N)</p>
+                                <p><b>f</b> — force de frottement (N)</p>
                             </div>
                             <p class="loi-desc" style="margin-top: 8px; color: var(--cyan);">
-                                🎓 Niveau lycée / université (Bénin) — Expérience de Galilée
+                                🎓 Niveau lycée / université (Bénin) — Application directe de la 2ème loi de Newton
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="loi-card" id="loi-angle">
+                        <div class="loi-header" onclick="toggleLoi(this)">
+                            <h4>⚖️ Angle limite de glissement</h4>
+                            <span class="loi-tag">θ<sub>lim</sub></span>
+                            <span class="loi-chevron">▼</span>
+                        </div>
+                        <div class="loi-body">
+                            <div class="formula-box">tan(θ<sub>lim</sub>) = μ</div>
+                            <p class="loi-desc">
+                                L'angle limite est l'angle à partir duquel l'objet commence à glisser.
+                                Pour θ < θ<sub>lim</sub>, le frottement statique maintient l'objet en équilibre.
+                                Pour θ > θ<sub>lim</sub>, l'objet accélère vers le bas.
                             </p>
                         </div>
                     </div>
@@ -1009,7 +1014,7 @@
                     <div class="rapport-info">
                         <p id="txt-rap-info">
                             Génère un rapport de TP complet avec toutes les mesures enregistrées, 
-                            les formules utilisées et une analyse des résultats.
+                            les forces en jeu et l'évolution du mouvement sur le plan incliné.
                         </p>
                     </div>
                     <div class="rapport-btns">
@@ -1036,13 +1041,16 @@
     <!-- ===== TOAST ===== -->
     <div id="toast"></div>
 
-    <!-- ===== POLITIQUE DE CONFIDENTIALITÉ ===== -->
+    <!-- Adsterra Social Bar (avant </body>) -->
+    <script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
+
+    <!-- Politique de Confidentialité -->
     <div style="text-align: center; padding: 10px; background: var(--surface); border-top: 1px solid var(--border); position: fixed; bottom: var(--panel-h); left: 0; right: 0; z-index: 45;">
         <a href="politique-confidentialite.html" style="color: var(--text-dim); text-decoration: none; font-size: 0.8rem;">Politique de Confidentialité</a>
     </div>
 
     <script>
-        // ===== SIMULATION CHUTE LIBRE =====
+        // ===== SIMULATION PLAN INCLINÉ AVEC FROTTEMENT =====
         
         // --- ÉTAT GLOBAL ---
         let lang = 'fr';
@@ -1055,16 +1063,24 @@
         let lastTimestamp = null;
         
         // Paramètres
-        let h0 = 10.0;
-        let v0 = 0.0;
+        let angle = 30; // degrés
+        let mass = 2.0;
+        let mu = 0.3;
         let g = 9.81;
+        let v0 = 0.0;
         let simSpeed = 1.0;
-        let masse = 1.0; // pour l'énergie
         
-        // État de la simulation
-        let y = 10.0;
+        // État de la simulation (position le long du plan)
+        let s = 0.0; // distance parcourue le long du plan
         let v = 0.0;
-        let impact = false;
+        let a = 0.0;
+        
+        // Forces calculées
+        let theta = angle * Math.PI / 180;
+        let forceParallele = 0;
+        let forceNormale = 0;
+        let frottement = 0;
+        let forceNette = 0;
         
         // Données enregistrées
         let recordedData = [];
@@ -1076,17 +1092,17 @@
         // Références DOM
         const simTimeEl = document.getElementById('sim-time');
         const timelineFill = document.getElementById('timeline-fill');
-        const resY = document.getElementById('res-y');
+        const resS = document.getElementById('res-s');
         const resV = document.getElementById('res-v');
         const resA = document.getElementById('res-a');
+        const resF = document.getElementById('res-f');
         const resT = document.getElementById('res-t');
-        const resDist = document.getElementById('res-dist');
-        const mvY = document.getElementById('mv-y');
+        const mvS = document.getElementById('mv-s');
         const mvV = document.getElementById('mv-v');
-        const mvA = document.getElementById('mv-a');
-        const mvT = document.getElementById('mv-t');
-        const mvEk = document.getElementById('mv-ek');
-        const mvEp = document.getElementById('mv-ep');
+        const mVA = document.getElementById('mv-a');
+        const mvFp = document.getElementById('mv-fp');
+        const mvFf = document.getElementById('mv-ff');
+        const mvN = document.getElementById('mv-n');
         const resultsPanel = document.getElementById('results-panel');
         
         // --- I18N ---
@@ -1102,22 +1118,27 @@
                 tabL: 'Lois',
                 tabR: 'Rapport TP',
                 resTitle: 'Résultats',
-                rly: 'Hauteur y',
+                rls: 'Distance s',
                 rlv: 'Vitesse v',
-                rla: 'Accélération g',
+                rla: 'Accélération a',
+                rlf: 'Force //',
                 rlt: 'Temps',
                 vlv: 'Vecteur vitesse',
-                vla: 'Vecteur accélération (g)',
-                vlt: 'Trajectoire',
-                mly: 'Hauteur Y',
+                vla: 'Vecteur accélération',
+                vlfp: 'Force parallèle',
+                vlff: 'Force frottement',
+                vln: 'Réaction normale',
+                mls: 'Distance',
                 mlv: 'Vitesse',
-                mla: 'Accélération g',
-                mlt: 'Temps',
-                mlek: 'Énergie cinétique',
-                mlep: 'Énergie potentielle',
-                lblH0: 'Hauteur initiale h₀',
-                lblV0: 'Vitesse initiale v₀',
+                mla: 'Accélération',
+                mlfp: 'Force //',
+                mlff: 'Frottement',
+                mln: 'Normale',
+                lblAngle: 'Angle θ',
+                lblMass: 'Masse m',
+                lblMu: 'Coeff. frottement μ',
                 lblG: 'Gravité g',
+                lblV0: 'Vitesse initiale v₀',
                 lblSpeed: 'Vitesse simulation',
                 rapInfo: 'Rapport de TP disponible après simulation.',
                 csv: 'Exporter CSV',
@@ -1129,7 +1150,7 @@
                 tCsv: 'CSV exporté !',
                 tShot: 'Capture enregistrée !',
                 tNoData: "Lancez d'abord une simulation",
-                tImpact: 'Impact ! Temps de chute : ',
+                tLimit: 'Fin du plan incliné',
                 simLabel: 'Temps',
                 info3d: 'Orbite · Scroll zoom · Shift pan'
             },
@@ -1144,22 +1165,27 @@
                 tabL: 'Laws',
                 tabR: 'Lab Report',
                 resTitle: 'Results',
-                rly: 'Height y',
+                rls: 'Distance s',
                 rlv: 'Velocity v',
-                rla: 'Acceleration g',
+                rla: 'Acceleration a',
+                rlf: 'Force //',
                 rlt: 'Time',
                 vlv: 'Velocity vector',
-                vla: 'Acceleration vector (g)',
-                vlt: 'Trajectory',
-                mly: 'Height Y',
+                vla: 'Acceleration vector',
+                vlfp: 'Parallel force',
+                vlff: 'Friction force',
+                vln: 'Normal force',
+                mls: 'Distance',
                 mlv: 'Velocity',
-                mla: 'Acceleration g',
-                mlt: 'Time',
-                mlek: 'Kinetic energy',
-                mlep: 'Potential energy',
-                lblH0: 'Initial height h₀',
-                lblV0: 'Initial speed v₀',
+                mla: 'Acceleration',
+                mlfp: 'Force //',
+                mlff: 'Friction',
+                mln: 'Normal',
+                lblAngle: 'Angle θ',
+                lblMass: 'Mass m',
+                lblMu: 'Friction coeff. μ',
                 lblG: 'Gravity g',
+                lblV0: 'Initial speed v₀',
                 lblSpeed: 'Simulation speed',
                 rapInfo: 'Lab report available after simulation.',
                 csv: 'Export CSV',
@@ -1171,7 +1197,7 @@
                 tCsv: 'CSV exported!',
                 tShot: 'Screenshot saved!',
                 tNoData: 'Launch a simulation first',
-                tImpact: 'Impact! Fall time: ',
+                tLimit: 'End of incline',
                 simLabel: 'Time',
                 info3d: 'Orbit · Scroll zoom · Shift pan'
             }
@@ -1192,22 +1218,27 @@
                 'tt-l': 'tabL',
                 'tt-r': 'tabR',
                 'txt-res-title': 'resTitle',
-                'rl-y': 'rly',
+                'rl-s': 'rls',
                 'rl-v': 'rlv',
                 'rl-a': 'rla',
+                'rl-f': 'rlf',
                 'rl-t': 'rlt',
                 'vl-v': 'vlv',
                 'vl-a': 'vla',
-                'vl-t': 'vlt',
-                'ml-y': 'mly',
+                'vl-fp': 'vlfp',
+                'vl-ff': 'vlff',
+                'vl-n': 'vln',
+                'ml-s': 'mls',
                 'ml-v': 'mlv',
                 'ml-a': 'mla',
-                'ml-t': 'mlt',
-                'ml-ek': 'mlek',
-                'ml-ep': 'mlep',
-                'lbl-h0': 'lblH0',
-                'lbl-v0': 'lblV0',
+                'ml-fp': 'mlfp',
+                'ml-ff': 'mlff',
+                'ml-n': 'mln',
+                'lbl-angle': 'lblAngle',
+                'lbl-mass': 'lblMass',
+                'lbl-mu': 'lblMu',
                 'lbl-g': 'lblG',
+                'lbl-v0': 'lblV0',
                 'lbl-speed': 'lblSpeed',
                 'txt-rap-info': 'rapInfo',
                 'txt-csv': 'csv',
@@ -1240,27 +1271,45 @@
             toastTimeout = setTimeout(() => el.className = '', 2600);
         }
         
+        // --- MISE À JOUR DES FORCES ---
+        function updateForces() {
+            theta = angle * Math.PI / 180;
+            forceParallele = mass * g * Math.sin(theta);
+            forceNormale = mass * g * Math.cos(theta);
+            
+            // Frottement : s'oppose au mouvement
+            if (Math.abs(v) > 0.001) {
+                // En mouvement : frottement cinétique
+                frottement = mu * forceNormale * (v > 0 ? -1 : 1);
+            } else {
+                // À l'arrêt : frottement statique s'oppose à la force parallèle
+                if (Math.abs(forceParallele) <= mu * forceNormale) {
+                    frottement = -forceParallele; // équilibre
+                } else {
+                    frottement = -mu * forceNormale * Math.sign(forceParallele);
+                }
+            }
+            
+            forceNette = forceParallele + frottement;
+            a = forceNette / mass;
+        }
+        
         // --- MISE À JOUR ---
         function updateUI() {
             // Résultats
-            resY.textContent = y.toFixed(2) + ' m';
+            resS.textContent = s.toFixed(2) + ' m';
             resV.textContent = v.toFixed(2) + ' m/s';
-            resA.textContent = g.toFixed(2) + ' m/s²';
+            resA.textContent = a.toFixed(2) + ' m/s²';
+            resF.textContent = forceNette.toFixed(2) + ' N';
             resT.textContent = simTime.toFixed(2) + ' s';
-            const distance = Math.abs(h0 - y);
-            resDist.textContent = distance.toFixed(2) + ' m';
             
             // Mesures
-            mvY.textContent = y.toFixed(2);
+            mvS.textContent = s.toFixed(2);
             mvV.textContent = v.toFixed(2);
-            mvA.textContent = g.toFixed(2);
-            mvT.textContent = simTime.toFixed(2);
-            
-            // Énergies
-            const ek = 0.5 * masse * v * v;
-            const ep = masse * g * Math.max(0, y);
-            mvEk.textContent = ek.toFixed(2);
-            mvEp.textContent = ep.toFixed(2);
+            mVA.textContent = a.toFixed(2);
+            mvFp.textContent = forceParallele.toFixed(2);
+            mvFf.textContent = Math.abs(frottement).toFixed(2);
+            mvN.textContent = forceNormale.toFixed(2);
             
             // Timeline
             simTimeEl.textContent = simTime.toFixed(2) + ' s';
@@ -1271,38 +1320,48 @@
             if (simRunning && !simPaused && Math.floor(simTime * 10) > recordedData.length) {
                 recordedData.push({
                     t: simTime.toFixed(2),
-                    y: y.toFixed(3),
+                    s: s.toFixed(3),
                     v: v.toFixed(3),
-                    ek: ek.toFixed(3),
-                    ep: ep.toFixed(3)
+                    a: a.toFixed(3),
+                    fp: forceParallele.toFixed(3),
+                    ff: frottement.toFixed(3),
+                    fn: forceNette.toFixed(3)
                 });
             }
         }
         
         // --- SLIDERS ---
-        const h0Slider = document.getElementById('sl-h0');
-        const h0Val = document.getElementById('val-h0');
-        h0Slider.addEventListener('input', () => {
-            h0 = parseFloat(h0Slider.value);
-            h0Val.textContent = h0.toFixed(1) + ' m';
+        const angleSlider = document.getElementById('sl-angle');
+        const angleVal = document.getElementById('val-angle');
+        angleSlider.addEventListener('input', () => {
+            angle = parseFloat(angleSlider.value);
+            angleVal.textContent = angle + '°';
             if (!simRunning) {
-                y = h0;
-                v = v0;
-                updateUI();
+                updateForces();
                 if (currentView === '2d') draw2D(true);
                 else idleThree();
             }
         });
         
-        const v0Slider = document.getElementById('sl-v0');
-        const v0Val = document.getElementById('val-v0');
-        v0Slider.addEventListener('input', () => {
-            v0 = parseFloat(v0Slider.value);
-            v0Val.textContent = v0.toFixed(1) + ' m/s';
+        const massSlider = document.getElementById('sl-mass');
+        const massVal = document.getElementById('val-mass');
+        massSlider.addEventListener('input', () => {
+            mass = parseFloat(massSlider.value);
+            massVal.textContent = mass.toFixed(1) + ' kg';
             if (!simRunning) {
-                y = h0;
-                v = v0;
-                updateUI();
+                updateForces();
+                if (currentView === '2d') draw2D(true);
+                else idleThree();
+            }
+        });
+        
+        const muSlider = document.getElementById('sl-mu');
+        const muVal = document.getElementById('val-mu');
+        muSlider.addEventListener('input', () => {
+            mu = parseFloat(muSlider.value);
+            muVal.textContent = mu.toFixed(2);
+            if (!simRunning) {
+                updateForces();
                 if (currentView === '2d') draw2D(true);
                 else idleThree();
             }
@@ -1314,8 +1373,21 @@
             g = parseFloat(gSlider.value);
             gVal.textContent = g.toFixed(2) + ' m/s²';
             if (!simRunning) {
-                y = h0;
+                updateForces();
+                if (currentView === '2d') draw2D(true);
+                else idleThree();
+            }
+        });
+        
+        const v0Slider = document.getElementById('sl-v0');
+        const v0Val = document.getElementById('val-v0');
+        v0Slider.addEventListener('input', () => {
+            v0 = parseFloat(v0Slider.value);
+            v0Val.textContent = v0.toFixed(1) + ' m/s';
+            if (!simRunning) {
+                s = 0;
                 v = v0;
+                updateForces();
                 updateUI();
                 if (currentView === '2d') draw2D(true);
                 else idleThree();
@@ -1331,13 +1403,13 @@
         
         // --- ÉTAT INITIAL ---
         function initState() {
-            y = h0;
+            s = 0;
             v = v0;
             simTime = 0;
-            impact = false;
             traj2D = [];
             traj3Dpts = [];
             recordedData = [];
+            updateForces();
             updateUI();
             if (currentView === '2d') {
                 resize2D();
@@ -1347,39 +1419,42 @@
             }
         }
         
-        // --- PHYSIQUE CHUTE LIBRE ---
+        // --- PHYSIQUE PLAN INCLINÉ ---
         function stepPhysics(dt) {
             const delta = dt * simSpeed;
             simTime += delta;
             
-            // Équations de la chute libre
-            v = v0 - g * simTime;
-            y = h0 + v0 * simTime - 0.5 * g * simTime * simTime;
+            updateForces();
             
-            // Détection de l'impact avec le sol
-            if (y <= 0 && !impact) {
-                impact = true;
-                y = 0;
+            // Mise à jour de la vitesse et position
+            v += a * delta;
+            s += v * delta;
+            
+            // Empêcher de remonter si vitesse nulle et force parallèle insuffisante
+            if (s < 0) s = 0;
+            if (s <= 0 && v < 0) v = 0;
+            
+            // Limite (fin du plan)
+            if (s > 5) {
                 endSim();
-                const fallTime = simTime.toFixed(2);
-                toast(t('tImpact') + fallTime + ' s', 'success');
-                
-                // Particules d'impact
+                toast(t('tLimit'), 'warn');
                 if (currentView === '2d') {
                     const canvas = document.getElementById('simCanvas');
-                    spawnParticles(canvas.width / 2, canvas.height - 80, 20, '#ff8c00');
+                    spawnParticles(canvas.width / 2, canvas.height - 60, 15, '#ff8c00');
                 } else {
-                    spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 20, '#ff8c00');
+                    spawnParticles(window.innerWidth / 2, window.innerHeight / 2, 15, '#ff8c00');
                 }
             }
             
-            if (y < 0) y = 0;
+            if (simTime > maxTime) {
+                endSim();
+            }
             
-            traj2D.push({ y: y });
+            traj2D.push({ s: s });
             if (traj2D.length > 500) traj2D.shift();
             
             if (currentView === '3d') {
-                traj3Dpts.push(new THREE.Vector3(0, y, 0));
+                traj3Dpts.push(new THREE.Vector3(s * Math.cos(theta), s * Math.sin(theta), 0));
                 if (traj3Dpts.length > 500) traj3Dpts.shift();
             }
         }
@@ -1509,176 +1584,170 @@
             }
         }
         
-        // ===== 2D AVEC POINT MATÉRIEL ET VECTEURS DÉCALÉS =====
+        // ===== 2D AVEC PLAN INCLINÉ =====
         const canvas = document.getElementById('simCanvas');
         const ctx = canvas.getContext('2d');
-        let SCALE_Y = 20; // pixels par mètre en hauteur
-        let camOffsetY = 0;
+        let SCALE = 50; // pixels par mètre
         
         function resize2D() {
             const wrap = document.getElementById('canvas-wrap');
             canvas.width = wrap.clientWidth;
             canvas.height = wrap.clientHeight;
-            SCALE_Y = Math.max(10, Math.min(40, (canvas.height * 0.7) / h0));
-        }
-        
-        function worldToScreen(yWorld) {
-            // Conversion : y=0 en bas de l'écran, y positif vers le haut
-            return canvas.height - 80 - yWorld * SCALE_Y;
+            SCALE = Math.max(30, Math.min(80, (canvas.height * 0.6) / 3));
         }
         
         function draw2D(idle = false) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             
-            if (simRunning) {
-                camOffsetY = y;
-            }
+            const centerX = canvas.width / 2;
+            const baseY = canvas.height - 80;
+            theta = angle * Math.PI / 180;
             
-            // Grille horizontale (lignes de hauteur)
-            const startY = 0;
-            const endY = Math.ceil(h0 + 2);
+            // Longueur du plan
+            const planLength = 5; // mètres
+            const planPixels = planLength * SCALE;
             
-            for (let i = 0; i <= endY; i += 2) {
-                const screenY = worldToScreen(i);
-                if (screenY < 20 || screenY > canvas.height - 20) continue;
-                
-                ctx.beginPath();
-                ctx.moveTo(50, screenY);
-                ctx.lineTo(canvas.width - 50, screenY);
-                ctx.strokeStyle = i === 0 ? 'rgba(255, 68, 68, 0.8)' : 'rgba(42, 58, 92, 0.5)';
-                ctx.stroke();
-                
-                // Label
-                ctx.fillStyle = '#8898b0';
-                ctx.font = '10px JetBrains Mono';
-                ctx.textAlign = 'right';
-                ctx.fillText(i + ' m', 40, screenY - 4);
-            }
+            // Calcul des coordonnées du plan
+            const xStart = centerX - planPixels * Math.cos(theta) / 2;
+            const yStart = baseY;
+            const xEnd = centerX + planPixels * Math.cos(theta) / 2;
+            const yEnd = baseY - planPixels * Math.sin(theta);
             
-            // Sol (y=0)
+            // Dessin du plan incliné
             ctx.beginPath();
-            ctx.moveTo(0, worldToScreen(0));
-            ctx.lineTo(canvas.width, worldToScreen(0));
-            ctx.strokeStyle = '#ff8c00';
-            ctx.lineWidth = 3;
+            ctx.moveTo(xStart, yStart);
+            ctx.lineTo(xEnd, yEnd);
+            ctx.strokeStyle = '#ffd740';
+            ctx.lineWidth = 4;
             ctx.stroke();
             
-            // Trajectoire
-            if (traj2D.length > 1) {
+            // Hachures pour la texture
+            ctx.strokeStyle = 'rgba(255, 215, 64, 0.3)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 10; i++) {
+                const t = i / 10;
+                const x = xStart + (xEnd - xStart) * t;
+                const y = yStart + (yEnd - yStart) * t;
                 ctx.beginPath();
-                ctx.strokeStyle = 'rgba(192, 132, 252, 0.6)';
-                ctx.lineWidth = 2;
-                ctx.setLineDash([5, 3]);
-                
-                const firstY = worldToScreen(traj2D[0].y);
-                ctx.moveTo(canvas.width / 2, firstY);
-                
-                traj2D.forEach(p => {
-                    const sy = worldToScreen(p.y);
-                    ctx.lineTo(canvas.width / 2, sy);
-                });
-                
+                ctx.moveTo(x - 10, y - 5);
+                ctx.lineTo(x + 10, y + 5);
                 ctx.stroke();
-                ctx.setLineDash([]);
             }
             
-            // POINT MATÉRIEL
-            const objX = canvas.width / 2;
-            const objY = worldToScreen(y);
+            // Support triangulaire
+            ctx.beginPath();
+            ctx.moveTo(xStart - 20, yStart);
+            ctx.lineTo(xStart, yStart);
+            ctx.lineTo(xStart, yStart + 30);
+            ctx.closePath();
+            ctx.fillStyle = '#1a2540';
+            ctx.fill();
+            ctx.strokeStyle = '#2a3a5c';
+            ctx.stroke();
+            
+            // Position de l'objet
+            const objX = xStart + (xEnd - xStart) * (s / planLength);
+            const objY = yStart + (yEnd - yStart) * (s / planLength);
             
             // Halo
-            const grad = ctx.createRadialGradient(objX, objY, 0, objX, objY, 30);
+            const grad = ctx.createRadialGradient(objX, objY, 0, objX, objY, 25);
             grad.addColorStop(0, 'rgba(0, 229, 255, 0.6)');
             grad.addColorStop(1, 'rgba(0, 229, 255, 0)');
             ctx.beginPath();
-            ctx.arc(objX, objY, 30, 0, Math.PI * 2);
+            ctx.arc(objX, objY, 25, 0, Math.PI * 2);
             ctx.fillStyle = grad;
             ctx.fill();
             
-            // Point central
+            // Cube (objet)
             ctx.shadowBlur = 20;
             ctx.shadowColor = '#00e5ff';
-            ctx.beginPath();
-            ctx.arc(objX, objY, 10, 0, Math.PI * 2);
-            ctx.fillStyle = '#ffffff';
-            ctx.fill();
-            
-            ctx.shadowBlur = 25;
-            ctx.beginPath();
-            ctx.arc(objX, objY, 7, 0, Math.PI * 2);
             ctx.fillStyle = '#00e5ff';
-            ctx.fill();
+            ctx.fillRect(objX - 8, objY - 8, 16, 16);
             ctx.shadowBlur = 0;
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(objX - 8, objY - 8, 16, 16);
             
-            // VECTEUR VITESSE (décalé vers la gauche)
-            if (Math.abs(v) > 0.01 && simRunning) {
-                const arrowStartX = objX - 40;
-                const arrowStartY = objY;
-                const arrowLength = Math.abs(v) * 8;
-                const arrowEndX = objX - 40 - (v > 0 ? arrowLength : -arrowLength);
-                const arrowEndY = objY;
+            // Vecteurs
+            if (simRunning) {
+                // Vecteur vitesse (parallèle au plan)
+                if (Math.abs(v) > 0.01) {
+                    const vScale = v * 10;
+                    const vX = objX + vScale * Math.cos(theta) * (v > 0 ? 1 : -1);
+                    const vY = objY - vScale * Math.sin(theta) * (v > 0 ? 1 : -1);
+                    
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#00e5ff';
+                    ctx.lineWidth = 2;
+                    ctx.moveTo(objX, objY);
+                    ctx.lineTo(vX, vY);
+                    ctx.stroke();
+                    
+                    // Tête de flèche
+                    ctx.fillStyle = '#00e5ff';
+                    ctx.beginPath();
+                    ctx.moveTo(vX, vY);
+                    ctx.lineTo(vX - 8 * Math.cos(theta) - 4 * Math.sin(theta), vY + 8 * Math.sin(theta) - 4 * Math.cos(theta));
+                    ctx.lineTo(vX - 8 * Math.cos(theta) + 4 * Math.sin(theta), vY + 8 * Math.sin(theta) + 4 * Math.cos(theta));
+                    ctx.closePath();
+                    ctx.fill();
+                }
                 
-                // Ligne
-                ctx.beginPath();
-                ctx.strokeStyle = '#00e5ff';
-                ctx.lineWidth = 3;
-                ctx.moveTo(arrowStartX, arrowStartY);
-                ctx.lineTo(arrowEndX, arrowEndY);
-                ctx.stroke();
+                // Vecteur force parallèle
+                if (Math.abs(forceParallele) > 0.1) {
+                    const fScale = forceParallele * 3;
+                    const fX = objX + fScale * Math.cos(theta) * (forceParallele > 0 ? 1 : -1);
+                    const fY = objY - fScale * Math.sin(theta) * (forceParallele > 0 ? 1 : -1);
+                    
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#ff4444';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 3]);
+                    ctx.moveTo(objX, objY);
+                    ctx.lineTo(fX, fY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                }
                 
-                // Tête de flèche
-                ctx.fillStyle = '#00e5ff';
-                ctx.beginPath();
-                ctx.moveTo(arrowEndX, arrowEndY);
-                ctx.lineTo(arrowEndX - (v > 0 ? 14 : -14), arrowEndY - 7);
-                ctx.lineTo(arrowEndX - (v > 0 ? 14 : -14), arrowEndY + 7);
-                ctx.closePath();
-                ctx.fill();
-                
-                // Label
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 13px JetBrains Mono';
-                ctx.textAlign = 'center';
-                ctx.fillText('v', arrowEndX - (v > 0 ? 25 : -25), arrowEndY - 12);
+                // Vecteur frottement
+                if (Math.abs(frottement) > 0.1) {
+                    const fScale = Math.abs(frottement) * 3;
+                    const fDir = frottement > 0 ? 1 : -1;
+                    const fX = objX - fScale * Math.cos(theta) * fDir;
+                    const fY = objY + fScale * Math.sin(theta) * fDir;
+                    
+                    ctx.beginPath();
+                    ctx.strokeStyle = '#c084fc';
+                    ctx.lineWidth = 2;
+                    ctx.moveTo(objX, objY);
+                    ctx.lineTo(fX, fY);
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = '#c084fc';
+                    ctx.beginPath();
+                    ctx.moveTo(fX, fY);
+                    ctx.lineTo(fX + 8 * Math.cos(theta) - 4 * Math.sin(theta), fY - 8 * Math.sin(theta) - 4 * Math.cos(theta));
+                    ctx.lineTo(fX + 8 * Math.cos(theta) + 4 * Math.sin(theta), fY - 8 * Math.sin(theta) + 4 * Math.cos(theta));
+                    ctx.closePath();
+                    ctx.fill();
+                }
             }
             
-            // VECTEUR ACCÉLÉRATION (décalé vers la droite)
-            if (Math.abs(g) > 0.01 && simRunning) {
-                const arrowStartX = objX + 40;
-                const arrowStartY = objY;
-                const arrowLength = g * 5;
-                const arrowEndX = objX + 40 + arrowLength;
-                const arrowEndY = objY;
-                
-                // Ligne
-                ctx.beginPath();
-                ctx.strokeStyle = '#ff8c00';
-                ctx.lineWidth = 3;
-                ctx.moveTo(arrowStartX, arrowStartY);
-                ctx.lineTo(arrowEndX, arrowEndY);
-                ctx.stroke();
-                
-                // Tête de flèche
-                ctx.fillStyle = '#ff8c00';
-                ctx.beginPath();
-                ctx.moveTo(arrowEndX, arrowEndY);
-                ctx.lineTo(arrowEndX - 14, arrowEndY - 7);
-                ctx.lineTo(arrowEndX - 14, arrowEndY + 7);
-                ctx.closePath();
-                ctx.fill();
-                
-                // Label
-                ctx.fillStyle = '#ffffff';
-                ctx.font = 'bold 13px JetBrains Mono';
-                ctx.textAlign = 'center';
-                ctx.fillText('g', arrowEndX + 20, arrowEndY - 12);
-            }
+            // Angle
+            ctx.fillStyle = '#8898b0';
+            ctx.font = '12px JetBrains Mono';
+            ctx.fillText(`θ = ${angle}°`, centerX + 50, baseY - 100);
+            
+            // Angle limite
+            const angleLim = Math.atan(mu) * 180 / Math.PI;
+            ctx.fillStyle = angle > angleLim ? '#ff4444' : '#00ff88';
+            ctx.fillText(`μ = ${mu.toFixed(2)}  →  θ_lim = ${angleLim.toFixed(1)}°`, centerX + 50, baseY - 80);
         }
         
         // ===== 3D THREE.JS =====
-        let three = { renderer: null, scene: null, camera: null, sphere: null, velArrow: null, accArrow: null, trajLine: null, rafId: null };
-        let orbit = { theta: Math.PI/4, phi: 0.5, r: 15, panX: 0, panY: 0, drag: false, btn: -1, sx: 0, sy: 0, pd: 0 };
-        let orbitTarget = new THREE.Vector3(0, 5, 0);
+        let three = { renderer: null, scene: null, camera: null, cube: null, velArrow: null, fpArrow: null, ffArrow: null, trajLine: null, rafId: null };
+        let orbit = { theta: Math.PI/4, phi: 0.5, r: 10, panX: 0, panY: 0, drag: false, btn: -1, sx: 0, sy: 0, pd: 0 };
+        let orbitTarget = new THREE.Vector3(2.5 * Math.cos(theta), 2.5 * Math.sin(theta), 0);
         
         function buildThree() {
             const c3 = document.getElementById('threeCanvas');
@@ -1694,63 +1763,57 @@
             three.scene = new THREE.Scene();
             three.scene.background = new THREE.Color(0x0a0e1a);
             three.camera = new THREE.PerspectiveCamera(55, W/H, 0.1, 100);
-            three.camera.position.set(10, 8, 15);
-            three.camera.lookAt(0, 5, 0);
+            three.camera.position.set(5, 3, 8);
+            three.camera.lookAt(2.5 * Math.cos(theta), 2.5 * Math.sin(theta), 0);
             
             // Lumières
             three.scene.add(new THREE.AmbientLight(0xffffff, 0.5));
             const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-            dirLight.position.set(10, 20, 10);
+            dirLight.position.set(5, 10, 5);
             dirLight.castShadow = true;
             three.scene.add(dirLight);
             
-            // Sol
-            const groundMat = new THREE.MeshStandardMaterial({ color: 0x2a3a5c });
-            const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), groundMat);
+            // Plan incliné
+            const planeMat = new THREE.MeshStandardMaterial({ color: 0x1a2540, side: THREE.DoubleSide });
+            const planeGeo = new THREE.PlaneGeometry(6, 2);
+            const plane = new THREE.Mesh(planeGeo, planeMat);
+            plane.rotation.z = -theta;
+            plane.rotation.x = Math.PI/2;
+            plane.position.set(2.5 * Math.cos(theta), 2.5 * Math.sin(theta), 0);
+            plane.receiveShadow = true;
+            three.scene.add(plane);
+            
+            // Grille sur le plan
+            const gridHelper = new THREE.GridHelper(6, 10, 0x00e5ff, 0x2a3a5c);
+            gridHelper.rotation.z = -theta;
+            gridHelper.rotation.x = Math.PI/2;
+            gridHelper.position.set(2.5 * Math.cos(theta), 2.5 * Math.sin(theta), 0);
+            three.scene.add(gridHelper);
+            
+            // Sol horizontal
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x111827 });
+            const ground = new THREE.Mesh(new THREE.PlaneGeometry(20, 10), groundMat);
             ground.rotation.x = -Math.PI/2;
             ground.position.y = 0;
             ground.receiveShadow = true;
             three.scene.add(ground);
             
-            // Grille au sol
-            const grid = new THREE.GridHelper(20, 20, 0x00e5ff, 0x2a3a5c);
-            grid.position.y = 0.01;
-            three.scene.add(grid);
-            
-            // Mur de fond pour visualiser la hauteur
-            const wallMat = new THREE.MeshStandardMaterial({ color: 0x1a2540, wireframe: true, transparent: true, opacity: 0.3 });
-            const wall = new THREE.Mesh(new THREE.PlaneGeometry(20, 20), wallMat);
-            wall.position.set(-10, 10, -5);
-            wall.rotation.y = Math.PI/4;
-            three.scene.add(wall);
-            
-            // Marqueurs de hauteur
-            for (let i = 0; i <= h0; i += 2) {
-                const lineMat = new THREE.LineBasicMaterial({ color: 0x8898b0 });
-                const points = [];
-                points.push(new THREE.Vector3(-5, i, 5));
-                points.push(new THREE.Vector3(5, i, 5));
-                const geometry = new THREE.BufferGeometry().setFromPoints(points);
-                const line = new THREE.Line(geometry, lineMat);
-                three.scene.add(line);
-            }
-            
-            // Sphère (l'objet qui tombe)
-            const sphereMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x004444 });
-            three.sphere = new THREE.Mesh(new THREE.SphereGeometry(0.5, 32, 32), sphereMat);
-            three.sphere.castShadow = true;
-            three.sphere.receiveShadow = true;
-            three.sphere.position.set(0, y, 0);
-            three.scene.add(three.sphere);
+            // Cube
+            const cubeMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x004444 });
+            three.cube = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), cubeMat);
+            three.cube.castShadow = true;
+            three.cube.receiveShadow = true;
+            three.scene.add(three.cube);
             
             // Flèches
-            three.velArrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(1, 0, 0), 2, 0x00e5ff);
+            three.velArrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0x00e5ff);
             three.scene.add(three.velArrow);
-            three.accArrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(-1, 0, 0), 1.5, 0xff8c00);
-            three.scene.add(three.accArrow);
+            three.fpArrow = new THREE.ArrowHelper(new THREE.Vector3(1,0,0), new THREE.Vector3(0,0,0), 1, 0xff4444);
+            three.scene.add(three.fpArrow);
+            three.ffArrow = new THREE.ArrowHelper(new THREE.Vector3(-1,0,0), new THREE.Vector3(0,0,0), 1, 0xc084fc);
+            three.scene.add(three.ffArrow);
             
-            // Trajectoire
-            three.trajLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, y, 0)]), new THREE.LineBasicMaterial({ color: 0xc084fc }));
+            three.trajLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,0)]), new THREE.LineBasicMaterial({ color: 0xc084fc }));
             three.scene.add(three.trajLine);
             
             setupOrbitControls(c3);
@@ -1773,7 +1836,7 @@
                 updateCam3D();
             });
             window.addEventListener('mouseup', () => orbit.drag = false);
-            canvas.addEventListener('wheel', e => { orbit.r = Math.max(5, Math.min(30, orbit.r + e.deltaY * 0.03)); updateCam3D(); e.preventDefault(); }, { passive: false });
+            canvas.addEventListener('wheel', e => { orbit.r = Math.max(5, Math.min(20, orbit.r + e.deltaY * 0.03)); updateCam3D(); e.preventDefault(); }, { passive: false });
             canvas.addEventListener('touchstart', e => {
                 if (e.touches.length === 1) { orbit.drag = true; orbit.btn = 0; orbit.sx = e.touches[0].clientX; orbit.sy = e.touches[0].clientY; }
                 else if (e.touches.length === 2) orbit.pd = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
@@ -1788,7 +1851,7 @@
                     updateCam3D();
                 } else if (e.touches.length === 2) {
                     const d = Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-                    orbit.r = Math.max(5, Math.min(30, orbit.r * (orbit.pd / d)));
+                    orbit.r = Math.max(5, Math.min(20, orbit.r * (orbit.pd / d)));
                     orbit.pd = d;
                     updateCam3D();
                 }
@@ -1815,38 +1878,56 @@
         }
         
         function updateThree() {
-            if (!three.sphere) return;
-            three.sphere.position.y = Math.max(0, y);
+            if (!three.cube) return;
+            
+            theta = angle * Math.PI / 180;
+            const xPos = s * Math.cos(theta);
+            const yPos = s * Math.sin(theta);
+            
+            three.cube.position.set(xPos, yPos, 0);
+            
+            // Orientation du cube suivant le plan
+            three.cube.rotation.z = -theta;
             
             if (three.velArrow) {
-                three.velArrow.position.copy(three.sphere.position.clone().add(new THREE.Vector3(1, 0, 0)));
+                three.velArrow.position.copy(three.cube.position.clone().add(new THREE.Vector3(0, 0.5, 0)));
                 if (Math.abs(v) > 0.01 && simRunning) {
                     three.velArrow.visible = true;
-                    three.velArrow.setDirection(new THREE.Vector3(0, v > 0 ? 1 : -1, 0));
-                    three.velArrow.setLength(Math.min(3, Math.abs(v) * 0.3), 0.5, 0.3);
+                    three.velArrow.setDirection(new THREE.Vector3(Math.cos(theta), Math.sin(theta), 0).multiplyScalar(v > 0 ? 1 : -1));
+                    three.velArrow.setLength(Math.min(2, Math.abs(v) * 0.5), 0.3, 0.2);
                 } else three.velArrow.visible = false;
             }
             
-            if (three.accArrow) {
-                three.accArrow.position.copy(three.sphere.position.clone().add(new THREE.Vector3(-1, 0, 0)));
-                if (Math.abs(g) > 0.01 && simRunning) {
-                    three.accArrow.visible = true;
-                    three.accArrow.setDirection(new THREE.Vector3(0, -1, 0));
-                    three.accArrow.setLength(Math.min(2, g * 0.2), 0.4, 0.2);
-                } else three.accArrow.visible = false;
+            if (three.fpArrow) {
+                three.fpArrow.position.copy(three.cube.position.clone().add(new THREE.Vector3(0, 0.3, 0.3)));
+                if (Math.abs(forceParallele) > 0.1 && simRunning) {
+                    three.fpArrow.visible = true;
+                    three.fpArrow.setDirection(new THREE.Vector3(Math.cos(theta), Math.sin(theta), 0));
+                    three.fpArrow.setLength(Math.min(1.5, Math.abs(forceParallele) * 0.1), 0.3, 0.2);
+                } else three.fpArrow.visible = false;
+            }
+            
+            if (three.ffArrow) {
+                three.ffArrow.position.copy(three.cube.position.clone().add(new THREE.Vector3(0, 0.3, -0.3)));
+                if (Math.abs(frottement) > 0.1 && simRunning) {
+                    three.ffArrow.visible = true;
+                    three.ffArrow.setDirection(new THREE.Vector3(-Math.cos(theta), -Math.sin(theta), 0).multiplyScalar(Math.sign(frottement)));
+                    three.ffArrow.setLength(Math.min(1.5, Math.abs(frottement) * 0.1), 0.3, 0.2);
+                } else three.ffArrow.visible = false;
             }
             
             if (traj3Dpts.length >= 2 && three.trajLine) three.trajLine.geometry.setFromPoints(traj3Dpts);
-            orbitTarget.set(0, Math.max(0, y), 0);
+            orbitTarget.set(xPos, yPos, 0);
             updateCam3D();
         }
         
         function idleThree() {
-            if (!three.sphere) return;
-            three.sphere.position.y = h0;
+            if (!three.cube) return;
+            three.cube.position.set(0, 0, 0);
             if (three.velArrow) three.velArrow.visible = false;
-            if (three.accArrow) three.accArrow.visible = false;
-            orbitTarget.set(0, h0/2, 0);
+            if (three.fpArrow) three.fpArrow.visible = false;
+            if (three.ffArrow) three.ffArrow.visible = false;
+            orbitTarget.set(0, 0, 0);
             updateCam3D();
         }
         
@@ -1916,13 +1997,13 @@
         // ===== RAPPORT =====
         document.getElementById('export-csv').addEventListener('click', () => {
             if (!recordedData.length) { toast(t('tNoData'), 'warn'); return; }
-            const headers = 'Temps (s),Hauteur y (m),Vitesse v (m/s),Énergie cinétique (J),Énergie potentielle (J)';
-            const rows = recordedData.map(d => `${d.t},${d.y},${d.v},${d.ek},${d.ep}`);
+            const headers = 'Temps (s),Distance s (m),Vitesse v (m/s),Accélération a (m/s²),Force parallèle (N),Frottement (N),Force nette (N)';
+            const rows = recordedData.map(d => `${d.t},${d.s},${d.v},${d.a},${d.fp},${d.ff},${d.fn}`);
             const blob = new Blob([headers + '\n' + rows.join('\n')], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `simlab_chute_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`;
+            a.download = `simlab_plan_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.csv`;
             a.click();
             URL.revokeObjectURL(url);
             toast(t('tCsv'), 'success');
@@ -1940,7 +2021,7 @@
             const url = tempCanvas.toDataURL('image/png');
             const a = document.createElement('a');
             a.href = url;
-            a.download = `simlab_chute_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.png`;
+            a.download = `simlab_plan_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.png`;
             a.click();
             toast(t('tShot'), 'success');
         });

@@ -6,6 +6,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AtomSim – Module 1 : Structure de l'Atome | by Edmond Atinzoun TCHOKPON</title>
+@media (max-width: 768px) {
+    body {
+        overflow-y: auto !important; /* Active le défilement pour voir la suite */
+        height: auto !important;
+    }
+
+    #app {
+        height: 50vh !important; /* La simulation prend la moitié du haut */
+        position: relative !important;
+    }
+
+    #ctrl-panel {
+        position: static !important; /* Le panneau ne flotte plus sur la simulation */
+        width: 100% !important;
+        margin-top: 20px;
+        padding-bottom: 80px; /* Espace pour ta Social Bar Adsterra en bas */
+    }
+}
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap');
 
@@ -29,11 +47,6 @@
   * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
-    font-family: 'Exo 2', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
   }
 
   /* STARFIELD */
@@ -805,6 +818,53 @@
   .badge.blue { background: rgba(0,229,255,0.15); color: var(--accent); border: 1px solid var(--accent); }
   .badge.orange { background: rgba(255,107,53,0.15); color: var(--accent2); border: 1px solid var(--accent2); }
   .badge.green { background: rgba(127,255,0,0.15); color: var(--accent3); border: 1px solid var(--accent3); }
+  @media (max-width: 768px) {
+    /* 1. On libère le scroll pour voir toute la page */
+    html, body {
+        overflow-y: auto !important;
+        height: auto !important;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 2. Simulation : 75% de la hauteur de l'écran */
+    #app {
+        height: 75vh !important;
+        width: 100% !important;
+        position: relative !important;
+    }
+
+    /* 3. Paramètres : 25% de la hauteur, bien rangés */
+    #ctrl-panel {
+        position: relative !important;
+        min-height: 25vh !important;
+        width: 100% !important;
+        background: var(--bg2);
+        padding: 10px !important;
+        z-index: 100;
+    }
+
+    /* 4. On réduit la taille des blocs de paramètres pour qu'ils soient compacts */
+    .params-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important; /* Deux colonnes pour gagner de la place */
+        gap: 8px !important;
+    }
+
+    .param-card {
+        padding: 5px !important;
+        font-size: 11px !important; /* Texte plus petit */
+    }
+
+    /* 5. On déplace la Politique de Confidentialité tout en bas */
+    .privacy-link, footer {
+        display: block !important;
+        margin-top: 50px !important;
+        padding-bottom: 80px !important; /* Espace pour ta Social Bar Adsterra */
+        text-align: center;
+        width: 100%;
+    }
+}
 </style>
 </head>
 <body>

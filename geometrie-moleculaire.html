@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Géométrie Moléculaire — SimLab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --hh:48px;--ph:190px;
+  --bg:#0a0e1a;--s1:#111827;--s2:#1a2540;--s3:#0d1530;
+  --acc:#00e5ff;--grn:#00ff88;--red:#ff4060;--yel:#ffd740;--ora:#ff9f43;--pur:#c084fc;
+  --txt:#e8eaf6;--sub:#7986a3;--brd:rgba(0,229,255,0.13);
+}
+@media(max-width:600px){:root{--hh:44px;--ph:178px;}}
+@media(max-width:380px){:root{--hh:42px;--ph:168px;}}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;overflow:hidden;}
+
+/* ── HEADER ── */
+#hd{
+  position:fixed;top:0;left:0;right:0;height:var(--hh);
+  background:linear-gradient(90deg,#060c1a,#0d1830,#060c1a);
+  border-bottom:1px solid var(--brd);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;z-index:200;gap:6px;
+}
+#hd a.ret{color:var(--acc);text-decoration:none;font-size:11px;font-weight:600;
+  padding:4px 8px;border:1px solid rgba(0,229,255,.3);border-radius:6px;white-space:nowrap;transition:.2s;}
+#hd a.ret:hover{background:rgba(0,229,255,.1);}
+#htitle{font-size:13px;font-weight:700;color:#fff;text-align:center;flex:1;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#logo{font-size:12px;font-weight:600;color:var(--acc);white-space:nowrap;}
+#v3btn{background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.3);color:var(--acc);
+  font-size:10px;padding:4px 9px;border-radius:6px;cursor:pointer;
+  font-family:'Outfit',sans-serif;white-space:nowrap;transition:.2s;}
+#v3btn:hover{background:rgba(0,229,255,.2);}
+@media(max-width:600px){#logo{display:none;}#htitle{font-size:11px;}}
+
+/* ── SIMULATION ZONE ── */
+#sw{position:fixed;top:var(--hh);bottom:var(--ph);left:0;right:0;overflow:hidden;}
+#c2{display:block;width:100%;height:100%;cursor:grab;}
+#c2:active{cursor:grabbing;}
+#c3wrap{position:absolute;top:0;left:0;width:100%;height:100%;display:none;}
+#c3wrap canvas{display:block;}
+
+/* ── TOOLTIP ── */
+#tt{
+  position:fixed;background:rgba(8,12,28,.96);
+  border:1px solid rgba(0,229,255,.45);border-radius:10px;
+  padding:7px 11px;font-size:10px;pointer-events:none;
+  display:none;z-index:300;font-family:'JetBrains Mono',monospace;
+  color:var(--acc);line-height:1.8;min-width:130px;
+  box-shadow:0 4px 20px rgba(0,0,0,.5);
+}
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:calc(var(--ph)+12px);left:50%;transform:translateX(-50%);
+  background:rgba(0,229,255,.12);border:1px solid var(--acc);border-radius:8px;
+  padding:6px 16px;font-size:11px;color:var(--acc);z-index:400;
+  opacity:0;transition:opacity .35s;pointer-events:none;white-space:nowrap;
+}
+/* ── PANEL BAS ── */
+#pb{
+  position:fixed;bottom:0;left:0;right:0;height:var(--ph);
+  background:var(--s1);border-top:1px solid var(--brd);
+  display:flex;flex-direction:column;z-index:100;
+}
+#tabs{display:flex;overflow-x:auto;border-bottom:1px solid rgba(0,229,255,.1);
+  scrollbar-width:none;flex-shrink:0;}
+#tabs::-webkit-scrollbar{display:none;}
+.tab{flex-shrink:0;padding:5px 11px;font-size:10px;font-weight:600;cursor:pointer;
+  color:var(--sub);border-bottom:2px solid transparent;white-space:nowrap;transition:.2s;}
+.tab.active{color:var(--acc);border-bottom-color:var(--acc);}
+.tab:hover{color:var(--txt);}
+#tcon{flex:1;overflow-y:auto;padding:6px 8px;scrollbar-width:thin;
+  scrollbar-color:var(--s2) transparent;}
+#tcon::-webkit-scrollbar{width:4px;}
+#tcon::-webkit-scrollbar-thumb{background:var(--s2);border-radius:2px;}
+.tp{display:none;}.tp.active{display:block;}
+
+/* ── SLIDERS ── */
+.prow{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.prow label{font-size:9px;color:var(--sub);width:105px;flex-shrink:0;}
+.prow input[type=range]{
+  flex:1;height:4px;-webkit-appearance:none;appearance:none;
+  background:linear-gradient(90deg,var(--acc) var(--pct,50%),rgba(255,255,255,.1) var(--pct,50%));
+  border-radius:2px;outline:none;cursor:pointer;
+}
+.prow input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--acc);box-shadow:0 0 8px var(--acc),0 0 16px rgba(0,229,255,.4);cursor:pointer;
+}
+.prow input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:var(--acc);
+  box-shadow:0 0 8px var(--acc);cursor:pointer;border:none;
+}
+.lv{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--acc);
+  min-width:44px;text-align:right;}
+.brow{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.btn{flex:1;min-width:58px;padding:5px 8px;border-radius:8px;font-size:11px;font-weight:600;
+  cursor:pointer;border:none;font-family:'Outfit',sans-serif;transition:.15s;}
+.btn-g{background:var(--grn);color:#000;}.btn-g:hover{filter:brightness(1.15);}
+.btn-p{background:var(--yel);color:#000;}.btn-p:hover{filter:brightness(1.15);}
+.btn-r{background:var(--red);color:#fff;}.btn-r:hover{filter:brightness(1.15);}
+.chkrow{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:5px;}
+.chkrow label{font-size:9px;color:var(--sub);display:flex;align-items:center;gap:4px;cursor:pointer;}
+.chkrow input{accent-color:var(--acc);}
+
+/* ── MOLECULE SELECTOR ── */
+.sec{font-size:9px;font-weight:700;color:var(--acc);text-transform:uppercase;
+  letter-spacing:1px;margin:5px 0 4px;}
+.molcat{font-size:8px;color:var(--sub);margin-bottom:3px;font-weight:600;}
+.molsel{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px;}
+.molbtn{padding:3px 8px;border-radius:6px;font-size:9px;font-weight:600;cursor:pointer;
+  border:1px solid var(--brd);background:var(--s2);color:var(--sub);
+  font-family:'JetBrains Mono',monospace;transition:.2s;white-space:nowrap;}
+.molbtn.active{background:var(--acc);color:#000;border-color:var(--acc);}
+.molbtn:hover:not(.active){border-color:var(--acc);color:var(--acc);}
+
+/* ── CARDS ── */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:4px;}
+.card{background:var(--s2);border-radius:8px;padding:6px 8px;
+  border:1px solid rgba(0,229,255,.07);transition:.2s;}
+.card:hover{border-color:rgba(0,229,255,.2);}
+.card .cl{font-size:8px;color:var(--sub);margin-bottom:2px;}
+.card .cv{font-size:13px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--acc);}
+.card .cu{font-size:8px;color:var(--sub);margin-top:1px;}
+.card.grn .cv{color:var(--grn);}
+.card.yel .cv{color:var(--yel);}
+.card.red .cv{color:var(--red);}
+.card.ora .cv{color:var(--ora);}
+.card.pur .cv{color:var(--pur);}
+
+/* ── LOIS CARDS ── */
+.fcard{background:var(--s3);border-radius:8px;padding:8px 10px;margin-bottom:5px;
+  border-left:3px solid var(--yel);position:relative;overflow:hidden;}
+.fcard::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,var(--yel),transparent);}
+.fcard .ff{font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--yel);
+  margin-bottom:3px;font-weight:600;}
+.fcard .fd{font-size:9px;color:var(--sub);line-height:1.55;}
+.fcard .fd b{color:var(--txt);}
+
+/* ── TABLE VSEPR ── */
+.vtable{width:100%;border-collapse:collapse;font-size:8px;margin-bottom:6px;}
+.vtable th{background:var(--s2);color:var(--acc);padding:4px 6px;text-align:left;
+  font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;}
+.vtable td{padding:4px 6px;border-top:1px solid rgba(0,229,255,.07);color:var(--txt);}
+.vtable tr:hover td{background:rgba(0,229,255,.04);}
+.vtable .geo{color:var(--grn);font-weight:600;}
+.vtable .ang{color:var(--yel);font-family:'JetBrains Mono',monospace;}
+.vtable .hyb{color:var(--pur);font-family:'JetBrains Mono',monospace;}
+
+/* ── TP ── */
+.tptxt{font-size:9px;color:var(--sub);line-height:1.65;margin-bottom:6px;}
+.tptxt b{color:var(--txt);}
+.tptxt .f{font-family:'JetBrains Mono',monospace;color:var(--yel);font-size:9px;}
+.btn-exp{background:var(--acc);color:#000;padding:5px 14px;border-radius:8px;
+  font-size:10px;font-weight:700;cursor:pointer;border:none;
+  font-family:'Outfit',sans-serif;transition:.2s;}
+.btn-exp:hover{filter:brightness(1.1);}
+
+/* ── VÉRIF ── */
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:5px;}
+.vcard{background:var(--s2);border-radius:8px;padding:6px 8px;
+  display:flex;align-items:center;gap:6px;border:1px solid rgba(0,229,255,.07);}
+.vcard input{accent-color:var(--grn);flex-shrink:0;}
+.vcard label{font-size:9px;color:var(--sub);flex:1;}
+.vbadge{font-size:8px;font-family:'JetBrains Mono',monospace;color:var(--grn);
+  font-weight:700;white-space:nowrap;background:rgba(0,255,136,.08);
+  padding:1px 5px;border-radius:4px;}
+
+/* ── DIPOLE BAR ── */
+.dipbar{height:6px;border-radius:3px;background:linear-gradient(90deg,var(--s2),var(--red));
+  margin-top:4px;transition:width .4s;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="hd">
+  <a href="index.html" class="ret">&#8592; Retour</a>
+  <span id="htitle">&#x1F9EA; Géométrie Moléculaire — VSEPR</span>
+  <button id="v3btn" onclick="switchV()">&#x1F504; 2D&#x2F;3D</button>
+  <span id="logo">&#x2697;&#xFE0F; SimLab</span>
+</header>
+
+<!-- ZONE SIMULATION -->
+<div id="sw">
+  <canvas id="c2"></canvas>
+  <div id="c3wrap"></div>
+</div>
+<div id="tt"></div>
+<div id="toast"></div>
+
+<!-- PANEL BAS -->
+<div id="pb">
+  <div id="tabs">
+    <div class="tab active" onclick="selTab(0)">&#x2699;&#xFE0F; Paramètres</div>
+    <div class="tab" onclick="selTab(1)">&#x1F4D0; Mesures</div>
+    <div class="tab" onclick="selTab(2)">&#x1F4DA; Lois VSEPR</div>
+    <div class="tab" onclick="selTab(3)">&#x1F4C4; TP</div>
+    <div class="tab" onclick="selTab(4)">&#x1F4CA; Résultats</div>
+  </div>
+  <div id="tcon">
+
+    <!-- ═══ ONGLET 0 : PARAMÈTRES ═══ -->
+    <div class="tp active" id="t0">
+      <div class="sec">Choisir la molécule</div>
+      <div class="molcat">Géométries de base</div>
+      <div class="molsel" id="msel0"></div>
+      <div class="molcat">Molécules courantes</div>
+      <div class="molsel" id="msel1"></div>
+      <div class="molcat">Hypervalentes &amp; avancées</div>
+      <div class="molsel" id="msel2"></div>
+      <div class="prow"><label>Rotation X (°)</label>
+        <input type="range" id="sRX" min="-180" max="180" value="25" oninput="slUpd('sRX','lRX',0)"/>
+        <span class="lv" id="lRX">25</span></div>
+      <div class="prow"><label>Rotation Y (°)</label>
+        <input type="range" id="sRY" min="-180" max="180" value="40" oninput="slUpd('sRY','lRY',0)"/>
+        <span class="lv" id="lRY">40</span></div>
+      <div class="prow"><label>Zoom</label>
+        <input type="range" id="sZm" min="40" max="200" value="100" oninput="slUpd('sZm','lZm',0)"/>
+        <span class="lv" id="lZm">100</span></div>
+      <div class="prow"><label>Vitesse rotation</label>
+        <input type="range" id="sVit" min="0" max="30" value="10" oninput="slUpd('sVit','lVit',0)"/>
+        <span class="lv" id="lVit">10</span></div>
+      <div class="chkrow">
+        <label><input type="checkbox" id="chkLP" checked onchange="d2()"/>Doublets libres</label>
+        <label><input type="checkbox" id="chkLbl" checked onchange="d2()"/>Étiquettes</label>
+        <label><input type="checkbox" id="chkAng" checked onchange="d2()"/>Angles</label>
+        <label><input type="checkbox" id="chkDip" checked onchange="d2()"/>Dipôle</label>
+        <label><input type="checkbox" id="chkAnim" checked/>Auto-rotation</label>
+      </div>
+      <div class="brow">
+        <button class="btn btn-g" onclick="doLancer()">&#9654; Lancer</button>
+        <button class="btn btn-p" onclick="doPause()">&#9208; Pause</button>
+        <button class="btn btn-r" onclick="doReset()">&#8635; Reset</button>
+      </div>
+    </div>
+
+    <!-- ═══ ONGLET 1 : MESURES ═══ -->
+    <div class="tp" id="t1">
+      <div class="cgrid">
+        <div class="card grn"><div class="cl">Molécule</div>
+          <div class="cv" id="mNom" style="font-size:11px;">—</div><div class="cu">formule</div></div>
+        <div class="card yel"><div class="cl">Géométrie VSEPR</div>
+          <div class="cv" id="mGeo" style="font-size:9px;">—</div><div class="cu">—</div></div>
+        <div class="card"><div class="cl">Angle de liaison</div>
+          <div class="cv" id="mAng">—</div><div class="cu">°</div></div>
+        <div class="card"><div class="cl">Angle théorique</div>
+          <div class="cv" id="mAngTh">—</div><div class="cu">°</div></div>
+        <div class="card"><div class="cl">Liaisons (X)</div>
+          <div class="cv" id="mX">—</div><div class="cu">—</div></div>
+        <div class="card"><div class="cl">Doublets libres (E)</div>
+          <div class="cv" id="mE">—</div><div class="cu">paires</div></div>
+        <div class="card"><div class="cl">Notation AXmEn</div>
+          <div class="cv" id="mAXE" style="font-size:11px;">—</div><div class="cu">—</div></div>
+        <div class="card pur"><div class="cl">Hybridation</div>
+          <div class="cv" id="mHyb">—</div><div class="cu">orbitales</div></div>
+        <div class="card ora"><div class="cl">Moment dipolaire</div>
+          <div class="cv" id="mDip">—</div><div class="cu">Debye (D)</div></div>
+        <div class="card red"><div class="cl">Polarité</div>
+          <div class="cv" id="mPol" style="font-size:10px;">—</div><div class="cu">—</div></div>
+        <div class="card"><div class="cl">ΔEN max</div>
+          <div class="cv" id="mDEN">—</div><div class="cu">—</div></div>
+        <div class="card"><div class="cl">Groupes électron.</div>
+          <div class="cv" id="mGrp">—</div><div class="cu">m+n</div></div>
+      </div>
+      <div class="sec">Électronégativité des atomes</div>
+      <div id="enCards" class="cgrid"></div>
+    </div>
+
+    <!-- ═══ ONGLET 2 : LOIS VSEPR ═══ -->
+    <div class="tp" id="t2">
+      <div class="fcard">
+        <div class="ff">Théorie VSEPR — Principe fondamental</div>
+        <div class="fd">Les <b>paires d'électrons</b> (liantes et non-liantes) autour d'un atome central se repoussent mutuellement. Elles s'arrangent pour <b>maximiser les distances</b> entre elles, minimisant ainsi les répulsions. La géométrie moléculaire est la position des <b>seuls atomes</b> (pas des doublets libres).</div>
+      </div>
+      <div class="fcard">
+        <div class="ff">Notation AXmEn</div>
+        <div class="fd">
+          <b>A</b> = atome central | <b>X</b> = atomes liés (m liaisons sigma) | <b>E</b> = doublets non-liants (n paires).<br/>
+          Le nombre de <b>groupes électroniques</b> = m + n détermine la géométrie électronique.<br/>
+          Ex: H₂O = AX₂E₂ (2 liaisons + 2 LP) → géométrie électronique tétraédrique, géométrie moléculaire coudée.
+        </div>
+      </div>
+      <div class="fcard" style="border-left-color:var(--acc);">
+        <div class="ff" style="color:var(--acc);">Table VSEPR complète</div>
+        <div class="fd">
+          <table class="vtable">
+            <tr><th>AXmEn</th><th>m+n</th><th class="geo">Géométrie mol.</th><th class="ang">Angle</th><th class="hyb">Hybr.</th></tr>
+            <tr><td>AX₁E₃</td><td>4</td><td class="geo">Linéaire (diatomique)</td><td class="ang">—</td><td class="hyb">sp³</td></tr>
+            <tr><td>AX₂E₀</td><td>2</td><td class="geo">Linéaire</td><td class="ang">180°</td><td class="hyb">sp</td></tr>
+            <tr><td>AX₂E₁</td><td>3</td><td class="geo">Coudée (120°)</td><td class="ang">120°</td><td class="hyb">sp²</td></tr>
+            <tr><td>AX₂E₂</td><td>4</td><td class="geo">Coudée (104,5°)</td><td class="ang">104.5°</td><td class="hyb">sp³</td></tr>
+            <tr><td>AX₃E₀</td><td>3</td><td class="geo">Trigonale plane</td><td class="ang">120°</td><td class="hyb">sp²</td></tr>
+            <tr><td>AX₃E₁</td><td>4</td><td class="geo">Pyramidale trigonale</td><td class="ang">107°</td><td class="hyb">sp³</td></tr>
+            <tr><td>AX₃E₂</td><td>5</td><td class="geo">T-shape</td><td class="ang">90°</td><td class="hyb">sp³d</td></tr>
+            <tr><td>AX₄E₀</td><td>4</td><td class="geo">Tétraédrique</td><td class="ang">109.5°</td><td class="hyb">sp³</td></tr>
+            <tr><td>AX₄E₁</td><td>5</td><td class="geo">Balançoire (seesaw)</td><td class="ang">90/120°</td><td class="hyb">sp³d</td></tr>
+            <tr><td>AX₄E₂</td><td>6</td><td class="geo">Plan carré</td><td class="ang">90°</td><td class="hyb">sp³d²</td></tr>
+            <tr><td>AX₅E₀</td><td>5</td><td class="geo">Bipyramidale trigon.</td><td class="ang">90/120°</td><td class="hyb">sp³d</td></tr>
+            <tr><td>AX₅E₁</td><td>6</td><td class="geo">Pyramidale carrée</td><td class="ang">90°</td><td class="hyb">sp³d²</td></tr>
+            <tr><td>AX₆E₀</td><td>6</td><td class="geo">Octaédrique</td><td class="ang">90°</td><td class="hyb">sp³d²</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="fcard">
+        <div class="ff">Ordre des répulsions</div>
+        <div class="fd">LP-LP &gt; LP-X &gt; X-X (doublet libre — doublet libre répulsion maximale).<br/>
+        Conséquence : chaque doublet libre réduit les angles de liaison d'environ <b>2,5°</b>.<br/>
+        NH₃ : 109,5° - 2,5° = 107° | H₂O : 109,5° - 2×2,5° = 104,5°</div>
+      </div>
+      <div class="fcard">
+        <div class="ff">Polarité et moment dipolaire</div>
+        <div class="fd">Liaison polaire si <b>ΔEN &gt; 0,4</b>. Molécule polaire si la <b>somme vectorielle</b> des moments dipolaires de liaison est non nulle.<br/>
+        Molécule symétrique → moments s'annulent → <b>apolaire</b> (CO₂, CH₄, BF₃, CCl₄).<br/>
+        μ en Debye (D) : 1 D = 3,336 × 10⁻³⁰ C·m</div>
+      </div>
+      <div class="fcard">
+        <div class="ff">Hybridation des orbitales atomiques</div>
+        <div class="fd">
+          <b>sp</b> : 2 groupes → linéaire | 180°<br/>
+          <b>sp²</b> : 3 groupes → trigonale plane | 120°<br/>
+          <b>sp³</b> : 4 groupes → tétraédrique | 109,5°<br/>
+          <b>sp³d</b> : 5 groupes → bipyramidale | 90°/120°<br/>
+          <b>sp³d²</b> : 6 groupes → octaédrique | 90°
+        </div>
+      </div>
+      <div class="fcard" style="border-left-color:var(--grn);">
+        <div class="ff" style="color:var(--grn);">Électronégativité (échelle de Pauling)</div>
+        <div class="fd">
+          F=3,98 | O=3,44 | N=3,04 | Cl=3,16 | Br=2,96 | C=2,55 | S=2,58 | H=2,20 | P=2,19 | B=2,04 | Si=1,90 | Al=1,61<br/>
+          <b>Règle :</b> ΔEN &gt; 0,4 → liaison polaire | ΔEN &gt; 1,7 → liaison ionique
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ONGLET 3 : TP ═══ -->
+    <div class="tp" id="t3">
+      <div class="tptxt">
+        <b>TP — Géométrie Moléculaire par la méthode VSEPR</b><br/><br/>
+        <b>Objectif :</b> Déterminer la géométrie 3D et la polarité de molécules à partir de leur formule de Lewis, en appliquant la théorie VSEPR (Valence Shell Electron Pair Repulsion).<br/><br/>
+        <b>Protocole :</b><br/>
+        <b>1.</b> Écrire la <b>structure de Lewis</b> de la molécule (liaison, doublets libres).<br/>
+        <b>2.</b> Compter les <b>paires d'électrons</b> autour de l'atome central : m liaisons sigma + n doublets libres.<br/>
+        <b>3.</b> Identifier la <b>notation AXmEn</b> et le nombre de groupes électroniques (m+n).<br/>
+        <b>4.</b> Déduire la <b>géométrie électronique</b> (arrangement des paires) et la <b>géométrie moléculaire</b> (position des atomes).<br/>
+        <b>5.</b> Estimer les <b>angles de liaison</b> en tenant compte des répulsions LP-LP &gt; LP-X &gt; X-X.<br/>
+        <b>6.</b> Déterminer l'<b>hybridation</b> de l'atome central.<br/>
+        <b>7.</b> Analyser la <b>polarité</b> (ΔEN des liaisons + symétrie de la molécule).<br/><br/>
+        <b>Formule de l'angle tétraédrique :</b><br/>
+        <span class="f">θ = arccos(-1/3) ≈ 109,47°</span><br/><br/>
+        <b>Formule du moment dipolaire de liaison :</b><br/>
+        <span class="f">μ = q × d [C·m] ou en Debye (1D = 3,336×10⁻³⁰ C·m)</span><br/><br/>
+        <b>Molécule étudiée :</b> <span id="tpMol" style="color:var(--acc);font-family:'JetBrains Mono',monospace;">—</span><br/>
+        <b>Résultat VSEPR :</b> <span id="tpRes" style="color:var(--grn);">—</span>
+      </div>
+      <button class="btn-exp" onclick="exportTP()">&#x2B07; Exporter rapport TXT</button>
+    </div>
+
+    <!-- ═══ ONGLET 4 : RÉSULTATS ═══ -->
+    <div class="tp" id="t4">
+      <div class="sec">Résultats — Molécule : <span id="rMolTitle" style="color:var(--grn);">—</span></div>
+      <div class="cgrid">
+        <div class="card grn"><div class="cl">Formule chimique</div>
+          <div class="cv" id="rFormule" style="font-size:11px;">—</div></div>
+        <div class="card yel"><div class="cl">Géométrie moléculaire</div>
+          <div class="cv" id="rGeo" style="font-size:8px;">—</div></div>
+        <div class="card"><div class="cl">Géométrie électronique</div>
+          <div class="cv" id="rGeoEl" style="font-size:8px;color:var(--sub);">—</div></div>
+        <div class="card pur"><div class="cl">Hybridation</div>
+          <div class="cv" id="rHyb">—</div></div>
+        <div class="card"><div class="cl">Angle réel</div>
+          <div class="cv" id="rAng">—</div><div class="cu">°</div></div>
+        <div class="card"><div class="cl">Angle théorique idéal</div>
+          <div class="cv" id="rAngTh">—</div><div class="cu">°</div></div>
+        <div class="card ora"><div class="cl">Moment dipolaire μ</div>
+          <div class="cv" id="rDip">—</div><div class="cu">Debye</div></div>
+        <div class="card red"><div class="cl">Polarité</div>
+          <div class="cv" id="rPol" style="font-size:10px;">—</div></div>
+      </div>
+      <div class="sec">&#x2705; Vérification TP</div>
+      <div class="vgrid">
+        <div class="vcard"><input type="checkbox" id="v1"/>
+          <label for="v1">Notation AXmEn</label><span class="vbadge" id="vb1">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v2"/>
+          <label for="v2">Géométrie moléculaire</label><span class="vbadge" id="vb2">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v3"/>
+          <label for="v3">Angle de liaison</label><span class="vbadge" id="vb3">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v4"/>
+          <label for="v4">Hybridation</label><span class="vbadge" id="vb4">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v5"/>
+          <label for="v5">Polarité molécule</label><span class="vbadge" id="vb5">—</span></div>
+        <div class="vcard"><input type="checkbox" id="v6"/>
+          <label for="v6">Moment dipolaire</label><span class="vbadge" id="vb6">—</span></div>
+      </div>
+      <div class="sec">Comparaison molécules similaires</div>
+      <div id="compGrid" class="cgrid"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// BASE DE DONNÉES MOLÉCULAIRE COMPLÈTE
+// ══════════════════════════════════════════════════════════════════════════════
+var MOLS = {
+
+  // ── GÉOMÉTRIES DE BASE ──
+  'HCl':{
+    nom:'HCl', full:'Chlorure d\'hydrogène', cat:0,
+    ax:'AX₁E₃', geo:'Linéaire (diatomique)', geoEl:'Tétraédrique électronique',
+    hyb:'sp³', angle:180, angleTh:180, lp:3, bonds:1,
+    polar:true, dipole:1.08,
+    desc:'Liaison H-Cl fortement polaire (ΔEN=0,96). 3 doublets libres sur Cl. Molécule diatomique polaire.',
+    atoms:[
+      {sym:'Cl',col:'#aaff44',r:20,en:3.16, x:-40,y:0,z:0},
+      {sym:'H', col:'#e8eaf6',r:11,en:2.20, x:60,y:0,z:0}
+    ],
+    bonds:[[0,1]], lps:[], bondType:[1],
+    dipDir:{x:1,y:0}
+  },
+  'CO₂':{
+    nom:'CO₂', full:'Dioxyde de carbone', cat:0,
+    ax:'AX₂E₀', geo:'Linéaire', geoEl:'Linéaire',
+    hyb:'sp', angle:180, angleTh:180, lp:0, bonds:2,
+    polar:false, dipole:0,
+    desc:'Doubles liaisons C=O (sp). Les 2 moments dipolaires sont opposés et s\'annulent → apolaire malgré liaisons polaires.',
+    atoms:[
+      {sym:'O',col:'#ff4466',r:17,en:3.44, x:-90,y:0,z:0},
+      {sym:'C',col:'#999',   r:14,en:2.55, x:0,  y:0,z:0},
+      {sym:'O',col:'#ff4466',r:17,en:3.44, x:90, y:0,z:0}
+    ],
+    bonds:[[1,0],[1,2]], lps:[], bondType:[2,2],
+    dipDir:null
+  },
+  'SO₂':{
+    nom:'SO₂', full:'Dioxyde de soufre', cat:0,
+    ax:'AX₂E₁', geo:'Coudée (119°)', geoEl:'Trigonale plane',
+    hyb:'sp²', angle:119, angleTh:120, lp:1, bonds:2,
+    polar:true, dipole:1.63,
+    desc:'1 doublet libre sur S → géométrie coudée contrairement à CO₂ (linéaire). Polaire.',
+    atoms:[
+      {sym:'S',col:'#ffee44',r:18,en:2.58, x:0,  y:0,z:0},
+      {sym:'O',col:'#ff4466',r:16,en:3.44, x:-72,y:55,z:0},
+      {sym:'O',col:'#ff4466',r:16,en:3.44, x:72, y:55,z:0}
+    ],
+    bonds:[[0,1],[0,2]], lps:[{ax:0,dx:0,dy:-55,dz:0}], bondType:[2,2],
+    dipDir:{x:0,y:1}
+  },
+  'H₂O':{
+    nom:'H₂O', full:'Eau', cat:0,
+    ax:'AX₂E₂', geo:'Coudée (104,5°)', geoEl:'Tétraédrique',
+    hyb:'sp³', angle:104.5, angleTh:109.5, lp:2, bonds:2,
+    polar:true, dipole:1.85,
+    desc:'2 doublets libres sur O compressent l\'angle à 104,5° (vs 109,5° tétraédrique). Molécule très polaire (μ=1,85D), propriétés remarquables.',
+    atoms:[
+      {sym:'O',col:'#ff4466',r:18,en:3.44, x:0,  y:0,z:0},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:-60,y:52,z:0},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:60, y:52,z:0}
+    ],
+    bonds:[[0,1],[0,2]], lps:[{ax:0,dx:-20,dy:-44,dz:15},{ax:0,dx:20,dy:-44,dz:-15}],
+    bondType:[1,1], dipDir:{x:0,y:1}
+  },
+  'BF₃':{
+    nom:'BF₃', full:'Trifluorure de bore', cat:0,
+    ax:'AX₃E₀', geo:'Trigonale plane', geoEl:'Trigonale plane',
+    hyb:'sp²', angle:120, angleTh:120, lp:0, bonds:3,
+    polar:false, dipole:0,
+    desc:'Atome B avec octet incomplet (6e). Trigonale plane parfaite, angles 120°. Les 3 moments dipolaires B-F s\'annulent → apolaire.',
+    atoms:[
+      {sym:'B',col:'#ffd740',r:14,en:2.04, x:0,  y:0,z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:-80,y:0,z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:40, y:-70,z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:40, y:70,z:0}
+    ],
+    bonds:[[0,1],[0,2],[0,3]], lps:[], bondType:[1,1,1],
+    dipDir:null
+  },
+  'NH₃':{
+    nom:'NH₃', full:'Ammoniac', cat:0,
+    ax:'AX₃E₁', geo:'Pyramidale trigonale', geoEl:'Tétraédrique',
+    hyb:'sp³', angle:107, angleTh:109.5, lp:1, bonds:3,
+    polar:true, dipole:1.47,
+    desc:'1 doublet libre sur N → pyramide trigonale. Angle 107° < 109,5° (répulsion LP-X). Polaire, accepteur de proton (base de Lewis).',
+    atoms:[
+      {sym:'N',col:'#4488ff',r:16,en:3.04, x:0,  y:0,z:0},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:-65,y:50,z:25},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:65, y:50,z:25},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:0,  y:50,z:-55}
+    ],
+    bonds:[[0,1],[0,2],[0,3]], lps:[{ax:0,dx:0,dy:-55,dz:0}],
+    bondType:[1,1,1], dipDir:{x:0,y:1}
+  },
+  'CH₄':{
+    nom:'CH₄', full:'Méthane', cat:0,
+    ax:'AX₄E₀', geo:'Tétraédrique', geoEl:'Tétraédrique',
+    hyb:'sp³', angle:109.5, angleTh:109.5, lp:0, bonds:4,
+    polar:false, dipole:0,
+    desc:'4 liaisons C-H identiques, parfaitement symétriques. Angles tétraédriques = arccos(-1/3) ≈ 109,47°. Apolaire.',
+    atoms:[
+      {sym:'C',col:'#999',   r:15,en:2.55, x:0,  y:0,  z:0},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:-65,y:-50,z:40},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:65, y:-50,z:40},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:0,  y:75, z:40},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:0,  y:0,  z:-80}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4]], lps:[],
+    bondType:[1,1,1,1], dipDir:null
+  },
+
+  // ── MOLÉCULES COURANTES ──
+  'H₂S':{
+    nom:'H₂S', full:'Sulfure d\'hydrogène', cat:1,
+    ax:'AX₂E₂', geo:'Coudée (92°)', geoEl:'Tétraédrique',
+    hyb:'sp³', angle:92, angleTh:109.5, lp:2, bonds:2,
+    polar:true, dipole:0.97,
+    desc:'Analogue de H₂O avec S. Angle encore plus comprimé (92°) car orbitales 3p plus diffuses. Moins polaire que H₂O.',
+    atoms:[
+      {sym:'S',col:'#ffee44',r:20,en:2.58, x:0,  y:0,z:0},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:-62,y:52,z:0},
+      {sym:'H',col:'#e8eaf6',r:11,en:2.20, x:62, y:52,z:0}
+    ],
+    bonds:[[0,1],[0,2]], lps:[{ax:0,dx:-18,dy:-44,dz:12},{ax:0,dx:18,dy:-44,dz:-12}],
+    bondType:[1,1], dipDir:{x:0,y:1}
+  },
+  'CCl₄':{
+    nom:'CCl₄', full:'Tétrachlorure de carbone', cat:1,
+    ax:'AX₄E₀', geo:'Tétraédrique', geoEl:'Tétraédrique',
+    hyb:'sp³', angle:109.5, angleTh:109.5, lp:0, bonds:4,
+    polar:false, dipole:0,
+    desc:'4 liaisons C-Cl polaires mais symétrie tétraédrique → moments s\'annulent → apolaire. Solvant organique.',
+    atoms:[
+      {sym:'C', col:'#999',   r:14,en:2.55, x:0,  y:0,  z:0},
+      {sym:'Cl',col:'#aaff44',r:18,en:3.16, x:-65,y:-50,z:40},
+      {sym:'Cl',col:'#aaff44',r:18,en:3.16, x:65, y:-50,z:40},
+      {sym:'Cl',col:'#aaff44',r:18,en:3.16, x:0,  y:75, z:40},
+      {sym:'Cl',col:'#aaff44',r:18,en:3.16, x:0,  y:0,  z:-82}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4]], lps:[],
+    bondType:[1,1,1,1], dipDir:null
+  },
+  'HCN':{
+    nom:'HCN', full:'Acide cyanhydrique', cat:1,
+    ax:'AX₂E₀', geo:'Linéaire', geoEl:'Linéaire',
+    hyb:'sp', angle:180, angleTh:180, lp:0, bonds:2,
+    polar:true, dipole:2.98,
+    desc:'Liaisons H-C (simple) et C≡N (triple). Linéaire sp. Très polaire (μ=2,98D). Molécule toxique.',
+    atoms:[
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:-85,y:0,z:0},
+      {sym:'C',col:'#999',   r:14,en:2.55, x:0,  y:0,z:0},
+      {sym:'N',col:'#4488ff',r:15,en:3.04, x:85, y:0,z:0}
+    ],
+    bonds:[[0,1],[1,2]], lps:[], bondType:[1,3],
+    dipDir:{x:-1,y:0}
+  },
+  'C₂H₄':{
+    nom:'C₂H₄', full:'Éthylène', cat:1,
+    ax:'AX₃E₀', geo:'Trigonale plane (×2)', geoEl:'Trigonale plane',
+    hyb:'sp²', angle:120, angleTh:120, lp:0, bonds:3,
+    polar:false, dipole:0,
+    desc:'Double liaison C=C. Chaque C est sp². Molécule plane. Angle ≈ 120°. Apolaire (symétrique).',
+    atoms:[
+      {sym:'C',col:'#999',   r:14,en:2.55, x:-45,y:0,  z:0},
+      {sym:'C',col:'#999',   r:14,en:2.55, x:45, y:0,  z:0},
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:-100,y:-50,z:0},
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:-100,y:50, z:0},
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:100, y:-50,z:0},
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:100, y:50, z:0}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[1,4],[1,5]], lps:[],
+    bondType:[2,1,1,1,1], dipDir:null
+  },
+  'C₂H₂':{
+    nom:'C₂H₂', full:'Éthyne (acétylène)', cat:1,
+    ax:'AX₂E₀', geo:'Linéaire', geoEl:'Linéaire',
+    hyb:'sp', angle:180, angleTh:180, lp:0, bonds:2,
+    polar:false, dipole:0,
+    desc:'Triple liaison C≡C. Les 2 C sont sp. Linéaire, tous les atomes alignés. Apolaire. Gaz combustible.',
+    atoms:[
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:-100,y:0,z:0},
+      {sym:'C',col:'#999',   r:14,en:2.55, x:-45, y:0,z:0},
+      {sym:'C',col:'#999',   r:14,en:2.55, x:45,  y:0,z:0},
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:100, y:0,z:0}
+    ],
+    bonds:[[0,1],[1,2],[2,3]], lps:[],
+    bondType:[1,3,1], dipDir:null
+  },
+  'H₂CO':{
+    nom:'H₂CO', full:'Formaldéhyde (méthanal)', cat:1,
+    ax:'AX₃E₀', geo:'Trigonale plane', geoEl:'Trigonale plane',
+    hyb:'sp²', angle:120, angleTh:120, lp:0, bonds:3,
+    polar:true, dipole:2.33,
+    desc:'Groupe carbonyle C=O. Le C est sp² → géométrie plane. Angle ≈ 120°. Polaire car C=O très polaire.',
+    atoms:[
+      {sym:'C',col:'#999',   r:14,en:2.55, x:0,  y:0,  z:0},
+      {sym:'O',col:'#ff4466',r:16,en:3.44, x:0,  y:-75,z:0},
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:-70,y:45, z:0},
+      {sym:'H',col:'#e8eaf6',r:10,en:2.20, x:70, y:45, z:0}
+    ],
+    bonds:[[0,1],[0,2],[0,3]], lps:[],
+    bondType:[2,1,1], dipDir:{x:0,y:-1}
+  },
+
+  // ── HYPERVALENTES & AVANCÉES ──
+  'PCl₅':{
+    nom:'PCl₅', full:'Pentachlorure de phosphore', cat:2,
+    ax:'AX₅E₀', geo:'Bipyramidale trigonale', geoEl:'Bipyramidale trigonale',
+    hyb:'sp³d', angle:90, angleTh:90, lp:0, bonds:5,
+    polar:false, dipole:0,
+    desc:'P hypervalent (couche n=3 avec orbitales 3d). Bipyramidale : 3 positions équatoriales (120°) + 2 axiales (90°). Apolaire.',
+    atoms:[
+      {sym:'P', col:'#ff9f43',r:16,en:2.19, x:0,  y:0,  z:0},
+      {sym:'Cl',col:'#aaff44',r:15,en:3.16, x:-82,y:0,  z:0},
+      {sym:'Cl',col:'#aaff44',r:15,en:3.16, x:41, y:-71,z:0},
+      {sym:'Cl',col:'#aaff44',r:15,en:3.16, x:41, y:71, z:0},
+      {sym:'Cl',col:'#aaff44',r:15,en:3.16, x:0,  y:0,  z:-85},
+      {sym:'Cl',col:'#aaff44',r:15,en:3.16, x:0,  y:0,  z:85}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4],[0,5]], lps:[],
+    bondType:[1,1,1,1,1], dipDir:null
+  },
+  'SF₄':{
+    nom:'SF₄', full:'Tétrafluorure de soufre', cat:2,
+    ax:'AX₄E₁', geo:'Balançoire (seesaw)', geoEl:'Bipyramidale trigonale',
+    hyb:'sp³d', angle:90, angleTh:90, lp:1, bonds:4,
+    polar:true, dipole:0.63,
+    desc:'1 LP en position équatoriale → géométrie "balançoire" (seesaw). Les angles sont distordus. Polaire.',
+    atoms:[
+      {sym:'S',col:'#ffee44',r:17,en:2.58, x:0,  y:0,  z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:-70,y:0,  z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:35, y:-61,z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:35, y:61, z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:0,  y:0,  z:-80}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4]], lps:[{ax:0,dx:0,dy:0,dz:80}],
+    bondType:[1,1,1,1], dipDir:{x:0,y:1}
+  },
+  'ClF₃':{
+    nom:'ClF₃', full:'Trifluorure de chlore', cat:2,
+    ax:'AX₃E₂', geo:'Forme en T (T-shape)', geoEl:'Bipyramidale trigonale',
+    hyb:'sp³d', angle:90, angleTh:90, lp:2, bonds:3,
+    polar:true, dipole:0.60,
+    desc:'2 LP en positions équatoriales → forme en T. Angles 90° (légèrement distordus). Polaire.',
+    atoms:[
+      {sym:'Cl',col:'#aaff44',r:18,en:3.16, x:0,  y:0,  z:0},
+      {sym:'F', col:'#44ff88',r:13,en:3.98, x:0,  y:-75,z:0},
+      {sym:'F', col:'#44ff88',r:13,en:3.98, x:-75,y:0,  z:0},
+      {sym:'F', col:'#44ff88',r:13,en:3.98, x:75, y:0,  z:0}
+    ],
+    bonds:[[0,1],[0,2],[0,3]], lps:[{ax:0,dx:0,dy:55,dz:30},{ax:0,dx:0,dy:55,dz:-30}],
+    bondType:[1,1,1], dipDir:{x:0,y:-1}
+  },
+  'XeF₄':{
+    nom:'XeF₄', full:'Tétrafluorure de xénon', cat:2,
+    ax:'AX₄E₂', geo:'Plan carré', geoEl:'Octaédrique',
+    hyb:'sp³d²', angle:90, angleTh:90, lp:2, bonds:4,
+    polar:false, dipole:0,
+    desc:'2 LP en positions axiales opposées → plan carré. Molécule de gaz noble hypervalent. Apolaire (les LP s\'annulent).',
+    atoms:[
+      {sym:'Xe',col:'#c084fc',r:22,en:2.60, x:0,  y:0,  z:0},
+      {sym:'F', col:'#44ff88',r:13,en:3.98, x:-80,y:0,  z:0},
+      {sym:'F', col:'#44ff88',r:13,en:3.98, x:80, y:0,  z:0},
+      {sym:'F', col:'#44ff88',r:13,en:3.98, x:0,  y:-80,z:0},
+      {sym:'F', col:'#44ff88',r:13,en:3.98, x:0,  y:80, z:0}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4]],
+    lps:[{ax:0,dx:0,dy:0,dz:55},{ax:0,dx:0,dy:0,dz:-55}],
+    bondType:[1,1,1,1], dipDir:null
+  },
+  'SF₆':{
+    nom:'SF₆', full:'Hexafluorure de soufre', cat:2,
+    ax:'AX₆E₀', geo:'Octaédrique', geoEl:'Octaédrique',
+    hyb:'sp³d²', angle:90, angleTh:90, lp:0, bonds:6,
+    polar:false, dipole:0,
+    desc:'Octaédrique parfait. Tous les angles = 90°. Parfaitement symétrique → apolaire. Isolant gazeux industriel.',
+    atoms:[
+      {sym:'S',col:'#ffee44',r:16,en:2.58, x:0,  y:0,  z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:-82,y:0,  z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:82, y:0,  z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:0,  y:-82,z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:0,  y:82, z:0},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:0,  y:0,  z:-82},
+      {sym:'F',col:'#44ff88',r:13,en:3.98, x:0,  y:0,  z:82}
+    ],
+    bonds:[[0,1],[0,2],[0,3],[0,4],[0,5],[0,6]], lps:[],
+    bondType:[1,1,1,1,1,1], dipDir:null
+  }
+};
+
+// ── CATÉGORIES ──
+var CATS = [
+  {id:'msel0', label:'Géométries de base', keys:['HCl','CO₂','SO₂','H₂O','BF₃','NH₃','CH₄']},
+  {id:'msel1', label:'Molécules courantes', keys:['H₂S','CCl₄','HCN','C₂H₄','C₂H₂','H₂CO']},
+  {id:'msel2', label:'Hypervalentes & avancées', keys:['PCl₅','SF₄','ClF₃','XeF₄','SF₆']}
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════════════
+var ST = {
+  running:false, time:0,
+  mol:'H₂O',
+  rotX:25, rotY:40, zoom:100, vit:10,
+  particles:[], mx:null, my:null, raf:null
+};
+
+var canvas = document.getElementById('c2');
+var ctx = canvas.getContext('2d');
+var sw = document.getElementById('sw');
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RESIZE
+// ══════════════════════════════════════════════════════════════════════════════
+function rsz(){
+  canvas.width = sw.clientWidth;
+  canvas.height = sw.clientHeight;
+  d2();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SLIDER
+// ══════════════════════════════════════════════════════════════════════════════
+function slUpd(id, lvId, dec){
+  var sl = document.getElementById(id);
+  var val = parseFloat(sl.value);
+  document.getElementById(lvId).textContent = val.toFixed(dec);
+  var pct = (sl.value - sl.min) / (sl.max - sl.min) * 100;
+  sl.style.setProperty('--pct', pct + '%');
+  if(id === 'sRX') ST.rotX = val;
+  if(id === 'sRY') ST.rotY = val;
+  if(id === 'sZm') ST.zoom = val;
+  if(id === 'sVit') ST.vit = val;
+  d2();
+}
+
+function initSliders(){
+  ['sRX','sRY','sZm','sVit'].forEach(function(id){
+    var sl = document.getElementById(id);
+    var pct = (sl.value - sl.min)/(sl.max - sl.min)*100;
+    sl.style.setProperty('--pct', pct+'%');
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// BUILD MOLECULE SELECTOR
+// ══════════════════════════════════════════════════════════════════════════════
+function buildMolSel(){
+  CATS.forEach(function(cat){
+    var div = document.getElementById(cat.id);
+    if(!div) return;
+    div.innerHTML = '';
+    cat.keys.forEach(function(k){
+      if(!MOLS[k]) return;
+      var btn = document.createElement('button');
+      btn.className = 'molbtn' + (k === ST.mol ? ' active' : '');
+      btn.textContent = k;
+      btn.onclick = function(){
+        ST.mol = k;
+        document.querySelectorAll('.molbtn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        d2(); uR();
+        toast('Molécule : ' + MOLS[k].full);
+      };
+      div.appendChild(btn);
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// 3D PROJECTION (perspective)
+// ══════════════════════════════════════════════════════════════════════════════
+function proj3(x, y, z, rx, ry, zoom, cx, cy){
+  var cosY = Math.cos(ry * Math.PI / 180);
+  var sinY = Math.sin(ry * Math.PI / 180);
+  var x1 = x * cosY - z * sinY;
+  var z1 = x * sinY + z * cosY;
+  var cosX = Math.cos(rx * Math.PI / 180);
+  var sinX = Math.sin(rx * Math.PI / 180);
+  var y2 = y * cosX - z1 * sinX;
+  var z2 = y * sinX + z1 * cosX;
+  var fov = 500;
+  var sc = fov / (fov + z2) * zoom / 100;
+  return { sx: cx + x1 * sc, sy: cy + y2 * sc, sc: sc, z: z2 };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DRAW 2D
+// ══════════════════════════════════════════════════════════════════════════════
+function d2(){
+  var W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  // Background gradient
+  var bg = ctx.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, '#04080f');
+  bg.addColorStop(1, '#060d18');
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(0,229,255,0.025)'; ctx.lineWidth = 1;
+  for(var gx = 0; gx < W; gx += 40){ ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke(); }
+  for(var gy = 0; gy < H; gy += 40){ ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke(); }
+
+  var mol = MOLS[ST.mol];
+  var cx = W/2, cy = H/2 - 15;
+  var rx = ST.rotX;
+  var ry = ST.rotY + (document.getElementById('chkAnim').checked ? ST.time * ST.vit : 0);
+  var zm = ST.zoom;
+
+  // Project atoms
+  var P = mol.atoms.map(function(a){
+    return proj3(a.x, a.y, a.z, rx, ry, zm, cx, cy);
+  });
+
+  // Painter's sort (back to front)
+  var order = mol.atoms.map(function(_, i){ return i; }).sort(function(a, b){
+    return P[a].z - P[b].z;
+  });
+
+  // ── Draw bonds ──
+  mol.bonds.forEach(function(bond, bi){
+    var i0 = bond[0], i1 = bond[1];
+    var p0 = P[i0], p1 = P[i1];
+    var sc = (p0.sc + p1.sc) / 2;
+    var btype = mol.bondType[bi] || 1;
+    var alpha = 0.65;
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = 'rgba(150,200,255,0.35)';
+
+    if(btype === 1){
+      // Single bond
+      ctx.strokeStyle = 'rgba(180,200,240,' + alpha + ')';
+      ctx.lineWidth = 3.5 * sc;
+      ctx.beginPath(); ctx.moveTo(p0.sx, p0.sy); ctx.lineTo(p1.sx, p1.sy); ctx.stroke();
+    } else if(btype === 2){
+      // Double bond — offset lines
+      var ddx = p1.sy - p0.sy, ddy = p0.sx - p1.sx;
+      var dlen = Math.sqrt(ddx*ddx + ddy*ddy) || 1;
+      var off = 4 * sc;
+      var ox = ddx/dlen*off, oy = ddy/dlen*off;
+      ctx.strokeStyle = 'rgba(180,200,240,' + alpha + ')';
+      ctx.lineWidth = 2 * sc;
+      ctx.beginPath(); ctx.moveTo(p0.sx+ox,p0.sy+oy); ctx.lineTo(p1.sx+ox,p1.sy+oy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p0.sx-ox,p0.sy-oy); ctx.lineTo(p1.sx-ox,p1.sy-oy); ctx.stroke();
+    } else if(btype === 3){
+      // Triple bond
+      var tdx = p1.sy - p0.sy, tdy = p0.sx - p1.sx;
+      var tlen = Math.sqrt(tdx*tdx + tdy*tdy) || 1;
+      var toff = 5 * sc;
+      var tx2 = tdx/tlen*toff, ty2 = tdy/tlen*toff;
+      ctx.strokeStyle = 'rgba(180,200,240,' + alpha + ')';
+      ctx.lineWidth = 1.8 * sc;
+      ctx.beginPath(); ctx.moveTo(p0.sx,p0.sy); ctx.lineTo(p1.sx,p1.sy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p0.sx+tx2,p0.sy+ty2); ctx.lineTo(p1.sx+tx2,p1.sy+ty2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(p0.sx-tx2,p0.sy-ty2); ctx.lineTo(p1.sx-tx2,p1.sy-ty2); ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+  });
+
+  // ── Draw lone pairs ──
+  if(document.getElementById('chkLP').checked){
+    mol.lps.forEach(function(lp){
+      var pa = P[lp.ax];
+      var pe = proj3(mol.atoms[lp.ax].x + lp.dx, mol.atoms[lp.ax].y + lp.dy,
+                     mol.atoms[lp.ax].z + lp.dz, rx, ry, zm, cx, cy);
+      // dashed line
+      ctx.strokeStyle = 'rgba(255,215,64,0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath(); ctx.moveTo(pa.sx, pa.sy); ctx.lineTo(pe.sx, pe.sy); ctx.stroke();
+      ctx.setLineDash([]);
+      // lobe glow
+      var lg = ctx.createRadialGradient(pe.sx, pe.sy, 0, pe.sx, pe.sy, 15 * pe.sc);
+      lg.addColorStop(0, 'rgba(255,215,64,0.55)');
+      lg.addColorStop(0.4, 'rgba(255,215,64,0.2)');
+      lg.addColorStop(1, 'rgba(255,215,64,0)');
+      ctx.fillStyle = lg;
+      ctx.beginPath(); ctx.arc(pe.sx, pe.sy, 15 * pe.sc, 0, Math.PI*2); ctx.fill();
+      // LP label
+      if(document.getElementById('chkLbl').checked){
+        ctx.fillStyle = 'rgba(255,215,64,0.9)';
+        ctx.font = 'bold 9px JetBrains Mono';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('LP', pe.sx, pe.sy - 14 * pe.sc);
+      }
+    });
+  }
+
+  // ── Draw atoms (back to front) ──
+  order.forEach(function(i){
+    var a = mol.atoms[i];
+    var p = P[i];
+    var r = a.r * p.sc;
+
+    // Outer glow
+    var grd = ctx.createRadialGradient(p.sx, p.sy, 0, p.sx, p.sy, r * 2.5);
+    grd.addColorStop(0, a.col + '88');
+    grd.addColorStop(0.5, a.col + '33');
+    grd.addColorStop(1, a.col + '00');
+    ctx.fillStyle = grd;
+    ctx.beginPath(); ctx.arc(p.sx, p.sy, r * 2.5, 0, Math.PI*2); ctx.fill();
+
+    // Atom body (sphere-like gradient)
+    var body = ctx.createRadialGradient(
+      p.sx - r*0.35, p.sy - r*0.35, r * 0.05,
+      p.sx, p.sy, r
+    );
+    body.addColorStop(0, '#ffffff');
+    body.addColorStop(0.2, a.col + 'ff');
+    body.addColorStop(0.75, a.col + 'cc');
+    body.addColorStop(1, a.col + '55');
+    ctx.fillStyle = body;
+    ctx.shadowBlur = 12; ctx.shadowColor = a.col;
+    ctx.beginPath(); ctx.arc(p.sx, p.sy, r, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 0;
+
+    // Rim
+    ctx.strokeStyle = a.col + 'aa'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(p.sx, p.sy, r, 0, Math.PI*2); ctx.stroke();
+
+    // Symbol label
+    if(document.getElementById('chkLbl').checked){
+      var fsize = Math.max(9, Math.round(12 * p.sc));
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold ' + fsize + 'px Outfit';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.shadowBlur = 4; ctx.shadowColor = '#000';
+      ctx.fillText(a.sym, p.sx, p.sy);
+      ctx.shadowBlur = 0;
+      // EN value
+      if(r > 14){
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.font = Math.max(7, Math.round(8 * p.sc)) + 'px JetBrains Mono';
+        ctx.fillText(a.en, p.sx, p.sy + r * 0.55);
+      }
+    }
+  });
+
+  // ── Draw bond angles ──
+  if(document.getElementById('chkAng').checked && mol.bonds.length >= 2){
+    var c0 = mol.bonds[0][0]; // central atom index
+    var p_c = P[c0];
+    var r_arc = 28 * p_c.sc;
+    // find two ligand atoms
+    var lig1 = mol.bonds[0][1], lig2 = mol.bonds[1][1];
+    var pa1 = P[lig1], pa2 = P[lig2];
+    var ang1 = Math.atan2(pa1.sy - p_c.sy, pa1.sx - p_c.sx);
+    var ang2 = Math.atan2(pa2.sy - p_c.sy, pa2.sx - p_c.sx);
+    ctx.strokeStyle = 'rgba(0,229,255,0.55)'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    // always draw smaller arc
+    var da = ang2 - ang1;
+    while(da > Math.PI) da -= 2*Math.PI;
+    while(da < -Math.PI) da += 2*Math.PI;
+    ctx.arc(p_c.sx, p_c.sy, r_arc, ang1, ang1 + da, da < 0);
+    ctx.stroke();
+    var midAng = ang1 + da/2;
+    var tx3 = p_c.sx + Math.cos(midAng)*(r_arc + 18);
+    var ty3 = p_c.sy + Math.sin(midAng)*(r_arc + 18);
+    ctx.fillStyle = 'rgba(0,229,255,0.9)';
+    ctx.font = 'bold 10px JetBrains Mono';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(mol.angle + '°', tx3, ty3);
+  }
+
+  // ── Dipole arrow ──
+  if(document.getElementById('chkDip').checked && mol.polar && mol.dipDir){
+    var dox = W - 90, doy2 = 35;
+    var ddx2 = mol.dipDir.x * 40, ddy2 = mol.dipDir.y * 40;
+    ctx.strokeStyle = '#ff4060'; ctx.lineWidth = 2.5;
+    ctx.shadowBlur = 8; ctx.shadowColor = '#ff4060';
+    ctx.beginPath(); ctx.moveTo(dox - ddx2, doy2 - ddy2); ctx.lineTo(dox + ddx2, doy2 + ddy2); ctx.stroke();
+    // arrowhead
+    var aang = Math.atan2(ddy2, ddx2);
+    ctx.beginPath();
+    ctx.moveTo(dox + ddx2, doy2 + ddy2);
+    ctx.lineTo(dox + ddx2 - 10*Math.cos(aang-0.4), doy2 + ddy2 - 10*Math.sin(aang-0.4));
+    ctx.lineTo(dox + ddx2 - 10*Math.cos(aang+0.4), doy2 + ddy2 - 10*Math.sin(aang+0.4));
+    ctx.closePath(); ctx.fillStyle = '#ff4060'; ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,64,96,0.85)';
+    ctx.font = 'bold 9px Outfit'; ctx.textAlign = 'center';
+    ctx.fillText('\u03BC=' + mol.dipole + ' D', dox, doy2 + 18);
+  }
+
+  // ── Info panel (bottom-left) ──
+  var iy = H - 56;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(6, iy - 4, 340, 58);
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.font = 'bold 12px Outfit'; ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  ctx.fillText(mol.full + '  (' + mol.nom + ')', 12, iy + 10);
+  ctx.fillStyle = 'rgba(0,229,255,0.85)';
+  ctx.font = '10px JetBrains Mono';
+  ctx.fillText(mol.ax + '  |  ' + mol.geo + '  |  ' + mol.hyb, 12, iy + 24);
+  ctx.fillStyle = 'rgba(121,134,163,0.9)';
+  ctx.font = '9px Outfit';
+  // Trim desc to fit
+  var desc = mol.desc.length > 70 ? mol.desc.slice(0,70)+'…' : mol.desc;
+  ctx.fillText(desc, 12, iy + 38);
+  ctx.fillStyle = mol.polar ? '#ff4060' : '#00ff88';
+  ctx.fillText(mol.polar ? 'POLAIRE  \u03BC=' + mol.dipole + ' D' : 'APOLAIRE  \u03BC=0', 12, iy + 52);
+
+  // ── Legend top-right ──
+  var seen = {}, lx2 = W - 8, ly2 = 14;
+  mol.atoms.slice().reverse().forEach(function(a){
+    if(seen[a.sym]) return; seen[a.sym] = true;
+    ctx.fillStyle = a.col; ctx.beginPath(); ctx.arc(lx2 - 5, ly2, 6, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = 'rgba(200,210,240,0.85)'; ctx.font = '9px Outfit';
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    ctx.fillText(a.sym + ' (EN ' + a.en + ')', lx2 - 14, ly2);
+    ly2 += 16;
+  });
+
+  // Particles
+  tkP();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PARTICLES
+// ══════════════════════════════════════════════════════════════════════════════
+function spP(x, y, col, n){
+  col = col || '#00e5ff'; n = n || 10;
+  for(var i = 0; i < n; i++){
+    var a = Math.random() * Math.PI * 2;
+    var sp = 1 + Math.random() * 3.5;
+    ST.particles.push({x:x,y:y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,col:col});
+  }
+}
+function tkP(){
+  ST.particles = ST.particles.filter(function(p){ return p.life > 0; });
+  ST.particles.forEach(function(p){
+    p.x += p.vx; p.y += p.vy; p.vy += 0.07; p.life -= 0.028;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 3.5 * p.life, 0, Math.PI*2);
+    ctx.fillStyle = p.col; ctx.globalAlpha = p.life; ctx.fill();
+    ctx.globalAlpha = 1;
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ANIMATION LOOP
+// ══════════════════════════════════════════════════════════════════════════════
+function lp2(){
+  if(!ST.running){ ST.raf = null; return; }
+  ST.time += 0.016;
+  d2();
+  ST.raf = requestAnimationFrame(lp2);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UPDATE RESULTS
+// ══════════════════════════════════════════════════════════════════════════════
+function uR(){
+  var mol = MOLS[ST.mol];
+
+  // Onglet 1 — Mesures
+  document.getElementById('mNom').textContent = mol.nom;
+  document.getElementById('mGeo').textContent = mol.geo;
+  document.getElementById('mAng').textContent = mol.angle;
+  document.getElementById('mAngTh').textContent = mol.angleTh;
+  document.getElementById('mX').textContent = mol.bonds.length;
+  document.getElementById('mE').textContent = mol.lp;
+  document.getElementById('mAXE').textContent = mol.ax;
+  document.getElementById('mHyb').textContent = mol.hyb;
+  document.getElementById('mDip').textContent = mol.dipole + ' D';
+  document.getElementById('mPol').textContent = mol.polar ? 'POLAIRE' : 'APOLAIRE';
+  // Delta EN
+  var ens = mol.atoms.map(function(a){ return a.en; });
+  var dEN = (Math.max.apply(null, ens) - Math.min.apply(null, ens)).toFixed(2);
+  document.getElementById('mDEN').textContent = dEN;
+  document.getElementById('mGrp').textContent = mol.bonds.length + mol.lp;
+
+  // EN cards
+  var enDiv = document.getElementById('enCards');
+  enDiv.innerHTML = '';
+  var seen2 = {};
+  mol.atoms.forEach(function(a){
+    if(seen2[a.sym]) return; seen2[a.sym] = true;
+    var c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML = '<div class="cl">EN (' + a.sym + ')</div>' +
+      '<div class="cv" style="color:' + a.col + '">' + a.en + '</div>' +
+      '<div class="cu">Pauling</div>';
+    enDiv.appendChild(c);
+  });
+
+  // TP tab
+  document.getElementById('tpMol').textContent = mol.nom + ' — ' + mol.full;
+  document.getElementById('tpRes').textContent = mol.ax + ' → ' + mol.geo + ' | ' + mol.hyb;
+
+  // Onglet 4 — Résultats
+  document.getElementById('rMolTitle').textContent = mol.nom;
+  document.getElementById('rFormule').textContent = mol.nom;
+  document.getElementById('rGeo').textContent = mol.geo;
+  document.getElementById('rGeoEl').textContent = mol.geoEl;
+  document.getElementById('rHyb').textContent = mol.hyb;
+  document.getElementById('rAng').textContent = mol.angle;
+  document.getElementById('rAngTh').textContent = mol.angleTh;
+  document.getElementById('rDip').textContent = mol.dipole;
+  document.getElementById('rPol').textContent = mol.polar ? 'POLAIRE' : 'APOLAIRE';
+
+  // Badges vérif
+  document.getElementById('vb1').textContent = mol.ax;
+  document.getElementById('vb2').textContent = mol.geo.split(' ')[0];
+  document.getElementById('vb3').textContent = mol.angle + '°';
+  document.getElementById('vb4').textContent = mol.hyb;
+  document.getElementById('vb5').textContent = mol.polar ? 'Polaire' : 'Apolaire';
+  document.getElementById('vb6').textContent = mol.dipole + ' D';
+
+  // Comparaison molécules similaires
+  buildCompGrid(mol);
+}
+
+function buildCompGrid(mol){
+  var grid = document.getElementById('compGrid');
+  grid.innerHTML = '';
+  // Trouver des molécules avec même géométrie ou même AX
+  var similar = [];
+  Object.keys(MOLS).forEach(function(k){
+    if(k === ST.mol) return;
+    var m = MOLS[k];
+    if(m.hyb === mol.hyb || m.ax === mol.ax){ similar.push(k); }
+  });
+  similar.slice(0, 4).forEach(function(k){
+    var m = MOLS[k];
+    var c = document.createElement('div');
+    c.className = 'card';
+    c.style.cursor = 'pointer';
+    c.innerHTML = '<div class="cl">' + m.nom + '</div>' +
+      '<div class="cv" style="font-size:9px;color:var(--grn)">' + m.geo + '</div>' +
+      '<div class="cu">' + m.ax + ' | ' + m.hyb + '</div>';
+    c.onclick = function(){
+      ST.mol = k;
+      document.querySelectorAll('.molbtn').forEach(function(b){ b.classList.remove('active'); });
+      document.querySelectorAll('.molbtn').forEach(function(b){
+        if(b.textContent === k) b.classList.add('active');
+      });
+      d2(); uR(); toast('→ ' + m.full);
+    };
+    grid.appendChild(c);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════════════════════════════
+function doLancer(){
+  if(ST.running) return;
+  ST.running = true; toast('Animation démarrée'); lp2();
+}
+function doPause(){
+  ST.running = !ST.running;
+  if(ST.running) lp2();
+  toast(ST.running ? '&#9654; Reprise' : '&#9208; Pause');
+}
+function doReset(){
+  ST.running = false;
+  if(ST.raf){ cancelAnimationFrame(ST.raf); ST.raf = null; }
+  ST.time = 0; ST.particles = [];
+  document.getElementById('sRX').value = 25; slUpd('sRX','lRX',0);
+  document.getElementById('sRY').value = 40; slUpd('sRY','lRY',0);
+  document.getElementById('sZm').value = 100; slUpd('sZm','lZm',0);
+  d2(); toast('Reset effectué');
+}
+function switchV(){
+  // Cycle through molecules quickly (next molecule)
+  var keys = Object.keys(MOLS);
+  var idx = (keys.indexOf(ST.mol) + 1) % keys.length;
+  ST.mol = keys[idx];
+  document.querySelectorAll('.molbtn').forEach(function(b){ b.classList.remove('active'); });
+  document.querySelectorAll('.molbtn').forEach(function(b){
+    if(b.textContent === ST.mol) b.classList.add('active');
+  });
+  d2(); uR();
+  toast('Molécule suivante : ' + MOLS[ST.mol].nom);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════════════════════════
+function selTab(i){
+  document.querySelectorAll('.tab').forEach(function(t, j){ t.classList.toggle('active', j===i); });
+  document.querySelectorAll('.tp').forEach(function(t, j){ t.classList.toggle('active', j===i); });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════════════════════════════════
+function toast(m){
+  var t = document.getElementById('toast');
+  t.textContent = m; t.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(function(){ t.style.opacity = '0'; }, 2600);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// EXPORT TP
+// ══════════════════════════════════════════════════════════════════════════════
+function exportTP(){
+  var mol = MOLS[ST.mol];
+  var lines = [
+    'RAPPORT TP — GÉOMÉTRIE MOLÉCULAIRE (VSEPR)',
+    'SimLab — ' + new Date().toLocaleDateString('fr-FR'),
+    '='.repeat(50),
+    '',
+    'MOLÉCULE ÉTUDIÉE',
+    '  Formule chimique   : ' + mol.nom,
+    '  Nom IUPAC          : ' + mol.full,
+    '  Notation AXmEn     : ' + mol.ax,
+    '  Liaisons (m)       : ' + mol.bonds.length,
+    '  Doublets libres (n): ' + mol.lp,
+    '  Groupes électron.  : ' + (mol.bonds.length + mol.lp),
+    '',
+    'GÉOMÉTRIE',
+    '  Géométrie électronique : ' + mol.geoEl,
+    '  Géométrie moléculaire  : ' + mol.geo,
+    '  Angle de liaison réel  : ' + mol.angle + '°',
+    '  Angle théorique idéal  : ' + mol.angleTh + '°',
+    '  Écart (doublets libres): ' + (mol.angleTh - mol.angle).toFixed(1) + '°',
+    '  Hybridation            : ' + mol.hyb,
+    '',
+    'POLARITÉ',
+    '  Moment dipolaire μ : ' + mol.dipole + ' D',
+    '  Polarité           : ' + (mol.polar ? 'POLAIRE' : 'APOLAIRE'),
+    '',
+    'ÉLECTRONÉGATIVITÉ DES ATOMES',
+  ];
+  var seen3 = {};
+  mol.atoms.forEach(function(a){
+    if(seen3[a.sym]) return; seen3[a.sym] = true;
+    lines.push('  ' + a.sym + ' : EN = ' + a.en + ' (Pauling)');
+  });
+  var ens2 = mol.atoms.map(function(a){ return a.en; });
+  lines.push('  Delta EN max : ' + (Math.max.apply(null,ens2)-Math.min.apply(null,ens2)).toFixed(2));
+  lines.push('');
+  lines.push('DESCRIPTION');
+  lines.push('  ' + mol.desc);
+  lines.push('');
+  lines.push('LOIS VSEPR APPLIQUÉES');
+  lines.push('  - Notation AXmEn : A=atome central, X=ligand, E=doublet libre');
+  lines.push('  - Ordre répulsions : LP-LP > LP-X > X-X');
+  lines.push('  - Chaque LP réduit les angles d\'environ 2,5°');
+  lines.push('  - Hybridation sp (2g), sp² (3g), sp³ (4g), sp³d (5g), sp³d² (6g)');
+  lines.push('  - Angle tétraédrique = arccos(-1/3) ≈ 109,47°');
+  lines.push('  - Polaire si ΔEN > 0,4 ET somme vectorielle μ ≠ 0');
+  lines.push('');
+  lines.push('='.repeat(50));
+  lines.push('SimLab — Simulation pédagogique Bénin');
+
+  var txt = lines.join('\n');
+  var blob = new Blob([txt], {type:'text/plain;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'TP_GeomMol_' + mol.nom.replace(/[₀-₉]/g,'').replace(/[^a-zA-Z0-9]/g,'_') + '.txt';
+  a.click();
+  toast('Rapport TXT exporté !');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// MOUSE / TOUCH INTERACTIONS
+// ══════════════════════════════════════════════════════════════════════════════
+var drag = null, dRX = 25, dRY = 40;
+
+canvas.addEventListener('mousedown', function(e){
+  drag = {x:e.clientX, y:e.clientY};
+  dRX = ST.rotX; dRY = ST.rotY;
+});
+canvas.addEventListener('mousemove', function(e){
+  if(drag){
+    ST.rotX = dRX + (e.clientY - drag.y) * 0.45;
+    ST.rotY = dRY + (e.clientX - drag.x) * 0.45;
+    var slx = document.getElementById('sRX');
+    var sly = document.getElementById('sRY');
+    slx.value = Math.max(-180, Math.min(180, ST.rotX));
+    sly.value = Math.max(-180, Math.min(180, ST.rotY));
+    slUpd('sRX','lRX',0); slUpd('sRY','lRY',0);
+    if(!ST.running) d2();
+  }
+  // Tooltip
+  var mol = MOLS[ST.mol];
+  var cx = canvas.width/2, cy = canvas.height/2 - 15;
+  var rx = ST.rotX, ry = ST.rotY + (document.getElementById('chkAnim').checked ? ST.time*ST.vit : 0);
+  var rect = canvas.getBoundingClientRect();
+  var mx = e.clientX - rect.left, my = e.clientY - rect.top;
+  var best = null, bestD = 9999;
+  mol.atoms.forEach(function(a, i){
+    var p = proj3(a.x, a.y, a.z, rx, ry, ST.zoom, cx, cy);
+    var d = Math.sqrt((mx-p.sx)*(mx-p.sx)+(my-p.sy)*(my-p.sy));
+    if(d < bestD){ bestD = d; best = {a:a, p:p}; }
+  });
+  var tt = document.getElementById('tt');
+  if(best && bestD < 44){
+    tt.innerHTML = '<b style="color:' + best.a.col + '">' + best.a.sym + '</b><br>' +
+      'EN : ' + best.a.en + '<br>' +
+      'Rayon : ' + best.a.r + ' (rel.)';
+    tt.style.display = 'block';
+    tt.style.left = (e.clientX + 14) + 'px';
+    tt.style.top = (e.clientY - 35) + 'px';
+  } else { tt.style.display = 'none'; }
+});
+canvas.addEventListener('mouseup', function(){ drag = null; });
+canvas.addEventListener('mouseleave', function(){
+  drag = null;
+  document.getElementById('tt').style.display = 'none';
+});
+
+canvas.addEventListener('click', function(e){
+  var rect = canvas.getBoundingClientRect();
+  var mol = MOLS[ST.mol];
+  spP(e.clientX - rect.left, e.clientY - rect.top, mol.atoms[0] ? mol.atoms[0].col : '#00e5ff', 12);
+  if(!ST.running) d2();
+});
+
+canvas.addEventListener('wheel', function(e){
+  e.preventDefault();
+  var sl = document.getElementById('sZm');
+  sl.value = Math.max(sl.min, Math.min(sl.max, parseFloat(sl.value) - e.deltaY * 0.05));
+  slUpd('sZm','lZm',0);
+}, {passive:false});
+
+// Touch
+var tdrag = null, tdRX = 25, tdRY = 40, tpinch0 = null;
+canvas.addEventListener('touchstart', function(e){
+  if(e.touches.length === 1){
+    tdrag = {x:e.touches[0].clientX, y:e.touches[0].clientY};
+    tdRX = ST.rotX; tdRY = ST.rotY;
+  }
+  if(e.touches.length === 2){
+    var dx = e.touches[0].clientX - e.touches[1].clientX;
+    var dy = e.touches[0].clientY - e.touches[1].clientY;
+    tpinch0 = Math.sqrt(dx*dx+dy*dy);
+    e.preventDefault();
+  }
+},{passive:false});
+canvas.addEventListener('touchmove', function(e){
+  if(e.touches.length === 1 && tdrag){
+    ST.rotX = tdRX + (e.touches[0].clientY - tdrag.y)*0.45;
+    ST.rotY = tdRY + (e.touches[0].clientX - tdrag.x)*0.45;
+    document.getElementById('sRX').value = Math.max(-180,Math.min(180,ST.rotX));
+    document.getElementById('sRY').value = Math.max(-180,Math.min(180,ST.rotY));
+    slUpd('sRX','lRX',0); slUpd('sRY','lRY',0);
+    if(!ST.running) d2();
+    e.preventDefault();
+  }
+  if(e.touches.length === 2 && tpinch0){
+    var dx = e.touches[0].clientX - e.touches[1].clientX;
+    var dy = e.touches[0].clientY - e.touches[1].clientY;
+    var dist = Math.sqrt(dx*dx+dy*dy);
+    var sl = document.getElementById('sZm');
+    sl.value = Math.max(sl.min, Math.min(sl.max, parseFloat(sl.value)*(dist/tpinch0)));
+    tpinch0 = dist;
+    slUpd('sZm','lZm',0);
+    e.preventDefault();
+  }
+},{passive:false});
+canvas.addEventListener('touchend', function(){ tdrag = null; tpinch0 = null; });
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════════
+window.addEventListener('resize', rsz);
+buildMolSel();
+initSliders();
+rsz();
+uR();
+// Auto-start
+ST.running = true;
+lp2();
+</script>
+
+<script type='text/javascript' src='//pl26527913.profitableratecpm.com/5c/8e/2e/5c8e2eebcfa5e97f9c7d66bb3d9bfcf1.js'></script>
+</body>
+</html>

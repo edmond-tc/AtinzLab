@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Dynamique — Simulateur TP | Edmond Atinzoun TCHOKPON</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e17;
+    --panel: #111827;
+    --border: #1e2d45;
+    --accent: #00e5ff;
+    --accent2: #ff6b35;
+    --accent3: #a3e635;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --grid: rgba(0,229,255,0.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; overflow-x:hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events:none;
+    z-index:0;
+  }
+
+  .container { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:16px; }
+
+  /* HEADER */
+  header {
+    text-align:center;
+    padding: 28px 16px 18px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  header .badge {
+    display:inline-block;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+  }
+  header h1 {
+    font-size: clamp(22px, 5vw, 42px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1.1;
+  }
+  header h1 span { color: var(--accent); }
+  header p {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 8px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+    text-align: center;
+    letter-spacing: 0.5px;
+  }
+  .tab-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tab-btn.active {
+    background: rgba(0,229,255,0.12);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* PANELS */
+  .sim-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  @media(min-width:700px) {
+    .sim-layout { grid-template-columns: 1fr 340px; }
+  }
+
+  .canvas-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+  canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+    touch-action: none;
+  }
+
+  .controls {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ctrl-section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+  .ctrl-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .ctrl-label {
+    font-size: 12px;
+    color: var(--text);
+    min-width: 80px;
+  }
+  .ctrl-label span {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  input[type=range] {
+    -webkit-appearance: none;
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+  .val-display {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    min-width: 48px;
+    text-align: right;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .btn {
+    flex: 1;
+    padding: 10px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn.primary {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .btn.primary:hover { background: #00c4dc; }
+  .btn.danger { border-color: var(--accent2); color: var(--accent2); }
+  .btn.danger:hover { background: rgba(255,107,53,0.1); }
+
+  /* READINGS */
+  .readings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .reading-card {
+    background: rgba(0,229,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+  }
+  .reading-card .rval {
+    font-family: 'Space Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .reading-card .rlabel {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* THEORY BOX */
+  .theory-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 16px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .theory-box h3 {
+    color: var(--accent);
+    font-size: 13px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .formula {
+    display: inline-block;
+    background: rgba(0,229,255,0.08);
+    border: 1px solid rgba(0,229,255,0.2);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    margin: 4px 4px;
+  }
+
+  /* FOOTER */
+  footer {
+    text-align:center;
+    padding: 20px;
+    margin-top: 30px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  /* CHECKBOX STYLED */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .check-row input { accent-color: var(--accent); width:16px; height:16px; cursor:pointer; }
+  .check-row label { font-size:12px; color:var(--text); cursor:pointer; }
+
+  .status-bar {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 6px 12px;
+    background: rgba(0,0,0,0.3);
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+  .status-bar .status-dot {
+    display: inline-block;
+    width:8px; height:8px;
+    border-radius:50%;
+    background: var(--muted);
+    margin-right: 6px;
+  }
+  .status-bar .status-dot.running { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
+
+  /* PLAN INCLINÉ CANVAS OVERLAY */
+  .canvas-label {
+    position:absolute;
+    top:8px; left:8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+  }
+
+  select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    outline: none;
+    flex:1;
+  }
+  select:focus { border-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">SIMULATEUR TP — N°1 / 6</div>
+    <h1>DYNAMIQUE<br><span>NEWTONIENNE</span></h1>
+    <p>par Edmond Atinzoun TCHOKPON · Université d'Abomey-Calavi · CPGE / Licence PC</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('plan')">📐 Plan incliné</button>
+    <button class="tab-btn" onclick="showTab('atwood')">⚖️ Machine d'Atwood</button>
+    <button class="tab-btn" onclick="showTab('projectile')">🎯 Projectile</button>
+  </div>
+
+  <!-- ===== TAB 1 : PLAN INCLINÉ ===== -->
+  <div id="tab-plan" class="tab-content active">
+    <div class="sim-layout">
+      <div>
+        <div class="canvas-wrap">
+          <div class="canvas-label">PLAN INCLINÉ — VUE EXPÉRIMENTALE</div>
+          <canvas id="planCanvas" width="700" height="420"></canvas>
+          <div class="status-bar">
+            <span class="status-dot" id="planDot"></span>
+            <span id="planStatus">EN ATTENTE</span>
+          </div>
+        </div>
+        <div class="theory-box">
+          <h3>// THÉORIE ESSENTIELLE</h3>
+          <p>Sur un plan incliné d'angle θ, le bilan des forces sur la masse m donne :</p>
+          <br>
+          <span class="formula">ΣF = ma</span>
+          <span class="formula">mg·sinθ − f = ma</span>
+          <span class="formula">f = μ·N = μ·mg·cosθ</span>
+          <br><br>
+          <p>L'accélération résultante : <span class="formula">a = g(sinθ − μcosθ)</span></p>
+          <p style="margin-top:10px; color:var(--muted); font-size:12px;">
+            💡 Pour les TP : Mesure de μ par la méthode de l'angle limite (tanθ<sub>lim</sub> = μ)
+          </p>
+        </div>
+      </div>
+      <div class="controls">
+        <div>
+          <div class="ctrl-section-title">// PARAMÈTRES</div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">Angle θ<span>Plan incliné</span></div>
+            <input type="range" id="planAngle" min="0" max="80" value="30" oninput="updatePlan()">
+            <div class="val-display" id="planAngleVal">30°</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">Masse m<span>du bloc</span></div>
+            <input type="range" id="planMass" min="0.1" max="5" step="0.1" value="1" oninput="updatePlan()">
+            <div class="val-display" id="planMassVal">1.0 kg</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">μ (friction)<span>coeff. cinétique</span></div>
+            <input type="range" id="planMu" min="0" max="0.9" step="0.01" value="0.2" oninput="updatePlan()">
+            <div class="val-display" id="planMuVal">0.20</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">g<span>gravité m/s²</span></div>
+            <input type="range" id="planG" min="1" max="25" step="0.1" value="9.81" oninput="updatePlan()">
+            <div class="val-display" id="planGVal">9.81</div>
+          </div>
+        </div>
+        <div>
+          <div class="ctrl-section-title">// OPTIONS</div>
+          <label class="check-row" style="margin-bottom:8px">
+            <input type="checkbox" id="showForces" checked onchange="updatePlan()">
+            <label>Afficher les forces</label>
+          </label>
+          <label class="check-row">
+            <input type="checkbox" id="showDecomp" checked onchange="updatePlan()">
+            <label>Décomposition vectorielle</label>
+          </label>
+        </div>
+        <div>
+          <div class="ctrl-section-title">// MESURES EN TEMPS RÉEL</div>
+          <div class="readings">
+            <div class="reading-card">
+              <div class="rval" id="rAccel">0.00</div>
+              <div class="rlabel">a (m/s²)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="rVitesse">0.00</div>
+              <div class="rlabel">v (m/s)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="rPoids">0.00</div>
+              <div class="rlabel">P (N)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="rFriction">0.00</div>
+              <div class="rlabel">f (N)</div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="startPlan()">▶ LANCER</button>
+          <button class="btn danger" onclick="resetPlan()">↺ RESET</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2 : MACHINE ATWOOD ===== -->
+  <div id="tab-atwood" class="tab-content">
+    <div class="sim-layout">
+      <div>
+        <div class="canvas-wrap">
+          <div class="canvas-label">MACHINE D'ATWOOD — SYSTÈME MÉCANIQUE</div>
+          <canvas id="atwoodCanvas" width="700" height="420"></canvas>
+          <div class="status-bar">
+            <span class="status-dot" id="atwoodDot"></span>
+            <span id="atwoodStatus">EN ATTENTE</span>
+          </div>
+        </div>
+        <div class="theory-box">
+          <h3>// THÉORIE ESSENTIELLE</h3>
+          <p>La machine d'Atwood permet de mesurer g précisément. Pour deux masses m₁ et m₂ :</p>
+          <br>
+          <span class="formula">a = (m₁−m₂)g / (m₁+m₂)</span>
+          <span class="formula">T = 2m₁m₂g / (m₁+m₂)</span>
+          <br><br>
+          <p style="color:var(--muted); font-size:12px;">
+            💡 TP : Si m₁ ≈ m₂, l'accélération est faible → mesure précise de g par chronométrage.
+          </p>
+        </div>
+      </div>
+      <div class="controls">
+        <div>
+          <div class="ctrl-section-title">// PARAMÈTRES</div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">Masse m₁<span>gauche (kg)</span></div>
+            <input type="range" id="atwoodM1" min="0.1" max="5" step="0.1" value="2" oninput="updateAtwood()">
+            <div class="val-display" id="atwoodM1Val">2.0 kg</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">Masse m₂<span>droite (kg)</span></div>
+            <input type="range" id="atwoodM2" min="0.1" max="5" step="0.1" value="1.5" oninput="updateAtwood()">
+            <div class="val-display" id="atwoodM2Val">1.5 kg</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">g (m/s²)</div>
+            <input type="range" id="atwoodG" min="1" max="25" step="0.1" value="9.81" oninput="updateAtwood()">
+            <div class="val-display" id="atwoodGVal">9.81</div>
+          </div>
+        </div>
+        <div>
+          <div class="ctrl-section-title">// MESURES</div>
+          <div class="readings">
+            <div class="reading-card">
+              <div class="rval" id="aAccel">0.00</div>
+              <div class="rlabel">a (m/s²)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="aTension">0.00</div>
+              <div class="rlabel">T (N)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="aVit">0.00</div>
+              <div class="rlabel">v (m/s)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="aTemps">0.00</div>
+              <div class="rlabel">t (s)</div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="startAtwood()">▶ LANCER</button>
+          <button class="btn danger" onclick="resetAtwood()">↺ RESET</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3 : PROJECTILE ===== -->
+  <div id="tab-projectile" class="tab-content">
+    <div class="sim-layout">
+      <div>
+        <div class="canvas-wrap">
+          <div class="canvas-label">TIR PARABOLIQUE — SANS FROTTEMENT</div>
+          <canvas id="projCanvas" width="700" height="420"></canvas>
+          <div class="status-bar">
+            <span class="status-dot" id="projDot"></span>
+            <span id="projStatus">EN ATTENTE</span>
+          </div>
+        </div>
+        <div class="theory-box">
+          <h3>// THÉORIE ESSENTIELLE</h3>
+          <p>Mouvement à accélération constante dans deux directions :</p>
+          <br>
+          <span class="formula">x(t) = v₀·cosα·t</span>
+          <span class="formula">y(t) = v₀·sinα·t − ½gt²</span>
+          <br><br>
+          <span class="formula">Portée R = v₀²·sin(2α)/g</span>
+          <span class="formula">H<sub>max</sub> = v₀²·sin²α/2g</span>
+          <br><br>
+          <p style="color:var(--muted); font-size:12px;">
+            💡 Portée maximale pour α = 45°. En TP : mesurer R et en déduire v₀.
+          </p>
+        </div>
+      </div>
+      <div class="controls">
+        <div>
+          <div class="ctrl-section-title">// PARAMÈTRES</div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">Angle α<span>de tir</span></div>
+            <input type="range" id="projAngle" min="5" max="85" value="45" oninput="updateProj()">
+            <div class="val-display" id="projAngleVal">45°</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">v₀ initiale<span>(m/s)</span></div>
+            <input type="range" id="projV0" min="5" max="60" value="20" oninput="updateProj()">
+            <div class="val-display" id="projV0Val">20 m/s</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">g (m/s²)</div>
+            <input type="range" id="projG" min="1" max="25" step="0.1" value="9.81" oninput="updateProj()">
+            <div class="val-display" id="projGVal">9.81</div>
+          </div>
+          <div class="ctrl-row">
+            <div class="ctrl-label">Hauteur h₀<span>départ (m)</span></div>
+            <input type="range" id="projH0" min="0" max="20" value="0" oninput="updateProj()">
+            <div class="val-display" id="projH0Val">0 m</div>
+          </div>
+        </div>
+        <div>
+          <div class="ctrl-section-title">// RÉSULTATS</div>
+          <div class="readings">
+            <div class="reading-card">
+              <div class="rval" id="pPortee">0.0</div>
+              <div class="rlabel">Portée R (m)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="pHmax">0.0</div>
+              <div class="rlabel">H max (m)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="pTvol">0.0</div>
+              <div class="rlabel">t vol (s)</div>
+            </div>
+            <div class="reading-card">
+              <div class="rval" id="pVfin">0.0</div>
+              <div class="rlabel">v finale (m/s)</div>
+            </div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn primary" onclick="startProj()">▶ TIRER</button>
+          <button class="btn danger" onclick="resetProj()">↺ RESET</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    SIMULATEUR DE DYNAMIQUE — 1/6 &nbsp;|&nbsp;
+    <a href="https://edmond-atinzoun.netlify.app" target="_blank">edmond-atinzoun.netlify.app</a>
+    &nbsp;|&nbsp; Université d'Abomey-Calavi · CPGE / Licence PC
+  </footer>
+</div>
+
+<script>
+// ============================================================
+// UTILITIES
+// ============================================================
+function showTab(name) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function arrow(ctx, x1,y1, x2,y2, color, label, lineWidth=2){
+  const dx=x2-x1, dy=y2-y1;
+  const len=Math.sqrt(dx*dx+dy*dy);
+  if(len<1) return;
+  const ux=dx/len, uy=dy/len;
+  const hw=8, hl=14;
+  ctx.save();
+  ctx.strokeStyle=color; ctx.fillStyle=color;
+  ctx.lineWidth=lineWidth;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2-ux*hl,y2-uy*hl); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2-ux*hl-uy*hw, y2-uy*hl+ux*hw);
+  ctx.lineTo(x2-ux*hl+uy*hw, y2-uy*hl-ux*hw);
+  ctx.closePath(); ctx.fill();
+  if(label){
+    ctx.font='bold 12px Space Mono, monospace';
+    ctx.fillText(label, x2+4, y2);
+  }
+  ctx.restore();
+}
+
+function drawGrid(ctx,w,h){
+  ctx.save();
+  ctx.strokeStyle='rgba(0,229,255,0.05)';
+  ctx.lineWidth=1;
+  for(let x=0;x<w;x+=40){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=40){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  ctx.restore();
+}
+
+// ============================================================
+// TAB 1 — PLAN INCLINÉ
+// ============================================================
+let planState = { running:false, raf:null, t:0, y:0, v:0, dist:0 };
+
+function getPlanParams(){
+  const angle = parseFloat(document.getElementById('planAngle').value);
+  const mass  = parseFloat(document.getElementById('planMass').value);
+  const mu    = parseFloat(document.getElementById('planMu').value);
+  const g     = parseFloat(document.getElementById('planG').value);
+  return {angle, mass, mu, g};
+}
+
+function updatePlan(){
+  const {angle,mass,mu,g} = getPlanParams();
+  document.getElementById('planAngleVal').textContent = angle+'°';
+  document.getElementById('planMassVal').textContent  = mass.toFixed(1)+' kg';
+  document.getElementById('planMuVal').textContent    = mu.toFixed(2);
+  document.getElementById('planGVal').textContent     = parseFloat(document.getElementById('planG').value).toFixed(2);
+  const rad = angle*Math.PI/180;
+  const a = g*(Math.sin(rad)-mu*Math.cos(rad));
+  const P = mass*g;
+  const f = mu*mass*g*Math.cos(rad);
+  document.getElementById('rAccel').textContent = Math.max(0,a).toFixed(2);
+  document.getElementById('rPoids').textContent = P.toFixed(2);
+  document.getElementById('rFriction').textContent = f.toFixed(2);
+  drawPlan();
+}
+
+function drawPlan(){
+  const canvas = document.getElementById('planCanvas');
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const {angle,mass,mu,g} = getPlanParams();
+  const rad = angle*Math.PI/180;
+  const showF = document.getElementById('showForces').checked;
+  const showD = document.getElementById('showDecomp').checked;
+
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H);
+
+  // Plan
+  const ox=80, oy=H-60;
+  const planLen=520;
+  const ex = ox + planLen*Math.cos(rad);
+  const ey = oy - planLen*Math.sin(rad);
+
+  ctx.save();
+  ctx.strokeStyle='#1e2d45'; ctx.lineWidth=3;
+  // Sol
+  ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ox+planLen+20,oy); ctx.stroke();
+  // Plan incliné
+  ctx.strokeStyle='#334155'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ex,ey); ctx.stroke();
+  // Remplissage plan
+  ctx.fillStyle='rgba(30,45,69,0.7)';
+  ctx.beginPath(); ctx.moveTo(ox,oy); ctx.lineTo(ex,ey); ctx.lineTo(ex,oy); ctx.closePath(); ctx.fill();
+  // Hachures
+  ctx.strokeStyle='#1e2d45'; ctx.lineWidth=1;
+  for(let i=0;i<10;i++){
+    const tx = ox+i*(ex-ox)/10 + 15;
+    const ty = oy-i*(oy-ey)/10;
+    ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(tx-15,ty+20); ctx.stroke();
+  }
+
+  // Angle arc
+  ctx.strokeStyle='rgba(0,229,255,0.5)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(ox,oy,60,-(rad),0); ctx.stroke();
+  ctx.fillStyle='#00e5ff'; ctx.font='bold 13px Space Mono,monospace';
+  ctx.fillText('θ='+angle+'°', ox+65, oy-10);
+  ctx.restore();
+
+  // Position du bloc sur le plan
+  const maxTravel = planLen*0.8;
+  const frac = Math.min(1, planState.dist/maxTravel);
+  const blockW=46, blockH=34;
+  const bx = ox + (planLen*0.15 + planState.dist)*Math.cos(rad);
+  const by = oy - (planLen*0.15 + planState.dist)*Math.sin(rad);
+
+  ctx.save();
+  ctx.translate(bx, by);
+  ctx.rotate(-rad);
+  // Bloc
+  ctx.fillStyle='#1e3a5f';
+  ctx.strokeStyle='#00e5ff';
+  ctx.lineWidth=2;
+  ctx.fillRect(-blockW/2, -blockH, blockW, blockH);
+  ctx.strokeRect(-blockW/2, -blockH, blockW, blockH);
+  // Label masse
+  ctx.fillStyle='#00e5ff';
+  ctx.font='bold 11px Space Mono,monospace';
+  ctx.textAlign='center';
+  ctx.fillText(mass.toFixed(1)+'kg', 0, -blockH/2+4);
+
+  if(showF){
+    const scale=18;
+    const P=mass*g;
+    const N=mass*g*Math.cos(rad);
+    const f=mu*mass*g*Math.cos(rad);
+    const Pcomp=mass*g*Math.sin(rad);
+    // Poids vers le bas (dans repère incliné, poids est perpendiculaire à ax sinon)
+    ctx.rotate(rad); // retour repère monde
+    arrow(ctx, 0,-blockH/2, 0, -blockH/2+P*scale, '#ff6b35','P');
+    if(showD){
+      arrow(ctx, 6,-blockH/2, 6+Pcomp*scale*Math.cos(-rad+Math.PI/2-Math.PI/2),-blockH/2, '#fbbf24','P//');
+      // Normale (vers haut du plan)
+      arrow(ctx, -6,-blockH/2, -6-N*scale*Math.sin(-rad+Math.PI/2),-blockH/2-N*scale*Math.cos(-rad+Math.PI/2), '#a3e635','N');
+    }
+    ctx.rotate(-rad);
+    // Friction (opposée au mouvement)
+    arrow(ctx, -blockW/2,-blockH/2, -blockW/2-f*scale*1.5,-blockH/2, '#9333ea','f');
+    // Réaction normale
+    arrow(ctx, 0,-blockH, 0,-blockH-N*scale,'#a3e635','N');
+  }
+  ctx.restore();
+}
+
+function startPlan(){
+  if(planState.running) return;
+  const {angle,mass,mu,g} = getPlanParams();
+  const rad = angle*Math.PI/180;
+  const a = g*(Math.sin(rad)-mu*Math.cos(rad));
+  if(a<=0){ alert("Le bloc ne glisse pas ! Angle trop faible ou friction trop élevée."); return; }
+  planState.running=true; planState.t=0; planState.v=0; planState.dist=0;
+  document.getElementById('planDot').className='status-dot running';
+  document.getElementById('planStatus').textContent='SIMULATION EN COURS...';
+  let last=null;
+  const loop=(ts)=>{
+    if(!last) last=ts;
+    const dt=Math.min((ts-last)/1000, 0.05);
+    last=ts;
+    const {angle,mass,mu,g} = getPlanParams();
+    const rad=angle*Math.PI/180;
+    const acc=g*(Math.sin(rad)-mu*Math.cos(rad));
+    planState.v += acc*dt;
+    planState.dist += planState.v*dt;
+    planState.t += dt;
+    const maxT=550*0.8;
+    document.getElementById('rVitesse').textContent = planState.v.toFixed(2);
+    document.getElementById('rAccel').textContent = Math.max(0,acc).toFixed(2);
+    drawPlan();
+    if(planState.dist>=maxT || planState.v<0){
+      planState.running=false;
+      document.getElementById('planDot').className='status-dot';
+      document.getElementById('planStatus').textContent='SIMULATION TERMINÉE — t='+planState.t.toFixed(2)+'s';
+      return;
+    }
+    planState.raf=requestAnimationFrame(loop);
+  };
+  planState.raf=requestAnimationFrame(loop);
+}
+
+function resetPlan(){
+  if(planState.raf) cancelAnimationFrame(planState.raf);
+  planState={running:false,raf:null,t:0,y:0,v:0,dist:0};
+  document.getElementById('planDot').className='status-dot';
+  document.getElementById('planStatus').textContent='EN ATTENTE';
+  document.getElementById('rVitesse').textContent='0.00';
+  updatePlan();
+}
+
+// ============================================================
+// TAB 2 — MACHINE ATWOOD
+// ============================================================
+let awState = { running:false, raf:null, t:0, v:0, pos:0 };
+
+function updateAtwood(){
+  const m1=parseFloat(document.getElementById('atwoodM1').value);
+  const m2=parseFloat(document.getElementById('atwoodM2').value);
+  const g =parseFloat(document.getElementById('atwoodG').value);
+  document.getElementById('atwoodM1Val').textContent=m1.toFixed(1)+' kg';
+  document.getElementById('atwoodM2Val').textContent=m2.toFixed(1)+' kg';
+  document.getElementById('atwoodGVal').textContent=g.toFixed(2);
+  const a = (m1-m2)*g/(m1+m2);
+  const T = 2*m1*m2*g/(m1+m2);
+  document.getElementById('aAccel').textContent=Math.abs(a).toFixed(3);
+  document.getElementById('aTension').textContent=T.toFixed(2);
+  drawAtwood();
+}
+
+function drawAtwood(){
+  const canvas=document.getElementById('atwoodCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const m1=parseFloat(document.getElementById('atwoodM1').value);
+  const m2=parseFloat(document.getElementById('atwoodM2').value);
+  const g =parseFloat(document.getElementById('atwoodG').value);
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H);
+
+  const cx=W/2, pulleyY=80, ropeBot=H-50;
+  const leftX=cx-110, rightX=cx+110;
+
+  // Poulie
+  ctx.save();
+  ctx.strokeStyle='#334155'; ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(cx-10,20); ctx.lineTo(cx+10,20); ctx.stroke();
+  ctx.fillStyle='#1e3a5f'; ctx.strokeStyle='#00e5ff'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.arc(cx,pulleyY,22,0,Math.PI*2); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.arc(cx,pulleyY,10,0,Math.PI*2);
+  ctx.fillStyle='#0a0e17'; ctx.fill(); ctx.stroke();
+
+  // Cordes
+  const y1base = pulleyY+22 + awState.pos + (H-200)/2;
+  const y2base = pulleyY+22 - awState.pos + (H-200)/2;
+  const m1bottom=Math.min(y1base, ropeBot-40);
+  const m2bottom=Math.min(y2base, ropeBot-40);
+
+  ctx.strokeStyle='#64748b'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(cx-1,pulleyY+22); ctx.lineTo(leftX,m1bottom); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+1,pulleyY+22); ctx.lineTo(rightX,m2bottom); ctx.stroke();
+
+  const bW=50, bH=35;
+  // Masse m1
+  const dir = (m1>m2)?1:-1;
+  ctx.fillStyle='#1e3a5f'; ctx.strokeStyle='#ff6b35'; ctx.lineWidth=2;
+  ctx.fillRect(leftX-bW/2, m1bottom, bW, bH);
+  ctx.strokeRect(leftX-bW/2, m1bottom, bW, bH);
+  ctx.fillStyle='#ff6b35'; ctx.font='bold 12px Space Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('m₁='+m1.toFixed(1), leftX, m1bottom+bH/2+4);
+
+  // Masse m2
+  ctx.fillStyle='#1e3a5f'; ctx.strokeStyle='#a3e635'; ctx.lineWidth=2;
+  ctx.fillRect(rightX-bW/2, m2bottom, bW, bH);
+  ctx.strokeRect(rightX-bW/2, m2bottom, bW, bH);
+  ctx.fillStyle='#a3e635'; ctx.font='bold 12px Space Mono,monospace';
+  ctx.fillText('m₂='+m2.toFixed(1), rightX, m2bottom+bH/2+4);
+
+  // Flèches de tension
+  const a=(m1-m2)*g/(m1+m2);
+  const T=2*m1*m2*g/(m1+m2);
+  const Tsc=Math.min(50, T*2);
+  arrow(ctx,leftX,m1bottom,-1, leftX,m1bottom-Tsc,'#00e5ff','T');
+  arrow(ctx,rightX,m2bottom-1, rightX,m2bottom-Tsc,'#00e5ff','T');
+
+  // Poids
+  arrow(ctx,leftX-20,m1bottom+bH/2, leftX-20,m1bottom+bH/2+m1*g*1.5,'#ff6b35','P₁');
+  arrow(ctx,rightX+20,m2bottom+bH/2, rightX+20,m2bottom+bH/2+m2*g*1.5,'#a3e635','P₂');
+
+  // Panel vitesse
+  ctx.fillStyle='rgba(0,229,255,0.08)'; ctx.strokeStyle='rgba(0,229,255,0.2)'; ctx.lineWidth=1;
+  ctx.fillRect(W-180,H-90,165,75); ctx.strokeRect(W-180,H-90,165,75);
+  ctx.fillStyle='#64748b'; ctx.font='10px Space Mono,monospace'; ctx.textAlign='left';
+  ctx.fillText('a = '+Math.abs(a).toFixed(4)+' m/s²', W-170,H-68);
+  ctx.fillText('T = '+T.toFixed(3)+' N', W-170,H-52);
+  ctx.fillText('v = '+awState.v.toFixed(2)+' m/s', W-170,H-36);
+  ctx.fillText('t = '+awState.t.toFixed(2)+' s', W-170,H-20);
+  ctx.restore();
+}
+
+function startAtwood(){
+  if(awState.running) return;
+  awState.running=true; awState.t=0; awState.v=0; awState.pos=0;
+  document.getElementById('atwoodDot').className='status-dot running';
+  document.getElementById('atwoodStatus').textContent='SIMULATION EN COURS...';
+  let last=null;
+  const loop=(ts)=>{
+    if(!last) last=ts;
+    const dt=Math.min((ts-last)/1000,0.05); last=ts;
+    const m1=parseFloat(document.getElementById('atwoodM1').value);
+    const m2=parseFloat(document.getElementById('atwoodM2').value);
+    const g=parseFloat(document.getElementById('atwoodG').value);
+    const a=(m1-m2)*g/(m1+m2);
+    awState.v+=a*dt;
+    awState.pos+=awState.v*dt;
+    awState.t+=dt;
+    document.getElementById('aVit').textContent=Math.abs(awState.v).toFixed(2);
+    document.getElementById('aTemps').textContent=awState.t.toFixed(2);
+    drawAtwood();
+    if(Math.abs(awState.pos)>130){
+      awState.running=false;
+      document.getElementById('atwoodDot').className='status-dot';
+      document.getElementById('atwoodStatus').textContent='FIN — t='+awState.t.toFixed(2)+'s · v='+Math.abs(awState.v).toFixed(2)+'m/s';
+      return;
+    }
+    awState.raf=requestAnimationFrame(loop);
+  };
+  awState.raf=requestAnimationFrame(loop);
+}
+
+function resetAtwood(){
+  if(awState.raf) cancelAnimationFrame(awState.raf);
+  awState={running:false,raf:null,t:0,v:0,pos:0};
+  document.getElementById('atwoodDot').className='status-dot';
+  document.getElementById('atwoodStatus').textContent='EN ATTENTE';
+  document.getElementById('aVit').textContent='0.00';
+  document.getElementById('aTemps').textContent='0.00';
+  updateAtwood();
+}
+
+// ============================================================
+// TAB 3 — PROJECTILE
+// ============================================================
+let projState = { running:false, raf:null, t:0, x:0, y:0, trail:[] };
+
+function updateProj(){
+  const alpha=parseFloat(document.getElementById('projAngle').value);
+  const v0=parseFloat(document.getElementById('projV0').value);
+  const g=parseFloat(document.getElementById('projG').value);
+  const h0=parseFloat(document.getElementById('projH0').value);
+  document.getElementById('projAngleVal').textContent=alpha+'°';
+  document.getElementById('projV0Val').textContent=v0+' m/s';
+  document.getElementById('projGVal').textContent=g.toFixed(2);
+  document.getElementById('projH0Val').textContent=h0+' m';
+  const rad=alpha*Math.PI/180;
+  const vy0=v0*Math.sin(rad);
+  // durée vol (résoudre y=0)
+  // y = h0 + vy0*t - 0.5*g*t^2 = 0
+  const disc = vy0*vy0 + 2*g*h0;
+  const tvol = (vy0 + Math.sqrt(disc))/g;
+  const R = v0*Math.cos(rad)*tvol;
+  const Hmax = h0 + vy0*vy0/(2*g);
+  const vfin = Math.sqrt((v0*Math.cos(rad))**2 + (vy0-g*tvol)**2);
+  document.getElementById('pPortee').textContent=R.toFixed(2);
+  document.getElementById('pHmax').textContent=Hmax.toFixed(2);
+  document.getElementById('pTvol').textContent=tvol.toFixed(2);
+  document.getElementById('pVfin').textContent=vfin.toFixed(2);
+  drawProj();
+}
+
+function drawProj(){
+  const canvas=document.getElementById('projCanvas');
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  const alpha=parseFloat(document.getElementById('projAngle').value);
+  const v0=parseFloat(document.getElementById('projV0').value);
+  const g=parseFloat(document.getElementById('projG').value);
+  const h0=parseFloat(document.getElementById('projH0').value);
+  ctx.clearRect(0,0,W,H);
+  drawGrid(ctx,W,H);
+
+  const rad=alpha*Math.PI/180;
+  const vy0=v0*Math.sin(rad);
+  const disc=vy0*vy0+2*g*h0;
+  const tvol=(vy0+Math.sqrt(disc))/g;
+  const R=v0*Math.cos(rad)*tvol;
+
+  const margin=60;
+  const groundY=H-margin;
+  const scaleX=(W-2*margin)/Math.max(R,1);
+  const Hmax=h0+vy0*vy0/(2*g);
+  const scaleY=Math.min((H-2*margin)/Math.max(Hmax+2,1), scaleX);
+
+  const toScreen=(rx,ry)=>[margin+rx*scaleX, groundY-(ry*scaleY+h0*scaleY)];
+  const [ox,oy0]=toScreen(0,0);
+
+  // Sol
+  ctx.save();
+  ctx.strokeStyle='#334155'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(margin-10,groundY); ctx.lineTo(W-margin+10,groundY); ctx.stroke();
+  // Hachures sol
+  ctx.strokeStyle='#1e2d45'; ctx.lineWidth=1;
+  for(let i=0;i<20;i++){
+    const xx=margin+i*(W-2*margin)/20;
+    ctx.beginPath(); ctx.moveTo(xx,groundY); ctx.lineTo(xx-10,groundY+12); ctx.stroke();
+  }
+
+  // Trajectoire théorique
+  ctx.strokeStyle='rgba(0,229,255,0.2)'; ctx.lineWidth=1.5; ctx.setLineDash([6,4]);
+  ctx.beginPath();
+  for(let ti=0;ti<=tvol;ti+=tvol/100){
+    const rx=v0*Math.cos(rad)*ti;
+    const ry=h0+vy0*ti-0.5*g*ti*ti;
+    const [sx,sy]=toScreen(rx,ry);
+    ti===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
+  }
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Trail
+  if(projState.trail.length>1){
+    ctx.strokeStyle='rgba(163,230,53,0.7)'; ctx.lineWidth=2.5;
+    ctx.beginPath();
+    projState.trail.forEach(([rx,ry],i)=>{
+      const [sx,sy]=toScreen(rx,ry);
+      i===0 ? ctx.moveTo(sx,sy) : ctx.lineTo(sx,sy);
+    });
+    ctx.stroke();
+  }
+
+  // Projectile courant
+  const [px,py]=toScreen(projState.x, projState.y);
+  ctx.beginPath(); ctx.arc(px,py,10,0,Math.PI*2);
+  ctx.fillStyle='#a3e635'; ctx.fill();
+  ctx.strokeStyle='#0a0e17'; ctx.lineWidth=2; ctx.stroke();
+
+  // Vecteur vitesse
+  if(projState.running||projState.t>0){
+    const vx=v0*Math.cos(rad);
+    const vy_cur=vy0-g*projState.t;
+    const vmag=Math.sqrt(vx*vx+vy_cur*vy_cur);
+    const sc=2.5;
+    arrow(ctx,px,py,px+vx*sc,py-vy_cur*sc,'#ff6b35','v',2);
+  }
+
+  // Annotations
+  const [ex,ey]=toScreen(R,0);
+  ctx.strokeStyle='rgba(0,229,255,0.3)'; ctx.lineWidth=1; ctx.setLineDash([4,3]);
+  ctx.beginPath(); ctx.moveTo(ox,oy0-h0*scaleY); ctx.lineTo(ex,oy0-h0*scaleY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#00e5ff'; ctx.font='11px Space Mono,monospace'; ctx.textAlign='center';
+  ctx.fillText('R = '+R.toFixed(1)+'m', (ox+ex)/2, oy0-h0*scaleY-8);
+
+  // Angle
+  ctx.strokeStyle='rgba(255,107,53,0.6)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.arc(ox,oy0-h0*scaleY,45,0,-rad,true); ctx.stroke();
+  ctx.fillStyle='#ff6b35'; ctx.font='bold 12px Space Mono';
+  ctx.fillText('α='+alpha+'°', ox+50, oy0-h0*scaleY-10);
+  ctx.restore();
+}
+
+function startProj(){
+  if(projState.running) return;
+  projState.running=true; projState.t=0; projState.trail=[];
+  const alpha=parseFloat(document.getElementById('projAngle').value);
+  const v0=parseFloat(document.getElementById('projV0').value);
+  const g=parseFloat(document.getElementById('projG').value);
+  const h0=parseFloat(document.getElementById('projH0').value);
+  projState.x=0; projState.y=h0;
+  document.getElementById('projDot').className='status-dot running';
+  document.getElementById('projStatus').textContent='EN VOL...';
+  let last=null;
+  const rad=alpha*Math.PI/180;
+  const vy0=v0*Math.sin(rad);
+  const loop=(ts)=>{
+    if(!last) last=ts;
+    const dt=Math.min((ts-last)/1000,0.05); last=ts;
+    projState.t+=dt;
+    projState.x=v0*Math.cos(rad)*projState.t;
+    projState.y=h0+vy0*projState.t-0.5*g*projState.t*projState.t;
+    projState.trail.push([projState.x,projState.y]);
+    if(projState.trail.length>200) projState.trail.shift();
+    drawProj();
+    if(projState.y<=0 && projState.t>0.1){
+      projState.y=0;
+      projState.running=false;
+      document.getElementById('projDot').className='status-dot';
+      document.getElementById('projStatus').textContent='IMPACT — x='+projState.x.toFixed(2)+'m · t='+projState.t.toFixed(2)+'s';
+      return;
+    }
+    projState.raf=requestAnimationFrame(loop);
+  };
+  projState.raf=requestAnimationFrame(loop);
+}
+
+function resetProj(){
+  if(projState.raf) cancelAnimationFrame(projState.raf);
+  projState={running:false,raf:null,t:0,x:0,y:0,trail:[]};
+  document.getElementById('projDot').className='status-dot';
+  document.getElementById('projStatus').textContent='EN ATTENTE';
+  updateProj();
+}
+
+// Init
+updatePlan();
+updateAtwood();
+updateProj();
+</script>
+</body>
+</html>

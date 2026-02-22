@@ -1,0 +1,1622 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>WaveSim — Optique Ondulatoire · UAC FAST</title>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #050810;
+  --bg2:      #0a0f1e;
+  --bg3:      #0f1628;
+  --panel:    #111827;
+  --border:   rgba(99,179,237,0.12);
+  --accent:   #63b3ed;
+  --accent2:  #f6ad55;
+  --accent3:  #68d391;
+  --magenta:  #f687b3;
+  --violet:   #b794f4;
+  --text:     #e2e8f0;
+  --muted:    #718096;
+  --ray:      #63b3ed;
+  --glow:     rgba(99,179,237,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Josefin Sans',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  flex-direction:column;
+}
+
+/* ── HEADER ── */
+header{
+  background:linear-gradient(135deg,#050810 0%,#0a0f1e 100%);
+  border-bottom:1px solid var(--border);
+  padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+  position:relative;z-index:50;
+}
+header::after{
+  content:'';position:absolute;bottom:0;left:0;width:100%;height:1px;
+  background:linear-gradient(90deg,var(--accent),var(--violet),var(--magenta),transparent);
+}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo-mark{
+  width:34px;height:34px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+}
+.logo-name{font-size:1.15rem;font-weight:700;color:var(--accent);letter-spacing:2px;}
+.logo-sub{font-size:0.6rem;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.lang-pill{
+  display:flex;gap:3px;background:var(--bg3);border-radius:20px;padding:3px;
+  border:1px solid var(--border);
+}
+.lang-btn{
+  padding:4px 10px;border-radius:16px;border:none;
+  font-size:0.65rem;font-weight:700;cursor:pointer;
+  font-family:'Josefin Sans',sans-serif;transition:all .2s;
+  background:transparent;color:var(--muted);letter-spacing:1px;
+}
+.lang-btn.active{background:var(--accent);color:#000;}
+.author-tag{
+  font-size:0.6rem;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+  border:1px solid var(--border);border-radius:4px;
+  padding:3px 8px;display:none;
+}
+@media(min-width:600px){.author-tag{display:block;}}
+
+/* ── TAB BAR ── */
+.tabbar{
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;scrollbar-width:none;
+  flex-shrink:0;
+  -webkit-overflow-scrolling:touch;
+}
+.tabbar::-webkit-scrollbar{display:none;}
+.tabs{display:flex;padding:6px 10px;gap:4px;min-width:max-content;}
+.tab{
+  padding:7px 14px;border-radius:7px;border:none;
+  font-size:0.72rem;font-weight:600;letter-spacing:.5px;
+  cursor:pointer;transition:all .2s;
+  font-family:'Josefin Sans',sans-serif;
+  background:transparent;color:var(--muted);
+  display:flex;align-items:center;gap:6px;white-space:nowrap;
+}
+.tab:hover{background:var(--bg3);color:var(--text);}
+.tab.active{background:linear-gradient(135deg,var(--accent),var(--violet));color:#fff;}
+.tab-dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.7;}
+
+/* ── WORKSPACE ── */
+.workspace{
+  flex:1;display:flex;overflow:hidden;
+  min-height:0;
+}
+.module{display:none;flex:1;flex-direction:column;min-height:0;}
+.module.active{display:flex;}
+
+/* ── CANVAS AREA ── */
+.canvas-zone{
+  position:relative;flex:1;min-height:0;
+  background:#020408;
+  overflow:hidden;
+}
+canvas{
+  position:absolute;top:0;left:0;
+  width:100%;height:100%;
+  display:block;
+}
+.canvas-overlay-label{
+  position:absolute;top:10px;left:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;color:var(--accent);
+  opacity:.7;pointer-events:none;letter-spacing:.5px;
+}
+.canvas-readout{
+  position:absolute;top:10px;right:12px;
+  background:rgba(5,8,16,.85);
+  border:1px solid var(--border);
+  border-radius:7px;padding:7px 11px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.62rem;color:var(--accent3);
+  line-height:1.9;backdrop-filter:blur(8px);
+  pointer-events:none;min-width:140px;
+}
+
+/* ── CONTROLS STRIP ── */
+.controls-strip{
+  background:var(--panel);
+  border-top:1px solid var(--border);
+  padding:10px 14px;
+  display:flex;flex-direction:column;gap:9px;
+  flex-shrink:0;
+  max-height:260px;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent) transparent;
+}
+.controls-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:9px;
+}
+.ctrl{display:flex;flex-direction:column;gap:3px;}
+.ctrl-label{
+  font-size:.63rem;font-weight:600;letter-spacing:.7px;
+  color:var(--muted);text-transform:uppercase;
+  display:flex;justify-content:space-between;
+}
+.ctrl-val{
+  font-family:'JetBrains Mono',monospace;
+  color:var(--accent2);font-size:.68rem;
+}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:3px;border-radius:2px;
+  background:var(--bg3);outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;height:16px;border-radius:50%;
+  background:var(--accent);cursor:pointer;
+  box-shadow:0 0 6px var(--glow);
+}
+input[type=range]::-webkit-slider-thumb:active{transform:scale(1.25);}
+select{
+  background:var(--bg3);color:var(--text);
+  border:1px solid var(--border);border-radius:6px;
+  padding:6px 8px;font-family:'Josefin Sans',sans-serif;
+  font-size:.73rem;outline:none;
+}
+.btn-row{display:flex;gap:7px;flex-wrap:wrap;}
+.btn{
+  padding:7px 13px;border-radius:6px;
+  border:1px solid var(--border);
+  background:var(--bg3);color:var(--text);
+  font-family:'Josefin Sans',sans-serif;
+  font-size:.7rem;font-weight:600;letter-spacing:.5px;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:5px;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent);}
+.btn.active{border-color:var(--accent);color:var(--accent);background:rgba(99,179,237,.1);}
+.btn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  color:#fff;border-color:transparent;
+}
+
+/* ── INFO PANEL ── */
+.info-bar{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:8px 14px;
+  display:flex;gap:10px;flex-wrap:wrap;
+  flex-shrink:0;align-items:center;
+}
+.info-chip{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:6px;padding:5px 10px;
+  display:flex;flex-direction:column;
+}
+.info-chip-label{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.info-chip-val{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;color:var(--accent2);font-weight:500;
+}
+
+/* ── THEORY BOX ── */
+.theory{
+  margin:8px 14px;
+  background:linear-gradient(135deg,rgba(107,70,193,.08),rgba(99,179,237,.05));
+  border:1px solid rgba(107,70,193,.2);
+  border-radius:8px;padding:10px 13px;
+  font-size:.71rem;color:var(--muted);line-height:1.7;
+  flex-shrink:0;
+}
+.theory-title{font-size:.68rem;font-weight:700;color:var(--violet);margin-bottom:5px;letter-spacing:.5px;}
+.formula{
+  font-family:'JetBrains Mono',monospace;
+  background:rgba(0,0,0,.3);border-radius:5px;
+  padding:5px 10px;margin:5px 0;
+  color:var(--accent2);font-size:.73rem;
+  text-align:center;border-left:2px solid var(--accent2);
+}
+
+/* ── POLARIZATION SPECIFIC ── */
+.pol-canvas-wrap{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  width:100%;height:100%;
+  gap:8px;padding:12px;
+}
+
+/* ── WAVE SPECIFIC ── */
+.wave-overlay{
+  position:absolute;bottom:12px;left:12px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.6rem;color:rgba(99,179,237,.6);
+  pointer-events:none;line-height:1.8;
+}
+
+/* ── LEGEND ── */
+.legend{
+  position:absolute;bottom:10px;right:12px;
+  display:flex;flex-direction:column;gap:4px;
+  pointer-events:none;
+}
+.legend-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:.6rem;color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+}
+.legend-line{width:20px;height:2px;border-radius:1px;}
+
+/* ── MOBILE ── */
+@media(max-width:700px){
+  .controls-row{grid-template-columns:1fr 1fr;}
+  .controls-strip{max-height:220px;}
+  .canvas-readout{display:none;}
+}
+
+/* ── SCROLLBAR ── */
+.controls-strip::-webkit-scrollbar{width:3px;}
+.controls-strip::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px;}
+
+/* ── ANIMATE TOGGLE ── */
+.toggle-row{display:flex;align-items:center;gap:8px;}
+.tog-label{font-size:.7rem;color:var(--muted);flex:1;}
+.tog{
+  width:36px;height:20px;background:var(--bg3);
+  border-radius:10px;cursor:pointer;transition:background .2s;
+  border:1px solid var(--border);position:relative;flex-shrink:0;
+}
+.tog.on{background:var(--accent);border-color:var(--accent);}
+.tog-knob{
+  position:absolute;top:2px;left:2px;
+  width:14px;height:14px;border-radius:50%;
+  background:#fff;transition:transform .2s;
+}
+.tog.on .tog-knob{transform:translateX(16px);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-mark">〜</div>
+    <div>
+      <div class="logo-name">WAVESIM</div>
+      <div class="logo-sub">Optique Ondulatoire · UAC FAST · Edmond TCHOKPON</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="author-tag">E. TCHOKPON · L. Phys-Chim</div>
+    <div class="lang-pill">
+      <button class="lang-btn active" onclick="setLang('fr')">FR</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</header>
+
+<!-- TABS -->
+<div class="tabbar">
+  <div class="tabs">
+    <button class="tab active" onclick="switchMod('young',this)">
+      <span class="tab-dot"></span><span data-fr="Fentes de Young" data-en="Young's Slits">Fentes de Young</span>
+    </button>
+    <button class="tab" onclick="switchMod('diff1',this)">
+      <span class="tab-dot"></span><span data-fr="Diffraction Fente" data-en="Single Slit">Diffraction Fente</span>
+    </button>
+    <button class="tab" onclick="switchMod('reseau',this)">
+      <span class="tab-dot"></span><span data-fr="Réseau de diffraction" data-en="Diffraction Grating">Réseau</span>
+    </button>
+    <button class="tab" onclick="switchMod('polar',this)">
+      <span class="tab-dot"></span><span data-fr="Polarisation" data-en="Polarization">Polarisation</span>
+    </button>
+    <button class="tab" onclick="switchMod('wave',this)">
+      <span class="tab-dot"></span><span data-fr="Propagation d'onde" data-en="Wave Propagation">Propagation</span>
+    </button>
+  </div>
+</div>
+
+<!-- WORKSPACE -->
+<div class="workspace">
+
+<!-- ═══════════════════════════════ YOUNG ═══════════════════════════════ -->
+<div class="module active" id="mod-young">
+  <div class="canvas-zone">
+    <canvas id="c-young"></canvas>
+    <div class="canvas-overlay-label" data-fr="FENTES DE YOUNG — Interférences à deux sources cohérentes" data-en="YOUNG'S DOUBLE SLIT — Two coherent sources interference">FENTES DE YOUNG — Interférences</div>
+    <div class="canvas-readout" id="ro-young">λ = 550 nm<br>d = 0.50 mm<br>D = 1.00 m<br>i = 1.10 mm</div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-line" style="background:#f6e05e"></div><span data-fr="Maxima (brillants)" data-en="Maxima (bright)">Maxima</span></div>
+      <div class="legend-item"><div class="legend-line" style="background:#1a202c;border:1px solid #4a5568"></div><span data-fr="Minima (sombres)" data-en="Minima (dark)">Minima</span></div>
+    </div>
+  </div>
+
+  <div class="theory">
+    <div class="theory-title">📐 <span data-fr="Fentes de Young — Théorie" data-en="Young's Slits — Theory">Fentes de Young</span></div>
+    <div class="formula" id="young-formula">i = λD/d &nbsp;|&nbsp; δ = d·sinθ &nbsp;|&nbsp; Brillant: δ = mλ</div>
+    <span style="font-size:.68rem" data-fr="i = interfrange · λ = longueur d'onde · d = écart entre fentes · D = distance écran · m = ordre d'interférence" data-en="i = fringe spacing · λ = wavelength · d = slit spacing · D = screen distance · m = interference order">i = interfrange · λ = longueur d'onde · d = écart fentes · D = distance écran</span>
+  </div>
+
+  <div class="controls-strip">
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Longueur d'onde λ (nm)" data-en="Wavelength λ (nm)">Longueur d'onde λ</span><span class="ctrl-val" id="v-lambda">550 nm</span></div>
+        <input type="range" min="380" max="780" value="550" id="sl-lambda" oninput="drawYoung()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Écart fentes d (μm)" data-en="Slit spacing d (μm)">Écart fentes d</span><span class="ctrl-val" id="v-d">500 μm</span></div>
+        <input type="range" min="100" max="2000" value="500" id="sl-d" oninput="drawYoung()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Distance écran D (cm)" data-en="Screen distance D (cm)">Distance écran D</span><span class="ctrl-val" id="v-D">100 cm</span></div>
+        <input type="range" min="30" max="300" value="100" id="sl-D" oninput="drawYoung()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Nb de fentes" data-en="Number of slits">Nb fentes</span><span class="ctrl-val" id="v-nslits">2</span></div>
+        <input type="range" min="2" max="2" value="2" id="sl-nslits" oninput="drawYoung()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Source lumineuse" data-en="Light source">Source lumineuse</div>
+        <select id="sel-src" onchange="onSrcChange()">
+          <option value="mono" data-fr="Monochromatique" data-en="Monochromatic">Monochromatique</option>
+          <option value="white" data-fr="Lumière blanche" data-en="White light">Lumière blanche</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Options" data-en="Options">Options</div>
+        <div class="toggle-row">
+          <span class="tog-label" data-fr="Afficher déphasage" data-en="Show phase shift">Déphasage δ</span>
+          <div class="tog on" id="tog-delta" onclick="toggleOpt('delta',this)"><div class="tog-knob"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="animYoung()" id="btn-anim-y">▶ <span data-fr="Animer λ" data-en="Animate λ">Animer λ</span></button>
+      <button class="btn" onclick="resetYoung()">↺ <span data-fr="Reset" data-en="Reset">Reset</span></button>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-chip"><div class="info-chip-label" data-fr="Interfrange i" data-en="Fringe spacing i">Interfrange i</div><div class="info-chip-val" id="ic-i">1.10 mm</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Ordre max visible" data-en="Max visible order">Ordre max</div><div class="info-chip-val" id="ic-mmax">—</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Condition brillant" data-en="Bright condition">δ brillant</div><div class="info-chip-val" id="ic-bright">mλ</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Condition sombre" data-en="Dark condition">δ sombre</div><div class="info-chip-val" id="ic-dark">(m+½)λ</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ DIFFRACTION FENTE ═══════════════════ -->
+<div class="module" id="mod-diff1">
+  <div class="canvas-zone">
+    <canvas id="c-diff1"></canvas>
+    <div class="canvas-overlay-label" data-fr="DIFFRACTION — Fente simple (Fraunhofer)" data-en="DIFFRACTION — Single slit (Fraunhofer)">DIFFRACTION — Fente simple</div>
+    <div class="canvas-readout" id="ro-diff1">λ = 550 nm<br>a = 0.10 mm<br>θ_min = ±0.32°</div>
+  </div>
+
+  <div class="theory">
+    <div class="theory-title">📐 <span data-fr="Diffraction — Fente simple" data-en="Single Slit Diffraction">Diffraction Fraunhofer</span></div>
+    <div class="formula">I(θ) = I₀ · [sin(α)/α]²&nbsp;&nbsp;où&nbsp;&nbsp;α = πa·sinθ/λ</div>
+    <span style="font-size:.68rem" data-fr="Minima : a·sinθ = mλ (m≠0) · Largeur pic central : Δθ = 2λ/a · a = largeur de fente" data-en="Minima: a·sinθ = mλ (m≠0) · Central peak width: Δθ = 2λ/a · a = slit width">Minima : a·sinθ = mλ (m≠0) · Largeur centrale = 2λ/a</span>
+  </div>
+
+  <div class="controls-strip">
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Longueur d'onde λ (nm)" data-en="Wavelength λ (nm)">λ (nm)</span><span class="ctrl-val" id="v-d1l">550 nm</span></div>
+        <input type="range" min="380" max="780" value="550" id="sl-d1l" oninput="drawDiff1()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Largeur fente a (μm)" data-en="Slit width a (μm)">Largeur fente a</span><span class="ctrl-val" id="v-d1a">100 μm</span></div>
+        <input type="range" min="20" max="500" value="100" id="sl-d1a" oninput="drawDiff1()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Distance écran D (cm)" data-en="Screen distance D (cm)">Distance D</span><span class="ctrl-val" id="v-d1D">100 cm</span></div>
+        <input type="range" min="20" max="300" value="100" id="sl-d1D" oninput="drawDiff1()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Vue" data-en="View">Vue</div>
+        <select id="sel-diffview" onchange="drawDiff1()">
+          <option value="pattern" data-fr="Motif de diffraction" data-en="Diffraction pattern">Motif de diffraction</option>
+          <option value="intensity" data-fr="Profil d'intensité" data-en="Intensity profile">Profil d'intensité</option>
+          <option value="both" data-fr="Les deux" data-en="Both">Les deux</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Afficher ordres" data-en="Show orders">Afficher ordres</div>
+        <div class="toggle-row">
+          <span class="tog-label" data-fr="Lignes minima" data-en="Minima lines">Lignes minima</span>
+          <div class="tog on" id="tog-minima" onclick="toggleOpt('minima',this)"><div class="tog-knob"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="animDiff1()" id="btn-anim-d1">▶ <span data-fr="Animer a" data-en="Animate a">Animer a</span></button>
+      <button class="btn" onclick="drawDiff1()">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-chip"><div class="info-chip-label" data-fr="1er minimum θ₁" data-en="1st minimum θ₁">1er minimum</div><div class="info-chip-val" id="ic-d1min">—</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Largeur centrale (mm)" data-en="Central width (mm)">Largeur centrale</div><div class="info-chip-val" id="ic-d1w">—</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Résolution angulaire" data-en="Angular resolution">Résolution</div><div class="info-chip-val" id="ic-d1res">—</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ RÉSEAU ═══════════════════════════════ -->
+<div class="module" id="mod-reseau">
+  <div class="canvas-zone">
+    <canvas id="c-reseau"></canvas>
+    <div class="canvas-overlay-label" data-fr="RÉSEAU DE DIFFRACTION — Dispersion spectrale" data-en="DIFFRACTION GRATING — Spectral dispersion">RÉSEAU DE DIFFRACTION</div>
+    <div class="canvas-readout" id="ro-reseau">N = 500 tr/mm<br>d = 2.00 μm<br>θ(m=1) = 16.0°</div>
+  </div>
+
+  <div class="theory">
+    <div class="theory-title">📐 <span data-fr="Réseau de diffraction" data-en="Diffraction Grating">Réseau de diffraction</span></div>
+    <div class="formula">d · sin(θ_m) = m · λ &nbsp;|&nbsp; Pouvoir résolvant R = mN</div>
+    <span style="font-size:.68rem" data-fr="d = pas du réseau · m = ordre · N = nombre de traits · θ_m = angle de diffraction · R = λ/δλ" data-en="d = grating spacing · m = order · N = number of lines · θ_m = diffraction angle · R = λ/δλ">d = pas du réseau · m = ordre · N = nb traits · R = pouvoir résolvant</span>
+  </div>
+
+  <div class="controls-strip">
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Traits/mm du réseau" data-en="Lines/mm of grating">Traits/mm</span><span class="ctrl-val" id="v-rN">500</span></div>
+        <input type="range" min="100" max="2000" value="500" id="sl-rN" oninput="drawReseau()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Longueur d'onde λ (nm)" data-en="Wavelength λ (nm)">λ (nm)</span><span class="ctrl-val" id="v-rl">550 nm</span></div>
+        <input type="range" min="380" max="780" value="550" id="sl-rl" oninput="drawReseau()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Ordre max affiché" data-en="Max order displayed">Ordre max</span><span class="ctrl-val" id="v-rmord">3</span></div>
+        <input type="range" min="1" max="5" value="3" id="sl-rmord" oninput="drawReseau()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Source" data-en="Source">Source</div>
+        <select id="sel-rsrc" onchange="drawReseau()">
+          <option value="mono" data-fr="Monochromatique" data-en="Monochromatic">Monochromatique</option>
+          <option value="white" data-fr="Lumière blanche (spectre)" data-en="White light (spectrum)">Lumière blanche</option>
+          <option value="sodium" data-fr="Doublet sodium Na (589/589.6)" data-en="Sodium doublet (589/589.6)">Doublet Na (589/589.6 nm)</option>
+        </select>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Affichage" data-en="Display">Affichage</div>
+        <div class="toggle-row">
+          <span class="tog-label" data-fr="Angles θ_m" data-en="Angles θ_m">Angles θ_m</span>
+          <div class="tog on" id="tog-angles" onclick="toggleOpt('angles',this)"><div class="tog-knob"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="animReseau()" id="btn-anim-r">▶ <span data-fr="Animer λ" data-en="Animate λ">Animer λ</span></button>
+      <button class="btn" onclick="drawReseau()">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-chip"><div class="info-chip-label" data-fr="Pas du réseau d" data-en="Grating spacing d">Pas d</div><div class="info-chip-val" id="ic-rd">—</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="θ ordre 1" data-en="θ order 1">θ (m=1)</div><div class="info-chip-val" id="ic-rth1">—</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Pouvoir résolvant R" data-en="Resolving power R">Rés. R = mN</div><div class="info-chip-val" id="ic-rR">—</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="δλ min séparable" data-en="Min. resolvable δλ">δλ min</div><div class="info-chip-val" id="ic-rdl">—</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ POLARISATION ═══════════════════════ -->
+<div class="module" id="mod-polar">
+  <div class="canvas-zone">
+    <canvas id="c-polar"></canvas>
+    <div class="canvas-overlay-label" data-fr="POLARISATION — Loi de Malus" data-en="POLARIZATION — Malus's Law">POLARISATION — Loi de Malus</div>
+    <div class="canvas-readout" id="ro-polar">I = I₀cos²(θ)<br>θ = 0°<br>I/I₀ = 1.000</div>
+  </div>
+
+  <div class="theory">
+    <div class="theory-title">📐 <span data-fr="Polarisation — Loi de Malus" data-en="Polarization — Malus's Law">Loi de Malus</span></div>
+    <div class="formula">I = I₀ · cos²(θ) &nbsp;|&nbsp; θ = angle entre polariseurs</div>
+    <span style="font-size:.68rem" data-fr="θ=0°: transmission totale · θ=90°: extinction complète · θ=45°: I = I₀/2 · Polarisation par réflexion: angle de Brewster tan(θ_B) = n" data-en="θ=0°: full transmission · θ=90°: extinction · θ=45°: I = I₀/2 · Brewster angle: tan(θ_B) = n">θ=0°: I=I₀ · θ=90°: I=0 (extinction) · tan(θ_Brewster) = n₂/n₁</span>
+  </div>
+
+  <div class="controls-strip">
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Angle polariseur 2 (°)" data-en="Analyser angle (°)">Angle analyseur θ</span><span class="ctrl-val" id="v-ptheta">0°</span></div>
+        <input type="range" min="0" max="360" value="0" id="sl-ptheta" oninput="drawPolar()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Intensité source I₀" data-en="Source intensity I₀">Intensité I₀</span><span class="ctrl-val" id="v-pI0">100%</span></div>
+        <input type="range" min="10" max="100" value="100" id="sl-pI0" oninput="drawPolar()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="3e polariseur" data-en="3rd polarizer">3e polariseur</div>
+        <div class="toggle-row">
+          <span class="tog-label" data-fr="Activer" data-en="Enable">Activer</span>
+          <div class="tog" id="tog-pol3" onclick="toggleOpt('pol3',this)"><div class="tog-knob"></div></div>
+        </div>
+      </div>
+      <div class="ctrl" id="ctrl-pol3" style="opacity:.4">
+        <div class="ctrl-label"><span data-fr="Angle 3e polariseur" data-en="3rd polarizer angle">Angle P₃ (°)</span><span class="ctrl-val" id="v-p3">45°</span></div>
+        <input type="range" min="0" max="180" value="45" id="sl-p3" oninput="drawPolar()" disabled>
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Type de polarisation" data-en="Polarization type">Type</div>
+        <select id="sel-poltype" onchange="drawPolar()">
+          <option value="linear" data-fr="Polarisation linéaire" data-en="Linear polarization">Polarisation linéaire</option>
+          <option value="circular" data-fr="Polarisation circulaire" data-en="Circular polarization">Polarisation circulaire</option>
+          <option value="elliptic" data-fr="Polarisation elliptique" data-en="Elliptic polarization">Polarisation elliptique</option>
+        </select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" onclick="animPolar()" id="btn-anim-p">▶ <span data-fr="Rotation continue" data-en="Continuous rotation">Rotation</span></button>
+      <button class="btn" onclick="drawPolar()">↺ Reset</button>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-chip"><div class="info-chip-label">I / I₀</div><div class="info-chip-val" id="ic-pI">1.000</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Transmission (%)" data-en="Transmission (%)">Transmission</div><div class="info-chip-val" id="ic-pT">100%</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="cos²(θ)" data-en="cos²(θ)">cos²(θ)</div><div class="info-chip-val" id="ic-pcos">1.000</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Angle Brewster (verre n=1.5)" data-en="Brewster angle (glass n=1.5)">Brewster (n=1.5)</div><div class="info-chip-val">56.3°</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ PROPAGATION ═══════════════════════ -->
+<div class="module" id="mod-wave">
+  <div class="canvas-zone">
+    <canvas id="c-wave"></canvas>
+    <div class="canvas-overlay-label" data-fr="PROPAGATION D'ONDE — Simulation temps réel" data-en="WAVE PROPAGATION — Real-time simulation">PROPAGATION D'ONDE</div>
+    <div class="canvas-readout" id="ro-wave">f = 2.0 Hz<br>λ = 150 px<br>v = 300 px/s</div>
+    <div class="wave-overlay" id="wave-overlay">t = 0.00 s</div>
+  </div>
+
+  <div class="theory">
+    <div class="theory-title">📐 <span data-fr="Propagation d'onde" data-en="Wave Propagation">Propagation d'onde</span></div>
+    <div class="formula">y(x,t) = A·cos(kx − ωt + φ) &nbsp;|&nbsp; v = λf = ω/k</div>
+    <span style="font-size:.68rem" data-fr="k = 2π/λ (vecteur d'onde) · ω = 2πf (pulsation) · φ = phase initiale · Onde stationnaire: y = 2A·cos(kx)cos(ωt)" data-en="k = 2π/λ (wave vector) · ω = 2πf (angular frequency) · φ = initial phase · Standing wave: y = 2A·cos(kx)cos(ωt)">k = 2π/λ · ω = 2πf · Onde stationnaire: y = 2A·cos(kx)·cos(ωt)</span>
+  </div>
+
+  <div class="controls-strip">
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Fréquence f (Hz)" data-en="Frequency f (Hz)">Fréquence f</span><span class="ctrl-val" id="v-wf">2.0 Hz</span></div>
+        <input type="range" min="1" max="10" value="2" step=".1" id="sl-wf" oninput="updateWave()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Amplitude A" data-en="Amplitude A">Amplitude A</span><span class="ctrl-val" id="v-wA">50</span></div>
+        <input type="range" min="5" max="100" value="50" id="sl-wA" oninput="updateWave()">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label"><span data-fr="Vitesse v" data-en="Speed v">Vitesse v</span><span class="ctrl-val" id="v-wv">300</span></div>
+        <input type="range" min="50" max="600" value="300" id="sl-wv" oninput="updateWave()">
+      </div>
+    </div>
+    <div class="controls-row">
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Mode d'onde" data-en="Wave mode">Mode</div>
+        <select id="sel-wmode" onchange="updateWave()">
+          <option value="traveling" data-fr="Onde progressive" data-en="Traveling wave">Onde progressive</option>
+          <option value="standing" data-fr="Onde stationnaire" data-en="Standing wave">Onde stationnaire</option>
+          <option value="two" data-fr="Deux ondes (battements)" data-en="Two waves (beats)">Deux ondes (battements)</option>
+          <option value="2d" data-fr="Propagation 2D (circulaire)" data-en="2D Propagation (circular)">Propagation 2D</option>
+        </select>
+      </div>
+      <div class="ctrl" id="ctrl-w2" style="opacity:.4">
+        <div class="ctrl-label"><span data-fr="Fréquence f₂ (Hz)" data-en="Frequency f₂ (Hz)">f₂ (battements)</span><span class="ctrl-val" id="v-wf2">2.5 Hz</span></div>
+        <input type="range" min="1" max="10" value="25" step="1" id="sl-wf2" oninput="updateWave()" disabled>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label" data-fr="Phase initiale φ" data-en="Initial phase φ">Phase φ</div>
+        <input type="range" min="0" max="360" value="0" id="sl-wphi" oninput="updateWave()">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn primary" id="btn-wplay" onclick="toggleWave()">⏸ <span data-fr="Pause" data-en="Pause">Pause</span></button>
+      <button class="btn" onclick="resetWave()">↺ Reset</button>
+      <button class="btn" onclick="addSource()" id="btn-addsrc">+ <span data-fr="Ajouter source" data-en="Add source">Ajouter source</span></button>
+    </div>
+  </div>
+
+  <div class="info-bar">
+    <div class="info-chip"><div class="info-chip-label" data-fr="Période T (s)" data-en="Period T (s)">Période T</div><div class="info-chip-val" id="ic-wT">0.50 s</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Longueur d'onde λ" data-en="Wavelength λ">Longueur d'onde</div><div class="info-chip-val" id="ic-wlambda">150 px</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Pulsation ω (rad/s)" data-en="Angular freq. ω">Pulsation ω</div><div class="info-chip-val" id="ic-womega">12.6 rad/s</div></div>
+    <div class="info-chip"><div class="info-chip-label" data-fr="Vecteur d'onde k" data-en="Wave vector k">Vecteur k</div><div class="info-chip-val" id="ic-wk">0.042 rad/px</div></div>
+  </div>
+</div>
+
+</div><!-- end workspace -->
+
+<script>
+// ══════════════════════ GLOBALS ══════════════════════
+let lang = 'fr';
+const opts = { delta:true, minima:true, angles:true, pol3:false };
+let youngAnimId=null, diff1AnimId=null, reseauAnimId=null, polarAnimId=null;
+let waveAnimId=null, waveRunning=true, waveT=0;
+let waveParams = {};
+let wave2Sources = [];
+
+// ══════════════════════ LANGUAGE ══════════════════════
+function setLang(l){
+  lang=l;
+  document.querySelectorAll('[data-fr]').forEach(el=>{
+    el.textContent=el.getAttribute('data-'+l)||el.textContent;
+  });
+  document.querySelectorAll('option[data-fr]').forEach(el=>{
+    el.textContent=el.getAttribute('data-'+l)||el.textContent;
+  });
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.lang-btn:${l==='fr'?'first':'last'}-child`).classList.add('active');
+  redrawActive();
+}
+
+// ══════════════════════ MODULE SWITCH ══════════════════════
+let activeMod = 'young';
+function switchMod(name, btn){
+  document.querySelectorAll('.module').forEach(m=>m.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('mod-'+name).classList.add('active');
+  btn.classList.add('active');
+  activeMod = name;
+  cancelAllAnims();
+  setTimeout(()=>{
+    if(name==='young') drawYoung();
+    if(name==='diff1') drawDiff1();
+    if(name==='reseau') drawReseau();
+    if(name==='polar') drawPolar();
+    if(name==='wave'){ startWaveLoop(); }
+  },40);
+}
+
+function redrawActive(){
+  if(activeMod==='young') drawYoung();
+  if(activeMod==='diff1') drawDiff1();
+  if(activeMod==='reseau') drawReseau();
+  if(activeMod==='polar') drawPolar();
+}
+
+function cancelAllAnims(){
+  if(youngAnimId){ clearInterval(youngAnimId); youngAnimId=null; }
+  if(diff1AnimId){ clearInterval(diff1AnimId); diff1AnimId=null; }
+  if(reseauAnimId){ clearInterval(reseauAnimId); reseauAnimId=null; }
+  if(polarAnimId){ clearInterval(polarAnimId); polarAnimId=null; }
+}
+
+// ══════════════════════ TOGGLE ══════════════════════
+function toggleOpt(key, el){
+  opts[key]=!opts[key];
+  el.classList.toggle('on', opts[key]);
+  if(key==='pol3'){
+    document.getElementById('ctrl-pol3').style.opacity = opts.pol3 ? '1':'0.4';
+    document.getElementById('sl-p3').disabled = !opts.pol3;
+  }
+  redrawActive();
+}
+
+// ══════════════════════ UTILITIES ══════════════════════
+function getCtx(id){
+  const c=document.getElementById(id);
+  const p=c.parentElement;
+  const dpr=window.devicePixelRatio||1;
+  c.width=p.clientWidth*dpr;
+  c.height=p.clientHeight*dpr;
+  const ctx=c.getContext('2d');
+  ctx.scale(dpr,dpr);
+  return {c,ctx,w:p.clientWidth,h:p.clientHeight};
+}
+
+function wavelengthToRGB(nm){
+  let r,g,b;
+  if(nm>=380&&nm<440){r=(440-nm)/(440-380);g=0;b=1;}
+  else if(nm<490){r=0;g=(nm-440)/(490-440);b=1;}
+  else if(nm<510){r=0;g=1;b=(510-nm)/(510-490);}
+  else if(nm<580){r=(nm-510)/(580-510);g=1;b=0;}
+  else if(nm<645){r=1;g=(645-nm)/(645-580);b=0;}
+  else{r=1;g=0;b=0;}
+  let a=1;
+  if(nm<420) a=0.3+0.7*(nm-380)/(420-380);
+  else if(nm>700) a=0.3+0.7*(780-nm)/(780-700);
+  return `rgba(${Math.round(r*255)},${Math.round(g*255)},${Math.round(b*255)},${a})`;
+}
+
+function drawGrid(ctx,w,h,step=50){
+  ctx.strokeStyle='rgba(99,179,237,0.04)';
+  ctx.lineWidth=1;
+  for(let x=0;x<w;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  for(let y=0;y<h;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+}
+
+function deg2rad(d){return d*Math.PI/180;}
+function rad2deg(r){return r*180/Math.PI;}
+
+// ══════════════════════ MODULE 1: YOUNG ══════════════════════
+function onSrcChange(){
+  const isWhite = document.getElementById('sel-src').value==='white';
+  document.getElementById('sl-lambda').disabled=isWhite;
+  drawYoung();
+}
+
+function drawYoung(){
+  const {ctx,w,h} = getCtx('c-young');
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+
+  const lambda = parseFloat(document.getElementById('sl-lambda').value)*1e-9;
+  const d = parseFloat(document.getElementById('sl-d').value)*1e-6;
+  const D = parseFloat(document.getElementById('sl-D').value)*1e-2;
+  const src = document.getElementById('sel-src').value;
+
+  document.getElementById('v-lambda').textContent = (lambda*1e9).toFixed(0)+' nm';
+  document.getElementById('v-d').textContent = (d*1e6).toFixed(0)+' μm';
+  document.getElementById('v-D').textContent = (D*100).toFixed(0)+' cm';
+
+  const i_frange = lambda*D/d; // en mètres
+  const i_px = i_frange * (w/0.05); // mapping: 5cm = w pixels
+
+  document.getElementById('ic-i').textContent = (i_frange*1e3).toFixed(2)+' mm';
+  document.getElementById('ic-mmax').textContent = Math.floor(d/(2*lambda));
+
+  // Zone fentes (côté gauche)
+  const slitX = w*0.18;
+  const s1Y = h/2 - (d/2)*(w/0.05);
+  const s2Y = h/2 + (d/2)*(w/0.05);
+  const screenX = w*0.82;
+
+  // Fond sombre avant écran
+  ctx.fillStyle='rgba(5,8,16,0.5)';
+  ctx.fillRect(0,0,w,h);
+
+  // Source lumineuse
+  const srcColor = src==='white' ? 'rgba(255,255,240,0.9)' : wavelengthToRGB(lambda*1e9);
+  ctx.shadowBlur=30; ctx.shadowColor=srcColor;
+  ctx.fillStyle=srcColor;
+  ctx.beginPath(); ctx.arc(w*0.06, h/2, 5, 0, 2*Math.PI); ctx.fill();
+  ctx.shadowBlur=0;
+
+  // Rayons vers fentes
+  ctx.strokeStyle=src==='white'?'rgba(255,255,220,0.25)':srcColor.replace(/[\d.]+\)$/,'0.25)');
+  ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(w*0.06,h/2); ctx.lineTo(slitX,s1Y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(w*0.06,h/2); ctx.lineTo(slitX,s2Y); ctx.stroke();
+
+  // Plan de fentes
+  ctx.fillStyle='rgba(100,130,170,0.9)';
+  ctx.fillRect(slitX-3, 0, 5, s1Y-8);
+  ctx.fillRect(slitX-3, s1Y+8, 5, s2Y-s1Y-16);
+  ctx.fillRect(slitX-3, s2Y+8, 5, h-s2Y-8);
+
+  // Points fentes
+  ctx.fillStyle='#fff';
+  ctx.beginPath(); ctx.arc(slitX,s1Y,4,0,2*Math.PI); ctx.fill();
+  ctx.beginPath(); ctx.arc(slitX,s2Y,4,0,2*Math.PI); ctx.fill();
+  ctx.fillStyle='rgba(255,255,255,0.5)';
+  ctx.font="10px 'JetBrains Mono'"; ctx.textAlign='right';
+  ctx.fillText('S₁',slitX-8,s1Y+4);
+  ctx.fillText('S₂',slitX-8,s2Y+4);
+  ctx.textAlign='left';
+
+  // Écran
+  ctx.fillStyle='rgba(40,50,80,0.9)';
+  ctx.fillRect(screenX, 0, 8, h);
+
+  // Motif d'interférences sur l'écran
+  const lambdas = src==='white'
+    ? Array.from({length:20},(_,i)=>380+i*20)
+    : [lambda*1e9];
+
+  const imgData = ctx.createImageData(Math.ceil(screenX-slitX-20), h);
+
+  for(let y=0;y<h;y++){
+    let R=0,G=0,B=0,A=0;
+    const yPos = (y - h/2) / (w/0.05); // en mètres
+    for(const lam of lambdas){
+      const ll=lam*1e-9;
+      const delta = d*yPos/D;
+      let I;
+      if(src==='white'){
+        const phase = 2*Math.PI*delta/ll;
+        I = Math.cos(phase/2)**2;
+      } else {
+        const phase = 2*Math.PI*delta/ll;
+        I = Math.cos(phase/2)**2;
+      }
+      const [rr,gg,bb] = hexToRgb(wavelengthToRGB(lam));
+      R+=I*rr; G+=I*gg; B+=I*bb; A+=I;
+    }
+    const scale = src==='white'?1/(lambdas.length)*2.5:1;
+    const px = (y * (screenX-slitX-20)|0)*4;
+    // Draw gradient from slitX to screenX
+    for(let xi=0;xi<Math.ceil(screenX-slitX-20);xi++){
+      const xoff = (xi/(screenX-slitX-20));
+      const xpx = (y*Math.ceil(screenX-slitX-20)+xi)*4;
+      imgData.data[xpx]=Math.min(255,R*scale*255*xoff);
+      imgData.data[xpx+1]=Math.min(255,G*scale*255*xoff);
+      imgData.data[xpx+2]=Math.min(255,B*scale*255*xoff);
+      imgData.data[xpx+3]=Math.min(255,A*scale*180*xoff);
+    }
+  }
+  ctx.putImageData(imgData, slitX+10, 0);
+
+  // Profil intensité à droite de l'écran
+  const profX = screenX+12;
+  const profW = w - profX - 10;
+  ctx.fillStyle='rgba(5,8,16,0.6)';
+  ctx.fillRect(profX, 10, profW, h-20);
+
+  if(src!=='white'){
+    ctx.strokeStyle=wavelengthToRGB(lambda*1e9);
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    for(let y=10;y<h-10;y++){
+      const yPos=(y-h/2)/(w/0.05);
+      const delta=d*yPos/D;
+      const phase=2*Math.PI*delta/lambda;
+      const I=Math.cos(phase/2)**2;
+      const x=profX+I*profW*0.9;
+      y===10?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Interfrange markers
+    if(opts.delta){
+      ctx.strokeStyle='rgba(200,200,100,0.4)';
+      ctx.lineWidth=1; ctx.setLineDash([3,4]);
+      let m=0;
+      while(true){
+        const yFringe = h/2 + m*i_px;
+        if(yFringe>h) break;
+        ctx.beginPath(); ctx.moveTo(slitX, yFringe); ctx.lineTo(screenX+8, yFringe); ctx.stroke();
+        if(m>0){
+          ctx.beginPath(); ctx.moveTo(slitX, h/2-m*i_px); ctx.lineTo(screenX+8, h/2-m*i_px); ctx.stroke();
+        }
+        m++;
+        if(m>15) break;
+      }
+      ctx.setLineDash([]);
+    }
+  }
+
+  // Dimension arrow (interfrange)
+  if(i_px>10 && i_px<h*0.4){
+    const ax=w-20;
+    ctx.strokeStyle='rgba(246,173,85,0.7)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(ax,h/2-i_px); ctx.lineTo(ax,h/2+i_px); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ax-5,h/2-i_px); ctx.lineTo(ax+5,h/2-i_px); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(ax-5,h/2+i_px); ctx.lineTo(ax+5,h/2+i_px); ctx.stroke();
+    ctx.fillStyle='rgba(246,173,85,0.9)'; ctx.font="10px 'JetBrains Mono'";
+    ctx.fillText('i='+(i_frange*1e3).toFixed(2)+'mm', ax-55, h/2+5);
+  }
+
+  // Labels
+  ctx.fillStyle='rgba(255,255,255,0.35)'; ctx.font="11px 'JetBrains Mono'";
+  ctx.textAlign='center';
+  ctx.fillText('SOURCE', w*0.06, h-10);
+  ctx.fillText('FENTES', slitX, h-10);
+  ctx.fillText('ÉCRAN', screenX+4, h-10);
+  ctx.fillText('PROFIL I(y)', profX+profW/2, h-10);
+  ctx.textAlign='left';
+
+  // Readout
+  document.getElementById('ro-young').innerHTML=
+    `λ = ${(lambda*1e9).toFixed(0)} nm<br>d = ${(d*1e6).toFixed(0)} μm<br>D = ${(D*100).toFixed(0)} cm<br>i = ${(i_frange*1e3).toFixed(2)} mm`;
+}
+
+function hexToRgb(rgba){
+  const m = rgba.match(/rgba\((\d+),(\d+),(\d+)/);
+  return m?[parseInt(m[1]),parseInt(m[2]),parseInt(m[3])]:[255,255,255];
+}
+
+let youngAnimDir=1, youngLambda=380;
+function animYoung(){
+  if(youngAnimId){ clearInterval(youngAnimId); youngAnimId=null;
+    document.getElementById('btn-anim-y').innerHTML='▶ <span>'+(lang==='fr'?'Animer λ':'Animate λ')+'</span>'; return; }
+  document.getElementById('btn-anim-y').innerHTML='⏹ <span>'+(lang==='fr'?'Stop':'Stop')+'</span>';
+  youngLambda=parseFloat(document.getElementById('sl-lambda').value);
+  youngAnimId=setInterval(()=>{
+    youngLambda+=youngAnimDir*4;
+    if(youngLambda>=780){youngAnimDir=-1;}
+    if(youngLambda<=380){youngAnimDir=1;}
+    document.getElementById('sl-lambda').value=youngLambda;
+    drawYoung();
+  },50);
+}
+function resetYoung(){
+  cancelAllAnims();
+  document.getElementById('sl-lambda').value=550;
+  document.getElementById('sl-d').value=500;
+  document.getElementById('sl-D').value=100;
+  document.getElementById('btn-anim-y').innerHTML='▶ <span>'+(lang==='fr'?'Animer λ':'Animate λ')+'</span>';
+  drawYoung();
+}
+
+// ══════════════════════ MODULE 2: DIFFRACTION FENTE ══════════════════════
+function drawDiff1(){
+  const {ctx,w,h}=getCtx('c-diff1');
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+
+  const lambda=parseFloat(document.getElementById('sl-d1l').value)*1e-9;
+  const a=parseFloat(document.getElementById('sl-d1a').value)*1e-6;
+  const D=parseFloat(document.getElementById('sl-d1D').value)*1e-2;
+  const view=document.getElementById('sel-diffview').value;
+
+  document.getElementById('v-d1l').textContent=(lambda*1e9).toFixed(0)+' nm';
+  document.getElementById('v-d1a').textContent=(a*1e6).toFixed(0)+' μm';
+  document.getElementById('v-d1D').textContent=(D*100).toFixed(0)+' cm';
+
+  const theta1 = Math.asin(lambda/a); // 1er minimum en radians (si lambda<a)
+  const d1min_deg = a>lambda ? rad2deg(theta1).toFixed(2)+'°' : 'TIR';
+  const width_mm = a>lambda ? (2*lambda*D/a*1e3).toFixed(2)+' mm' : '—';
+  document.getElementById('ic-d1min').textContent=d1min_deg;
+  document.getElementById('ic-d1w').textContent=width_mm;
+  document.getElementById('ic-d1res').textContent='λ/a = '+(lambda/a).toFixed(4);
+
+  const col=wavelengthToRGB(lambda*1e9);
+
+  // ---- Profil intensité ----
+  const showProfile = view==='intensity'||view==='both';
+  const showPattern = view==='pattern'||view==='both';
+
+  if(showPattern){
+    // Zone motif (gauche)
+    const cx=w*(view==='both'?0.45:0.5);
+    const scale = (h*0.45)/(lambda/a||0.01);
+
+    // Draw diffraction pattern (vertical)
+    for(let y=0;y<h;y++){
+      const yPos=(y-h/2);
+      const sinTheta=yPos/(scale);
+      const alpha=Math.PI*a*sinTheta/lambda;
+      let I;
+      if(Math.abs(alpha)<1e-8) I=1;
+      else I=Math.pow(Math.sin(alpha)/alpha,2);
+      const brightness=Math.round(I*255);
+      const [rr,gg,bb]=hexToRgb(col);
+      ctx.fillStyle=`rgba(${Math.round(rr*I)},${Math.round(gg*I)},${Math.round(bb*I)},${0.4+I*0.6})`;
+      const barW = view==='both' ? cx*0.6 : w*0.5;
+      ctx.fillRect(cx-barW/2, y, barW, 1);
+    }
+
+    // Fente à gauche
+    const slitX=view==='both'?w*0.08:w*0.12;
+    const aH=Math.max(4,(a/500e-6)*60);
+    ctx.fillStyle='rgba(100,130,170,0.85)';
+    ctx.fillRect(slitX-4,0,7,h/2-aH);
+    ctx.fillRect(slitX-4,h/2+aH,7,h/2-aH);
+    ctx.fillStyle='rgba(99,179,237,0.5)';
+    ctx.fillRect(slitX-4,h/2-aH,7,aH*2);
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.font="9px 'JetBrains Mono'";
+    ctx.fillText('a='+document.getElementById('v-d1a').textContent,slitX-18,h/2+aH+14);
+
+    // Minima lines
+    if(opts.minima && a>lambda){
+      ctx.strokeStyle='rgba(246,173,85,0.4)';
+      ctx.lineWidth=1;ctx.setLineDash([4,5]);
+      for(let m=1;m<=4;m++){
+        const sinT=m*lambda/a;
+        if(sinT>1) break;
+        const yMin=h/2+sinT*scale;
+        const yMax=h/2-sinT*scale;
+        ctx.beginPath();ctx.moveTo(0,yMin);ctx.lineTo(cx+10,yMin);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(0,yMax);ctx.lineTo(cx+10,yMax);ctx.stroke();
+        ctx.fillStyle='rgba(246,173,85,0.7)';ctx.font="9px 'JetBrains Mono'";
+        ctx.fillText('m='+m,cx-22,yMin-3);
+        ctx.fillText('m=-'+m,cx-28,yMax+10);
+      }
+      ctx.setLineDash([]);
+    }
+  }
+
+  if(showProfile){
+    const px0 = view==='both' ? w*0.55 : 0;
+    const profW = w-px0-10;
+    // Draw I(θ) curve
+    ctx.strokeStyle=col;
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let y=5;y<h-5;y++){
+      const sinT=(y-h/2)/(h*1.5);
+      const alpha=Math.PI*a*sinT/lambda;
+      let I;
+      if(Math.abs(alpha)<1e-8) I=1;
+      else I=Math.pow(Math.sin(alpha)/alpha,2);
+      const x=px0+I*profW*0.88;
+      y===5?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Shade under curve
+    ctx.fillStyle=col.replace(/[\d.]+\)$/,'0.1)');
+    ctx.beginPath();
+    for(let y=5;y<h-5;y++){
+      const sinT=(y-h/2)/(h*1.5);
+      const alpha=Math.PI*a*sinT/lambda;
+      let I;
+      if(Math.abs(alpha)<1e-8) I=1;
+      else I=Math.pow(Math.sin(alpha)/alpha,2);
+      const x=px0+I*profW*0.88;
+      y===5?ctx.moveTo(px0,y):ctx.lineTo(x,y);
+    }
+    ctx.lineTo(px0,h-5);ctx.closePath();ctx.fill();
+
+    // Axis
+    ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(px0,h/2);ctx.lineTo(px0+profW,h/2);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(px0,5);ctx.lineTo(px0,h-5);ctx.stroke();
+
+    ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font="10px 'JetBrains Mono'";
+    ctx.fillText('I(θ)',px0+profW*0.7,20);
+    ctx.fillText('I₀',px0+profW*0.9,h/2-4);
+  }
+
+  document.getElementById('ro-diff1').innerHTML=
+    `λ = ${(lambda*1e9).toFixed(0)} nm<br>a = ${(a*1e6).toFixed(0)} μm<br>θ₁ = ${d1min_deg}`;
+}
+
+let d1AnimDir=1, d1A=20;
+function animDiff1(){
+  if(diff1AnimId){clearInterval(diff1AnimId);diff1AnimId=null;
+    document.getElementById('btn-anim-d1').innerHTML='▶ <span>'+(lang==='fr'?'Animer a':'Animate a')+'</span>';return;}
+  document.getElementById('btn-anim-d1').innerHTML='⏹ Stop';
+  d1A=parseFloat(document.getElementById('sl-d1a').value);
+  diff1AnimId=setInterval(()=>{
+    d1A+=d1AnimDir*2;
+    if(d1A>=500){d1AnimDir=-1;}
+    if(d1A<=20){d1AnimDir=1;}
+    document.getElementById('sl-d1a').value=d1A;
+    drawDiff1();
+  },60);
+}
+
+// ══════════════════════ MODULE 3: RÉSEAU ══════════════════════
+function drawReseau(){
+  const {ctx,w,h}=getCtx('c-reseau');
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+
+  const N_mm=parseFloat(document.getElementById('sl-rN').value);
+  const lambda=parseFloat(document.getElementById('sl-rl').value)*1e-9;
+  const mmax=parseInt(document.getElementById('sl-rmord').value);
+  const src=document.getElementById('sel-rsrc').value;
+  const d=1e-3/N_mm; // pas du réseau en mètres
+
+  document.getElementById('v-rN').textContent=N_mm.toFixed(0);
+  document.getElementById('v-rl').textContent=(lambda*1e9).toFixed(0)+' nm';
+  document.getElementById('v-rmord').textContent=mmax;
+  document.getElementById('ic-rd').textContent=(d*1e6).toFixed(2)+' μm';
+
+  const theta1=Math.asin(Math.min(1,lambda/d));
+  document.getElementById('ic-rth1').textContent=rad2deg(theta1).toFixed(1)+'°';
+
+  const N_total = N_mm*10; // nombre de traits visibles (sur 10mm)
+  document.getElementById('ic-rR').textContent=(mmax*N_total).toFixed(0);
+  document.getElementById('ic-rdl').textContent=((lambda)/(mmax*N_total)*1e9).toFixed(3)+' nm';
+
+  const cx=w/2, cy=h/2;
+  const R=Math.min(w,h)*0.38;
+
+  // Draw grating (réseau)
+  const grW=30;
+  for(let i=0;i<20;i++){
+    const yy=cy-80+i*8;
+    ctx.strokeStyle=i%2===0?'rgba(99,179,237,0.7)':'rgba(50,80,120,0.5)';
+    ctx.lineWidth=i%2===0?1.5:0.5;
+    ctx.beginPath();ctx.moveTo(cx-grW,yy);ctx.lineTo(cx+grW,yy);ctx.stroke();
+  }
+  ctx.fillStyle='rgba(99,179,237,0.2)';
+  ctx.fillRect(cx-grW,cy-80,grW*2,160);
+  ctx.fillStyle='rgba(99,179,237,0.6)';ctx.font="9px 'JetBrains Mono'";
+  ctx.textAlign='center';
+  ctx.fillText('RÉSEAU',cx,cy+95);
+  ctx.fillText(N_mm+' tr/mm',cx,cy+107);
+  ctx.textAlign='left';
+
+  // Rayon incident (m=0 direction)
+  ctx.strokeStyle='rgba(255,255,220,0.5)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx-R*0.8,cy);ctx.lineTo(cx,cy);ctx.stroke();
+
+  // Lambdas sources
+  let lambdas=[];
+  if(src==='mono') lambdas=[lambda*1e9];
+  else if(src==='white') lambdas=Array.from({length:30},(_,i)=>380+i*13.3);
+  else lambdas=[589,589.6]; // Na doublet
+
+  for(const lam of lambdas){
+    const ll=lam*1e-9;
+    const col=wavelengthToRGB(lam);
+    for(let m=-mmax;m<=mmax;m++){
+      if(m===0) continue;
+      const sinT=m*ll/d;
+      if(Math.abs(sinT)>0.98) continue;
+      const theta=Math.asin(sinT);
+      const ex=cx+R*Math.cos(theta);
+      const ey=cy-R*Math.sin(theta);
+      ctx.strokeStyle=col;
+      ctx.lineWidth=src==='white'?1:2;
+      ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(ex,ey);ctx.stroke();
+
+      if(opts.angles && src!=='white' && lambdas.length<=2){
+        ctx.fillStyle=col;ctx.font="10px 'JetBrains Mono'";
+        const tx=cx+(R+18)*Math.cos(theta);
+        const ty=cy-(R+18)*Math.sin(theta);
+        ctx.fillText('m='+m+' ('+rad2deg(theta).toFixed(1)+'°)',tx-20,ty+4);
+      }
+    }
+  }
+
+  // Order 0 (droite)
+  ctx.strokeStyle='rgba(255,255,200,0.8)';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+R,cy);ctx.stroke();
+  ctx.fillStyle='rgba(255,255,200,0.7)';ctx.font="10px 'JetBrains Mono'";
+  ctx.fillText('m=0',cx+R+5,cy+4);
+
+  // Semi-circle guide
+  ctx.strokeStyle='rgba(255,255,255,0.08)';ctx.lineWidth=1;
+  ctx.setLineDash([3,5]);
+  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI,true);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Na doublet special rendering
+  if(src==='sodium'){
+    ctx.fillStyle='rgba(255,220,100,0.8)';ctx.font="11px 'JetBrains Mono'";
+    ctx.fillText('Doublet Na: Δλ = 0.6 nm | R_min = '+Math.ceil(589/0.6).toLocaleString(),10,h-12);
+  }
+
+  document.getElementById('ro-reseau').innerHTML=
+    `N = ${N_mm} tr/mm<br>d = ${(d*1e6).toFixed(2)} μm<br>θ(m=1) = ${rad2deg(theta1).toFixed(1)}°`;
+}
+
+let rAnimDir=1, rLambda=380;
+function animReseau(){
+  if(reseauAnimId){clearInterval(reseauAnimId);reseauAnimId=null;
+    document.getElementById('btn-anim-r').innerHTML='▶ <span>'+(lang==='fr'?'Animer λ':'Animate λ')+'</span>';return;}
+  document.getElementById('btn-anim-r').innerHTML='⏹ Stop';
+  rLambda=parseFloat(document.getElementById('sl-rl').value);
+  reseauAnimId=setInterval(()=>{
+    rLambda+=rAnimDir*4;
+    if(rLambda>=780) rAnimDir=-1;
+    if(rLambda<=380) rAnimDir=1;
+    document.getElementById('sl-rl').value=rLambda;
+    drawReseau();
+  },50);
+}
+
+// ══════════════════════ MODULE 4: POLARISATION ══════════════════════
+let polarAnimAngle=0, polarAnimRunning=false;
+function drawPolar(){
+  const {ctx,w,h}=getCtx('c-polar');
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+
+  const theta_deg=parseFloat(document.getElementById('sl-ptheta').value);
+  const I0=parseFloat(document.getElementById('sl-pI0').value)/100;
+  const theta=deg2rad(theta_deg);
+  const polType=document.getElementById('sel-poltype').value;
+  const p3active=opts.pol3;
+  const theta3_deg=parseFloat(document.getElementById('sl-p3').value);
+
+  document.getElementById('v-ptheta').textContent=theta_deg.toFixed(0)+'°';
+  document.getElementById('v-pI0').textContent=(I0*100).toFixed(0)+'%';
+  document.getElementById('v-p3').textContent=theta3_deg.toFixed(0)+'°';
+
+  let I_after2 = I0*Math.cos(theta)**2;
+  let I_final = I_after2;
+  if(p3active){
+    const theta_23=deg2rad(theta3_deg-theta_deg);
+    I_final=I_after2*Math.cos(theta_23)**2;
+  }
+
+  document.getElementById('ic-pI').textContent=(I_final/I0).toFixed(3);
+  document.getElementById('ic-pT').textContent=(I_final/I0*100).toFixed(1)+'%';
+  document.getElementById('ic-pcos').textContent=Math.cos(theta).toFixed(3)**2;
+
+  document.getElementById('ro-polar').innerHTML=
+    `I = I₀·cos²(θ)<br>θ = ${theta_deg.toFixed(0)}°<br>I/I₀ = ${(I_final/I0).toFixed(3)}`;
+
+  const n = p3active ? 3 : 2;
+  const polX = [w*0.15, w*0.5, w*0.85].slice(0, n);
+  const polY = h/2;
+  const polR = Math.min(w/6, 80);
+
+  // ─── Draw polarizers ───
+  const polAngles=[0, theta_deg, p3active?theta3_deg:null];
+  const polLabels=['P₁ (Polariseur)', 'P₂ (Analyseur)', 'P₃'];
+  const polColors=['#63b3ed','#f6ad55','#68d391'];
+
+  for(let i=0;i<n;i++){
+    const px=polX[i], pa=deg2rad(polAngles[i]);
+    ctx.save();
+    ctx.translate(px,polY);
+
+    // Disk
+    ctx.beginPath();ctx.arc(0,0,polR,0,2*Math.PI);
+    ctx.fillStyle=`rgba(${i===0?'26,57,100':i===1?'80,50,10':'10,60,40'},0.4)`;
+    ctx.fill();
+    ctx.strokeStyle=polColors[i];ctx.lineWidth=2;
+    ctx.stroke();
+
+    // Polarization axis line
+    ctx.strokeStyle=polColors[i];ctx.lineWidth=3;
+    ctx.beginPath();
+    ctx.moveTo(-polR*0.8*Math.cos(pa),-polR*0.8*Math.sin(pa));
+    ctx.lineTo(polR*0.8*Math.cos(pa),polR*0.8*Math.sin(pa));
+    ctx.stroke();
+
+    // Electric field oscillation
+    if(i===0||polType==='linear'){
+      ctx.strokeStyle=`rgba(${polColors[i].replace('#','').match(/../g).map(x=>parseInt(x,16)).join(',')},0.35)`;
+      ctx.lineWidth=1;
+      for(let s=-polR*0.7;s<=polR*0.7;s+=polR*0.2){
+        const perp={x:-Math.sin(pa)*s, y:Math.cos(pa)*s};
+        ctx.save();ctx.translate(perp.x,perp.y);
+        ctx.beginPath();
+        ctx.moveTo(-polR*0.35*Math.cos(pa),-polR*0.35*Math.sin(pa));
+        ctx.lineTo(polR*0.35*Math.cos(pa),polR*0.35*Math.sin(pa));
+        ctx.stroke();ctx.restore();
+      }
+    } else if(polType==='circular'){
+      ctx.strokeStyle=polColors[i];ctx.lineWidth=2;
+      ctx.beginPath();ctx.arc(0,0,polR*0.5,0,2*Math.PI);ctx.stroke();
+      // Arrow for circular
+      ctx.fillStyle=polColors[i];
+      ctx.beginPath();
+      ctx.moveTo(polR*0.5,0);ctx.lineTo(polR*0.5-8,6);ctx.lineTo(polR*0.5-8,-6);
+      ctx.fill();
+    } else { // elliptic
+      ctx.strokeStyle=polColors[i];ctx.lineWidth=2;
+      ctx.beginPath();ctx.ellipse(0,0,polR*0.55,polR*0.3,pa,0,2*Math.PI);ctx.stroke();
+    }
+
+    // Label
+    ctx.fillStyle=polColors[i];ctx.font="10px 'JetBrains Mono'";
+    ctx.textAlign='center';
+    ctx.fillText(polLabels[i],0,polR+18);
+    if(i===1) ctx.fillText(theta_deg.toFixed(0)+'°',0,polR+30);
+    if(i===2) ctx.fillText(theta3_deg.toFixed(0)+'°',0,polR+30);
+    ctx.restore();
+  }
+
+  // ─── Light beam between polarizers ───
+  const Is=[I0, I0, I_after2, I_final];
+  for(let i=0;i<n;i++){
+    if(i===n-1) break;
+    const x1=polX[i]+polR+5, x2=polX[i+1]-polR-5;
+    const beamH=80;
+    const I_beam=Is[i+1];
+    const alpha=Math.min(0.9, I_beam*0.9+0.05);
+    const grad=ctx.createLinearGradient(x1,0,x2,0);
+    grad.addColorStop(0,`rgba(99,179,237,${alpha})`);
+    grad.addColorStop(1,`rgba(99,179,237,${alpha*0.7})`);
+    ctx.fillStyle=grad;
+    ctx.fillRect(x1,polY-beamH*I_beam/2,x2-x1,beamH*I_beam);
+
+    // I label
+    ctx.fillStyle='rgba(246,173,85,0.8)';ctx.font="11px 'JetBrains Mono'";
+    ctx.textAlign='center';
+    const ix=(x1+x2)/2;
+    if(i===0) ctx.fillText(`I₀=${(I0*100).toFixed(0)}%`,ix,polY-55);
+    if(i===1) ctx.fillText(`I=${(I_after2*100/I0).toFixed(0)}%`,ix,polY-55);
+    if(i===2) ctx.fillText(`I=${(I_final*100/I0).toFixed(0)}%`,ix,polY-55);
+  }
+
+  // ─── Polar diagram ───
+  const diagR=Math.min(h*0.28,90);
+  const diagX=p3active?w*0.93:w*0.88;
+  const diagY=polY;
+
+  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=1;
+  [0.25,0.5,0.75,1].forEach(r=>{
+    ctx.beginPath();ctx.arc(diagX,diagY,diagR*r,0,2*Math.PI);ctx.stroke();
+  });
+  [0,45,90,135].forEach(a=>{
+    const rad=deg2rad(a);
+    ctx.beginPath();ctx.moveTo(diagX-diagR*Math.cos(rad),diagY-diagR*Math.sin(rad));
+    ctx.lineTo(diagX+diagR*Math.cos(rad),diagY+diagR*Math.sin(rad));ctx.stroke();
+  });
+
+  // Malus curve on polar diagram
+  ctx.strokeStyle='rgba(246,173,85,0.8)';ctx.lineWidth=2;
+  ctx.beginPath();
+  for(let a=0;a<=360;a+=2){
+    const rad=deg2rad(a);
+    const Icos2=Math.cos(rad)**2;
+    const r=diagR*Icos2;
+    const x=diagX+r*Math.cos(rad);
+    const y=diagY+r*Math.sin(rad);
+    a===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  // Current angle pointer
+  const ptr_r=diagR*Math.cos(theta)**2;
+  ctx.fillStyle='#f6ad55';
+  ctx.beginPath();ctx.arc(diagX+ptr_r*Math.cos(theta),diagY+ptr_r*Math.sin(theta),5,0,2*Math.PI);ctx.fill();
+
+  ctx.fillStyle='rgba(246,173,85,0.7)';ctx.font="9px 'JetBrains Mono'";
+  ctx.textAlign='center';ctx.fillText('Malus',diagX,diagY+diagR+14);
+  ctx.textAlign='left';
+}
+
+let polarAnimRunningFlag=false;
+function animPolar(){
+  if(polarAnimId){clearInterval(polarAnimId);polarAnimId=null;polarAnimRunningFlag=false;
+    document.getElementById('btn-anim-p').innerHTML='▶ <span>'+(lang==='fr'?'Rotation':'Rotation')+'</span>';return;}
+  document.getElementById('btn-anim-p').innerHTML='⏹ Stop';
+  polarAnimRunningFlag=true;
+  polarAnimId=setInterval(()=>{
+    let v=parseFloat(document.getElementById('sl-ptheta').value);
+    v=(v+1)%361;
+    document.getElementById('sl-ptheta').value=v;
+    drawPolar();
+  },30);
+}
+
+// ══════════════════════ MODULE 5: PROPAGATION ══════════════════════
+function updateWave(){
+  const f=parseFloat(document.getElementById('sl-wf').value);
+  const A=parseFloat(document.getElementById('sl-wA').value);
+  const v=parseFloat(document.getElementById('sl-wv').value);
+  const phi=parseFloat(document.getElementById('sl-wphi').value);
+  const f2=parseFloat(document.getElementById('sl-wf2').value)/10;
+  const mode=document.getElementById('sel-wmode').value;
+
+  document.getElementById('v-wf').textContent=f.toFixed(1)+' Hz';
+  document.getElementById('v-wA').textContent=A.toFixed(0);
+  document.getElementById('v-wv').textContent=v.toFixed(0);
+  document.getElementById('v-wf2').textContent=f2.toFixed(1)+' Hz';
+
+  const T=1/f;
+  const lambda=v/f;
+  const omega=2*Math.PI*f;
+  const k=2*Math.PI/lambda;
+
+  document.getElementById('ic-wT').textContent=T.toFixed(3)+' s';
+  document.getElementById('ic-wlambda').textContent=lambda.toFixed(0)+' px';
+  document.getElementById('ic-womega').textContent=omega.toFixed(2)+' rad/s';
+  document.getElementById('ic-wk').textContent=k.toFixed(4)+' rad/px';
+
+  waveParams={f,A,v,phi:deg2rad(phi),f2,mode,k,omega,T,lambda};
+
+  const isTwoMode = mode==='two';
+  document.getElementById('ctrl-w2').style.opacity=isTwoMode?'1':'0.4';
+  document.getElementById('sl-wf2').disabled=!isTwoMode;
+  document.getElementById('btn-addsrc').style.display=mode==='2d'?'flex':'none';
+}
+
+function startWaveLoop(){
+  if(waveAnimId) cancelAnimationFrame(waveAnimId);
+  waveT=0;
+  updateWave();
+  function loop(){
+    if(waveRunning) waveT+=0.016;
+    drawWaveFrame();
+    waveAnimId=requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+let waveSources2D=[{x:0.3,y:0.5},{x:0.7,y:0.5}];
+
+function addSource(){
+  waveSources2D.push({x:Math.random()*0.6+0.2,y:Math.random()*0.6+0.2});
+}
+
+function drawWaveFrame(){
+  if(!waveParams.f) return;
+  const {ctx,w,h}=getCtx('c-wave');
+  ctx.clearRect(0,0,w,h);
+
+  const {f,A,v,phi,f2,mode,k,omega,T,lambda}=waveParams;
+
+  document.getElementById('wave-overlay').textContent='t = '+waveT.toFixed(2)+' s';
+
+  if(mode==='2d'){
+    // 2D interference pattern
+    const imgData=ctx.createImageData(w,h);
+    for(let y=0;y<h;y++){
+      for(let x=0;x<w;x++){
+        let val=0;
+        for(const src of waveSources2D){
+          const sx=src.x*w, sy=src.y*h;
+          const r=Math.sqrt((x-sx)**2+(y-sy)**2);
+          const phase=k*r-omega*waveT+phi;
+          val+=Math.cos(phase)*Math.exp(-r/600);
+        }
+        const norm=val/waveSources2D.length;
+        const b=Math.floor((norm+1)*0.5*255);
+        const idx=(y*w+x)*4;
+        imgData.data[idx]=b*0.4;
+        imgData.data[idx+1]=b*0.6;
+        imgData.data[idx+2]=b;
+        imgData.data[idx+3]=255;
+      }
+    }
+    ctx.putImageData(imgData,0,0);
+
+    // Source points
+    waveSources2D.forEach((src,i)=>{
+      const sx=src.x*w, sy=src.y*h;
+      ctx.fillStyle='#fff';
+      ctx.beginPath();ctx.arc(sx,sy,5,0,2*Math.PI);ctx.fill();
+      ctx.fillStyle='rgba(99,179,237,0.8)';ctx.font="10px 'JetBrains Mono'";
+      ctx.fillText('S'+(i+1),sx+8,sy-6);
+    });
+    return;
+  }
+
+  const cy=h/2;
+  drawGrid(ctx,w,h,40);
+
+  // Axis
+  ctx.strokeStyle='rgba(255,255,255,0.15)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(0,cy);ctx.lineTo(w,cy);ctx.stroke();
+  ctx.strokeStyle='rgba(255,255,255,0.1)';
+  ctx.beginPath();ctx.moveTo(0,cy-A);ctx.lineTo(w,cy-A);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(0,cy+A);ctx.lineTo(w,cy+A);ctx.stroke();
+
+  if(mode==='traveling'){
+    ctx.strokeStyle='#63b3ed';ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy+A*Math.cos(k*x-omega*waveT+phi);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Glow
+    ctx.strokeStyle='rgba(99,179,237,0.15)';ctx.lineWidth=8;
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy+A*Math.cos(k*x-omega*waveT+phi);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Moving point
+    const t_x = ((omega*waveT)%(2*Math.PI)/k+lambda)%lambda;
+    const tp_y=cy+A*Math.cos(0);
+    ctx.fillStyle='#f6ad55';
+    ctx.beginPath();ctx.arc(t_x,cy+A*Math.cos(k*t_x-omega*waveT+phi),6,0,2*Math.PI);ctx.fill();
+
+    // Wavelength arrow
+    if(lambda>30){
+      const ax=50, ay=cy-A-20;
+      ctx.strokeStyle='rgba(246,173,85,0.6)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(ax+lambda,ay);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ax,ay-4);ctx.lineTo(ax,ay+4);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(ax+lambda,ay-4);ctx.lineTo(ax+lambda,ay+4);ctx.stroke();
+      ctx.fillStyle='rgba(246,173,85,0.8)';ctx.font="10px 'JetBrains Mono'";
+      ctx.fillText('λ='+lambda.toFixed(0)+'px',ax+lambda/2-20,ay-6);
+    }
+
+  } else if(mode==='standing'){
+    // Onde stationnaire = 2A cos(kx) cos(ωt)
+    const A2=2*A;
+    ctx.strokeStyle='rgba(99,179,237,0.3)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy+A2*Math.cos(k*x);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.strokeStyle='rgba(255,100,100,0.3)';
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy-A2*Math.cos(k*x);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle='#68d391';ctx.lineWidth=2.5;
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy+A2*Math.cos(k*x)*Math.cos(omega*waveT+phi);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Nœuds et ventres
+    ctx.fillStyle='rgba(246,173,85,0.7)';ctx.font="9px 'JetBrains Mono'";
+    for(let n=0;n*lambda/2<w;n++){
+      const nx=n*lambda/2;
+      ctx.fillStyle='rgba(255,100,100,0.8)';
+      ctx.beginPath();ctx.arc(nx,cy,4,0,2*Math.PI);ctx.fill();
+      if(n<6) ctx.fillText('N',nx-4,cy+15);
+    }
+    ctx.fillStyle='rgba(99,179,237,0.6)';ctx.font="9px 'JetBrains Mono'";
+    for(let n=0;(n+0.5)*lambda/2<w;n++){
+      const vx=(n+0.5)*lambda/2;
+      ctx.fillText('V',vx-4,cy-A-8);
+    }
+
+  } else if(mode==='two'){
+    const omega2=2*Math.PI*f2;
+    const k2=omega2/v;
+    ctx.strokeStyle='rgba(99,179,237,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy+A*Math.cos(k*x-omega*waveT+phi);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+    ctx.strokeStyle='rgba(246,173,85,0.5)';ctx.lineWidth=1.5;
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy+A*Math.cos(k2*x-omega2*waveT);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    // Résultante
+    ctx.strokeStyle='#f687b3';ctx.lineWidth=2.5;
+    ctx.beginPath();
+    for(let x=0;x<w;x++){
+      const y=cy+A*Math.cos(k*x-omega*waveT+phi)+A*Math.cos(k2*x-omega2*waveT);
+      x===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+
+    ctx.fillStyle='rgba(246,100,179,0.7)';ctx.font="10px 'JetBrains Mono'";
+    ctx.fillText('Résultante (battements)',10,20);
+    const fbeat=Math.abs(f-f2);
+    ctx.fillStyle='rgba(255,255,255,0.4)';
+    ctx.fillText('f_bat = |f₁-f₂| = '+fbeat.toFixed(1)+' Hz',10,34);
+  }
+}
+
+function toggleWave(){
+  waveRunning=!waveRunning;
+  const btn=document.getElementById('btn-wplay');
+  btn.innerHTML=waveRunning
+    ? '⏸ <span>'+(lang==='fr'?'Pause':'Pause')+'</span>'
+    : '▶ <span>'+(lang==='fr'?'Play':'Play')+'</span>';
+}
+function resetWave(){
+  waveT=0;
+  waveSources2D=[{x:0.3,y:0.5},{x:0.7,y:0.5}];
+  document.getElementById('sl-wf').value=2;
+  document.getElementById('sl-wA').value=50;
+  document.getElementById('sl-wv').value=300;
+  document.getElementById('sl-wphi').value=0;
+  document.getElementById('sel-wmode').value='traveling';
+  updateWave();
+}
+
+// ══════════════════════ RESIZE ══════════════════════
+let resizeTimer;
+window.addEventListener('resize',()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer=setTimeout(()=>{ redrawActive(); },120);
+});
+
+// ══════════════════════ INIT ══════════════════════
+window.addEventListener('DOMContentLoaded',()=>{
+  drawYoung();
+  setTimeout(()=>{
+    drawDiff1();drawReseau();drawPolar();
+    updateWave();
+    startWaveLoop();
+  },200);
+});
+</script>
+</body>
+</html>

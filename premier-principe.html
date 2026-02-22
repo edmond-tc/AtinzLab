@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premier Principe de la Thermodynamique — SimLab</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hh: 48px;
+  --ph: 185px;
+  --bg: #0a0e1a;
+  --s1: #111827;
+  --s2: #1a2540;
+  --acc: #00e5ff;
+  --grn: #00ff88;
+  --red: #ff4060;
+  --yel: #ffd740;
+  --ora: #ff8c42;
+  --txt: #e2e8f0;
+  --txt2: #94a3b8;
+  --rad: 8px;
+}
+@media(max-width:600px){:root{--hh:44px;--ph:178px;}}
+@media(max-width:380px){:root{--hh:42px;--ph:168px;}}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;overflow:hidden;height:100vh;}
+
+/* HEADER */
+#hdr{
+  position:fixed;top:0;left:0;right:0;height:var(--hh);
+  background:rgba(17,24,39,0.96);border-bottom:1px solid rgba(0,229,255,0.2);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 10px;z-index:100;backdrop-filter:blur(10px);gap:6px;
+}
+#hdr a{color:var(--acc);text-decoration:none;font-size:11px;font-weight:500;
+  white-space:nowrap;padding:4px 8px;border:1px solid rgba(0,229,255,0.3);border-radius:4px;}
+#hdr a:hover{background:rgba(0,229,255,0.1);}
+#hdr-title{font-size:12px;font-weight:600;color:var(--acc);text-align:center;
+  flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#logo{font-size:12px;white-space:nowrap;color:var(--txt2);}
+#v3d-btn{background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);
+  color:var(--acc);font-size:10px;padding:4px 8px;border-radius:4px;cursor:pointer;white-space:nowrap;}
+#v3d-btn:hover{background:rgba(0,229,255,0.2);}
+@media(max-width:600px){#logo{display:none;}}
+
+/* ZONE SIMULATION */
+#sw{
+  position:fixed;top:var(--hh);bottom:var(--ph);left:0;right:0;
+  overflow:hidden;background:linear-gradient(160deg,#04080f 0%,#060d18 100%);
+}
+#c2d{display:block;width:100%;height:100%;}
+#c3d{display:none;width:100%;height:100%;}
+
+/* TOOLTIP */
+#tip{
+  position:fixed;background:rgba(17,24,39,0.95);border:1px solid rgba(0,229,255,0.4);
+  border-radius:6px;padding:6px 10px;font-size:10px;font-family:'JetBrains Mono',monospace;
+  color:var(--acc);pointer-events:none;display:none;z-index:200;line-height:1.7;
+  max-width:180px;
+}
+
+/* PANEL BAS */
+#pnl{
+  position:fixed;bottom:0;left:0;right:0;height:var(--ph);
+  background:var(--s1);border-top:1px solid rgba(0,229,255,0.15);
+  display:flex;flex-direction:column;z-index:100;
+}
+
+/* ONGLETS */
+#tabs{display:flex;overflow-x:auto;border-bottom:1px solid rgba(0,229,255,0.1);
+  background:rgba(10,14,26,0.8);flex-shrink:0;}
+#tabs::-webkit-scrollbar{height:2px;}
+#tabs::-webkit-scrollbar-thumb{background:var(--acc);}
+.tab{padding:6px 10px;font-size:10px;font-weight:500;color:var(--txt2);
+  cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
+  transition:all .2s;flex-shrink:0;}
+.tab:hover{color:var(--acc);}
+.tab.act{color:var(--acc);border-bottom-color:var(--acc);background:rgba(0,229,255,0.05);}
+
+/* CONTENU */
+#tcon{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 10px;}
+#tcon::-webkit-scrollbar{width:3px;}
+#tcon::-webkit-scrollbar-thumb{background:var(--acc);}
+.tpane{display:none;}
+.tpane.act{display:block;}
+
+/* SLIDERS */
+.ctrl-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}
+.ctrl-row label{font-size:9px;color:var(--txt2);min-width:95px;flex-shrink:0;}
+.ctrl-row input[type=range]{flex:1;height:4px;-webkit-appearance:none;
+  background:rgba(0,229,255,0.2);border-radius:2px;outline:none;cursor:pointer;}
+.ctrl-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;
+  width:20px;height:20px;border-radius:50%;background:var(--acc);
+  box-shadow:0 0 8px var(--acc);cursor:pointer;}
+.ctrl-row .lv{font-family:'JetBrains Mono',monospace;font-size:9px;
+  color:var(--acc);min-width:52px;text-align:right;flex-shrink:0;}
+.ctrl-row input[type=checkbox]{accent-color:var(--acc);width:14px;height:14px;}
+
+/* SELECT */
+.ctrl-row select{flex:1;background:var(--s2);color:var(--txt);border:1px solid rgba(0,229,255,0.2);
+  border-radius:4px;padding:3px 6px;font-size:9px;outline:none;cursor:pointer;
+  font-family:'Outfit',sans-serif;}
+
+/* BOUTONS */
+.btn-row{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;}
+.btn{padding:5px 12px;font-size:11px;font-weight:600;border:none;border-radius:6px;
+  cursor:pointer;transition:all .2s;font-family:'Outfit',sans-serif;}
+.btn-go{background:var(--grn);color:#000;}
+.btn-go:hover{box-shadow:0 0 10px var(--grn);}
+.btn-pause{background:var(--yel);color:#000;}
+.btn-pause:hover{box-shadow:0 0 10px var(--yel);}
+.btn-rst{background:var(--red);color:#fff;}
+.btn-rst:hover{box-shadow:0 0 10px var(--red);}
+.btn-exp{background:var(--acc);color:#000;}
+.btn-exp:hover{box-shadow:0 0 10px var(--acc);}
+
+/* CARDS */
+.card-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.card{background:var(--s2);border:1px solid rgba(0,229,255,0.1);
+  border-radius:var(--rad);padding:6px 8px;}
+.card .cl{font-size:9px;color:var(--txt2);margin-bottom:2px;}
+.card .cv{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--acc);font-weight:700;}
+.card .cu{font-size:8px;color:var(--txt2);}
+.card.yel .cv{color:var(--yel);}
+.card.grn .cv{color:var(--grn);}
+.card.red .cv{color:var(--red);}
+.card.ora .cv{color:var(--ora);}
+
+/* LOIS */
+.law-card{background:var(--s2);border:1px solid rgba(255,215,64,0.15);
+  border-radius:var(--rad);padding:8px 10px;margin-bottom:6px;}
+.law-card .lf{font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:var(--yel);margin-bottom:4px;font-weight:700;}
+.law-card .le{font-size:9px;color:var(--txt2);line-height:1.5;}
+
+/* VÉRIF */
+.verif-row{display:flex;align-items:center;gap:8px;padding:4px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);}
+.verif-row input[type=checkbox]{accent-color:var(--grn);}
+.verif-row label{font-size:9px;color:var(--txt2);flex:1;}
+.badge{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;
+  border-radius:3px;background:rgba(0,229,255,0.15);color:var(--acc);white-space:nowrap;}
+
+/* TOAST */
+#toast{position:fixed;bottom:calc(var(--ph)+10px);left:50%;transform:translateX(-50%);
+  background:rgba(0,229,255,0.15);border:1px solid var(--acc);color:var(--acc);
+  padding:6px 16px;border-radius:6px;font-size:11px;z-index:300;
+  opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+#toast.show{opacity:1;}
+
+/* SECTION-TITLE TP */
+.tp-section{font-size:9px;font-weight:600;color:var(--acc);
+  margin:6px 0 4px;letter-spacing:0.04em;}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="hdr">
+  <a href="index.html">← Retour</a>
+  <div id="hdr-title">⚡ Premier Principe — Thermodynamique</div>
+  <button id="v3d-btn" onclick="switchV()">3D</button>
+  <div id="logo">⚗️ SimLab</div>
+</div>
+
+<!-- ZONE SIMULATION -->
+<div id="sw">
+  <canvas id="c2d"></canvas>
+  <canvas id="c3d"></canvas>
+</div>
+
+<!-- TOOLTIP -->
+<div id="tip"></div>
+
+<!-- PANEL BAS -->
+<div id="pnl">
+  <div id="tabs">
+    <div class="tab act" onclick="selTab(0)">⚙️ Paramètres</div>
+    <div class="tab" onclick="selTab(1)">📐 Mesures</div>
+    <div class="tab" onclick="selTab(2)">📚 Lois</div>
+    <div class="tab" onclick="selTab(3)">📄 TP</div>
+    <div class="tab" onclick="selTab(4)">📊 Résultats</div>
+  </div>
+  <div id="tcon">
+
+    <!-- ⚙️ PARAMÈTRES -->
+    <div class="tpane act" id="tp0">
+      <div class="ctrl-row">
+        <label>Système</label>
+        <select id="sel-sys" onchange="onSysChange()">
+          <option value="gaz">Gaz parfait (cylindre)</option>
+          <option value="solide">Corps solide (chauffage)</option>
+          <option value="cycle">Cycle fermé</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <label>Chaleur Q (J)</label>
+        <input type="range" id="s-Q" min="-2000" max="2000" value="800" step="10">
+        <span class="lv" id="lv-Q">+800 J</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Travail W (J)</label>
+        <input type="range" id="s-W" min="-1500" max="1500" value="-300" step="10">
+        <span class="lv" id="lv-W">-300 J</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Masse m (kg)</label>
+        <input type="range" id="s-m" min="0.1" max="5" value="1" step="0.1">
+        <span class="lv" id="lv-m">1.0 kg</span>
+      </div>
+      <div class="ctrl-row">
+        <label>T initiale (K)</label>
+        <input type="range" id="s-Ti" min="200" max="600" value="300" step="5">
+        <span class="lv" id="lv-Ti">300 K</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Cv (J·kg⁻¹·K⁻¹)</label>
+        <input type="range" id="s-Cv" min="100" max="4200" value="718" step="10">
+        <span class="lv" id="lv-Cv">718</span>
+      </div>
+      <div class="ctrl-row">
+        <label>Vitesse anim.</label>
+        <input type="range" id="s-spd" min="0.3" max="3" value="1" step="0.1">
+        <span class="lv" id="lv-spd">1.0×</span>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-go" onclick="doStart()">▶ Lancer</button>
+        <button class="btn btn-pause" onclick="doPause()">⏸ Pause</button>
+        <button class="btn btn-rst" onclick="doReset()">↺ Reset</button>
+      </div>
+    </div>
+
+    <!-- 📐 MESURES -->
+    <div class="tpane" id="tp1">
+      <div class="card-grid">
+        <div class="card yel"><div class="cl">Q Chaleur reçue</div><div class="cv" id="m-Q">+800</div><div class="cu">J</div></div>
+        <div class="card red"><div class="cl">W Travail reçu</div><div class="cv" id="m-W">-300</div><div class="cu">J</div></div>
+        <div class="card grn"><div class="cl">ΔU Variation énergie int.</div><div class="cv" id="m-dU">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">T initiale</div><div class="cv" id="m-Ti">300</div><div class="cu">K</div></div>
+        <div class="card ora"><div class="cl">T finale</div><div class="cv" id="m-Tf">—</div><div class="cu">K</div></div>
+        <div class="card"><div class="cl">ΔT variation</div><div class="cv" id="m-dT">—</div><div class="cu">K</div></div>
+        <div class="card"><div class="cl">m masse</div><div class="cv" id="m-m">1.0</div><div class="cu">kg</div></div>
+        <div class="card"><div class="cl">Cv chaleur spécif.</div><div class="cv" id="m-Cv">718</div><div class="cu">J/kg·K</div></div>
+      </div>
+    </div>
+
+    <!-- 📚 LOIS -->
+    <div class="tpane" id="tp2">
+      <div class="law-card">
+        <div class="lf">ΔU = Q + W</div>
+        <div class="le">Premier principe de la thermodynamique : la variation d'énergie interne ΔU d'un système est égale à la somme de la chaleur Q reçue et du travail W reçu par le système. C'est la loi de conservation de l'énergie pour les systèmes thermiques.</div>
+      </div>
+      <div class="law-card">
+        <div class="lf">ΔU = m · Cv · ΔT</div>
+        <div class="le">Pour un corps ou un gaz parfait : la variation d'énergie interne est liée à la variation de température ΔT, à la masse m et à la capacité thermique massique à volume constant Cv. Unités : J = kg · (J·kg⁻¹·K⁻¹) · K.</div>
+      </div>
+      <div class="law-card">
+        <div class="lf">ΔU = 0 (cycle)</div>
+        <div class="le">Pour un cycle fermé (retour à l'état initial), la variation d'énergie interne est nulle. Donc Q + W = 0, soit Q = -W. La chaleur reçue est entièrement convertie en travail (ou vice versa) sur un cycle complet.</div>
+      </div>
+      <div class="law-card">
+        <div class="lf">W = -P · ΔV (travail mécanique)</div>
+        <div class="le">Pour une transformation quasi-statique d'un gaz à pression constante (isobare), le travail reçu par le système est W = -P·ΔV. Si le gaz se détend (ΔV &gt; 0), il fournit du travail (W &lt; 0 pour le système).</div>
+      </div>
+      <div class="law-card">
+        <div class="lf">Convention : Q &gt; 0 si reçu, W &gt; 0 si reçu</div>
+        <div class="le">Convention récepteur (système = récepteur) : Q &gt; 0 → système reçoit de la chaleur. W &gt; 0 → système reçoit du travail. Q &lt; 0 → système cède de la chaleur. W &lt; 0 → système fournit du travail.</div>
+      </div>
+    </div>
+
+    <!-- 📄 TP -->
+    <div class="tpane" id="tp3">
+      <div class="tp-section">DONNÉES DU SYSTÈME</div>
+      <div id="tp-summary" style="font-family:'JetBrains Mono',monospace;font-size:9px;
+        color:var(--yel);background:var(--s2);border-radius:6px;padding:8px;line-height:1.9;
+        margin-bottom:6px;white-space:pre-wrap;"></div>
+      <div class="tp-section">FORMULES APPLIQUÉES</div>
+      <div id="tp-formulas" style="font-family:'JetBrains Mono',monospace;font-size:9px;
+        color:var(--acc);background:var(--s2);border-radius:6px;padding:8px;line-height:1.9;
+        white-space:pre-wrap;"></div>
+      <div class="btn-row" style="margin-top:8px;">
+        <button class="btn btn-exp" onclick="exportTP()">⬇ Exporter TXT</button>
+      </div>
+    </div>
+
+    <!-- 📊 RÉSULTATS -->
+    <div class="tpane" id="tp4">
+      <div class="card-grid" style="margin-bottom:8px;">
+        <div class="card grn"><div class="cl">ΔU = Q + W</div><div class="cv" id="r-dU">—</div><div class="cu">J</div></div>
+        <div class="card yel"><div class="cl">T finale Tf</div><div class="cv" id="r-Tf">—</div><div class="cu">K</div></div>
+        <div class="card"><div class="cl">ΔT = ΔU / (m·Cv)</div><div class="cv" id="r-dT">—</div><div class="cu">K</div></div>
+        <div class="card red"><div class="cl">Bilan Q + W</div><div class="cv" id="r-bilan">—</div><div class="cu">J</div></div>
+        <div class="card"><div class="cl">|Q| / |ΔU|</div><div class="cv" id="r-ratio">—</div><div class="cu">%</div></div>
+        <div class="card"><div class="cl">Système</div><div class="cv" id="r-sys" style="font-size:9px;">—</div><div class="cu"></div></div>
+      </div>
+      <div style="font-size:9px;font-weight:600;color:var(--txt2);margin-bottom:6px;">✅ Vérification TP</div>
+      <div class="verif-row"><input type="checkbox" id="vf1"><label for="vf1">ΔU = Q + W vérifié (1er principe)</label><span class="badge" id="vb1">—</span></div>
+      <div class="verif-row"><input type="checkbox" id="vf2"><label for="vf2">ΔU = m·Cv·ΔT cohérent</label><span class="badge" id="vb2">—</span></div>
+      <div class="verif-row"><input type="checkbox" id="vf3"><label for="vf3">Tf = Ti + ΔT &gt; 0 K</label><span class="badge" id="vb3">—</span></div>
+      <div class="verif-row"><input type="checkbox" id="vf4"><label for="vf4">Conservation énergie (cycle: ΔU=0)</label><span class="badge" id="vb4">—</span></div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ===================== ÉTAT =====================
+var ST = {
+  running: false,
+  time: 0,
+  view: '2d',
+  Q: 800, W: -300,
+  m: 1.0, Ti: 300, Cv: 718,
+  speed: 1,
+  sys: 'gaz',
+  particles: [],
+  heatParticles: [],
+  workParticles: [],
+  pistonY: 0,
+  pistonDir: 1,
+  raf: null,
+  phase: 0,
+  mx: 0, my: 0
+};
+
+var c2 = document.getElementById('c2d');
+var ctx = c2.getContext('2d');
+
+// ===================== CALCULS =====================
+function calcDU() { return ST.Q + ST.W; }
+function calcDT() { return calcDU() / (ST.m * ST.Cv); }
+function calcTf() { return ST.Ti + calcDT(); }
+
+// ===================== RESIZE =====================
+function rsz() {
+  var sw = document.getElementById('sw');
+  c2.width = sw.clientWidth;
+  c2.height = sw.clientHeight;
+  d2();
+}
+
+// ===================== SLIDERS =====================
+function bindSlider(id, lvId, dec, suffix, cb) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.addEventListener('input', function() {
+    var v = parseFloat(this.value);
+    document.getElementById(lvId).textContent = (v >= 0 && id === 's-Q' ? '+' : '') + v.toFixed(dec) + (suffix || '');
+    if (cb) cb(v);
+    uR();
+    if (!ST.running) d2();
+  });
+}
+
+bindSlider('s-Q','lv-Q',0,' J', function(v){ ST.Q = v; });
+bindSlider('s-W','lv-W',0,' J', function(v){ ST.W = v; });
+bindSlider('s-m','lv-m',1,' kg', function(v){ ST.m = v; });
+bindSlider('s-Ti','lv-Ti',0,' K', function(v){ ST.Ti = v; });
+bindSlider('s-Cv','lv-Cv',0,'', function(v){ ST.Cv = v; });
+bindSlider('s-spd','lv-spd',1,'×', function(v){ ST.speed = v; });
+
+function onSysChange() {
+  ST.sys = document.getElementById('sel-sys').value;
+  // Valeurs par défaut selon le système
+  if (ST.sys === 'gaz') {
+    document.getElementById('s-Q').value = 800;
+    document.getElementById('s-W').value = -300;
+    document.getElementById('s-Cv').value = 718;
+    ST.Q = 800; ST.W = -300; ST.Cv = 718;
+    document.getElementById('lv-Q').textContent = '+800 J';
+    document.getElementById('lv-W').textContent = '-300 J';
+    document.getElementById('lv-Cv').textContent = '718';
+  } else if (ST.sys === 'solide') {
+    document.getElementById('s-Q').value = 1200;
+    document.getElementById('s-W').value = 0;
+    document.getElementById('s-Cv').value = 450;
+    ST.Q = 1200; ST.W = 0; ST.Cv = 450;
+    document.getElementById('lv-Q').textContent = '+1200 J';
+    document.getElementById('lv-W').textContent = '0 J';
+    document.getElementById('lv-Cv').textContent = '450';
+  } else {
+    document.getElementById('s-Q').value = 500;
+    document.getElementById('s-W').value = -500;
+    document.getElementById('s-Cv').value = 718;
+    ST.Q = 500; ST.W = -500; ST.Cv = 718;
+    document.getElementById('lv-Q').textContent = '+500 J';
+    document.getElementById('lv-W').textContent = '-500 J';
+    document.getElementById('lv-Cv').textContent = '718';
+  }
+  uR(); if (!ST.running) d2();
+}
+
+// ===================== UPDATE DISPLAY =====================
+function uR() {
+  var dU = calcDU(), dT = calcDT(), Tf = calcTf();
+  var sysNames = { gaz: 'Gaz parfait', solide: 'Corps solide', cycle: 'Cycle fermé' };
+
+  // Mesures
+  setText('m-Q',  (ST.Q >= 0 ? '+' : '') + ST.Q.toFixed(0));
+  setText('m-W',  (ST.W >= 0 ? '+' : '') + ST.W.toFixed(0));
+  setText('m-dU', (dU >= 0 ? '+' : '') + dU.toFixed(1));
+  setText('m-Ti', ST.Ti.toFixed(0));
+  setText('m-Tf', Tf.toFixed(1));
+  setText('m-dT', (dT >= 0 ? '+' : '') + dT.toFixed(2));
+  setText('m-m',  ST.m.toFixed(1));
+  setText('m-Cv', ST.Cv.toFixed(0));
+
+  // Couleur ΔU
+  var dUel = document.getElementById('m-dU');
+  if (dUel) dUel.style.color = dU > 0 ? 'var(--grn)' : dU < 0 ? 'var(--red)' : 'var(--acc)';
+
+  // Résultats
+  setText('r-dU', (dU >= 0 ? '+' : '') + dU.toFixed(1));
+  setText('r-Tf', Tf.toFixed(1));
+  setText('r-dT', (dT >= 0 ? '+' : '') + dT.toFixed(2));
+  setText('r-bilan', (ST.Q + ST.W).toFixed(1));
+  var ratioQ = dU !== 0 ? Math.abs(ST.Q / dU * 100) : 0;
+  setText('r-ratio', isFinite(ratioQ) ? ratioQ.toFixed(0) : '∞');
+  setText('r-sys', sysNames[ST.sys] || '—');
+
+  // Badges vérif
+  var ok1 = Math.abs(dU - (ST.Q + ST.W)) < 0.01;
+  var duCalc = ST.m * ST.Cv * dT;
+  var ok2 = Math.abs(dU - duCalc) < 0.1;
+  var ok3 = Tf > 0;
+  var ok4 = ST.sys === 'cycle' ? Math.abs(dU) < 0.1 : true;
+
+  setBadge('vb1', 'ΔU=' + dU.toFixed(1) + ' J', ok1);
+  setBadge('vb2', 'ΔU_calc=' + duCalc.toFixed(1), ok2);
+  setBadge('vb3', 'Tf=' + Tf.toFixed(1) + 'K', ok3);
+  setBadge('vb4', ST.sys === 'cycle' ? 'ΔU=' + dU.toFixed(1) : 'N/A', ok4);
+  setCheck('vf1', ok1);
+  setCheck('vf2', ok2);
+  setCheck('vf3', ok3);
+  setCheck('vf4', ok4);
+
+  // TP
+  document.getElementById('tp-summary').textContent =
+    'Système  : ' + sysNames[ST.sys] + '\n' +
+    'Q reçu   : ' + (ST.Q >= 0 ? '+' : '') + ST.Q + ' J\n' +
+    'W reçu   : ' + (ST.W >= 0 ? '+' : '') + ST.W + ' J\n' +
+    'Masse m  : ' + ST.m.toFixed(1) + ' kg\n' +
+    'Cv       : ' + ST.Cv + ' J/(kg·K)\n' +
+    'Ti init  : ' + ST.Ti + ' K';
+  document.getElementById('tp-formulas').textContent =
+    '1er principe : ΔU = Q + W\n' +
+    '  ΔU = ' + (ST.Q >= 0 ? '+' : '') + ST.Q + ' + (' + ST.W + ')\n' +
+    '  ΔU = ' + (dU >= 0 ? '+' : '') + dU.toFixed(1) + ' J\n\n' +
+    'Température  : ΔT = ΔU / (m·Cv)\n' +
+    '  ΔT = ' + dU.toFixed(1) + ' / (' + ST.m.toFixed(1) + ' × ' + ST.Cv + ')\n' +
+    '  ΔT = ' + (dT >= 0 ? '+' : '') + dT.toFixed(3) + ' K\n\n' +
+    'Tf = Ti + ΔT = ' + ST.Ti + ' + ' + dT.toFixed(3) + '\n' +
+    'Tf = ' + Tf.toFixed(2) + ' K';
+}
+
+function setText(id, v) { var e = document.getElementById(id); if(e) e.textContent = v; }
+function setBadge(id, txt, ok) {
+  var e = document.getElementById(id); if(!e) return;
+  e.textContent = txt;
+  e.style.background = ok ? 'rgba(0,255,136,0.15)' : 'rgba(255,64,96,0.2)';
+  e.style.color = ok ? 'var(--grn)' : 'var(--red)';
+}
+function setCheck(id, v) { var e = document.getElementById(id); if(e) e.checked = v; }
+
+// ===================== DESSIN 2D =====================
+function d2() {
+  var W = c2.width, H = c2.height;
+  ctx.clearRect(0,0,W,H);
+
+  // Fond dégradé
+  var bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#04080f'); bg.addColorStop(1,'#060d18');
+  ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+
+  // Grille
+  ctx.strokeStyle = 'rgba(0,229,255,0.03)'; ctx.lineWidth = 1;
+  for(var gx=0;gx<W;gx+=40){ctx.beginPath();ctx.moveTo(gx,0);ctx.lineTo(gx,H);ctx.stroke();}
+  for(var gy=0;gy<H;gy+=40){ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke();}
+
+  if(ST.sys === 'gaz')    drawGazScene(W, H);
+  else if(ST.sys === 'solide') drawSolideScene(W, H);
+  else if(ST.sys === 'cycle')  drawCycleScene(W, H);
+
+  tkP();
+}
+
+// ---- SCÈNE GAZ PARFAIT ----
+function drawGazScene(W, H) {
+  var cx = W/2, cy = H/2;
+  var cylW = Math.min(W*0.28, 130);
+  var cylH = Math.min(H*0.5, 180);
+  var cylX = cx - cylW/2, cylY = cy - cylH/2;
+  var dU = calcDU(), dT = calcDT(), Tf = calcTf();
+
+  // Température → couleur gaz
+  var tNorm = Math.max(0, Math.min(1, (Tf - 200) / 600));
+  var r = Math.floor(tNorm * 255);
+  var b = Math.floor((1-tNorm) * 180);
+  var gazColor = 'rgba(' + r + ',' + Math.floor(tNorm*80) + ',' + b + ',';
+
+  // Remplissage cylindre (gaz)
+  var pistonOffset = ST.pistonY;
+  var gazH = cylH * 0.7 - pistonOffset;
+  if (gazH < 10) gazH = 10;
+  var gazGrd = ctx.createLinearGradient(cylX, cy, cylX+cylW, cy);
+  gazGrd.addColorStop(0, gazColor + '0.15)');
+  gazGrd.addColorStop(0.5, gazColor + '0.35)');
+  gazGrd.addColorStop(1, gazColor + '0.15)');
+  ctx.fillStyle = gazGrd;
+  ctx.fillRect(cylX+3, cylY + cylH*0.15 + pistonOffset, cylW-6, gazH);
+
+  // Parois cylindre
+  ctx.strokeStyle = 'rgba(0,229,255,0.6)'; ctx.lineWidth = 2;
+  ctx.strokeRect(cylX, cylY, cylW, cylH);
+  // Fond cylindre
+  ctx.fillStyle = 'rgba(0,229,255,0.08)';
+  ctx.fillRect(cylX+2, cylY + cylH*0.8, cylW-4, cylH*0.2 - 2);
+  ctx.strokeStyle = 'rgba(0,229,255,0.4)'; ctx.lineWidth = 1;
+  ctx.strokeRect(cylX+2, cylY + cylH*0.8, cylW-4, cylH*0.2 - 2);
+
+  // Piston
+  var pistY = cylY + cylH*0.15 + pistonOffset;
+  var pistGrd = ctx.createLinearGradient(cylX, pistY, cylX, pistY+16);
+  pistGrd.addColorStop(0,'rgba(0,229,255,0.9)'); pistGrd.addColorStop(1,'rgba(0,100,140,0.7)');
+  ctx.fillStyle = pistGrd;
+  roundRectFill(ctx, cylX+2, pistY, cylW-4, 16, 3);
+  ctx.strokeStyle = 'rgba(0,229,255,0.8)'; ctx.lineWidth = 1.5;
+  roundRectStroke(ctx, cylX+2, pistY, cylW-4, 16, 3);
+
+  // Tige piston
+  ctx.strokeStyle = 'rgba(0,229,255,0.6)'; ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx, pistY); ctx.lineTo(cx, pistY - 30); ctx.stroke();
+  ctx.lineCap = 'butt';
+
+  // Étiquette W
+  var wLabel = ST.W < 0 ? '↑ W fourni' : '↓ W reçu';
+  ctx.font = 'bold 9px JetBrains Mono'; ctx.fillStyle = 'rgba(255,215,64,0.9)';
+  ctx.textAlign = 'center';
+  ctx.fillText(wLabel, cx, pistY - 36);
+
+  // Flamme/glace sous le cylindre = source Q
+  drawHeatSource(cx, cylY + cylH + 14, ST.Q, ST.time);
+
+  // BILAN ÉNERGÉTIQUE — barres
+  drawEnergyBars(W, H, cylX + cylW + 20, cy);
+
+  // Indicateur T
+  drawThermo(cylX - 45, cy, ST.Ti, Tf, ST.time, cylH);
+
+  // Labels ΔU
+  var dUStr = (dU >= 0 ? '+' : '') + dU.toFixed(0) + ' J';
+  ctx.font = 'bold 11px Outfit'; ctx.fillStyle = dU > 0 ? '#00ff88' : dU < 0 ? '#ff4060' : '#00e5ff';
+  ctx.textAlign = 'center';
+  ctx.shadowColor = dU > 0 ? '#00ff88' : '#ff4060'; ctx.shadowBlur = 6;
+  ctx.fillText('ΔU = ' + dUStr, cx, cylY - 14);
+  ctx.shadowBlur = 0;
+}
+
+// ---- SOURCE DE CHALEUR ----
+function drawHeatSource(cx, y, Q, t) {
+  if (Math.abs(Q) < 5) return;
+  var hot = Q > 0;
+  var col = hot ? '#ff6030' : '#3080ff';
+  var n = 5;
+  for (var i = 0; i < n; i++) {
+    var xi = cx + (i - 2) * 14;
+    if (hot) {
+      // Flammes
+      var fh = 16 + Math.sin(t*4 + i*1.2) * 5;
+      var fg = ctx.createLinearGradient(xi, y-fh, xi, y);
+      fg.addColorStop(0,'rgba(255,220,0,0)'); fg.addColorStop(0.4,col+'cc'); fg.addColorStop(1,col+'44');
+      ctx.fillStyle = fg; ctx.beginPath();
+      ctx.moveTo(xi-5, y); ctx.quadraticCurveTo(xi, y-fh, xi+5, y); ctx.fill();
+    } else {
+      // Cristaux glace
+      ctx.strokeStyle = col + 'aa'; ctx.lineWidth = 1.5;
+      var icy = y + Math.sin(t*2+i)*2;
+      ctx.beginPath(); ctx.moveTo(xi-6, icy); ctx.lineTo(xi+6, icy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(xi, icy-6); ctx.lineTo(xi, icy+6); ctx.stroke();
+    }
+  }
+  ctx.font = '9px JetBrains Mono'; ctx.fillStyle = col; ctx.textAlign = 'center';
+  ctx.fillText('Q = ' + (Q>=0?'+':'') + Q.toFixed(0) + ' J', cx, y + 18);
+}
+
+// ---- BARRES ÉNERGIE ----
+function drawEnergyBars(W, H, x, cy) {
+  var dU = calcDU();
+  var maxVal = 2000;
+  var bw = 20, bh = Math.min(H*0.35, 120);
+  var gap = 32;
+  var labels = ['Q','W','ΔU'];
+  var vals   = [ST.Q, ST.W, dU];
+  var colors = ['#ffd740','#ff8c42','#00ff88'];
+
+  ctx.font = '8px JetBrains Mono'; ctx.textAlign = 'center';
+  for (var i = 0; i < 3; i++) {
+    var bx = x + i * (bw + gap);
+    var v = vals[i];
+    var filled = Math.abs(v) / maxVal * bh;
+    filled = Math.min(filled, bh);
+    // Fond barre
+    ctx.fillStyle = 'rgba(255,255,255,0.04)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth=1;
+    ctx.beginPath(); roundRectFill(ctx, bx, cy-bh/2, bw, bh, 4);
+    ctx.strokeRect(bx, cy-bh/2, bw, bh);
+    // Remplissage
+    if (filled > 0) {
+      var gy = v > 0 ? cy - filled : cy;
+      var cg = ctx.createLinearGradient(bx, gy, bx, gy+filled);
+      cg.addColorStop(0, colors[i]); cg.addColorStop(1, colors[i]+'44');
+      ctx.fillStyle = cg;
+      roundRectFill(ctx, bx, gy, bw, filled, 4);
+    }
+    // Label
+    ctx.fillStyle = colors[i]; ctx.font = 'bold 8px JetBrains Mono';
+    ctx.fillText(labels[i], bx+bw/2, cy-bh/2-5);
+    ctx.font = '7px JetBrains Mono'; ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.fillText((v>=0?'+':'')+v.toFixed(0), bx+bw/2, cy+bh/2+10);
+  }
+  ctx.font = '9px Outfit'; ctx.fillStyle = 'rgba(0,229,255,0.5)';
+  ctx.fillText('Bilan', x + (bw+gap), cy + bh/2 + 22);
+}
+
+// ---- THERMOMÈTRE ----
+function drawThermo(x, cy, Ti, Tf, t, cylH) {
+  var bh = Math.min(cylH * 0.8, 120);
+  var bw = 10;
+  var bx = x, by = cy - bh/2;
+  // Corps
+  ctx.strokeStyle = 'rgba(0,229,255,0.4)'; ctx.lineWidth = 1;
+  ctx.strokeRect(bx, by, bw, bh);
+  // Remplissage T
+  var tRange = 600;
+  var fillFrac = Math.max(0, Math.min(1, (Tf - 200) / tRange));
+  var tColor = 'hsl(' + (240 - fillFrac*240).toFixed(0) + ',100%,55%)';
+  ctx.fillStyle = 'rgba(0,229,255,0.06)'; ctx.fillRect(bx+1, by+1, bw-2, bh-2);
+  var fh = (bh-2) * fillFrac;
+  ctx.fillStyle = tColor;
+  ctx.fillRect(bx+2, by+bh-1-fh, bw-4, fh);
+  // Bulle
+  ctx.beginPath(); ctx.arc(bx+bw/2, by+bh+5, 7, 0, Math.PI*2);
+  ctx.fillStyle = tColor; ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth=1; ctx.stroke();
+  // Labels
+  ctx.font = '7px JetBrains Mono'; ctx.textAlign = 'center'; ctx.fillStyle = 'rgba(255,215,64,0.8)';
+  ctx.fillText('Ti=' + Ti.toFixed(0), bx+bw/2, by - 5);
+  ctx.fillStyle = tColor;
+  ctx.fillText('Tf=' + Tf.toFixed(0), bx+bw/2, by + bh + 22);
+}
+
+// ---- SCÈNE CORPS SOLIDE ----
+function drawSolideScene(W, H) {
+  var cx = W/2, cy = H/2;
+  var dU = calcDU(), Tf = calcTf();
+  var tNorm = Math.max(0, Math.min(1, (Tf - 200) / 600));
+  var r = Math.floor(tNorm*255), b = Math.floor((1-tNorm)*200);
+  var colSolide = 'rgb(' + r + ',' + Math.floor(tNorm*60) + ',' + b + ')';
+
+  var sw = Math.min(W*0.28, 130), sh = Math.min(H*0.3, 100);
+  var sx = cx - sw/2, sy = cy - sh/2;
+
+  // Glow température
+  var glow = ctx.createRadialGradient(cx,cy,0,cx,cy,sw);
+  glow.addColorStop(0, 'rgba(' + r + ',0,' + b + ',0.15)');
+  glow.addColorStop(1,'transparent');
+  ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(cx,cy,sw,0,Math.PI*2); ctx.fill();
+
+  // Corps solide
+  var sg = ctx.createLinearGradient(sx,sy,sx+sw,sy+sh);
+  sg.addColorStop(0, 'rgba(' + r + ',' + Math.floor(tNorm*60) + ',' + b + ',0.7)');
+  sg.addColorStop(1, 'rgba(' + r + ',' + Math.floor(tNorm*60) + ',' + b + ',0.3)');
+  ctx.fillStyle = sg;
+  roundRectFill(ctx, sx, sy, sw, sh, 10);
+  ctx.strokeStyle = colSolide; ctx.lineWidth = 2;
+  roundRectStroke(ctx, sx, sy, sw, sh, 10);
+
+  // Texture grille interne
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 1;
+  for(var gx2 = sx+15; gx2 < sx+sw-5; gx2 += 15) {
+    ctx.beginPath(); ctx.moveTo(gx2, sy+5); ctx.lineTo(gx2, sy+sh-5); ctx.stroke();
+  }
+  for(var gy2 = sy+15; gy2 < sy+sh-5; gy2 += 15) {
+    ctx.beginPath(); ctx.moveTo(sx+5, gy2); ctx.lineTo(sx+sw-5, gy2); ctx.stroke();
+  }
+
+  // Vibrations particules thermiques animées
+  if(ST.running) {
+    var nVib = Math.floor(Math.abs(dU)/50) + 3;
+    for(var iv = 0; iv < nVib; iv++) {
+      var vx = sx + 10 + (iv % 5) * (sw-20)/5 + Math.sin(ST.time*5+iv)*3;
+      var vy = sy + 10 + Math.floor(iv/5) * (sh-20)/2 + Math.cos(ST.time*4+iv*1.3)*3;
+      ctx.beginPath(); ctx.arc(vx, vy, 2, 0, Math.PI*2);
+      ctx.fillStyle = colSolide + 'cc'; ctx.fill();
+    }
+  }
+
+  // Labels
+  ctx.font = 'bold 12px Outfit'; ctx.textAlign = 'center'; ctx.fillStyle = colSolide;
+  ctx.shadowColor = colSolide; ctx.shadowBlur = 8;
+  ctx.fillText(ST.m.toFixed(1) + ' kg', cx, cy + 5);
+  ctx.font = '9px JetBrains Mono'; ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.shadowBlur = 0;
+  ctx.fillText('Cv = ' + ST.Cv + ' J/kg·K', cx, sy + sh + 16);
+
+  // Source chaleur
+  drawHeatSource(cx, sy + sh + 30, ST.Q, ST.time);
+  drawEnergyBars(W, H, cx + sw/2 + 25, cy);
+  drawThermo(sx - 50, cy, ST.Ti, Tf, ST.time, sh * 1.5);
+
+  var dUStr = (dU>=0?'+':'') + dU.toFixed(0) + ' J';
+  ctx.font = 'bold 11px Outfit'; ctx.fillStyle = dU>0?'#00ff88':dU<0?'#ff4060':'#00e5ff';
+  ctx.textAlign = 'center'; ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 6;
+  ctx.fillText('ΔU = ' + dUStr, cx, sy - 16);
+  ctx.shadowBlur = 0;
+}
+
+// ---- SCÈNE CYCLE ----
+function drawCycleScene(W, H) {
+  var cx = W/2, cy = H/2;
+  var dU = calcDU();
+  var rx = Math.min(W*0.22, 120), ry = Math.min(H*0.28, 80);
+
+  // Tracé du cycle (ellipse)
+  var nPts = 60;
+  var prog = ST.running ? ((ST.time * ST.speed * 0.3) % 1) : 0.99;
+
+  // Fond ellipse - cycle
+  ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,229,255,0.04)'; ctx.fill();
+  ctx.strokeStyle = 'rgba(0,229,255,0.2)'; ctx.lineWidth = 1; ctx.stroke();
+
+  // Chemin parcouru
+  ctx.beginPath();
+  for(var pi=0; pi <= nPts*prog; pi++) {
+    var ang = (pi/nPts)*Math.PI*2 - Math.PI/2;
+    var px = cx + rx*Math.cos(ang), py = cy + ry*Math.sin(ang);
+    pi === 0 ? ctx.moveTo(px,py) : ctx.lineTo(px,py);
+  }
+  var cyGrad = ctx.createLinearGradient(cx-rx,cy,cx+rx,cy);
+  cyGrad.addColorStop(0,'#00e5ff'); cyGrad.addColorStop(0.5,'#00ff88'); cyGrad.addColorStop(1,'#ffd740');
+  ctx.strokeStyle = cyGrad; ctx.lineWidth = 2.5; ctx.stroke();
+
+  // Point courant
+  var curAng = prog * Math.PI*2 - Math.PI/2;
+  var curX = cx + rx*Math.cos(curAng), curY = cy + ry*Math.sin(curAng);
+  var pg = ctx.createRadialGradient(curX,curY,0,curX,curY,10);
+  pg.addColorStop(0,'#00ff88'); pg.addColorStop(1,'transparent');
+  ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(curX,curY,10,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(curX,curY,4,0,Math.PI*2);
+  ctx.fillStyle = '#00ff88'; ctx.fill();
+
+  // Labels états
+  var stateLabels = [
+    {a:-Math.PI/2,    label:'A (initial)', col:'#00e5ff'},
+    {a: 0,            label:'B', col:'#ffd740'},
+    {a: Math.PI/2,    label:'C', col:'#00e5ff'},
+    {a: Math.PI,      label:'D', col:'#ffd740'},
+  ];
+  for(var si=0; si<stateLabels.length; si++) {
+    var sl = stateLabels[si];
+    var slx = cx + (rx+22)*Math.cos(sl.a), sly = cy + (ry+18)*Math.sin(sl.a);
+    ctx.font = 'bold 9px JetBrains Mono'; ctx.fillStyle = sl.col; ctx.textAlign = 'center';
+    ctx.fillText(sl.label, slx, sly);
+  }
+
+  // Flèche direction cycle
+  var arrAng = prog * Math.PI*2 - Math.PI/2 + 0.2;
+  var arrX = cx + rx*Math.cos(arrAng), arrY = cy + ry*Math.sin(arrAng);
+  var tangX = -Math.sin(arrAng), tangY = Math.cos(arrAng);
+  ctx.beginPath();
+  ctx.moveTo(arrX, arrY);
+  ctx.lineTo(arrX - tangX*8 + tangY*5, arrY - tangY*8 - tangX*5);
+  ctx.lineTo(arrX - tangX*8 - tangY*5, arrY - tangY*8 + tangX*5);
+  ctx.closePath(); ctx.fillStyle = '#00ff88'; ctx.fill();
+
+  // Bilan cycle
+  ctx.font = 'bold 12px Outfit'; ctx.textAlign = 'center';
+  var cycleDU = dU;
+  ctx.fillStyle = Math.abs(cycleDU) < 1 ? '#00ff88' : '#ff4060';
+  ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
+  ctx.fillText('ΔU = ' + (cycleDU>=0?'+':'') + cycleDU.toFixed(1) + ' J', cx, cy - ry - 22);
+  ctx.shadowBlur = 0;
+  ctx.font = '9px JetBrains Mono'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
+  ctx.fillText('Q + W = ' + (ST.Q+ST.W).toFixed(0) + ' J', cx, cy + ry + 20);
+
+  // P-V axes label
+  ctx.font = '8px JetBrains Mono'; ctx.fillStyle = 'rgba(0,229,255,0.4)';
+  ctx.textAlign = 'right'; ctx.fillText('P (Pa)', cx - rx - 10, cy - ry + 5);
+  ctx.textAlign = 'center'; ctx.fillText('V (m³)', cx + rx + 5, cy + 10);
+
+  drawEnergyBars(W, H, cx + rx + 30, cy);
+}
+
+// ---- UTILITAIRES CANVAS ----
+function roundRectFill(c, x, y, w, h, r) {
+  c.beginPath(); c.moveTo(x+r,y); c.lineTo(x+w-r,y);
+  c.quadraticCurveTo(x+w,y,x+w,y+r); c.lineTo(x+w,y+h-r);
+  c.quadraticCurveTo(x+w,y+h,x+w-r,y+h); c.lineTo(x+r,y+h);
+  c.quadraticCurveTo(x,y+h,x,y+h-r); c.lineTo(x,y+r);
+  c.quadraticCurveTo(x,y,x+r,y); c.closePath(); c.fill();
+}
+function roundRectStroke(c, x, y, w, h, r) {
+  c.beginPath(); c.moveTo(x+r,y); c.lineTo(x+w-r,y);
+  c.quadraticCurveTo(x+w,y,x+w,y+r); c.lineTo(x+w,y+h-r);
+  c.quadraticCurveTo(x+w,y+h,x+w-r,y+h); c.lineTo(x+r,y+h);
+  c.quadraticCurveTo(x,y+h,x,y+h-r); c.lineTo(x,y+r);
+  c.quadraticCurveTo(x,y,x+r,y); c.closePath(); c.stroke();
+}
+
+// ===================== PARTICULES =====================
+function spP(x, y, col, n) {
+  col = col || '#00e5ff'; n = n || 8;
+  for(var i=0;i<n;i++){
+    var a = Math.random()*Math.PI*2, s = Math.random()*2+1;
+    ST.particles.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,life:1,col:col});
+  }
+}
+function tkP() {
+  ST.particles = ST.particles.filter(function(p){return p.life>0;});
+  for(var i=0;i<ST.particles.length;i++){
+    var p = ST.particles[i];
+    p.x+=p.vx; p.y+=p.vy; p.vy+=0.05; p.life-=0.02;
+    ctx.save(); ctx.globalAlpha=p.life; ctx.fillStyle=p.col;
+    ctx.beginPath(); ctx.arc(p.x,p.y,3*p.life,0,Math.PI*2); ctx.fill(); ctx.restore();
+  }
+}
+
+// ===================== LOOP =====================
+function lp2() {
+  if(!ST.running) return;
+  ST.time += 0.016 * ST.speed;
+
+  // Animation piston
+  var dU = calcDU();
+  var pistonAmp = Math.min(40, Math.abs(dU)/40);
+  if(ST.sys === 'gaz') {
+    ST.pistonY = -pistonAmp * Math.abs(Math.sin(ST.time * 1.5));
+    if(ST.W < 0) ST.pistonY = pistonAmp * Math.abs(Math.sin(ST.time * 1.5));
+  }
+
+  // Particules chaleur périodiques
+  if(Math.floor(ST.time * 3) % 2 === 0 && ST.Q !== 0) {
+    var W2 = c2.width, H2 = c2.height;
+    if(ST.Q > 0) spP(W2/2, H2*0.8, '#ff6030', 2);
+    else spP(W2/2, H2*0.8, '#3080ff', 2);
+  }
+
+  d2();
+  ST.raf = requestAnimationFrame(lp2);
+}
+
+// ===================== CONTROLES =====================
+function doStart() {
+  if(ST.view === '3d'){ toast('Animation 3D active'); return; }
+  if(!ST.running){ ST.running=true; toast('Simulation lancée'); lp2(); }
+}
+function doPause() {
+  if(ST.view === '3d'){ ST.speed = ST.speed>0?0:1; toast(ST.speed>0?'Reprise':'Pause'); return; }
+  ST.running=!ST.running;
+  if(ST.running) lp2();
+  toast(ST.running?'Reprise':'Pause');
+}
+function doReset() {
+  ST.running=false;
+  if(ST.raf) cancelAnimationFrame(ST.raf);
+  ST.time=0; ST.pistonY=0; ST.particles=[];
+  if(ST.view==='2d') d2();
+  if(threeNS.time3!==undefined) threeNS.time3=0;
+  toast('Réinitialisé');
+}
+
+// ===================== ONGLETS =====================
+function selTab(i) {
+  document.querySelectorAll('.tab').forEach(function(t,j){t.classList.toggle('act',j===i);});
+  document.querySelectorAll('.tpane').forEach(function(t,j){t.classList.toggle('act',j===i);});
+}
+
+// ===================== TOOLTIP =====================
+c2.addEventListener('mousemove', function(e) {
+  var rect = c2.getBoundingClientRect();
+  var mx = e.clientX-rect.left, my = e.clientY-rect.top;
+  var W = c2.width, H = c2.height;
+  var dU = calcDU(), dT = calcDT(), Tf = calcTf();
+  var tip = document.getElementById('tip');
+  tip.style.display = 'block';
+  tip.style.left = (e.clientX+14)+'px'; tip.style.top = (e.clientY-40)+'px';
+  tip.innerHTML = 'Q = '+(ST.Q>=0?'+':'')+ST.Q+' J<br>W = '+(ST.W>=0?'+':'')+ST.W+' J<br>ΔU = '+(dU>=0?'+':'')+dU.toFixed(1)+' J<br>Tf = '+Tf.toFixed(1)+' K';
+});
+c2.addEventListener('mouseleave', function(){ document.getElementById('tip').style.display='none'; });
+c2.addEventListener('click', function(e) {
+  var rect = c2.getBoundingClientRect();
+  var col = ST.Q>0?'#ff6030':ST.Q<0?'#3080ff':'#00e5ff';
+  spP(e.clientX-rect.left, e.clientY-rect.top, col, 10);
+  if(!ST.running) d2();
+});
+
+// Touch pinch → modifie Q
+var ptch = null;
+c2.addEventListener('touchstart', function(e){
+  if(e.touches.length===2) ptch=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+  e.preventDefault();},{passive:false});
+c2.addEventListener('touchmove', function(e){
+  if(e.touches.length===2&&ptch!==null){
+    var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    var ratio=d/ptch;
+    var nv=Math.min(2000,Math.max(-2000,ST.Q*ratio));
+    document.getElementById('s-Q').value=nv;
+    ST.Q=nv;
+    document.getElementById('lv-Q').textContent=(nv>=0?'+':'')+nv.toFixed(0)+' J';
+    ptch=d; uR(); if(!ST.running) d2();
+  }
+  e.preventDefault();},{passive:false});
+
+// ===================== EXPORT =====================
+function exportTP() {
+  var dU=calcDU(), dT=calcDT(), Tf=calcTf();
+  var sysNames={gaz:'Gaz parfait',solide:'Corps solide',cycle:'Cycle fermé'};
+  var txt=[
+    '==========================================',
+    '  RAPPORT TP — PREMIER PRINCIPE',
+    '  SimLab — '+new Date().toLocaleString(),
+    '==========================================','',
+    'SYSTÈME   : '+sysNames[ST.sys],
+    'Q reçu    : '+(ST.Q>=0?'+':'')+ST.Q+' J',
+    'W reçu    : '+(ST.W>=0?'+':'')+ST.W+' J',
+    'Masse m   : '+ST.m.toFixed(1)+' kg',
+    'Cv        : '+ST.Cv+' J/(kg·K)',
+    'Ti init   : '+ST.Ti+' K','',
+    'RÉSULTATS',
+    '  ΔU = Q + W = '+(ST.Q>=0?'+':'')+ST.Q+' + ('+ST.W+') = '+(dU>=0?'+':'')+dU.toFixed(2)+' J',
+    '  ΔT = ΔU/(m·Cv) = '+dU.toFixed(2)+'/('+ST.m.toFixed(1)+'×'+ST.Cv+') = '+(dT>=0?'+':'')+dT.toFixed(4)+' K',
+    '  Tf = Ti + ΔT = '+ST.Ti+' + '+dT.toFixed(4)+' = '+Tf.toFixed(2)+' K','',
+    'VÉRIFICATIONS',
+    '  1er principe : ΔU = Q + W → '+(Math.abs(dU-(ST.Q+ST.W))<0.01?'OUI ✓':'NON ✗'),
+    '  Cohérence m·Cv·ΔT : '+(Math.abs(dU-ST.m*ST.Cv*dT)<0.1?'OUI ✓':'NON ✗'),
+    '  Tf > 0 K : '+(Tf>0?'OUI ✓':'NON ✗'),
+    '==========================================',
+  ].join('\n');
+  var blob=new Blob([txt],{type:'text/plain'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='TP_Premier_Principe.txt'; a.click();
+  toast('Export TXT téléchargé');
+}
+
+// ===================== TOAST =====================
+function toast(m) {
+  var el=document.getElementById('toast');
+  el.textContent=m; el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},2600);
+}
+
+// ===================== 3D COMPLET =====================
+var THREE_LOADED = false;
+var threeNS = {};
+
+function switchV() {
+  if(ST.view==='2d'){
+    ST.view='3d';
+    document.getElementById('v3d-btn').textContent='2D';
+    document.getElementById('c2d').style.display='none';
+    document.getElementById('c3d').style.display='block';
+    ST.running=false; if(ST.raf) cancelAnimationFrame(ST.raf);
+    i3D();
+  } else {
+    ST.view='2d';
+    document.getElementById('v3d-btn').textContent='3D';
+    document.getElementById('c2d').style.display='block';
+    document.getElementById('c3d').style.display='none';
+    if(threeNS.rafId) cancelAnimationFrame(threeNS.rafId);
+    d2();
+  }
+}
+
+function i3D() {
+  if(THREE_LOADED){ bld3(); return; }
+  var s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  s.onload=function(){ THREE_LOADED=true; toast('Scène 3D chargée'); bld3(); };
+  s.onerror=function(){ toast('Erreur chargement Three.js'); };
+  document.head.appendChild(s);
+}
+
+function bld3() {
+  var T=window.THREE;
+  var sw=document.getElementById('sw');
+  var W=sw.clientWidth, H=sw.clientHeight;
+  var canvas3=document.getElementById('c3d');
+  if(threeNS.renderer) threeNS.renderer.dispose();
+  threeNS={};
+
+  var renderer=new T.WebGLRenderer({canvas:canvas3,antialias:true,alpha:true});
+  renderer.setSize(W,H); renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setClearColor(0x04080f,1); renderer.shadowMap.enabled=true;
+  threeNS.renderer=renderer;
+
+  var scene=new T.Scene(); scene.fog=new T.FogExp2(0x04080f,0.035);
+  threeNS.scene=scene;
+
+  var camera=new T.PerspectiveCamera(50,W/H,0.1,200);
+  camera.position.set(0,8,18); camera.lookAt(0,0,0);
+  threeNS.camera=camera;
+
+  // Lumières
+  scene.add(new T.AmbientLight(0x112233,1.5));
+  var hotL=new T.PointLight(0xff6030,4,20); hotL.position.set(0,-5,0); scene.add(hotL); threeNS.hotL=hotL;
+  var coldL=new T.PointLight(0x00e5ff,2,15); coldL.position.set(0,5,0); scene.add(coldL); threeNS.coldL=coldL;
+
+  // Grille
+  var grid=new T.GridHelper(40,40,0x00e5ff0a,0x00e5ff05); grid.position.y=-6; scene.add(grid);
+
+  // Cylindre 3D
+  var cylGeo=new T.CylinderGeometry(2,2,6,32,1,true);
+  var cylMat=new T.MeshStandardMaterial({color:0x1a2540,metalness:0.7,roughness:0.3,side:T.DoubleSide,transparent:true,opacity:0.5});
+  var cyl=new T.Mesh(cylGeo,cylMat); scene.add(cyl); threeNS.cyl=cyl;
+
+  // Anneau cylindre
+  var cylRingGeo=new T.TorusGeometry(2,0.07,12,50);
+  var cylRingMat=new T.MeshStandardMaterial({color:0x00e5ff,emissive:0x006688,emissiveIntensity:0.8});
+  var cr1=new T.Mesh(cylRingGeo,cylRingMat); cr1.position.y=3; cr1.rotation.x=Math.PI/2; scene.add(cr1);
+  var cr2=new T.Mesh(cylRingGeo,cylRingMat); cr2.position.y=-3; cr2.rotation.x=Math.PI/2; scene.add(cr2);
+
+  // Piston 3D
+  var pistGeo=new T.CylinderGeometry(1.9,1.9,0.5,32);
+  var pistMat=new T.MeshStandardMaterial({color:0x00e5ff,emissive:0x003344,emissiveIntensity:0.5,metalness:0.9,roughness:0.1});
+  var piston=new T.Mesh(pistGeo,pistMat); piston.position.y=1.5; scene.add(piston); threeNS.piston=piston;
+
+  // Gaz (sphères de molécules)
+  threeNS.molecules=[];
+  var molGeo=new T.SphereGeometry(0.12,8,8);
+  for(var mi=0;mi<30;mi++){
+    var col3D=ST.Q>0?0xff4020:0x2060ff;
+    var molMat=new T.MeshStandardMaterial({color:col3D,emissive:col3D,emissiveIntensity:0.6});
+    var mol=new T.Mesh(molGeo,molMat);
+    mol.position.set((Math.random()-0.5)*3.2,(Math.random()-0.5)*3-0.5,(Math.random()-0.5)*3.2);
+    mol.userData={vx:(Math.random()-0.5)*0.04,vy:(Math.random()-0.5)*0.04,vz:(Math.random()-0.5)*0.04};
+    scene.add(mol); threeNS.molecules.push(mol);
+  }
+
+  // Flamme source (bas)
+  var flameGeo=new T.SphereGeometry(0.6,8,8);
+  var flameMat=new T.MeshStandardMaterial({color:0xff6030,emissive:0xff3000,emissiveIntensity:2,transparent:true,opacity:0.8});
+  var flame=new T.Mesh(flameGeo,flameMat); flame.position.y=-4; scene.add(flame); threeNS.flame=flame;
+
+  // Tige piston
+  var rodGeo=new T.CylinderGeometry(0.12,0.12,3,8);
+  var rodMat=new T.MeshStandardMaterial({color:0x8899aa,metalness:0.9});
+  var rod=new T.Mesh(rodGeo,rodMat); rod.position.y=3.5; scene.add(rod); threeNS.rod=rod;
+
+  // Étiquettes (sphères indicatrices)
+  var qSph=new T.Mesh(new T.SphereGeometry(0.3,8,8),new T.MeshStandardMaterial({color:0xffd740,emissive:0xcc8800,emissiveIntensity:1}));
+  qSph.position.set(3.5,-4,0); scene.add(qSph); threeNS.qSph=qSph;
+
+  // Orbite
+  threeNS.orb={theta:0.4,phi:Math.PI/3,r:18,dragging:false,lastX:0,lastY:0};
+  setup3ctl(canvas3);
+  threeNS.time3=0;
+  s3l();
+  onRsz3();
+}
+
+function s3l() {
+  if(ST.view!=='3d') return;
+  threeNS.rafId=requestAnimationFrame(s3l);
+  r3();
+}
+
+function r3() {
+  var T=window.THREE;
+  if(!T||!threeNS.renderer) return;
+  threeNS.time3=(threeNS.time3||0)+0.016*ST.speed;
+  var t=threeNS.time3;
+  var dU=calcDU(), Tf=calcTf();
+  var tNorm=Math.max(0,Math.min(1,(Tf-200)/600));
+
+  // Couleur molécules selon T
+  var r3c=Math.floor(tNorm*255), b3c=Math.floor((1-tNorm)*200);
+  var molSpeed=(0.01+tNorm*0.05);
+
+  // Animation molécules
+  for(var mi=0;mi<threeNS.molecules.length;mi++){
+    var mol=threeNS.molecules[mi];
+    mol.position.x+=mol.userData.vx*(1+molSpeed*3);
+    mol.position.y+=mol.userData.vy*(1+molSpeed*3);
+    mol.position.z+=mol.userData.vz*(1+molSpeed*3);
+    // Rebond cylindre
+    if(Math.abs(mol.position.x)>1.5||Math.abs(mol.position.z)>1.5){ mol.userData.vx*=-1; mol.userData.vz*=-1; }
+    var pistY=threeNS.piston?threeNS.piston.position.y:1.5;
+    if(mol.position.y>pistY-0.3) mol.userData.vy=Math.abs(mol.userData.vy)*-1;
+    if(mol.position.y<-2.8) mol.userData.vy=Math.abs(mol.userData.vy);
+    mol.material.color.setRGB(r3c/255,0.1,b3c/255);
+    mol.material.emissive.setRGB(r3c/255*0.8,0,b3c/255*0.5);
+    mol.material.emissiveIntensity=0.3+tNorm*0.8;
+  }
+
+  // Animation piston
+  var pistOffset=ST.W<0 ? 0.8*Math.sin(t*2) : -0.5+0.5*Math.sin(t*2);
+  if(threeNS.piston){ threeNS.piston.position.y=1.5+pistOffset; threeNS.rod.position.y=3.5+pistOffset*0.5; }
+
+  // Animation flamme
+  if(threeNS.flame){
+    var fp=1+0.2*Math.sin(t*5);
+    threeNS.flame.scale.set(fp,fp+0.3*Math.sin(t*7),fp);
+    threeNS.flame.material.opacity=0.6+0.3*Math.abs(Math.sin(t*4));
+    threeNS.hotL.intensity=ST.Q>0?3+2*Math.abs(Math.sin(t*3)):0.5;
+    threeNS.flame.material.color.setRGB(1, 0.3+0.3*Math.sin(t*3), 0);
+  }
+
+  // Q indicator sphere
+  if(threeNS.qSph){
+    threeNS.qSph.position.y=-4+Math.sin(t*2)*0.3;
+    threeNS.qSph.material.emissiveIntensity=0.5+0.5*Math.abs(Math.sin(t*3));
+    threeNS.qSph.material.color.setRGB(ST.Q>0?1:0, ST.Q>0?0.5:0.5, ST.Q>0?0:1);
+  }
+
+  orbC();
+  threeNS.renderer.render(threeNS.scene,threeNS.camera);
+}
+
+function orbC() {
+  if(!threeNS.orb) return;
+  var o=threeNS.orb;
+  threeNS.camera.position.set(
+    o.r*Math.sin(o.phi)*Math.sin(o.theta),
+    o.r*Math.cos(o.phi),
+    o.r*Math.sin(o.phi)*Math.cos(o.theta)
+  );
+  threeNS.camera.lookAt(0,0,0);
+}
+
+function setup3ctl(canvas) {
+  var o=threeNS.orb;
+  canvas.addEventListener('mousedown',function(e){o.dragging=true;o.lastX=e.clientX;o.lastY=e.clientY;});
+  window.addEventListener('mouseup',function(){o.dragging=false;});
+  window.addEventListener('mousemove',function(e){
+    if(!o.dragging) return;
+    o.theta-=(e.clientX-o.lastX)*0.008;
+    o.phi=Math.max(0.15,Math.min(Math.PI-0.15,o.phi+(e.clientY-o.lastY)*0.008));
+    o.lastX=e.clientX; o.lastY=e.clientY;
+  });
+  canvas.addEventListener('wheel',function(e){o.r=Math.max(8,Math.min(40,o.r+e.deltaY*0.03));e.preventDefault();},{passive:false});
+  var tS=null;
+  canvas.addEventListener('touchstart',function(e){
+    if(e.touches.length===1){o.dragging=true;o.lastX=e.touches[0].clientX;o.lastY=e.touches[0].clientY;}
+    else if(e.touches.length===2) tS=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchmove',function(e){
+    if(e.touches.length===1&&o.dragging){
+      o.theta-=(e.touches[0].clientX-o.lastX)*0.01;
+      o.phi=Math.max(0.15,Math.min(Math.PI-0.15,o.phi+(e.touches[0].clientY-o.lastY)*0.01));
+      o.lastX=e.touches[0].clientX; o.lastY=e.touches[0].clientY;
+    } else if(e.touches.length===2&&tS){
+      var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      o.r=Math.max(8,Math.min(40,o.r*(tS/d))); tS=d;
+    }
+    e.preventDefault();},{passive:false});
+  canvas.addEventListener('touchend',function(){o.dragging=false;tS=null;});
+}
+
+function onRsz3() {
+  if(!threeNS.renderer) return;
+  var sw=document.getElementById('sw');
+  threeNS.renderer.setSize(sw.clientWidth,sw.clientHeight);
+  threeNS.camera.aspect=sw.clientWidth/sw.clientHeight;
+  threeNS.camera.updateProjectionMatrix();
+}
+
+// ===================== INIT =====================
+window.addEventListener('resize',function(){ rsz(); onRsz3(); });
+rsz();
+uR();
+d2();
+</script>
+
+<script type='text/javascript' src='//pl26527913.profitableratecpm.com/5c/8e/2e/5c8e2eebcfa5e97f9c7d66bb3d9bfcf1.js'></script>
+</body>
+</html>
