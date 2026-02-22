@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921"
-     crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7080347883879921" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#050d1a">
@@ -11,25 +10,19 @@
     <meta name="keywords" content="simulation scientifique, simulateur physique, simulation chimie, simulation mathématiques, simulation SVT, simulation biologie, simulation astronomie, simulation informatique, algorithmique interactive, sciences interactives, lycée, terminale, BAC, Bénin, UAC, Cotonou, Edmond TCHOKPON, laboratoire virtuel">
     <meta name="author" content="Edmond Atinzoun TCHOKPON">
     <meta name="robots" content="index, follow">
-    <!-- CORRECTION 1 : canonical corrigé vers le bon domaine -->
     <link rel="canonical" href="https://atinzlab.pages.dev/">
-    <!-- Open Graph -->
     <meta property="og:title" content="SimLab | Le Laboratoire Virtuel de Simulations Scientifiques">
     <meta property="og:description" content="Explorez toutes les sciences à travers des simulations interactives : Physique, Chimie, Maths, SVT, Astronomie, Informatique. Gratuit, éducatif, pour tous les scientifiques.">
     <meta property="og:type" content="website">
-    <!-- CORRECTION 2 : og:url ajouté -->
     <meta property="og:url" content="https://atinzlab.pages.dev/">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:site_name" content="SimLab">
-    <!-- CORRECTION 3 : og:image ajouté (remplacez par une vraie image si disponible) -->
     <meta property="og:image" content="https://atinzlab.pages.dev/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SimLab | Simulations Scientifiques Interactives">
     <meta name="twitter:description" content="Laboratoire virtuel de simulations pour tous les scientifiques. Physique, Chimie, Maths, SVT, Astronomie, Informatique. Gratuit.">
-    <!-- CORRECTION 4 : twitter:image ajouté -->
     <meta name="twitter:image" content="https://atinzlab.pages.dev/og-image.png">
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"EducationalOrganization","name":"SimLab","alternateName":"SimLab – Laboratoire Virtuel de Simulations Scientifiques","description":"Plateforme gratuite de simulations scientifiques interactives couvrant Physique, Chimie, Mathématiques, SVT, Astronomie et Informatique","url":"https://atinzlab.pages.dev","founder":{"@type":"Person","name":"Edmond Atinzoun TCHOKPON","jobTitle":"Étudiant en Physique-Chimie, Créateur de SimLab","affiliation":"Université d'Abomey-Calavi (UAC)","address":{"@type":"PostalAddress","addressLocality":"Cotonou","addressCountry":"BJ"}},"addressCountry":"BJ","knowsAbout":["Physique","Chimie","Mathématiques","SVT","Biologie","Astronomie","Informatique","Simulations scientifiques","Éducation numérique"]}</script>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -51,7 +44,7 @@
         .nav-links a{text-decoration:none;color:var(--text-muted);font-size:0.88rem;font-weight:500;padding:0.4rem 0.75rem;border-radius:8px;transition:all 0.2s}
         .nav-links a:hover{color:var(--secondary);background:rgba(0,180,216,0.08)}
         .nav-donate{background:linear-gradient(135deg,var(--primary),var(--secondary))!important;color:white!important;border-radius:20px!important}
-        .hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer}
+        .hamburger{display:none;background:none;border:none;color:var(--text);font-size:1.5rem;cursor:pointer;padding:4px 8px;z-index:1001}
         .mobile-nav{display:none;position:fixed;top:70px;left:0;right:0;background:rgba(5,13,26,0.98);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1rem;z-index:999;flex-direction:column;gap:0.3rem}
         .mobile-nav.open{display:flex}
         .mobile-nav a{text-decoration:none;color:var(--text-muted);padding:0.8rem 1rem;border-radius:8px;font-size:0.95rem;font-weight:500;transition:all 0.2s}
@@ -108,7 +101,7 @@
         .cat{display:none}
         .cat.active{display:block}
         .domain-banner{display:flex;align-items:center;gap:1rem;padding:1.2rem 1.5rem;border-radius:var(--radius-lg);margin-bottom:2.5rem;border:1px solid}
-        .domain-banner-icon{font-size:2rem}
+        .domain-banner-icon{font-size:2rem;flex-shrink:0}
         .domain-banner h3{font-family:var(--font-display);font-size:1.3rem;font-weight:800;margin-bottom:0.2rem}
         .domain-banner p{font-size:0.85rem;opacity:0.8}
         .b-phy{background:rgba(0,71,171,0.12);border-color:rgba(96,165,250,0.3);color:#60a5fa}
@@ -134,19 +127,23 @@
         .c-svt::before{background:linear-gradient(90deg,#34d399,#06d6a0)}
         .c-ast::before{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
         .c-inf::before{background:linear-gradient(90deg,#f97316,#fbbf24)}
-        .sim-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem}
-        .sim-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--surface2)}
-        .sim-badge{font-size:0.7rem;padding:3px 8px;border-radius:10px;font-weight:600;background:rgba(6,214,160,0.15);color:var(--accent);border:1px solid rgba(6,214,160,0.3)}
+        .sim-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;gap:0.5rem}
+        .sim-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--surface2);flex-shrink:0}
+        .header-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+        .sim-badge{font-size:0.7rem;padding:3px 8px;border-radius:10px;font-weight:600;background:rgba(6,214,160,0.15);color:var(--accent);border:1px solid rgba(6,214,160,0.3);white-space:nowrap}
+        .badge-level{background:rgba(167,139,250,0.15);color:#a78bfa;border-color:rgba(167,139,250,0.3)}
         .sim-name{font-family:var(--font-display);font-size:1.05rem;font-weight:700;margin-bottom:0.4rem}
         .sim-desc{font-size:0.85rem;color:var(--text-muted);line-height:1.6;margin-bottom:1.2rem}
         .sim-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
         .sim-tag{font-size:0.72rem;padding:2px 8px;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:10px;color:var(--text-muted)}
-        .sim-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0.65rem;background:linear-gradient(135deg,rgba(0,71,171,0.4),rgba(0,180,216,0.3));border:1px solid var(--border2);border-radius:8px;color:var(--secondary);font-size:0.85rem;font-weight:600;transition:all 0.2s;font-family:var(--font-body)}
-        .sim-btn:hover{background:linear-gradient(135deg,rgba(0,71,171,0.6),rgba(0,180,216,0.5));color:white}
-        /* CORRECTION 5 : suppression du <object> — on utilise un vrai div pour les boutons */
-        .sim-card-btns{display:flex;flex-direction:column;gap:.5rem;margin-top:.75rem;}
-        .sim-btn-guide{background:linear-gradient(135deg,rgba(6,214,160,.12),rgba(0,71,171,.18));border:1px solid rgba(6,214,160,.3);color:var(--accent);display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0.65rem;border-radius:8px;font-size:0.85rem;font-weight:600;transition:all 0.2s;font-family:var(--font-body);text-decoration:none;}
-        .sim-btn-guide:hover{background:linear-gradient(135deg,rgba(6,214,160,.28),rgba(0,71,171,.35));color:white;}
+        /* FIX: boutons de carte — structure propre sans conflit de clic */
+        .sim-card-btns{display:flex;flex-direction:column;gap:0.5rem;margin-top:0.75rem;position:relative;z-index:2}
+        .sim-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0.65rem;background:linear-gradient(135deg,rgba(0,71,171,0.4),rgba(0,180,216,0.3));border:1px solid var(--border2);border-radius:8px;color:var(--secondary);font-size:0.85rem;font-weight:600;transition:all 0.2s;font-family:var(--font-body);cursor:pointer;pointer-events:none}
+        .sim-card:hover .sim-btn{background:linear-gradient(135deg,rgba(0,71,171,0.6),rgba(0,180,216,0.5));color:white}
+        .sim-btn-guide{background:linear-gradient(135deg,rgba(6,214,160,0.12),rgba(0,71,171,0.18));border:1px solid rgba(6,214,160,0.3);color:var(--accent);display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:0.65rem;border-radius:8px;font-size:0.85rem;font-weight:600;transition:all 0.2s;font-family:var(--font-body);text-decoration:none;position:relative;z-index:3}
+        .sim-btn-guide:hover{background:linear-gradient(135deg,rgba(6,214,160,0.28),rgba(0,71,171,0.35));color:white}
+        /* FIX: carte sans guide — bouton unique */
+        .sim-btn-solo{pointer-events:auto;cursor:pointer}
 
         /* ABOUT */
         .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
@@ -211,7 +208,7 @@
         .contact-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem}
         .c-method{display:flex;align-items:center;gap:1rem;padding:0.8rem 0;border-bottom:1px solid var(--border)}
         .c-method:last-of-type{border-bottom:none}
-        .c-icon{width:38px;height:38px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1rem}
+        .c-icon{width:38px;height:38px;border-radius:8px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
         .c-method a{color:var(--secondary);text-decoration:none;font-size:0.9rem}
         .c-method strong{display:block;font-size:0.85rem;margin-bottom:2px}
         .socials{display:flex;gap:0.8rem;flex-wrap:wrap;margin-top:1.5rem}
@@ -220,7 +217,7 @@
         .contact-form{display:flex;flex-direction:column;gap:1rem}
         .fg{display:flex;flex-direction:column;gap:0.4rem}
         .fg label{font-size:0.85rem;color:var(--text-muted);font-weight:500}
-        .fg input,.fg textarea,.fg select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 1rem;color:var(--text);font-family:var(--font-body);font-size:0.9rem;transition:border-color 0.2s}
+        .fg input,.fg textarea,.fg select{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0.8rem 1rem;color:var(--text);font-family:var(--font-body);font-size:0.9rem;transition:border-color 0.2s;width:100%}
         .fg input:focus,.fg textarea:focus,.fg select:focus{outline:none;border-color:var(--secondary)}
         .fg textarea{min-height:120px;resize:vertical}
         .fg select option{background:var(--surface2)}
@@ -235,6 +232,8 @@
         .fcol a:hover{color:var(--secondary)}
         .footer-bottom{border-top:1px solid var(--border);padding-top:1.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
         .footer-bottom p{font-size:0.82rem;color:var(--text-muted)}
+        .footer-legal{font-size:0.82rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+        .footer-legal:hover{color:var(--secondary)}
 
         /* WA FLOAT */
         .wa-float{position:fixed;bottom:24px;right:24px;z-index:999}
@@ -242,21 +241,40 @@
         @keyframes wa-b{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
         .wa-btn:hover{transform:scale(1.1)!important;animation:none}
 
-        /* POLITIQUE CONFIDENTIALITE FOOTER LINK */
-        .footer-legal{font-size:0.82rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s;}
-        .footer-legal:hover{color:var(--secondary);}
-
-        .toast{position:fixed;bottom:90px;right:24px;background:var(--surface2);border:1px solid var(--accent);color:var(--accent);padding:0.7rem 1.2rem;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:9999;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
+        .toast{position:fixed;bottom:90px;right:24px;background:var(--surface2);border:1px solid var(--accent);color:var(--accent);padding:0.7rem 1.2rem;border-radius:8px;font-size:0.85rem;font-weight:600;z-index:9999;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none;max-width:300px}
         .toast.show{opacity:1;transform:translateY(0)}
         .fade-in{opacity:0;transform:translateY(20px);transition:opacity 0.6s ease,transform 0.6s ease}
         .fade-in.visible{opacity:1;transform:translateY(0)}
 
-        /* ANNONCE */
-        .ad-block{width:100%;max-width:1200px;margin:2rem auto;text-align:center;}
-        .ad-label{font-size:0.65rem;color:#666;margin-bottom:10px;}
+        /* AD BLOCK */
+        .ad-block{width:100%;max-width:1200px;margin:2rem auto;text-align:center}
+        .ad-label{font-size:0.65rem;color:#666;margin-bottom:10px}
 
-        @media(max-width:900px){.nav-links{display:none}.hamburger{display:block}.about-grid,.donation-grid,.contact-grid{grid-template-columns:1fr;gap:2rem}.footer-grid{grid-template-columns:1fr 1fr}}
-        @media(max-width:600px){.hero h1{font-size:2.4rem}.footer-grid{grid-template-columns:1fr}.sims-grid{grid-template-columns:1fr}.hero-stats{gap:1.5rem}.domain-tabs{gap:0.4rem}.domain-tab{font-size:0.78rem;padding:0.45rem 0.9rem}}
+        /* RESPONSIVE */
+        @media(max-width:900px){
+            .nav-links{display:none}
+            .hamburger{display:block}
+            .about-grid,.donation-grid,.contact-grid{grid-template-columns:1fr;gap:2rem}
+            .footer-grid{grid-template-columns:1fr 1fr}
+        }
+        @media(max-width:600px){
+            .hero h1{font-size:2.4rem}
+            .footer-grid{grid-template-columns:1fr}
+            .sims-grid{grid-template-columns:1fr}
+            .hero-stats{gap:1.5rem}
+            .domain-tabs{gap:0.4rem}
+            .domain-tab{font-size:0.78rem;padding:0.45rem 0.9rem}
+            /* FIX MOBILE: empêcher les cartes de déborder */
+            .sim-card{width:100%;max-width:100%}
+            .sim-card-header{flex-wrap:wrap}
+            .header-right{flex-direction:row;flex-wrap:wrap;justify-content:flex-end}
+            /* FIX MOBILE: améliorer la zone de toucher des boutons guides */
+            .sim-btn-guide{padding:0.75rem;font-size:0.9rem}
+            .sim-btn{padding:0.75rem}
+            /* FIX: don-num sur mobile */
+            .don-num{flex-direction:column;align-items:flex-start;gap:0.3rem}
+            .don-num strong{font-size:0.95rem}
+        }
     </style>
 </head>
 <body>
@@ -271,15 +289,15 @@
         <li><a href="#contact">Contact</a></li>
         <li><a href="#don" class="nav-donate">❤️ Faire un Don</a></li>
     </ul>
-    <button class="hamburger" onclick="toggleMobileNav()">☰</button>
+    <button class="hamburger" onclick="toggleMobileNav()" aria-label="Menu">☰</button>
 </nav>
 
 <div class="mobile-nav" id="mobileNav">
-    <a href="#simulations" onclick="toggleMobileNav()">🔬 Simulations</a>
-    <a href="#a-propos" onclick="toggleMobileNav()">👤 À Propos</a>
-    <a href="#don" onclick="toggleMobileNav()">❤️ Soutenir</a>
-    <a href="#faq" onclick="toggleMobileNav()">❓ FAQ</a>
-    <a href="#contact" onclick="toggleMobileNav()">📩 Contact</a>
+    <a href="#simulations" onclick="closeMobileNav()">🔬 Simulations</a>
+    <a href="#a-propos" onclick="closeMobileNav()">👤 À Propos</a>
+    <a href="#don" onclick="closeMobileNav()">❤️ Soutenir</a>
+    <a href="#faq" onclick="closeMobileNav()">❓ FAQ</a>
+    <a href="#contact" onclick="closeMobileNav()">📩 Contact</a>
 </div>
 
 <!-- HERO -->
@@ -310,9 +328,8 @@
 </section>
 
 <!-- ============================================================
-     SIMULATIONS — structure unique et propre
-     CORRECTION 6 : tous les domaines sont à l'intérieur
-                    d'un seul <section id="simulations">
+     SIMULATIONS — structure propre, domaines bien séparés,
+     zéro doublon, balises toutes fermées correctement
      ============================================================ -->
 <section id="simulations" class="section-padding">
     <div class="container">
@@ -332,27 +349,95 @@
             <button class="domain-tab t-inf" onclick="switchDomain('info',this)">💻 Informatique</button>
         </div>
 
-        <!-- PHYSIQUE -->
+        <!-- ===== PHYSIQUE ===== -->
         <div id="domain-physique" class="cat active">
             <div class="domain-banner b-phy fade-in">
                 <div class="domain-banner-icon">⚡</div>
                 <div><h3>Physique</h3><p>Mécanique · Optique · Électricité · Énergie · Rotation · Thermodynamique · Ondes</p></div>
             </div>
 
+            <!-- Mécanique -->
             <div class="subcat">
                 <div class="subcat-title">⚙️ Mécanique</div>
                 <div class="sims-grid">
-                    <!-- CORRECTION 7 : suppression des <object> — bouton Guide remplacé par un vrai <a> dans .sim-card-btns -->
-                    <div class="sim-card c-phy" data-href="travail-energie.html" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">⚙️</div><span class="sim-badge">Physique</span></div>
-                        <div class="sim-name">Travail et Énergie</div>
-                        <div class="sim-desc">Étudiez les transferts d'énergie, le travail d'une force et l'énergie cinétique.</div>
-                        <div class="sim-tags"><span class="sim-tag">Énergie</span><span class="sim-tag">Force</span><span class="sim-tag">Joule</span></div>
+
+                    <div class="sim-card c-phy" data-href="lois-de-newton.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🍎</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Les Lois de Newton</div>
+                        <div class="sim-desc">Explorez l'inertie, la relation fondamentale de la dynamique (RFD) et l'action-réaction.</div>
+                        <div class="sim-tags"><span class="sim-tag">Force</span><span class="sim-tag">Accélération</span><span class="sim-tag">Dynamique</span></div>
                         <div class="sim-card-btns">
                             <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-                            <a href="guide-travail-energie.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                            <a href="guide-newton.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
                         </div>
                     </div>
+
+                    <div class="sim-card c-phy" data-href="chute-libre.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🏐</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">La Chute Libre</div>
+                        <div class="sim-desc">Simulez la chute d'un corps dans le vide et observez l'accélération de la pesanteur g.</div>
+                        <div class="sim-tags"><span class="sim-tag">Cinématique</span><span class="sim-tag">Gravité</span><span class="sim-tag">Vitesse</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-chute-libre.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="mru.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🏎️</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Mouvement Rectiligne Uniforme (MRU)</div>
+                        <div class="sim-desc">Étudiez les mouvements à vitesse constante : position linéaire, vecteur vitesse et trajectoire.</div>
+                        <div class="sim-tags"><span class="sim-tag">Cinématique</span><span class="sim-tag">Vitesse constante</span><span class="sim-tag">1D</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-mru.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="mrua.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">📈</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Mouvement Uniformément Accéléré (MRUA)</div>
+                        <div class="sim-desc">Explorez l'accélération constante, les équations horaires et la chute libre.</div>
+                        <div class="sim-tags"><span class="sim-tag">Accélération</span><span class="sim-tag">Parabole</span><span class="sim-tag">MRUA</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-mrua.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="cinematique.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🎯</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Cinématique Générale</div>
+                        <div class="sim-desc">Étude complète des mouvements : position, vitesse, accélération et trajectoires.</div>
+                        <div class="sim-tags"><span class="sim-tag">Vecteurs</span><span class="sim-tag">Mouvement</span><span class="sim-tag">Trajectoire</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-cinematique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="plan-incline.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">📐</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Plan Incliné</div>
+                        <div class="sim-desc">Étudiez la décomposition du poids, le frottement et le mouvement sur un plan incliné.</div>
+                        <div class="sim-tags"><span class="sim-tag">Frottement</span><span class="sim-tag">Angle</span><span class="sim-tag">Mécanique</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-plan-incline.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="pendule.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">⏰</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Le Pendule Pesant</div>
+                        <div class="sim-desc">Analysez les oscillations, la période propre et l'influence de la longueur du fil.</div>
+                        <div class="sim-tags"><span class="sim-tag">Oscillation</span><span class="sim-tag">Gravité</span><span class="sim-tag">Période</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-pendule.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
                     <div class="sim-card c-phy" data-href="rotation.html" onclick="openSim(event,this)">
                         <div class="sim-card-header"><div class="sim-icon">🔄</div><span class="sim-badge">Physique</span></div>
                         <div class="sim-name">Rotation d'un Solide</div>
@@ -362,84 +447,71 @@
                             <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
                             <a href="guide-rotation.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
                         </div>
-                  <div class="sim-card c-phy" data-href="circuit-lab.html" onclick="openSim(event,this)">
-    <div class="sim-card-header">
-        <div class="sim-icon">⚡</div>
-        <div class="header-right">
-            <span class="sim-badge badge-level">Licence / CPGE</span>
-            <span class="sim-badge">Physique</span>
-        </div>
-    </div>
-
-    <div class="sim-name">Analyse de Circuit RLC</div>
-    <div class="sim-desc">Étude des régimes transitoires et de la résonance. Modélisation de la courbe de réponse en fréquence.</div>
-
-    <div class="sim-tags">
-        <span class="sim-tag">Électricité</span>
-        <span class="sim-tag">Oscillations</span>
-        <span class="sim-tag">Bode</span>
-    </div>
-
-    <div class="sim-card-btns">
-        <div class="sim-btn main-btn">🚀 Lancer l'Expérience ↗</div>
-        <a href="guide-rlc.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">
-            📖 Guide de TP & Théorie
-        </a>
-    </div>
-</div>
                     </div>
-                    <div class="sim-card c-phy" data-href="pendule.html" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">⚖️</div><span class="sim-badge">Physique</span></div>
-                        <div class="sim-name">Le Pendule Pesant</div>
-                        <div class="sim-desc">Analysez les oscillations, la période propre et l'influence de la longueur du fil.</div>
-                        <div class="sim-tags"><span class="sim-tag">Oscillation</span><span class="sim-tag">Gravité</span><span class="sim-tag">Période</span></div>
+
+                    <div class="sim-card c-phy" data-href="travail-energie.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">⚙️</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Travail et Énergie</div>
+                        <div class="sim-desc">Explorez le travail d'une force, l'énergie cinétique, potentielle et la conservation.</div>
+                        <div class="sim-tags"><span class="sim-tag">Énergie</span><span class="sim-tag">Travail</span><span class="sim-tag">Conservation</span></div>
                         <div class="sim-card-btns">
                             <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-                            <a href="guide-pendule.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                            <a href="guide-travail-energie.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
                         </div>
-                    
-                    
-</div>
-
-<div class="sim-card c-phy" data-href="lois-de-newton.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🍎</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Les Lois de Newton</div>
-    <div class="sim-desc">Explorez l'inertie, la relation fondamentale de la dynamique (RFD) et l'action-réaction.</div>
-    <div class="sim-tags"><span class="sim-tag">Force</span><span class="sim-tag">Accélération</span><span class="sim-tag">Dynamique</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-newton.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="chute-libre.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🏐</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">La Chute Libre</div>
-    <div class="sim-desc">Simulez la chute d'un corps dans le vide et observez l'accélération de la pesanteur $g$.</div>
-    <div class="sim-tags"><span class="sim-tag">Cinématique</span><span class="sim-tag">Gravité</span><span class="sim-tag">Vitesse</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-chute-libre.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="mru.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🏎️</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Le MRU </div>
-    <div class="sim-desc">Étudiez les mouvements à vitesse constante.</div>
-    <div class="sim-tags"><span class="sim-tag">Trajectoire</span><span class="sim-tag">Vitesse</span><span class="sim-tag">Temps</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-mru.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>    
                     </div>
-                </div>
-            </div>
 
+                    <div class="sim-card c-phy" data-href="collision.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">💥</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Collisions</div>
+                        <div class="sim-desc">Simulez des collisions élastiques et inélastiques avec conservation de la quantité de mouvement.</div>
+                        <div class="sim-tags"><span class="sim-tag">Choc</span><span class="sim-tag">Momentum</span><span class="sim-tag">Énergie</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-collision.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="simulateur-collisions.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🎱</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Simulateur de Collisions Avancé</div>
+                        <div class="sim-desc">Version avancée avec multiples corps et paramètres ajustables.</div>
+                        <div class="sim-tags"><span class="sim-tag">2D</span><span class="sim-tag">Multiple</span><span class="sim-tag">Élastique</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-collision-avance.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="simulateur-dynamique.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🔧</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Dynamique des Systèmes</div>
+                        <div class="sim-desc">Étudiez les systèmes mécaniques complexes avec forces et contraintes.</div>
+                        <div class="sim-tags"><span class="sim-tag">Forces</span><span class="sim-tag">Système</span><span class="sim-tag">Dynamique</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-dynamique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="terre.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🌍</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Gravitation Universelle</div>
+                        <div class="sim-desc">Simulez les orbites, la loi de Newton et les mouvements planétaires.</div>
+                        <div class="sim-tags"><span class="sim-tag">Gravité</span><span class="sim-tag">Orbite</span><span class="sim-tag">Kepler</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-terre.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div><!-- fin subcat Mécanique -->
+
+            <!-- Optique -->
             <div class="subcat">
                 <div class="subcat-title">💡 Optique</div>
                 <div class="sims-grid">
+
                     <div class="sim-card c-phy" data-href="optique.html" onclick="openSim(event,this)">
                         <div class="sim-card-header"><div class="sim-icon">🔭</div><span class="sim-badge">Physique</span></div>
                         <div class="sim-name">Optique Géométrique</div>
@@ -450,525 +522,321 @@
                             <a href="guide-optique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
                         </div>
                     </div>
-                    <div class="sim-card c-phy" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔭</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Lentilles &amp; Miroirs</div>
-                        <div class="sim-desc">Lentilles convergentes et divergentes, miroirs, formation des images optiques.</div>
-                        <div class="sim-tags"><span class="sim-tag">Lentille</span><span class="sim-tag">Image</span><span class="sim-tag">Foyer</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+
+                    <div class="sim-card c-phy" data-href="optique_ondulatoire.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🌊</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Interférences Lumineuses</div>
+                        <div class="sim-desc">Explorez les fentes d'Young, les interférences et la diffraction.</div>
+                        <div class="sim-tags"><span class="sim-tag">Ondes</span><span class="sim-tag">Franges</span><span class="sim-tag">Young</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-interferences.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
                     </div>
+
                     <div class="sim-card c-phy" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🌈</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🌈</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Vision des Couleurs</div>
                         <div class="sim-desc">Explorez comment l'œil perçoit les couleurs, mélange de lumières et synthèse additive.</div>
                         <div class="sim-tags"><span class="sim-tag">Couleur</span><span class="sim-tag">Lumière</span><span class="sim-tag">Perception</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">⏳ Bientôt Disponible</div>
+                        </div>
                     </div>
+
                 </div>
-            </div>
-<div class="sim-card c-phy" data-href="mru.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">📏</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Mouvement Rectiligne Uniforme (MRU)</div>
-    <div class="sim-desc">Étudiez le mouvement à vitesse constante : position linéaire, vecteur vitesse et trajectoire rectiligne.</div>
-    <div class="sim-tags"><span class="sim-tag">Cinématique</span><span class="sim-tag">Vitesse constante</span><span class="sim-tag">1D</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-mrua.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
+            </div><!-- fin subcat Optique -->
 
-<div class="sim-card c-phy" data-href="mrua.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">📈</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Mouvement Uniformément Accéléré (MRUA)</div>
-    <div class="sim-desc">Explorez l'accélération constante, les équations horaires et la chute libre.</div>
-    <div class="sim-tags"><span class="sim-tag">Accélération</span><span class="sim-tag">Parabole</span><span class="sim-tag">MRUA</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-mrua.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="chute-libre.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🪶</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Chute Libre</div>
-    <div class="sim-desc">Simulez la chute d'objets sous l'effet de la gravité, avec et sans vitesse initiale.</div>
-    <div class="sim-tags"><span class="sim-tag">Gravité</span><span class="sim-tag">g=9.81</span><span class="sim-tag">MRUA</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-chute-libre.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="cinematique.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🎯</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Cinématique générale</div>
-    <div class="sim-desc">Étude complète des mouvements : position, vitesse, accélération et trajectoires.</div>
-    <div class="sim-tags"><span class="sim-tag">Vecteurs</span><span class="sim-tag">Mouvement</span><span class="sim-tag">Trajectoire</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-cinematique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="plan-incline.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">📐</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Plan incliné</div>
-    <div class="sim-desc">Étudiez la décomposition du poids, le frottement et le mouvement sur un plan incliné.</div>
-    <div class="sim-tags"><span class="sim-tag">Frottement</span><span class="sim-tag">Angle</span><span class="sim-tag">Mécanique</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-plan-incline.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="pendule.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">⏰</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Pendule simple</div>
-    <div class="sim-desc">Observez les oscillations, la période et l'énergie d'un pendule.</div>
-    <div class="sim-tags"><span class="sim-tag">Oscillation</span><span class="sim-tag">Période</span><span class="sim-tag">Énergie</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-pendule.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="rotation.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🔄</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Rotation d'un Solide</div>
-    <div class="sim-desc">Étudiez le mouvement circulaire, la vitesse angulaire et le moment d'une force.</div>
-    <div class="sim-tags"><span class="sim-tag">Mouvement</span><span class="sim-tag">Angle</span><span class="sim-tag">Vitesse</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-rotation.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="travail-energie.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">⚡</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Travail et Énergie</div>
-    <div class="sim-desc">Explorez le travail d'une force, l'énergie cinétique, potentielle et la conservation.</div>
-    <div class="sim-tags"><span class="sim-tag">Énergie</span><span class="sim-tag">Travail</span><span class="sim-tag">Conservation</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-travail-energie.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="lois-de-newton.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">⚖️</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Lois de Newton</div>
-    <div class="sim-desc">Découvrez les trois principes fondamentaux de la mécanique classique.</div>
-    <div class="sim-tags"><span class="sim-tag">Inertie</span><span class="sim-tag">Force</span><span class="sim-tag">Action-Réaction</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-lois-de-newton.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="collision.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">💥</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Collisions</div>
-    <div class="sim-desc">Simulez des collisions élastiques et inélastiques avec conservation de la quantité de mouvement.</div>
-    <div class="sim-tags"><span class="sim-tag">Choc</span><span class="sim-tag">Momentum</span><span class="sim-tag">Énergie</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-collision.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="simulateur-collisions.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🎱</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Simulateur de Collisions</div>
-    <div class="sim-desc">Version avancée avec multiples corps et paramètres ajustables.</div>
-    <div class="sim-tags"><span class="sim-tag">2D</span><span class="sim-tag">Multiple</span><span class="sim-tag">Élastique</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-collision-avance.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="simulateur-dynamique.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🔧</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Dynamique des Systèmes</div>
-    <div class="sim-desc">Étudiez les systèmes mécaniques complexes avec forces et contraintes.</div>
-    <div class="sim-tags"><span class="sim-tag">Forces</span><span class="sim-tag">Système</span><span class="sim-tag">Dynamique</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-dynamique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="terre.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🌍</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Gravitation universelle</div>
-    <div class="sim-desc">Simulez les orbites, la loi de Newton et les mouvements planétaires.</div>
-    <div class="sim-tags"><span class="sim-tag">Gravité</span><span class="sim-tag">Orbite</span><span class="sim-tag">Kepler</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-terre.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="optique.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🔦</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Optique géométrique</div>
-    <div class="sim-desc">Étudiez la réflexion, la réfraction et les lentilles.</div>
-    <div class="sim-tags"><span class="sim-tag">Lumière</span><span class="sim-tag">Miroir</span><span class="sim-tag">Lentille</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-optique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="optique_ondulatoire.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🌊</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Interférences lumineuses</div>
-    <div class="sim-desc">Explorez les fentes d'Young, les interférences et la diffraction.</div>
-    <div class="sim-tags"><span class="sim-tag">Ondes</span><span class="sim-tag">Franges</span><span class="sim-tag">Young</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-interferences.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="circuit-lab.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">⚡</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Circuit électrique (Lab)</div>
-    <div class="sim-desc">Construisez et testez des circuits électriques en temps réel.</div>
-    <div class="sim-tags"><span class="sim-tag">Électricité</span><span class="sim-tag">Circuit</span><span class="sim-tag">Ohm</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-circuit.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="circuit-rc-simlab.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">⏲️</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Circuit RC</div>
-    <div class="sim-desc">Étudiez la charge et la décharge d'un condensateur à travers une résistance.</div>
-    <div class="sim-tags"><span class="sim-tag">RC</span><span class="sim-tag">Condensateur</span><span class="sim-tag">Constante de temps</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-circuit-rc.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="electrocinetique.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🔋</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Électrocinétique</div>
-    <div class="sim-desc">Lois de Kirchhoff, diviseurs de tension et réseaux électriques.</div>
-    <div class="sim-tags"><span class="sim-tag">Kirchhoff</span><span class="sim-tag">Tension</span><span class="sim-tag">Courant</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-electrocinetique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="thermodynamique.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🔥</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Thermodynamique</div>
-    <div class="sim-desc">Explorez les gaz parfaits, les transformations et les échanges thermiques.</div>
-    <div class="sim-tags"><span class="sim-tag">Chaleur</span><span class="sim-tag">Gaz</span><span class="sim-tag">Pression</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-thermodynamique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="machine-thermique.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🏭</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Machines thermiques</div>
-    <div class="sim-desc">Cycle de Carnot, rendement et théorème de Carnot.</div>
-    <div class="sim-tags"><span class="sim-tag">Carnot</span><span class="sim-tag">Rendement</span><span class="sim-tag">Cycle</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-carnot.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-phy" data-href="premier-principe.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">📊</div><span class="sim-badge">Physique</span></div>
-    <div class="sim-name">Premier principe</div>
-    <div class="sim-desc">Conservation de l'énergie, travail et chaleur dans les systèmes thermodynamiques.</div>
-    <div class="sim-tags"><span class="sim-tag">Énergie interne</span><span class="sim-tag">Travail</span><span class="sim-tag">Chaleur</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-premier-principe.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="simulations-chimie.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🧪</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Simulations de chimie</div>
-    <div class="sim-desc">Collection complète de simulations pour la chimie générale.</div>
-    <div class="sim-tags"><span class="sim-tag">Général</span><span class="sim-tag">Labo</span><span class="sim-tag">Molécules</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-chimie.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="chimie-solutions-simulation.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">💧</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Solutions chimiques</div>
-    <div class="sim-desc">Concentration, dilution, pH et équilibres en solution.</div>
-    <div class="sim-tags"><span class="sim-tag">Concentration</span><span class="sim-tag">pH</span><span class="sim-tag">Solution</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-solutions.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="cinetique.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">⏱️</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Cinétique chimique</div>
-    <div class="sim-desc">Vitesses de réaction, ordres et constante de vitesse.</div>
-    <div class="sim-tags"><span class="sim-tag">Vitesse</span><span class="sim-tag">Réaction</span><span class="sim-tag">Activation</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-cinetique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="geometrie-moleculaire.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🔷</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Géométrie moléculaire</div>
-    <div class="sim-desc">VSEPR, angles de liaison et formes des molécules.</div>
-    <div class="sim-tags"><span class="sim-tag">VSEPR</span><span class="sim-tag">Molécules</span><span class="sim-tag">3D</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-geometrie-moleculaire.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="polymeres.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🧵</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Polymères</div>
-    <div class="sim-desc">Chaînes polymères, degré de polymérisation et propriétés.</div>
-    <div class="sim-tags"><span class="sim-tag">Macromolécule</span><span class="sim-tag">Chaîne</span><span class="sim-tag">Plastique</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-polymeres.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="titrage.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🧴</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Titrage acido-basique</div>
-    <div class="sim-desc">Courbes de titrage, point d'équivalence et indicateurs.</div>
-    <div class="sim-tags"><span class="sim-tag">pH-métrie</span><span class="sim-tag">Acide</span><span class="sim-tag">Base</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-titrage.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="atome.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">⚛️</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Modèle de l'atome</div>
-    <div class="sim-desc">Structure atomique, orbitales et configuration électronique.</div>
-    <div class="sim-tags"><span class="sim-tag">Électrons</span><span class="sim-tag">Noyau</span><span class="sim-tag">Orbitales</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-atome.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
-
-<div class="sim-card c-chem" data-href="org.html" onclick="openSim(event,this)">
-    <div class="sim-card-header"><div class="sim-icon">🧬</div><span class="sim-badge">Chimie</span></div>
-    <div class="sim-name">Chimie organique</div>
-    <div class="sim-desc">Groupes fonctionnels, réactions et mécanismes organiques.</div>
-    <div class="sim-tags"><span class="sim-tag">Carbone</span><span class="sim-tag">Fonctions</span><span class="sim-tag">Mécanisme</span></div>
-    <div class="sim-card-btns">
-        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-        <a href="guide-org.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
-    </div>
-</div>
+            <!-- Électricité -->
             <div class="subcat">
                 <div class="subcat-title">⚡ Électricité</div>
                 <div class="sims-grid">
-                    <div class="sim-card c-phy" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔌</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Circuits Électriques DC</div>
-                        <div class="sim-desc">Construisez des circuits en courant continu avec résistances, ampoules et interrupteurs.</div>
-                        <div class="sim-tags"><span class="sim-tag">Circuit</span><span class="sim-tag">Résistance</span><span class="sim-tag">Ohm</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+
+                    <div class="sim-card c-phy" data-href="circuit-lab.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header">
+                            <div class="sim-icon">⚡</div>
+                            <div class="header-right">
+                                <span class="sim-badge badge-level">Licence / CPGE</span>
+                                <span class="sim-badge">Physique</span>
+                            </div>
+                        </div>
+                        <div class="sim-name">Analyse de Circuit RLC</div>
+                        <div class="sim-desc">Étude des régimes transitoires et de la résonance. Modélisation de la courbe de réponse en fréquence.</div>
+                        <div class="sim-tags"><span class="sim-tag">Électricité</span><span class="sim-tag">Oscillations</span><span class="sim-tag">Bode</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-rlc.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Guide de TP & Théorie</a>
+                        </div>
                     </div>
-                    <div class="sim-card c-phy" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">📊</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Loi d'Ohm</div>
-                        <div class="sim-desc">Visualisez la relation U = R × I de manière interactive. Idéal pour les circuits simples.</div>
-                        <div class="sim-tags"><span class="sim-tag">Tension</span><span class="sim-tag">Intensité</span><span class="sim-tag">Résistance</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+
+                    <div class="sim-card c-phy" data-href="circuit-rc-simlab.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">⏲️</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Circuit RC</div>
+                        <div class="sim-desc">Étudiez la charge et la décharge d'un condensateur à travers une résistance.</div>
+                        <div class="sim-tags"><span class="sim-tag">RC</span><span class="sim-tag">Condensateur</span><span class="sim-tag">Constante de temps</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-circuit-rc.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
                     </div>
-                    <div class="sim-card c-phy" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🧲</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Charges &amp; Champs Électriques</div>
-                        <div class="sim-desc">Visualisez champs électriques et potentiels créés par des charges positives et négatives.</div>
-                        <div class="sim-tags"><span class="sim-tag">Champ</span><span class="sim-tag">Charge</span><span class="sim-tag">Potentiel</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+
+                    <div class="sim-card c-phy" data-href="electrocinetique.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🔋</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Électrocinétique</div>
+                        <div class="sim-desc">Lois de Kirchhoff, diviseurs de tension et réseaux électriques.</div>
+                        <div class="sim-tags"><span class="sim-tag">Kirchhoff</span><span class="sim-tag">Tension</span><span class="sim-tag">Courant</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-electrocinetique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
                     </div>
+
+                    <div class="sim-card c-phy" data-href="circuit-lab.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🔌</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Circuit Électrique (Lab)</div>
+                        <div class="sim-desc">Construisez et testez des circuits électriques en temps réel.</div>
+                        <div class="sim-tags"><span class="sim-tag">Électricité</span><span class="sim-tag">Circuit</span><span class="sim-tag">Ohm</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-circuit.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
                 </div>
-            </div>
-        </div><!-- fin domain-physique -->
+            </div><!-- fin subcat Électricité -->
 
-        <!-- CORRECTION 8 : annonce avec id unique ad-block-1 -->
-        <div class="ad-block">
-            <p class="ad-label">ANNONCE</p>
-            <script async="async" data-cfasync="false" src="https://pl28749776.effectivegatecpm.com/ced9d6bd01657bda6021abb1c5919291/invoke.js"></script>
-            <div id="ad-container-1"></div>
-        </div>
+            <!-- Thermodynamique -->
+            <div class="subcat">
+                <div class="subcat-title">🔥 Thermodynamique</div>
+                <div class="sims-grid">
 
-        <!-- CHIMIE -->
+                    <div class="sim-card c-phy" data-href="thermodynamique.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🔥</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Thermodynamique</div>
+                        <div class="sim-desc">Explorez les gaz parfaits, les transformations et les échanges thermiques.</div>
+                        <div class="sim-tags"><span class="sim-tag">Chaleur</span><span class="sim-tag">Gaz</span><span class="sim-tag">Pression</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-thermodynamique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="machine-thermique.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🏭</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Machines Thermiques</div>
+                        <div class="sim-desc">Cycle de Carnot, rendement et théorème de Carnot.</div>
+                        <div class="sim-tags"><span class="sim-tag">Carnot</span><span class="sim-tag">Rendement</span><span class="sim-tag">Cycle</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-carnot.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-phy" data-href="premier-principe.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">📊</div><span class="sim-badge">Physique</span></div>
+                        <div class="sim-name">Premier Principe</div>
+                        <div class="sim-desc">Conservation de l'énergie, travail et chaleur dans les systèmes thermodynamiques.</div>
+                        <div class="sim-tags"><span class="sim-tag">Énergie interne</span><span class="sim-tag">Travail</span><span class="sim-tag">Chaleur</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-premier-principe.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div><!-- fin subcat Thermodynamique -->
+
+        </div><!-- ===== FIN PHYSIQUE ===== -->
+
+        <div class="ad-block"><p class="ad-label">ANNONCE</p><div id="ad-container-1"></div></div>
+
+        <!-- ===== CHIMIE ===== -->
         <div id="domain-chimie" class="cat">
             <div class="domain-banner b-chi fade-in">
                 <div class="domain-banner-icon">🧪</div>
-                <div><h3>Chimie</h3><p>Réactions · Acides &amp; Bases · Atomes &amp; Molécules · Solutions</p></div>
+                <div><h3>Chimie</h3><p>Réactions · Acides & Bases · Atomes & Molécules · Solutions · Organique</p></div>
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">🧪 Réactions Chimiques</div>
+                <div class="subcat-title">🧪 Réactions & Solutions</div>
                 <div class="sims-grid">
+
+                    <div class="sim-card c-chi" data-href="simulations-chimie.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🧪</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Simulations de Chimie</div>
+                        <div class="sim-desc">Collection complète de simulations pour la chimie générale.</div>
+                        <div class="sim-tags"><span class="sim-tag">Général</span><span class="sim-tag">Labo</span><span class="sim-tag">Molécules</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-chimie.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-chi" data-href="chimie-solutions-simulation.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">💧</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Solutions Chimiques</div>
+                        <div class="sim-desc">Concentration, dilution, pH et équilibres en solution.</div>
+                        <div class="sim-tags"><span class="sim-tag">Concentration</span><span class="sim-tag">pH</span><span class="sim-tag">Solution</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-solutions.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-chi" data-href="cinetique.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">⏱️</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Cinétique Chimique</div>
+                        <div class="sim-desc">Vitesses de réaction, ordres et constante de vitesse.</div>
+                        <div class="sim-tags"><span class="sim-tag">Vitesse</span><span class="sim-tag">Réaction</span><span class="sim-tag">Activation</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-cinetique.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-chi" data-href="titrage.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🧴</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Titrage Acido-Basique</div>
+                        <div class="sim-desc">Courbes de titrage, point d'équivalence et indicateurs colorés.</div>
+                        <div class="sim-tags"><span class="sim-tag">pH-métrie</span><span class="sim-tag">Acide</span><span class="sim-tag">Base</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-titrage.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
                     <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">⚗️</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Réactifs &amp; Produits</div>
+                        <div class="sim-card-header"><div class="sim-icon">⚗️</div><span class="sim-badge">Bientôt</span></div>
+                        <div class="sim-name">Réactifs & Produits</div>
                         <div class="sim-desc">Explorez la stœchiométrie et les réactifs limitants dans des réactions chimiques concrètes.</div>
                         <div class="sim-tags"><span class="sim-tag">Stœchiométrie</span><span class="sim-tag">Réactif</span><span class="sim-tag">Produit</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
-                    <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">⚖️</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Équilibrage d'Équations</div>
-                        <div class="sim-desc">Apprenez à équilibrer des équations chimiques avec retour visuel immédiat.</div>
-                        <div class="sim-tags"><span class="sim-tag">Équation</span><span class="sim-tag">Atome</span><span class="sim-tag">Conservation</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-                    </div>
-                    <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🧫</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Concentration de Solutions</div>
-                        <div class="sim-desc">Simulez dissolution, dilution et concentration molaire. Visualisez les solutions.</div>
-                        <div class="sim-tags"><span class="sim-tag">Molaire</span><span class="sim-tag">Dilution</span><span class="sim-tag">Solution</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-                    </div>
+
                 </div>
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">🔴🔵 Acides &amp; Bases</div>
+                <div class="subcat-title">⚛️ Atomes & Molécules</div>
                 <div class="sims-grid">
-                    <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">📏</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Échelle de pH</div>
-                        <div class="sim-desc">Mesurez le pH de diverses solutions avec un pH-mètre interactif. Acides, bases et neutres.</div>
-                        <div class="sim-tags"><span class="sim-tag">pH</span><span class="sim-tag">Acide</span><span class="sim-tag">Base</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+
+                    <div class="sim-card c-chi" data-href="atome.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">⚛️</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Modèle de l'Atome</div>
+                        <div class="sim-desc">Structure atomique, orbitales et configuration électronique.</div>
+                        <div class="sim-tags"><span class="sim-tag">Électrons</span><span class="sim-tag">Noyau</span><span class="sim-tag">Orbitales</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-atome.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
                     </div>
-                    <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🧬</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Solutions Acide-Base</div>
-                        <div class="sim-desc">Comprenez acides forts, faibles et les bases, ions, conductivité et comportements.</div>
-                        <div class="sim-tags"><span class="sim-tag">Ion</span><span class="sim-tag">Conductivité</span><span class="sim-tag">Équilibre</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+
+                    <div class="sim-card c-chi" data-href="geometrie-moleculaire.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🔷</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Géométrie Moléculaire</div>
+                        <div class="sim-desc">VSEPR, angles de liaison et formes des molécules en 3D.</div>
+                        <div class="sim-tags"><span class="sim-tag">VSEPR</span><span class="sim-tag">Molécules</span><span class="sim-tag">3D</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-geometrie-moleculaire.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
                     </div>
+
+                    <div class="sim-card c-chi" data-href="polymeres.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🧵</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Polymères</div>
+                        <div class="sim-desc">Chaînes polymères, degré de polymérisation et propriétés des matériaux.</div>
+                        <div class="sim-tags"><span class="sim-tag">Macromolécule</span><span class="sim-tag">Chaîne</span><span class="sim-tag">Plastique</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-polymeres.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
+                    <div class="sim-card c-chi" data-href="org.html" onclick="openSim(event,this)">
+                        <div class="sim-card-header"><div class="sim-icon">🧬</div><span class="sim-badge">Chimie</span></div>
+                        <div class="sim-name">Chimie Organique</div>
+                        <div class="sim-desc">Groupes fonctionnels, réactions et mécanismes organiques.</div>
+                        <div class="sim-tags"><span class="sim-tag">Carbone</span><span class="sim-tag">Fonctions</span><span class="sim-tag">Mécanisme</span></div>
+                        <div class="sim-card-btns">
+                            <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                            <a href="guide-org.html" target="_blank" class="sim-btn-guide" onclick="event.stopPropagation()">📖 Lire le Guide Interactif</a>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
-            <div class="subcat">
-                <div class="subcat-title">⚛️ Atomes &amp; Molécules</div>
-                <div class="sims-grid">
-                    <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔵</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Construire une Molécule</div>
-                        <div class="sim-desc">Assemblez des atomes pour former des molécules réelles (H₂O, CO₂, CH₄...) en interactif.</div>
-                        <div class="sim-tags"><span class="sim-tag">Molécule</span><span class="sim-tag">Atome</span><span class="sim-tag">Structure</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-                    </div>
-                    <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">⚛️</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Construire un Atome</div>
-                        <div class="sim-desc">Ajoutez protons, neutrons et électrons pour construire un atome et découvrez ses propriétés.</div>
-                        <div class="sim-tags"><span class="sim-tag">Proton</span><span class="sim-tag">Neutron</span><span class="sim-tag">Électron</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-                    </div>
-                    <div class="sim-card c-chi" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔬</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Isotopes &amp; Masse Atomique</div>
-                        <div class="sim-desc">Explorez les isotopes, abondance naturelle et calcul de la masse atomique moyenne.</div>
-                        <div class="sim-tags"><span class="sim-tag">Isotope</span><span class="sim-tag">Masse</span><span class="sim-tag">Noyau</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
-                    </div>
-                </div>
-            </div>
-        </div><!-- fin domain-chimie -->
+        </div><!-- ===== FIN CHIMIE ===== -->
 
-        <!-- CORRECTION 9 : annonce id unique ad-block-2 -->
-        <div class="ad-block">
-            <p class="ad-label">ANNONCE</p>
-            <div id="ad-container-2"></div>
-        </div>
+        <div class="ad-block"><p class="ad-label">ANNONCE</p><div id="ad-container-2"></div></div>
 
-        <!-- MATHS -->
+        <!-- ===== MATHÉMATIQUES ===== -->
         <div id="domain-maths" class="cat">
             <div class="domain-banner b-mat fade-in">
                 <div class="domain-banner-icon">📐</div>
-                <div><h3>Mathématiques</h3><p>Fonctions &amp; Graphes · Géométrie · Probabilités · Algèbre · Analyse</p></div>
+                <div><h3>Mathématiques</h3><p>Fonctions & Graphes · Géométrie · Probabilités · Algèbre · Analyse</p></div>
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">📈 Fonctions &amp; Analyse</div>
+                <div class="subcat-title">📈 Fonctions & Analyse</div>
                 <div class="sims-grid">
+
                     <div class="sim-card c-mat" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">📉</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">📉</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Traceur de Fonctions</div>
                         <div class="sim-desc">Trace et explore des fonctions mathématiques en temps réel. Modifie les paramètres et observe les variations.</div>
                         <div class="sim-tags"><span class="sim-tag">Fonction</span><span class="sim-tag">Graphe</span><span class="sim-tag">Courbe</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-mat" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔄</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Dérivées &amp; Tangentes</div>
+                        <div class="sim-card-header"><div class="sim-icon">🔄</div><span class="sim-badge">Bientôt</span></div>
+                        <div class="sim-name">Dérivées & Tangentes</div>
                         <div class="sim-desc">Visualise la dérivée d'une fonction et la tangente en un point. Comprends l'analyse par l'image.</div>
                         <div class="sim-tags"><span class="sim-tag">Dérivée</span><span class="sim-tag">Tangente</span><span class="sim-tag">Analyse</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-mat" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">∫</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Intégrales &amp; Aires</div>
+                        <div class="sim-card-header"><div class="sim-icon">∫</div><span class="sim-badge">Bientôt</span></div>
+                        <div class="sim-name">Intégrales & Aires</div>
                         <div class="sim-desc">Visualise l'intégrale d'une fonction comme une aire sous la courbe. Méthode des rectangles interactive.</div>
                         <div class="sim-tags"><span class="sim-tag">Intégrale</span><span class="sim-tag">Aire</span><span class="sim-tag">Calcul</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                 </div>
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">📐 Géométrie &amp; Probabilités</div>
+                <div class="subcat-title">📐 Géométrie & Probabilités</div>
                 <div class="sims-grid">
+
                     <div class="sim-card c-mat" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔺</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🔺</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Géométrie Interactive</div>
                         <div class="sim-desc">Construis et explore des figures géométriques. Triangles, cercles, angles, théorèmes en action.</div>
                         <div class="sim-tags"><span class="sim-tag">Triangle</span><span class="sim-tag">Angle</span><span class="sim-tag">Théorème</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-mat" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🎲</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Probabilités &amp; Statistiques</div>
+                        <div class="sim-card-header"><div class="sim-icon">🎲</div><span class="sim-badge">Bientôt</span></div>
+                        <div class="sim-name">Probabilités & Statistiques</div>
                         <div class="sim-desc">Simule des expériences aléatoires, visualise lois de probabilité et distributions statistiques.</div>
                         <div class="sim-tags"><span class="sim-tag">Probabilité</span><span class="sim-tag">Distribution</span><span class="sim-tag">Statistique</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                 </div>
             </div>
-        </div><!-- fin domain-maths -->
 
-        <!-- CORRECTION 10 : annonce id unique ad-block-3 -->
-        <div class="ad-block">
-            <p class="ad-label">ANNONCE</p>
-            <div id="ad-container-3"></div>
-        </div>
+        </div><!-- ===== FIN MATHS ===== -->
 
-        <!-- SVT -->
+        <div class="ad-block"><p class="ad-label">ANNONCE</p><div id="ad-container-3"></div></div>
+
+        <!-- ===== SVT ===== -->
         <div id="domain-svt" class="cat">
             <div class="domain-banner b-svt fade-in">
                 <div class="domain-banner-icon">🌿</div>
@@ -976,155 +844,168 @@
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">🦠 Cellule &amp; Génétique</div>
+                <div class="subcat-title">🦠 Cellule & Génétique</div>
                 <div class="sims-grid">
+
                     <div class="sim-card c-svt" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🦠</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🦠</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">La Cellule Interactive</div>
                         <div class="sim-desc">Explore les organites d'une cellule animale et végétale. Clique sur chaque partie pour comprendre son rôle.</div>
                         <div class="sim-tags"><span class="sim-tag">Cellule</span><span class="sim-tag">Organite</span><span class="sim-tag">Mitochondrie</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-svt" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🧬</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">ADN &amp; Génétique</div>
+                        <div class="sim-card-header"><div class="sim-icon">🧬</div><span class="sim-badge">Bientôt</span></div>
+                        <div class="sim-name">ADN & Génétique</div>
                         <div class="sim-desc">Visualise la structure de l'ADN, la réplication et l'hérédité génétique de manière interactive.</div>
                         <div class="sim-tags"><span class="sim-tag">ADN</span><span class="sim-tag">Gène</span><span class="sim-tag">Hérédité</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-svt" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🌱</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🌱</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Photosynthèse</div>
                         <div class="sim-desc">Simule la photosynthèse dans une feuille. Observe l'effet de la lumière, CO₂ et eau sur la production d'O₂.</div>
                         <div class="sim-tags"><span class="sim-tag">Chlorophylle</span><span class="sim-tag">CO₂</span><span class="sim-tag">Oxygène</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                 </div>
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">🌍 Écosystèmes &amp; Corps Humain</div>
+                <div class="subcat-title">🌍 Écosystèmes & Corps Humain</div>
                 <div class="sims-grid">
+
                     <div class="sim-card c-svt" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🦁</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🦁</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Chaînes Alimentaires</div>
                         <div class="sim-desc">Simule un écosystème avec chaînes alimentaires, prédateurs et proies. Modifie les populations.</div>
                         <div class="sim-tags"><span class="sim-tag">Écosystème</span><span class="sim-tag">Prédateur</span><span class="sim-tag">Équilibre</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-svt" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">❤️</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">❤️</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Circulation Sanguine</div>
                         <div class="sim-desc">Explore le système cardiovasculaire humain. Suis le trajet du sang à travers le cœur et les organes.</div>
                         <div class="sim-tags"><span class="sim-tag">Cœur</span><span class="sim-tag">Sang</span><span class="sim-tag">Vaisseaux</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-svt" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🧠</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🧠</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Le Système Nerveux</div>
                         <div class="sim-desc">Visualise comment les neurones transmettent les informations dans le corps humain.</div>
                         <div class="sim-tags"><span class="sim-tag">Neurone</span><span class="sim-tag">Influx</span><span class="sim-tag">Cerveau</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                 </div>
             </div>
-        </div><!-- fin domain-svt -->
 
-        <!-- CORRECTION 11 : annonce id unique ad-block-4 -->
-        <div class="ad-block">
-            <p class="ad-label">ANNONCE</p>
-            <div id="ad-container-4"></div>
-        </div>
+        </div><!-- ===== FIN SVT ===== -->
 
-        <!-- ASTRONOMIE -->
+        <div class="ad-block"><p class="ad-label">ANNONCE</p><div id="ad-container-4"></div></div>
+
+        <!-- ===== ASTRONOMIE ===== -->
         <div id="domain-astro" class="cat">
             <div class="domain-banner b-ast fade-in">
                 <div class="domain-banner-icon">🔭</div>
-                <div><h3>Astronomie &amp; Astrophysique</h3><p>Système Solaire · Étoiles · Gravitation · Cosmologie · Lumière</p></div>
+                <div><h3>Astronomie & Astrophysique</h3><p>Système Solaire · Étoiles · Gravitation · Cosmologie · Lumière</p></div>
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">🌌 Système Solaire &amp; Étoiles</div>
+                <div class="subcat-title">🌌 Système Solaire & Étoiles</div>
                 <div class="sims-grid">
+
                     <div class="sim-card c-ast" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🪐</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🪐</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Système Solaire Interactif</div>
-                        <div class="sim-desc">Explore le système solaire en 3D. Observe les orbites des planètes, leurs distances et vitesses réelles.</div>
+                        <div class="sim-desc">Explore le système solaire. Observe les orbites des planètes, leurs distances et vitesses réelles.</div>
                         <div class="sim-tags"><span class="sim-tag">Planète</span><span class="sim-tag">Orbite</span><span class="sim-tag">Soleil</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-ast" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">⭐</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">⭐</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Cycle de Vie des Étoiles</div>
                         <div class="sim-desc">Découvre comment naissent, évoluent et meurent les étoiles. De la nébuleuse au trou noir.</div>
                         <div class="sim-tags"><span class="sim-tag">Étoile</span><span class="sim-tag">Nébuleuse</span><span class="sim-tag">Trou noir</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-ast" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🌑</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🌑</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Phases de la Lune</div>
                         <div class="sim-desc">Simule les phases lunaires et les éclipses. Comprends les mouvements Terre-Lune-Soleil.</div>
                         <div class="sim-tags"><span class="sim-tag">Lune</span><span class="sim-tag">Éclipse</span><span class="sim-tag">Phase</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-ast" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🌀</div><span class="sim-badge">Original</span></div>
-                        <div class="sim-name">Trous Noirs &amp; Gravité</div>
+                        <div class="sim-card-header"><div class="sim-icon">🌀</div><span class="sim-badge">Bientôt</span></div>
+                        <div class="sim-name">Trous Noirs & Gravité</div>
                         <div class="sim-desc">Visualise la courbure de l'espace-temps autour d'un trou noir. Explore la relativité générale.</div>
                         <div class="sim-tags"><span class="sim-tag">Trou noir</span><span class="sim-tag">Relativité</span><span class="sim-tag">Espace-temps</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                 </div>
             </div>
-        </div><!-- fin domain-astro -->
 
-        <!-- CORRECTION 12 : annonce id unique ad-block-5 -->
-        <div class="ad-block">
-            <p class="ad-label">ANNONCE</p>
-            <div id="ad-container-5"></div>
-        </div>
+        </div><!-- ===== FIN ASTRONOMIE ===== -->
 
-        <!-- INFORMATIQUE -->
+        <div class="ad-block"><p class="ad-label">ANNONCE</p><div id="ad-container-5"></div></div>
+
+        <!-- ===== INFORMATIQUE ===== -->
         <div id="domain-info" class="cat">
             <div class="domain-banner b-inf fade-in">
                 <div class="domain-banner-icon">💻</div>
-                <div><h3>Informatique &amp; Algorithmique</h3><p>Algorithmes · Structures de données · Réseaux · Cryptographie · IA</p></div>
+                <div><h3>Informatique & Algorithmique</h3><p>Algorithmes · Structures de données · Réseaux · Cryptographie · IA</p></div>
             </div>
 
             <div class="subcat">
-                <div class="subcat-title">⚙️ Algorithmes &amp; Structures</div>
+                <div class="subcat-title">⚙️ Algorithmes & Structures</div>
                 <div class="sims-grid">
+
                     <div class="sim-card c-inf" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔢</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🔢</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Algorithmes de Tri</div>
                         <div class="sim-desc">Visualise en temps réel le tri à bulles, rapide, fusion et par insertion. Compare leurs complexités.</div>
                         <div class="sim-tags"><span class="sim-tag">Tri</span><span class="sim-tag">Complexité</span><span class="sim-tag">O(n²)</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-inf" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🗺️</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🗺️</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Algorithmes de Graphes</div>
                         <div class="sim-desc">Explore BFS, DFS, Dijkstra et A* sur des graphes interactifs. Visualise le plus court chemin.</div>
                         <div class="sim-tags"><span class="sim-tag">Graphe</span><span class="sim-tag">Dijkstra</span><span class="sim-tag">BFS/DFS</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-inf" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🔐</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🔐</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Cryptographie de Base</div>
                         <div class="sim-desc">Découvre le chiffrement César, Vigenère et RSA. Encode et décode des messages en interactif.</div>
                         <div class="sim-tags"><span class="sim-tag">Chiffrement</span><span class="sim-tag">César</span><span class="sim-tag">RSA</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                     <div class="sim-card c-inf" data-href="#" onclick="openSim(event,this)">
-                        <div class="sim-card-header"><div class="sim-icon">🤖</div><span class="sim-badge">Original</span></div>
+                        <div class="sim-card-header"><div class="sim-icon">🤖</div><span class="sim-badge">Bientôt</span></div>
                         <div class="sim-name">Réseau de Neurones</div>
                         <div class="sim-desc">Visualise comment fonctionne un réseau de neurones artificiel. Entraîne un modèle simple en direct.</div>
                         <div class="sim-tags"><span class="sim-tag">IA</span><span class="sim-tag">Machine Learning</span><span class="sim-tag">Neurone</span></div>
-                        <div class="sim-btn">🚀 Lancer la Simulation ↗</div>
+                        <div class="sim-card-btns"><div class="sim-btn">⏳ Bientôt Disponible</div></div>
                     </div>
+
                 </div>
             </div>
-        </div><!-- fin domain-info -->
+
+        </div><!-- ===== FIN INFORMATIQUE ===== -->
 
     </div><!-- fin container -->
 </section><!-- fin section#simulations -->
@@ -1174,7 +1055,7 @@
                 <div class="why-list">
                     <div class="why-item"><span>🖥️</span><div><strong>Maintenir le site en ligne</strong><p>Hébergement, nom de domaine, maintenance technique.</p></div></div>
                     <div class="why-item"><span>🔬</span><div><strong>Créer de nouvelles simulations</strong><p>Développer des simulations pour tous les domaines scientifiques.</p></div></div>
-                    <div class="why-item"><span>🎓</span><div><strong>Garder l'accès gratuit pour tous</strong><p>Chaque don garantit que SimLab reste libre et sans publicité.</p></div></div>
+                    <div class="why-item"><span>🎓</span><div><strong>Garder l'accès gratuit pour tous</strong><p>Chaque don garantit que SimLab reste libre et accessible.</p></div></div>
                     <div class="why-item"><span>📖</span><div><strong>Soutenir un étudiant entrepreneur</strong><p>Votre soutien m'aide à continuer mes études tout en construisant ce projet.</p></div></div>
                 </div>
             </div>
@@ -1242,13 +1123,11 @@
                         <a href="https://youtube.com/@Atinzoun" target="_blank" class="soc" title="YouTube">🎥</a>
                         <a href="https://tiktok.com/@edmond.tchokpon" target="_blank" class="soc" title="TikTok">🎵</a>
                         <a href="https://t.me/atinzou" target="_blank" class="soc" title="Telegram">✈️</a>
-                        <!-- CORRECTION 13 : class="soc" corrigé (était clas"soc") -->
                         <a href="https://facebook.com/share/16JbpbJ1W7" target="_blank" class="soc" title="Facebook">💼</a>
                         <a href="https://atinzcreations.blogspot.com" target="_blank" class="soc" title="Blog">📝</a>
                     </div>
                 </div>
             </div>
-            <!-- CORRECTION 14 : formulaire connecté à Formspree (service gratuit) -->
             <form class="contact-form" action="https://formspree.io/f/VOTRE_ID_FORMSPREE" method="POST" onsubmit="handleContact(event)">
                 <div class="fg"><label>Nom complet</label><input type="text" name="nom" placeholder="Votre nom" required></div>
                 <div class="fg"><label>Email</label><input type="email" name="email" placeholder="votre@email.com" required></div>
@@ -1305,14 +1184,12 @@
                     <li><a href="mailto:atinzoun17@gmail.com">📧 Email</a></li>
                     <li><a href="https://instagram.com/atinz" target="_blank">📸 Instagram</a></li>
                     <li><a href="https://youtube.com/@Atinzoun" target="_blank">🎥 YouTube</a></li>
-                    <!-- CORRECTION 15 : LinkedIn URL corrigée (suppression de "undefined") -->
                     <li><a href="https://www.linkedin.com/in/edmond-tchokpon-7187683ab" target="_blank">💼 LinkedIn</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
             <p>© 2026 SimLab · Edmond Atinzoun TCHOKPON · Tous droits réservés.</p>
-            <!-- CORRECTION 16 : lien Politique de confidentialité intégré proprement dans le footer -->
             <a href="politique-confidentialite.html" class="footer-legal">Politique de Confidentialité</a>
         </div>
     </div>
@@ -1322,7 +1199,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- CORRECTION 17 : balise <script> corrigée (était <<script) -->
 <script src="https://pl28749769.effectivegatecpm.com/7e/50/ae/7e50ae4d2dc2865da45f931b5ab38c5b.js"></script>
 
 <script>
@@ -1331,9 +1207,12 @@
         document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
     });
 
-    // MOBILE NAV
+    // MOBILE NAV — FIX: fonctions séparées pour ouvrir/fermer
     function toggleMobileNav() {
         document.getElementById('mobileNav').classList.toggle('open');
+    }
+    function closeMobileNav() {
+        document.getElementById('mobileNav').classList.remove('open');
     }
     document.addEventListener('click', (e) => {
         const nav = document.getElementById('mobileNav');
@@ -1343,24 +1222,29 @@
         }
     });
 
-    // DOMAIN SWITCH
+    // DOMAIN SWITCH — FIX: scroll propre vers la section
     function switchDomain(domain, btn) {
         document.querySelectorAll('.cat').forEach(s => s.classList.remove('active'));
         const target = document.getElementById('domain-' + domain);
         if (target) target.classList.add('active');
+
+        document.querySelectorAll('.domain-tab').forEach(t => t.classList.remove('active'));
         if (btn) {
-            document.querySelectorAll('.domain-tab').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
-        }
-        if (!btn) {
+        } else {
+            // Appelé depuis le footer ou nav — activer le bon onglet
+            const tabs = document.querySelectorAll('.domain-tab');
+            const domains = ['physique','chimie','maths','svt','astro','info'];
+            const idx = domains.indexOf(domain);
+            if (idx >= 0 && tabs[idx]) tabs[idx].classList.add('active');
+            // Scroll vers la section simulations
             const sec = document.getElementById('simulations');
             if (sec) sec.scrollIntoView({ behavior: 'smooth' });
         }
     }
 
-    // OPENSIM — ouvre la simulation depuis les div.sim-card
+    // OPENSIM — FIX: détection propre du clic guide vs carte
     function openSim(e, el) {
-        // Ne pas intercepter si le clic vient du bouton Guide
         if (e.target.closest('.sim-btn-guide')) return;
         const href = el.getAttribute('data-href');
         if (!href || href === '#') {
@@ -1399,17 +1283,13 @@
     }
 
     // CONTACT FORM
-    // CORRECTION 18 : le formulaire soumet vraiment via Formspree
-    // Si Formspree n'est pas encore configuré, on affiche un toast de confirmation
     function handleContact(e) {
-        // Vérifier si Formspree est configuré (l'URL ne contient pas "VOTRE_ID")
         const form = e.target;
         if (form.action.includes('VOTRE_ID_FORMSPREE')) {
             e.preventDefault();
-            showToast('✅ Message reçu ! (Configurez Formspree pour l\'envoi réel)');
+            showToast('✅ Message envoyé ! Configurez Formspree pour l\'activation.');
             form.reset();
         }
-        // Sinon, le formulaire se soumet normalement à Formspree
     }
 
     // FADE IN ON SCROLL
@@ -1420,7 +1300,7 @@
     }, { threshold: 0.1 });
     document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
 
-    // SMOOTH SCROLL
+    // SMOOTH SCROLL — FIX: éviter les conflits avec switchDomain
     document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', e => {
             const href = a.getAttribute('href');
