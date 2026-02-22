@@ -131,7 +131,381 @@ body{background:var(--bg);color:var(--txt);font-family:'Outfit',sans-serif;overf
   opacity:0;transition:opacity .3s;pointer-events:none;
 }
 </style>
-</head>
+<<!-- ===== BLOQUEUR DE PANNEAUX FLOTTANTS POUR MOBILE ===== -->
+<script>
+(function() {
+    // ===== CONFIGURATION =====
+    const CONFIG = {
+        mobileBreakpoint: 768,
+        debug: false,
+        blockDelay: 500, // Délai avant de bloquer (ms)
+        forceReposition: true
+    };
+
+    // ===== DÉTECTION MOBILE =====
+    function isMobile() {
+        return window.innerWidth <= CONFIG.mobileBreakpoint;
+    }
+
+    // ===== LISTE DES PANNEAUX À BLOQUER =====
+    const FLOATING_PANELS = [
+        '#results-panel',
+        '#rp',
+        '.results-panel',
+        '.result-panel',
+        '[id*="result" i]',
+        '[id*="Result" i]',
+        '[class*="result" i]',
+        '[class*="Result" i]',
+        '#panel-resultats',
+        '.panel-resultats',
+        '.floating-panel',
+        '.slide-panel'
+    ];
+
+    // ===== FONCTION POUR BLOQUER UN PANNEAU =====
+    function blockPanel(panel) {
+        if (!panel) return false;
+
+        const style = window.getComputedStyle(panel);
+        const isVisible = style.display !== 'none' && style.visibility !== 'hidden';
+        
+        // Ne bloquer que si le panneau est visible
+        if (!isVisible) return false;
+
+        // Récupérer ou créer le conteneur dans le panel de contrôle
+        const ctrlPanel = document.querySelector('#ctrl-panel, #bp, .control-panel, [class*="ctrl-panel"]');
+        
+        if (!ctrlPanel) return false;
+
+        // Vérifier si le panneau est déjà dans le contrôle
+        if (ctrlPanel.contains(panel)) return false;
+
+        // Vérifier si le panneau est en position flottante
+        const position = style.position;
+        const isFloating = position === 'fixed' || position === 'absolute' || 
+                          style.transform.includes('translate') ||
+                          panel.classList.contains('visible') ||
+                          panel.classList.contains('on');
+
+        if (!isFloating && !CONFIG.forceReposition) return false;
+
+        // Créer un onglet ou section pour les résultats
+        let resultsTab = ctrlPanel.querySelector('#mobile-results, .mobile-results');
+        
+        if (!resultsTab) {
+            // Chercher un onglet existant pour les résultats
+            const existingTab = Array.from(ctrlPanel.querySelectorAll('.tab-pane, .tc')).find(
+                tab => tab.id.includes('result') || tab.className.includes('result')
+            );
+
+            if (existingTab) {
+                resultsTab = existingTab;
+            } else {
+                // Créer un nouvel onglet
+                resultsTab = document.createElement('div');
+                resultsTab.id = 'mobile-results';
+                resultsTab.className = 'mobile-results';
+                resultsTab.style.cssText = `
+                    background: var(--surface2);
+                    border: 1px solid var(--border);
+                    border-radius: 8px;
+                    padding: 12px;
+                    margin: 10px 0;
+                    width: 100%;
+                `;
+                
+                // Ajouter un titre
+                const title = document.createElement('h4');
+                title.textContent = '📊 RÉSULTATS';
+                title.style.cssText = `
+                    color: var(--cyan);
+                    font-size: 14px;
+                    margin-bottom: 10px;
+                `;
+                resultsTab.appendChild(title);
+                
+                // Ajouter aux contrôles
+                ctrlPanel.appendChild(resultsTab);
+            }
+        }
+
+        // Déplacer le contenu du panneau vers l'onglet mobile
+        const content = panel.innerHTML;
+        if (content) {
+            // Créer un conteneur pour le contenu
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'mobile-results-content';
+            contentDiv.innerHTML = content;
+            
+            // Ajouter au panneau de résultats mobile
+            if (resultsTab) {
+                // Vider si c'est un nouvel onglet
+                if (resultsTab.children.length === 1) {
+                    resultsTab.appendChild(contentDiv);
+                } else {
+                    // Remplacer le contenu existant
+                    const oldContent = resultsTab.querySelector('.mobile-results-content');
+                    if (oldContent) {
+                        oldContent.innerHTML = content;
+                    } else {
+                        resultsTab.appendChild(contentDiv);
+                    }
+                }
+            }
+        }
+
+        // Cacher le panneau flottant
+        panel.style.display = 'none';
+        panel.style.visibility = 'hidden';
+        panel.style.opacity = '0';
+        panel.style.pointerEvents = 'none';
+        panel.classList.remove('visible', 'on', 'show');
+
+        if (CONFIG.debug) console.log('📱 Panneau flottant bloqué:', panel);
+
+        return true;
+    }
+
+    // ===== FONCTION PRINCIPALE =====
+    function blockFloatingPanels() {
+        if (!isMobile()) return;
+
+        let blockedCount = 0;
+
+        // Essayer chaque sélecteur
+        FLOATING_PANELS.forEach(selector => {
+            try {
+                const panels = document.querySelectorAll(selector);
+                panels.forEach(panel => {
+                    if (blockPanel(panel)) blockedCount++;
+                });
+            } catch (e) {
+                // Ignorer les erreurs de sélecteur
+            }
+        });
+
+        // Chercher aussi par attributs
+        document.querySelectorAll('*').forEach(el => {
+            // Vérifier les classes
+            el.classList.forEach(cls => {
+                if (cls.includes('result') || cls.includes('Result') || 
+                    cls.includes('panel') || cls.includes('floating')) {
+                    blockPanel(el);
+                }
+            });
+            
+            // Vérifier les IDs
+            if (el.id && (el.id.includes('result') || el.id.includes('Result'))) {
+                blockPanel(el);
+            }
+        });
+
+        if (CONFIG.debug && blockedCount > 0) {
+            console.log(`📱 ${blockedCount} panneaux flottants bloqués`);
+        }
+    }
+
+    // ===== OBSERVER LES CHANGEMENTS =====
+    function observeChanges() {
+        // Observer l'ajout de nouveaux éléments
+        const observer = new MutationObserver(function(mutations) {
+            if (!isMobile()) return;
+
+            mutations.forEach(function(mutation) {
+                // Nouveaux noeuds ajoutés
+                if (mutation.addedNodes.length) {
+                    setTimeout(blockFloatingPanels, CONFIG.blockDelay);
+                }
+                
+                // Changements d'attributs
+                if (mutation.type === 'attributes' && 
+                    (mutation.attributeName === 'class' || 
+                     mutation.attributeName === 'style' ||
+                     mutation.attributeName === 'class')) {
+                    
+                    const target = mutation.target;
+                    if (target.classList && 
+                        (target.classList.contains('visible') || 
+                         target.classList.contains('on') ||
+                         target.classList.contains('show'))) {
+                        setTimeout(() => blockPanel(target), 100);
+                    }
+                }
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class', 'style']
+        });
+
+        if (CONFIG.debug) console.log('📱 Observateur de panneaux activé');
+    }
+
+    // ===== STYLES POUR LES RÉSULTATS MOBILES =====
+    function injectMobileResultsStyles() {
+        if (!isMobile()) return;
+
+        const style = document.createElement('style');
+        style.id = 'mobile-results-styles';
+        style.textContent = `
+            @media (max-width: 768px) {
+                /* Cacher tous les panneaux flottants */
+                [class*="result"][class*="panel"],
+                [id*="result"][id*="panel"],
+                .floating-panel,
+                .slide-panel,
+                [class*="slide"],
+                [style*="position: fixed"],
+                [style*="position:absolute"],
+                [style*="transform: translate"] {
+                    display: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
+                    pointer-events: none !important;
+                }
+
+                /* Style pour les résultats mobiles */
+                .mobile-results {
+                    background: var(--surface2) !important;
+                    border: 1px solid var(--border) !important;
+                    border-radius: 8px !important;
+                    padding: 15px !important;
+                    margin: 10px 0 !important;
+                    width: 100% !important;
+                    box-sizing: border-box !important;
+                }
+
+                .mobile-results h4 {
+                    color: var(--cyan) !important;
+                    font-size: 16px !important;
+                    margin-bottom: 15px !important;
+                    border-bottom: 1px solid var(--border) !important;
+                    padding-bottom: 8px !important;
+                }
+
+                .mobile-results-content {
+                    display: grid !important;
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 10px !important;
+                }
+
+                .mobile-results-content .result-row,
+                .mobile-results-content .rr,
+                .mobile-results-content [class*="result-row"],
+                .mobile-results-content [class*="rr"] {
+                    display: flex !important;
+                    justify-content: space-between !important;
+                    padding: 8px !important;
+                    background: var(--surface3) !important;
+                    border: 1px solid var(--border) !important;
+                    border-radius: 4px !important;
+                }
+
+                .mobile-results-content .result-label,
+                .mobile-results-content .rl {
+                    color: var(--text-dim) !important;
+                    font-size: 12px !important;
+                }
+
+                .mobile-results-content .result-value,
+                .mobile-results-content .rv {
+                    color: var(--cyan) !important;
+                    font-family: 'JetBrains Mono', monospace !important;
+                    font-size: 14px !important;
+                    font-weight: 600 !important;
+                }
+
+                /* Forcer l'affichage des résultats dans le panel de contrôle */
+                #ctrl-panel, #bp, .control-panel, [class*="ctrl-panel"] {
+                    position: relative !important;
+                    overflow-y: auto !important;
+                    max-height: 50vh !important;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .mobile-results-content {
+                    grid-template-columns: 1fr !important;
+                }
+            }
+        `;
+
+        const oldStyle = document.getElementById('mobile-results-styles');
+        if (oldStyle) oldStyle.remove();
+        
+        document.head.appendChild(style);
+    }
+
+    // ===== INTERCEPTER LES ÉVÉNEMENTS =====
+    function interceptEvents() {
+        // Intercepter les clics sur les boutons Lancer
+        document.addEventListener('click', function(e) {
+            if (!isMobile()) return;
+
+            const target = e.target;
+            
+            // Vérifier si c'est un bouton Lancer
+            if (target.matches('#btn-launch, #btnRun, [class*="launch"], [class*="run"]')) {
+                setTimeout(blockFloatingPanels, CONFIG.blockDelay);
+            }
+        }, true); // Utiliser la capture pour être sûr d'intercepter avant
+    }
+
+    // ===== INITIALISATION =====
+    function init() {
+        // Injecter les styles
+        injectMobileResultsStyles();
+
+        if (isMobile()) {
+            // Bloquer immédiatement
+            setTimeout(blockFloatingPanels, CONFIG.blockDelay);
+            
+            // Observer les changements
+            observeChanges();
+            
+            // Intercepter les événements
+            interceptEvents();
+            
+            if (CONFIG.debug) console.log('📱 Bloqueur de panneaux actif');
+        }
+
+        // Réagir au redimensionnement
+        window.addEventListener('resize', function() {
+            if (isMobile()) {
+                injectMobileResultsStyles();
+                setTimeout(blockFloatingPanels, 100);
+            }
+        });
+    }
+
+    // Lancer l'initialisation
+    init();
+})();
+</script>
+
+<!-- ===== STYLES DE BASE POUR LES RÉSULTATS ===== -->
+<style>
+/* Styles garantis même si le JS échoue */
+@media (max-width: 768px) {
+    /* Cacher tous les panneaux de résultats flottants */
+    [id*="result"][id*="panel"],
+    [class*="result"][class*="panel"],
+    [style*="position: fixed"][class*="result"],
+    [style*="position:absolute"][class*="result"] {
+        display: none !important;
+    }
+    
+    /* Forcer l'affichage des résultats dans la zone de contrôle */
+    #ctrl-panel, #bp, .control-panel-bottom {
+        overflow-y: auto !important;
+        max-height: 50vh !important;
+    }
+}
+</style>/head>
 <body>
 
 <!-- HEADER -->
