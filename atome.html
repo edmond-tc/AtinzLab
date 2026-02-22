@@ -866,7 +866,395 @@
     }
 }
 </style>
-</head>
+<<!-- ===== OPTIMISEUR MOBILE UNIVERSEL POUR SIMLAB ===== -->
+<script>
+(function() {
+    // ===== CONFIGURATION =====
+    const CONFIG = {
+        mobileBreakpoint: 768,
+        tinyBreakpoint: 480,
+        debug: false,  // Mettre true pour voir les logs
+        forceScroll: true,
+        sliderSize: 28,
+        buttonSize: 44
+    };
+
+    // ===== DÉTECTION MOBILE =====
+    function isMobile() {
+        return window.innerWidth <= CONFIG.mobileBreakpoint;
+    }
+
+    function isTiny() {
+        return window.innerWidth <= CONFIG.tinyBreakpoint;
+    }
+
+    // ===== INJECTEUR DE STYLES DYNAMIQUES =====
+    function injectMobileStyles() {
+        if (!isMobile()) return;
+
+        const style = document.createElement('style');
+        style.id = 'simlab-mobile-optimizer';
+        style.textContent = `
+            /* ===== OPTIMISATIONS MOBILES UNIVERSEL ===== */
+            @media (max-width: 768px) {
+                /* TOUS les canvas */
+                canvas, #simCanvas, #c2, #c3, #threeCanvas, #scopeCanvas, #demo-canvas,
+                [class*="canvas"], [id*="canvas"], [id*="Canvas"] {
+                    width: 100% !important;
+                    height: auto !important;
+                    max-height: 50vh !important;
+                    min-height: 300px !important;
+                    touch-action: pan-y pinch-zoom !important;
+                }
+
+                /* Zones de simulation */
+                #app, #sw, #canvas-wrap, .oscilloscope, .simulation-area,
+                [class*="sim"], [id*="sim"], [class*="canvas-wrap"] {
+                    height: 50vh !important;
+                    min-height: 350px !important;
+                    max-height: 60vh !important;
+                    overflow: hidden !important;
+                    position: relative !important;
+                }
+
+                /* TOUS les sliders */
+                input[type=range], .slider, [class*="slider"] {
+                    height: 8px !important;
+                    margin: 15px 0 !important;
+                }
+                
+                input[type=range]::-webkit-slider-thumb,
+                [class*="slider"]::-webkit-slider-thumb {
+                    width: ${CONFIG.sliderSize}px !important;
+                    height: ${CONFIG.sliderSize}px !important;
+                }
+
+                input[type=range]::-moz-range-thumb {
+                    width: ${CONFIG.sliderSize}px !important;
+                    height: ${CONFIG.sliderSize}px !important;
+                }
+
+                /* TOUS les boutons */
+                button, .btn, .action-btn, .sim-btn, .sim-btn-guide,
+                .hbtn, .btn-back, .tab-btn, .tbtn, [class*="btn"], [class*="button"] {
+                    min-height: ${CONFIG.buttonSize}px !important;
+                    padding: 12px 20px !important;
+                    font-size: 16px !important;
+                    margin: 5px 0 !important;
+                    touch-action: manipulation !important;
+                }
+
+                /* Groupes de sliders */
+                .slider-group, .param-card, .force-card, .cg, .crow,
+                [class*="slider-group"], [class*="param"], [class*="force"] {
+                    margin-bottom: 20px !important;
+                    width: 100% !important;
+                }
+
+                /* Labels */
+                label, .cl, .param-label, .result-label, .rl, .vlabel,
+                [class*="label"], [class*="Label"] {
+                    font-size: 14px !important;
+                }
+
+                /* Valeurs numériques */
+                .value, .result-value, .rv, .mcv, .rcv, .vval, .instrument-value,
+                [class*="value"], [class*="Value"], [class*="val"] {
+                    font-size: 18px !important;
+                }
+
+                /* TOUTES les grilles */
+                .params-grid, .mesures-grid, .mg, .rg, .exp-grid, .instruments,
+                .grid, [class*="grid"], [class*="Grid"] {
+                    grid-template-columns: 1fr !important;
+                    gap: 15px !important;
+                    display: grid !important;
+                }
+
+                /* Panneaux latéraux */
+                #sidebar, #ctrl-panel, #bp, .control-panel-bottom,
+                [class*="panel"], [class*="sidebar"] {
+                    width: 100% !important;
+                    max-height: 40vh !important;
+                    overflow-y: auto !important;
+                    position: relative !important;
+                    bottom: 0 !important;
+                    left: 0 !important;
+                    right: 0 !important;
+                }
+
+                /* Headers */
+                #header, #hdr, header, [class*="header"] {
+                    height: auto !important;
+                    min-height: 60px !important;
+                    padding: 10px !important;
+                    flex-wrap: wrap !important;
+                }
+
+                /* Badges et logos */
+                .badge, .hlogo span, .site-link, [class*="badge"] {
+                    display: none !important;
+                }
+
+                /* Titres */
+                .htitle, .sim-title, .hero h1, h1, h2, [class*="title"] {
+                    font-size: 18px !important;
+                    white-space: normal !important;
+                }
+
+                /* Barres d'onglets */
+                .tbar, #tabs-bar, [class*="tab"], [class*="Tab"] {
+                    overflow-x: auto !important;
+                    white-space: nowrap !important;
+                    flex-wrap: nowrap !important;
+                    padding: 5px !important;
+                    -webkit-overflow-scrolling: touch !important;
+                }
+
+                .tab-btn, .tbtn, [class*="tab-btn"] {
+                    display: inline-block !important;
+                    min-width: 80px !important;
+                    margin: 0 2px !important;
+                }
+
+                /* Tables */
+                table, .comparison-table, [class*="table"] {
+                    display: block !important;
+                    overflow-x: auto !important;
+                    white-space: nowrap !important;
+                }
+
+                /* Conteneurs */
+                .container, .crow, .brow, .action-bar,
+                [class*="container"], [class*="wrapper"] {
+                    padding: 10px !important;
+                    width: 100% !important;
+                }
+
+                /* Tooltips */
+                #tooltip, .tooltip, [class*="tooltip"] {
+                    max-width: 200px !important;
+                    font-size: 12px !important;
+                    left: 10px !important;
+                    right: 10px !important;
+                    transform: none !important;
+                }
+
+                /* Footer */
+                .footer, [class*="footer"] {
+                    padding: 20px 10px !important;
+                    font-size: 12px !important;
+                }
+
+                /* TOUS les champs input */
+                input, select, textarea, [class*="input"] {
+                    font-size: 16px !important;
+                    min-height: 44px !important;
+                }
+
+                /* Checkboxes */
+                input[type=checkbox], [class*="checkbox"] {
+                    width: 24px !important;
+                    height: 24px !important;
+                    transform: scale(1.2) !important;
+                    margin-right: 8px !important;
+                }
+            }
+
+            /* ===== TRÈS PETITS ÉCRANS ===== */
+            @media (max-width: 480px) {
+                canvas, #simCanvas, #c2, #c3, #threeCanvas, #scopeCanvas, #demo-canvas {
+                    max-height: 40vh !important;
+                    min-height: 250px !important;
+                }
+
+                #app, #sw, #canvas-wrap, .oscilloscope, .simulation-area {
+                    height: 40vh !important;
+                    min-height: 300px !important;
+                }
+
+                button, .btn, .action-btn, .sim-btn, .sim-btn-guide {
+                    font-size: 14px !important;
+                    padding: 8px !important;
+                }
+
+                h1, .htitle, .sim-title, .hero h1 {
+                    font-size: 16px !important;
+                }
+            }
+
+            /* ===== FORCER LE SCROLL ===== */
+            ${CONFIG.forceScroll ? `
+            html, body {
+                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 100vh !important;
+                position: relative !important;
+            }
+
+            #app, #sw, #canvas-wrap, .simulation-area, [class*="sim"] {
+                position: relative !important;
+                height: auto !important;
+                min-height: 50vh !important;
+            }
+
+            [style*="overflow: hidden"], .overflow-hidden {
+                overflow: visible !important;
+                overflow-y: auto !important;
+            }
+            ` : ''}
+        `;
+
+        // Supprimer l'ancien style s'il existe
+        const oldStyle = document.getElementById('simlab-mobile-optimizer');
+        if (oldStyle) oldStyle.remove();
+
+        document.head.appendChild(style);
+        
+        if (CONFIG.debug) console.log('📱 Styles mobiles injectés');
+    }
+
+    // ===== INJECTEUR DE FONCTIONS JS =====
+    function injectMobileFunctions() {
+        if (!isMobile()) return;
+
+        const script = document.createElement('script');
+        script.id = 'simlab-mobile-functions';
+        script.textContent = `
+            (function() {
+                // ===== FONCTIONS D'OPTIMISATION MOBILE =====
+                function isMobileView() {
+                    return window.innerWidth <= 768;
+                }
+
+                // Ajuster la qualité graphique
+                function adjustQuality() {
+                    if (typeof setPixelRatio === 'function') {
+                        setPixelRatio(Math.min(devicePixelRatio, 1.5));
+                    }
+                    
+                    // Pour Three.js
+                    if (typeof THREE !== 'undefined' && THREE.WebGLRenderer) {
+                        document.querySelectorAll('canvas').forEach(canvas => {
+                            if (canvas.__threeRenderer) {
+                                canvas.__threeRenderer.setPixelRatio(Math.min(devicePixelRatio, 1.5));
+                            }
+                        });
+                    }
+                }
+
+                // Recadrer les canvas
+                function resizeAllCanvas() {
+                    document.querySelectorAll('canvas').forEach(canvas => {
+                        if (typeof canvas.rerender === 'function') {
+                            canvas.rerender();
+                        }
+                    });
+                    
+                    // Appeler les fonctions de redimensionnement existantes
+                    if (typeof rsz === 'function') rsz();
+                    if (typeof resizeCanvas === 'function') resizeCanvas();
+                    if (typeof onRsz3 === 'function') onRsz3();
+                    if (typeof resize2D === 'function') resize2D();
+                }
+
+                // Désactiver les animations lourdes
+                function optimizeAnimations() {
+                    if (typeof setAnimationQuality === 'function') {
+                        setAnimationQuality('low');
+                    }
+                }
+
+                // Exécuter au chargement
+                window.addEventListener('load', function() {
+                    if (isMobileView()) {
+                        adjustQuality();
+                        resizeAllCanvas();
+                        optimizeAnimations();
+                        console.log('📱 Mode mobile activé');
+                    }
+                });
+
+                // Réagir aux changements d'orientation
+                window.addEventListener('resize', function() {
+                    if (isMobileView()) {
+                        setTimeout(resizeAllCanvas, 100);
+                    }
+                });
+
+                // Pour les iframes
+                window.addEventListener('orientationchange', function() {
+                    setTimeout(resizeAllCanvas, 200);
+                });
+            })();
+        `;
+
+        const oldScript = document.getElementById('simlab-mobile-functions');
+        if (oldScript) oldScript.remove();
+
+        document.body.appendChild(script);
+        
+        if (CONFIG.debug) console.log('📱 Fonctions mobiles injectées');
+    }
+
+    // ===== MONITEUR DE CHARGEMENT DES PAGES =====
+    function monitorPageLoad() {
+        // Observer les changements de contenu (pour les simulations chargées dynamiquement)
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.addedNodes.length) {
+                    // Nouveaux éléments détectés, réappliquer les styles
+                    setTimeout(function() {
+                        if (isMobile()) {
+                            injectMobileStyles();
+                            if (CONFIG.debug) console.log('📱 Mise à jour mobile appliquée');
+                        }
+                    }, 100);
+                }
+            });
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+
+    // ===== INITIALISATION =====
+    function init() {
+        // Appliquer immédiatement
+        if (isMobile()) {
+            injectMobileStyles();
+            injectMobileFunctions();
+        }
+
+        monitorPageLoad();
+
+        // Réappliquer lors du redimensionnement
+        window.addEventListener('resize', function() {
+            if (isMobile()) {
+                injectMobileStyles();
+            } else {
+                // Supprimer les styles mobiles si on repasse en desktop
+                const style = document.getElementById('simlab-mobile-optimizer');
+                if (style) style.remove();
+            }
+        });
+
+        if (CONFIG.debug) console.log('📱 Optimiseur mobile SimLab actif');
+    }
+
+    // Lancer l'initialisation
+    init();
+})();
+</script>
+
+<!-- ===== MÉTATAGS POUR MOBILE ===== -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes, viewport-fit=cover">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">/head>
 <body>
 
 <canvas id="stars"></canvas>
